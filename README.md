@@ -20,4 +20,4 @@ _autrainer_ offers a modular design that allows researchers to conduct reproduci
 
 ## Project Status
 
-As we approach the alpha launch of _autrainer_, star this repository for the latest updates.
+As we approach the alpha launch of _autrainer_, star this repository to be notified about updates and releases.
