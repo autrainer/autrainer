@@ -2,18 +2,15 @@
 # autrainer default data and results directories
 data/
 results/
-gpu_scripts/**/*.out
 
 # VS Code
 .vscode/
 
-# Nix Flake
-.direnv
-__pycache__
-.devenv
+# venv
 .venv
 
 # caches
+__pycache__
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
@@ -23,3 +20,4 @@ docs/build/
 
 # pytest
 .coverage
+.coverage.*
