@@ -1,0 +1,26 @@
+id: EDANSA2019-wav
+_target_: autrainer.datasets.EDANSA2019
+
+threshold: 0.5
+
+path: data/EDANSA-2019
+features_subdir: default
+index_column: Clip Path
+target_column:
+  - Anth
+  - Bio
+  - Geo
+  - Sil
+file_type: wav
+file_handler: autrainer.datasets.utils.AudioFileHandler
+
+criterion: torch.nn.BCEWithLogitsLoss
+metrics:
+  - autrainer.metrics.MLAccuracy
+  - autrainer.metrics.MLF1Micro
+  - autrainer.metrics.MLF1Macro
+  - autrainer.metrics.MLF1Weighted
+tracking_metric: autrainer.metrics.MLF1Weighted
+
+transform:
+  type: raw

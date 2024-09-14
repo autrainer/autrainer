@@ -1,0 +1,10 @@
+id: ViT-B-32-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: vit_b_32
+transfer: true
+transform:
+  type: image
+  base:
+    - autrainer.transforms.Resize:  
+        height: 224
+        width: 224

@@ -1,0 +1,15 @@
+figsize: [10, 5] # figure size in inches
+latex: true # use LaTeX for text rendering
+filetypes: [png, pdf] # save figures in these formats
+pickle: true # save the figure data in a pickle file
+context: notebook # seaborn context
+palette: colorblind # seaborn color palette
+replace_none: true # replace None with ~
+add_titles: true
+add_xlabels: true
+add_ylabels: true
+
+rcParams:
+  font.serif: Palatino # LaTeX font
+  font.family: serif
+  legend.fontsize: 9

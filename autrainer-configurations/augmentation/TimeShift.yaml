@@ -1,0 +1,9 @@
+id: TimeShift
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.TimeShift:
+      time_steps: 20
+      axis: 0

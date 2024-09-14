@@ -1,0 +1,7 @@
+id: AlexNet-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: alexnet
+transfer: true
+
+transform:
+  type: image

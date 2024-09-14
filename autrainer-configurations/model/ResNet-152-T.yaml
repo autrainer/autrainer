@@ -1,0 +1,6 @@
+id: ResNet-152-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: resnet152
+transfer: true
+transform:
+  type: image

@@ -1,0 +1,10 @@
+id: ViT-H-14
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: vit_h_14
+transfer: false
+transform:
+  type: image
+  base:
+    - autrainer.transforms.Resize:  
+        height: 518
+        width: 518

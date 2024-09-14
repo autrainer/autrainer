@@ -1,0 +1,6 @@
+id: Densenet-121
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: densenet121
+transfer: false
+transform:
+  type: image

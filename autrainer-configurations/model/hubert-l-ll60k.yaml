@@ -1,0 +1,16 @@
+id: hubert-l-ll60k
+_target_: autrainer.models.W2V2FFNN
+model_name: facebook/hubert-large-ll60k
+freeze_extractor: true
+hidden_size: 512
+num_layers: 2
+sigmoid: false
+softmax: false
+dropout: 0.5
+
+transform:
+  type: raw
+  base:
+    - autrainer.transforms.FeatureExtractor:
+        fe_type: W2V2
+        fe_transfer: facebook/hubert-large-ll60k

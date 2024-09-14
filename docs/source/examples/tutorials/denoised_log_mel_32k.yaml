@@ -1,0 +1,17 @@
+file_handler:
+  autrainer.datasets.utils.AudioFileHandler:
+    target_sample_rate: 32000
+pipeline:
+  - autrainer.transforms.StereoToMono
+  - autrainer.transforms.PannMel:
+      sample_rate: 32000
+      window_size: 1024
+      hop_size: 320
+      mel_bins: 64
+      fmin: 50
+      fmax: 14000
+      ref: 1.0
+      amin: 1e-10
+      top_db: null
+  - spect_median_filter.SpectMedianFilter:
+      size: 5

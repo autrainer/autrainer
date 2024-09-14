@@ -1,0 +1,8 @@
+id: Cnn14-16k-T
+_target_: autrainer.models.Cnn14
+transfer: https://zenodo.org/records/3987831/files/Cnn14_16k_mAP%3D0.438.pth
+
+transform:
+  type: grayscale
+  base:
+    - autrainer.transforms.Normalize: null

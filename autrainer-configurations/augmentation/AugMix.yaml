@@ -1,0 +1,8 @@
+id: AugMix
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.TorchvisionAugmentation:
+      name: AugMix

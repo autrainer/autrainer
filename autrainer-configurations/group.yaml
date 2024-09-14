@@ -1,0 +1,20 @@
+defaults:  
+  - _hydra_disable_logging_
+  - _self_
+  - plotting: Default
+
+results_dir: ???
+max_runs: ???
+
+groupings:
+  - experiment_id: ???
+    create_summary: ???
+    dir: null
+    id: null
+    states: null
+    runs:
+      - run_name: ???
+        dir: ???
+        id: ???
+        states: ???
+        combine: ???

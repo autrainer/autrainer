@@ -1,0 +1,6 @@
+id: ResNet-34-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: resnet34
+transfer: true
+transform:
+  type: image

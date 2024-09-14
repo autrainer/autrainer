@@ -1,0 +1,9 @@
+id: RandGrayscale
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.TorchvisionAugmentation:
+      name: RandomGrayscale
+      p: 0.5

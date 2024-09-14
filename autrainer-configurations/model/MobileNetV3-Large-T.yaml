@@ -1,0 +1,6 @@
+id: MobileNetV3-Large-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: mobilenet_v3_large
+transfer: true
+transform:
+  type: image

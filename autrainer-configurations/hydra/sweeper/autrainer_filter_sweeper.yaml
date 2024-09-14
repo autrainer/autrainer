@@ -1,0 +1,6 @@
+# @package hydra.sweeper
+_target_: hydra_plugins.filter.FilterSweeper
+max_batch_size: null
+filters:
+  - type: exists
+    path: metrics.csv

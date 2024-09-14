@@ -1,0 +1,23 @@
+id: SpeechCommands-16k
+_target_: autrainer.datasets.SpeechCommands
+
+path: data/SpeechCommands
+features_subdir: log_mel_16k
+index_column: path
+target_column: label
+file_type: npy
+file_handler: autrainer.datasets.utils.NumpyFileHandler
+
+criterion: autrainer.criterions.BalancedCrossEntropyLoss
+metrics: 
+  - autrainer.metrics.Accuracy
+  - autrainer.metrics.UAR
+  - autrainer.metrics.F1
+tracking_metric: autrainer.metrics.Accuracy
+
+transform:
+  type: grayscale
+  base:
+    - autrainer.transforms.Expand:
+        size: 101
+        axis: -2 

@@ -1,0 +1,43 @@
+defaults:  
+  - _hydra_disable_logging_
+  - _self_
+  - plotting: Default # Use the default plotting configuration
+
+results_dir: results # Directory to save results
+max_runs: null # Maximum number of best runs to include in the summary plots
+
+groupings:
+  - experiment_id: exp1 # Experiment ID (will be created if it doesn't exist)
+    create_summary: true # Whether to create a summary for the experiment
+    dir: null # Optional global directory for all runs
+    id: null # Optional global ID for all runs
+    states: null # Optional global save states for all runs
+    runs:
+      - run_name: FirstRun # Run name
+        dir: some_results_dir # Directory for the runs to be grouped
+        id: some_exp # ID for the runs to be grouped
+        states: false # Whether to copy the model states
+        combine: # Runs to combine into run_name
+          - SomeRun1
+          - SomeRun2
+      - run_name: SecondRun
+        dir: some_results_dir
+        id: some_exp
+        states: false
+        combine:
+          - SomeRun3
+          - SomeRun4
+  - experiment_id: exp2 # Example with global parameters to be more concise
+    create_summary: true
+    dir: some_results_dir
+    id: some_exp
+    states: false
+    runs:
+      - run_name: FirstRun
+        combine:
+          - SomeRun1
+          - SomeRun2
+      - run_name: SecondRun
+        combine:
+          - SomeRun3
+          - SomeRun4

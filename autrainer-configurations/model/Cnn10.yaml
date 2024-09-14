@@ -1,0 +1,7 @@
+id: Cnn10
+_target_: autrainer.models.Cnn10
+
+transform:
+  type: grayscale
+  base:
+    - autrainer.transforms.Normalize: null

@@ -1,0 +1,14 @@
+id: Seq-FFNN-IS09
+_target_: autrainer.models.SeqFFNN
+backbone_input_dim: 32
+backbone_cell: LSTM
+backbone_hidden_size: 32
+backbone_num_layers: 2
+hidden_size: 32
+num_layers: 2
+sigmoid: false
+softmax: false
+dropout: 0.5
+
+transform:
+  type: tabular

@@ -1,0 +1,6 @@
+id: EfficientNetV2-L
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: efficientnet_v2_l
+transfer: false
+transform:
+  type: image

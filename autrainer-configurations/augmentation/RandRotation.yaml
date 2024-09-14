@@ -1,0 +1,10 @@
+id: RandRotation
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.TorchvisionAugmentation:
+      name: RandomRotation
+      degrees: 90
+      p: 0.5

@@ -1,0 +1,10 @@
+id: Swin-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: swin_t
+transfer: false
+transform:
+  type: image
+  base:
+    - autrainer.transforms.Resize:  
+        height: 224
+        width: 224

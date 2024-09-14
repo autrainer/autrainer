@@ -1,0 +1,30 @@
+# Important: should be used with inference_batch_size: 1
+id: AIBO-mel-16k
+_target_: autrainer.datasets.AIBO
+
+aibo_task: 2cl
+
+path: data/AIBO
+features_subdir: log_mel_16k
+index_column: file
+target_column: class
+file_type: npy
+file_handler: autrainer.datasets.utils.NumpyFileHandler
+
+criterion: autrainer.criterions.BalancedCrossEntropyLoss
+metrics: 
+  - autrainer.metrics.Accuracy
+  - autrainer.metrics.UAR
+  - autrainer.metrics.F1
+tracking_metric: autrainer.metrics.Accuracy
+
+transform:
+  type: grayscale
+  base:
+    - autrainer.transforms.Expand:
+        size: 301
+        axis: -2
+  train:
+    - autrainer.transforms.RandomCrop:
+        size: 301
+        axis: -2

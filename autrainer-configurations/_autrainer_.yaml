@@ -1,0 +1,38 @@
+defaults:
+  - _self_
+  - dataset: ???
+  - model: ???
+  - optimizer: ???
+  - scheduler: None
+  - augmentation: None
+  - plotting: Default
+  - override hydra/sweeper: autrainer_filter_sweeper
+
+training_type: epoch
+eval_frequency: 1
+save_frequency: ${eval_frequency}
+inference_batch_size: ${batch_size}
+
+progress_bar: true
+continue_training: true
+remove_continued_runs: true
+save_train_outputs: true
+save_dev_outputs: true
+save_test_outputs: true
+
+hydra:
+  output_subdir: null
+  mode: MULTIRUN
+  sweep:
+    dir: ${results_dir}/${experiment_id}/training/
+    subdir: "\
+      ${dataset.id}_\
+      ${model.id}_\
+      ${optimizer.id}_\
+      ${learning_rate}_\
+      ${batch_size}_\
+      ${training_type}_\
+      ${iterations}_\
+      ${scheduler.id}_\
+      ${augmentation.id}_\
+      ${seed}"

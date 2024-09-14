@@ -1,0 +1,9 @@
+id: GaussianNoise
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.GaussianNoise:
+      mean: 0.0
+      std: 0.001

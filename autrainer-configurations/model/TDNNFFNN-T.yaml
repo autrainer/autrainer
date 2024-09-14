@@ -1,0 +1,6 @@
+id: TDNNFFNN-T
+_target_: autrainer.models.TDNNFFNN
+hidden_size: 32
+
+transform:
+  type: raw

@@ -1,0 +1,8 @@
+id: Cnn10-32k-T
+_target_: autrainer.models.Cnn10
+transfer: https://zenodo.org/records/3987831/files/Cnn10_mAP%3D0.380.pth
+
+transform:
+  type: grayscale
+  base:
+    - autrainer.transforms.Normalize: null

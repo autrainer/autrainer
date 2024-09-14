@@ -1,0 +1,3 @@
+id: None
+_target_: autrainer.augmentations.AugmentationPipeline
+pipeline: []

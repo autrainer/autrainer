@@ -1,0 +1,20 @@
+id: ToyAudio-MLC
+_target_: autrainer.datasets.ToyDataset
+
+task: ml-classification
+size: 1000
+num_targets: 10
+feature_shape: [1, 48000]
+dev_split: 0.2
+test_split: 0.2
+
+criterion: torch.nn.BCEWithLogitsLoss
+metrics:
+  - autrainer.metrics.MLAccuracy
+  - autrainer.metrics.MLF1Micro
+  - autrainer.metrics.MLF1Macro
+  - autrainer.metrics.MLF1Weighted
+tracking_metric: autrainer.metrics.MLF1Weighted
+
+transform:
+  type: raw

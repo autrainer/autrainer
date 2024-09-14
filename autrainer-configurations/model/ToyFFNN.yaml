@@ -1,0 +1,8 @@
+id: ToyFFNN
+_target_: autrainer.models.FFNN
+input_size: 64
+hidden_size: 64
+num_layers: 2
+
+transform:
+  type: tabular

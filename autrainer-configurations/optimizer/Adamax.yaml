@@ -1,0 +1,2 @@
+id: Adamax
+_target_: torch.optim.Adamax

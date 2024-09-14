@@ -1,0 +1,8 @@
+id: Three-Layer-FFNN
+_target_: autrainer.models.FFNN
+input_size: 64
+hidden_size: 64
+num_layers: 3 # 3 hidden layers
+
+transform:
+  type: tabular

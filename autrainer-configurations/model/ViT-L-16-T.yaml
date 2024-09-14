@@ -1,0 +1,10 @@
+id: ViT-L-16-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: vit_l_16
+transfer: true
+transform:
+  type: image
+  base:
+    - autrainer.transforms.Resize:  
+        height: 224
+        width: 224

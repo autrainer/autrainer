@@ -1,0 +1,11 @@
+id: SpecAugment
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.SpecAugment:
+      freq_mask: 10
+      time_mask: 80
+      W: 30
+      p: 0.5

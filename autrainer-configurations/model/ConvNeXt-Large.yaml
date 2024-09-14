@@ -1,0 +1,7 @@
+id: ConvNeXt-Large
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: convnext_large
+transfer: false
+
+transform:
+  type: image

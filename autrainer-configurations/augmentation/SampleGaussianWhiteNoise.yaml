@@ -1,0 +1,10 @@
+id: SampleGaussianWhiteNoise
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.SampleGaussianWhiteNoise:
+      snr_df: ???
+      snr_col: ???
+      sample_seed: ???

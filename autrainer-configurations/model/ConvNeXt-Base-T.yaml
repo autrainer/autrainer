@@ -1,0 +1,7 @@
+id: ConvNeXt-Base-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: convnext_base
+transfer: true
+
+transform:
+  type: image

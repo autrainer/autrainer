@@ -1,0 +1,3 @@
+id: SAM-SGD
+_target_: autrainer.optimizers.SAM
+base_optimizer: torch.optim.SGD

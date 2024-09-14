@@ -1,0 +1,11 @@
+id: GoogLeNet
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: googlenet
+transfer: false
+aux_logits: false
+transform:
+  type: image
+  base:
+    - autrainer.transforms.Resize:  
+        height: 224
+        width: 224

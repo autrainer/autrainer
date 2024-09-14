@@ -1,0 +1,18 @@
+file_handler:
+  autrainer.datasets.utils.AudioFileHandler:
+    target_sample_rate: 8000
+pipeline:
+  - autrainer.transforms.StereoToMono
+  - autrainer.transforms.PannMel:
+      sample_rate: 8000
+      window_size: 256
+      hop_size: 80
+      mel_bins: 64
+      fmin: 50
+      fmax: 4000
+      ref: 1.0
+      amin: 1e-10
+      top_db: null
+
+# adapted from:
+# https://github.com/qiuqiangkong/audioset_tagging_cnn/blob/d2f4b8c18eab44737fcc0de1248ae21eb43f6aa4/pytorch/models.py#L2644

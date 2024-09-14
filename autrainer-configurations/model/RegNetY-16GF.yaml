@@ -1,0 +1,6 @@
+id: RegNetY-16GF
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: regnet_y_16gf
+transfer: false
+transform:
+  type: image

@@ -1,0 +1,6 @@
+id: EfficientNet-B5
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: efficientnet_b5
+transfer: false
+transform:
+  type: image

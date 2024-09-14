@@ -1,0 +1,19 @@
+id: ToyAudio-C
+_target_: autrainer.datasets.ToyDataset
+
+task: classification
+size: 1000
+num_targets: 10
+feature_shape: [1, 48000]
+dev_split: 0.2
+test_split: 0.2
+
+criterion: autrainer.criterions.BalancedCrossEntropyLoss
+metrics:
+  - autrainer.metrics.Accuracy
+  - autrainer.metrics.UAR
+  - autrainer.metrics.F1
+tracking_metric: autrainer.metrics.Accuracy
+
+transform:
+  type: raw

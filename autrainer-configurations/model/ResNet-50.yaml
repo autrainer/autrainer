@@ -1,0 +1,6 @@
+id: ResNet-50
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: resnet50
+transfer: false
+transform:
+  type: image

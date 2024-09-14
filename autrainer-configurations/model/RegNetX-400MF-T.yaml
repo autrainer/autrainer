@@ -1,0 +1,6 @@
+id: RegNetX-400MF-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: regnet_x_400mf
+transfer: true
+transform:
+  type: image

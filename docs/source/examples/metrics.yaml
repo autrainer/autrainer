@@ -1,0 +1,12 @@
+id: ExampleDataset
+_target_: example_dataset.ExampleDataset
+...
+
+tracking_metric: autrainer.metrics.Accuracy
+metrics:
+  - autrainer.metrics.Accuracy
+  - autrainer.metrics.UAR
+  - autrainer.metrics.F1
+  - custom_metric.CustomMetric:
+      param1: 1
+      param2: 2
