@@ -1,0 +1,6 @@
+id: ResNeXt-101-64x4d
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: resnext101_64x4d
+transfer: false
+transform:
+  type: image

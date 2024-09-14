@@ -1,0 +1,8 @@
+id: CutMix
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.CutMix:
+      alpha: 0.8

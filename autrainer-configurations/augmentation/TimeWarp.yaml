@@ -1,0 +1,9 @@
+id: TimeWarp
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.TimeWarp:
+      W: 30
+      axis: 0

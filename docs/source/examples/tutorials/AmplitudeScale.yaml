@@ -1,0 +1,9 @@
+id: AmplitudeScale
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - amplitude_scale_augmentation.AmplitudeScale:
+      scale_range: [0.8, 1.2]
+      p: 0.5

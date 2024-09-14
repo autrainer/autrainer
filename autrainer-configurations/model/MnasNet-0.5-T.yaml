@@ -1,0 +1,6 @@
+id: MnasNet-0.5-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: mnasnet0_5
+transfer: true
+transform:
+  type: image

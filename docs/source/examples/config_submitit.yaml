@@ -1,0 +1,18 @@
+defaults:
+  - _autrainer_
+  - _self_
+  - override hydra/launcher: submitit_slurm # override the launcher to submitit_slurm
+
+results_dir: results
+experiment_id: default
+iterations: 5
+
+hydra:
+  sweeper:
+    params:
+      +seed: 1
+      +batch_size: 32
+      +learning_rate: 0.001
+      dataset: ToyTabular-C
+      model: ToyFFNN
+      optimizer: Adam

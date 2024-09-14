@@ -1,0 +1,22 @@
+defaults:
+  - _autrainer_
+  - _self_
+
+results_dir: results
+experiment_id: spectrogram_step
+
+training_type: step
+iterations: 1000
+eval_frequency: 100
+save_frequency: 200
+progress_bar: false
+
+hydra:
+  sweeper:
+    params:
+      +seed: 1
+      +batch_size: 32
+      +learning_rate: 0.001
+      dataset: DCASE2016Task1-32k
+      model: Cnn10-32k-T
+      optimizer: Adam

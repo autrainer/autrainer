@@ -1,0 +1,2 @@
+id: ASGD
+_target_: torch.optim.ASGD

@@ -1,0 +1,27 @@
+id: EmoDB-32k
+_target_: autrainer.datasets.EmoDB
+
+train_speakers: [3, 8, 9, 10, 11, 12]
+dev_speakers: [13, 14]
+test_speakers: [15, 16]
+
+path: data/EmoDB
+features_subdir: log_mel_32k
+index_column: filename
+target_column: emotion
+file_type: npy
+file_handler: autrainer.datasets.utils.NumpyFileHandler
+
+criterion: autrainer.criterions.BalancedCrossEntropyLoss
+metrics:
+  - autrainer.metrics.Accuracy
+  - autrainer.metrics.UAR
+  - autrainer.metrics.F1
+tracking_metric: autrainer.metrics.Accuracy
+
+transform:
+  type: grayscale
+  base:
+    - autrainer.transforms.Expand:
+        size: 901
+        axis: -2

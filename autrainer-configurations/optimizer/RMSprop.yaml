@@ -1,0 +1,2 @@
+id: RMSprop
+_target_: torch.optim.RMSprop

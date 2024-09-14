@@ -1,0 +1,6 @@
+id: VGG-19-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: vgg19
+transfer: true
+transform:
+  type: image

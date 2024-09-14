@@ -1,0 +1,10 @@
+id: ASTModel-T
+_target_: autrainer.models.ASTModel
+transfer: MIT/ast-finetuned-audioset-10-10-0.4593
+
+transform:
+  type: raw
+  base:
+    - autrainer.transforms.FeatureExtractor:
+        fe_type: AST
+        fe_transfer: MIT/ast-finetuned-audioset-10-10-0.4593

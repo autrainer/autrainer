@@ -1,0 +1,10 @@
+id: RandAugment-light
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.TorchvisionAugmentation:
+      name: RandAugment
+      num_ops: 2
+      magnitude: 0

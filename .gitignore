@@ -1,0 +1,23 @@
+
+# autrainer default data and results directories
+data/
+results/
+
+# VS Code
+.vscode/
+
+# venv
+.venv
+
+# caches
+__pycache__
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# sphinx
+docs/build/
+
+# pytest
+.coverage
+.coverage.*

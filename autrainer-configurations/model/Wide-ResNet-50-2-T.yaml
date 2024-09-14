@@ -1,0 +1,6 @@
+id: Wide-ResNet-50-2-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: wide_resnet50_2
+transfer: true
+transform:
+  type: image

@@ -1,0 +1,17 @@
+id: AmplitudeScaleOrTimeFreqMask
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.Choice:
+      weights: [0.2, 0.8]
+      choices:
+        - amplitude_scale_augmentation.AmplitudeScale:
+            scale_range: [0.8, 1.2]
+        - autrainer.augmentations.Sequential:
+            sequence:
+              - autrainer.augmentations.TimeMask:
+                  time_mask: 80
+              - autrainer.augmentations.FrequencyMask:
+                  freq_mask: 10

@@ -1,0 +1,2 @@
+id: Adagrad
+_target_: torch.optim.Adagrad

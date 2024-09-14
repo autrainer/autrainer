@@ -1,0 +1,9 @@
+id: TimeMask
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.TimeMask:
+      time_mask: 80
+      axis: 0

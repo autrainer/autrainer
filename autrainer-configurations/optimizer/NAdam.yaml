@@ -1,0 +1,2 @@
+id: NAdam
+_target_: torch.optim.NAdam

@@ -1,0 +1,6 @@
+id: End2You-zhao19
+_target_: autrainer.models.AudioRNNModel
+model_name: zhao19
+
+transform:
+  type: raw

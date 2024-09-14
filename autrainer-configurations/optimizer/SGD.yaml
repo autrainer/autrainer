@@ -1,0 +1,2 @@
+id: SGD
+_target_: torch.optim.SGD

@@ -1,0 +1,21 @@
+defaults:
+  - _autrainer_
+  - _self_
+  - override hydra/sweeper: optuna # override the sweeper to optuna
+
+results_dir: results
+experiment_id: default
+iterations: 5
+
+hydra:
+  sweeper:
+    n_trials: 10 # total number of function evaluations
+    n_jobs: 10 # number of parallel jobs
+    direction: maximize # direction of optimization (depending on the tracking metric)
+    params:
+      +seed: 1
+      +batch_size: 32
+      +learning_rate: range(0.001, 0.1, step=0.001) # range of values
+      dataset: ToyTabular-C
+      model: ToyFFNN
+      optimizer: Adam

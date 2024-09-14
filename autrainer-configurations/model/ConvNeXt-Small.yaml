@@ -1,0 +1,7 @@
+id: ConvNeXt-Small
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: convnext_small
+transfer: false
+
+transform:
+  type: image

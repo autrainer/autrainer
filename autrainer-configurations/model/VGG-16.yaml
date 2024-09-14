@@ -1,0 +1,6 @@
+id: VGG-16
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: vgg16
+transfer: false
+transform:
+  type: image

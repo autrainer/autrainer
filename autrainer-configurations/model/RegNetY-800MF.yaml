@@ -1,0 +1,6 @@
+id: RegNetY-800MF
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: regnet_y_800mf
+transfer: false
+transform:
+  type: image

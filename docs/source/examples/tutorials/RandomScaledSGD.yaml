@@ -1,0 +1,6 @@
+id: RandomScaledSGD
+_target_: random_scaled_sgd.RandomScaledSGD
+
+scaling_factor: 0.001
+p: 0.05
+generator_seed: ${seed}

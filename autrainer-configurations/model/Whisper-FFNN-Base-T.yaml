@@ -1,0 +1,15 @@
+id: Whisper-FFNN-Base-T
+_target_: autrainer.models.WhisperFFNN
+model_name: openai/whisper-base
+hidden_size: 512
+num_layers: 2
+sigmoid: false
+softmax: false
+dropout: 0.5
+
+transform:
+  type: raw
+  base:
+    - autrainer.transforms.FeatureExtractor:
+        fe_type: Whisper
+        fe_transfer: openai/whisper-base

@@ -1,0 +1,6 @@
+id: End2You-emo18
+_target_: autrainer.models.AudioRNNModel
+model_name: emo18
+
+transform:
+  type: raw

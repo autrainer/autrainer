@@ -1,0 +1,6 @@
+id: RegNetX-32GF
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: regnet_x_32gf
+transfer: false
+transform:
+  type: image

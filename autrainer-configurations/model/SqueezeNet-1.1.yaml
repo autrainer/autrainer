@@ -1,0 +1,6 @@
+id: SqueezeNet-1.1
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: squeezenet1_1
+transfer: false
+transform:
+  type: image

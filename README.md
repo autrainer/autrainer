@@ -1,23 +1,54 @@
-![autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks](logo_banner.png)
+<div align="center">
+  <img src="docs/source/_static/logo_banner.png" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks">
+</div>
 
 # autrainer
 
-[![PyPI](https://img.shields.io/badge/PyPI-soon!-b4befe?logo=pypi&logoColor=b4befe&color=b4befe)](https://pypi.org/project/autrainer/)
-[![Hugging Face](https://img.shields.io/badge/Hugging_Face-autrainer-b4befe?logo=huggingface&logoColor=b4befe)](https://huggingface.co/autrainer)
-[![License](https://img.shields.io/badge/license-MIT-b4befe?logo=c)](https://github.com/autrainer/autrainer/blob/main/LICENSE)
+[![autrainer PyPI Version](https://img.shields.io/pypi/v/autrainer?logo=pypi&logoColor=b4befe&color=b4befe)](https://pypi.org/project/autrainer/)
+[![autrainer Python Versions](https://img.shields.io/pypi/pyversions/autrainer?logo=python&logoColor=b4befe&color=b4befe)](https://pypi.org/project/autrainer/)
+[![autrainer Hugging Face](https://img.shields.io/badge/Hugging_Face-autrainer-b4befe?logo=huggingface&logoColor=b4befe)](https://huggingface.co/autrainer)
+[![autrainer GitHub License](https://img.shields.io/badge/license-MIT-b4befe?logo=c)](https://github.com/autrainer/autrainer/blob/main/LICENSE)
 
-**A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.**
+A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.
 
-Built on [PyTorch](https://pytorch.org/) and [Hydra](https://hydra.cc/), _autrainer_ simplifies and streamlines deep learning model training and experimentation workflows for computer audition tasks.
+_autrainer_ is built on top of [PyTorch](https://pytorch.org/) and [Hydra](https://hydra.cc/),
+offering a modular and extensible way to perform reproducible deep learning experiments
+for computer audition tasks using YAML configuration files and the command line.
 
-_autrainer_ offers a modular design that allows researchers to conduct reproducible and easily extensible experiments using YAML configuration files and a command-line interface.
+## Installation
 
-## Key Features
+To install _autrainer_, first ensure that PyTorch (along with torchvision and torchaudio) version 2.0 or higher is installed.
+For installation instructions, refer to the [PyTorch website](https://pytorch.org/get-started/locally/).
 
-- **Reproducibility**: _autrainer_ emphasizes reproducibility, facilitating the replication of deep learning research experiments through easily configurable YAML files.
-- **Low-Code Interface**: Designed with a low-code approach in mind, _autrainer_ lowers the barrier to entry, allowing researchers to configure and train models without the need for extensive boilerplate code.
-- **Extensible and Scalable**: _autrainer_ can be extended to accommodate custom datasets, model architectures, optimizers, transforms, augmentations, training regimes, and more, making it adaptable to a wide range of computer audition tasks.
+It is recommended to install _autrainer_ within a virtual environment.
+To create a new virtual environment, refer to the [Python venv documentation](https://docs.python.org/3/library/venv.html).
 
-## Project Status
+Next, install _autrainer_ using _pip_.
 
-As we approach the alpha launch of _autrainer_, star this repository to be notified about updates and releases.
+```bash
+pip install autrainer
+```
+
+The following optional dependencies can be installed to enable additional features:
+
+- `latex` for LaTeX plotting (requires a LaTeX installation).
+- `mlflow` for [MLflow](https://mlflow.org/) logging.
+- `tensorboard` for [TensorBoard](https://www.tensorflow.org/tensorboard) logging.
+- `opensmile` for audio feature extraction with [openSMILE](https://audeering.com/opensmile/).
+- `albumentations` for image augmentations with [Albumentations](https://albumentations.ai/).
+- `torch-audiomentations` for audio augmentations with [torch-audiomentations](https://github.com/asteroid-team/torch-audiomentations).
+
+To install _autrainer_ with all optional dependencies, use the following command:
+
+```bash
+pip install autrainer[all]
+```
+
+To install _autrainer_ from source, refer to the [contribution guide](https://autrainer.github.io/autrainer/development/contributing.html).
+
+## Next Steps
+
+To get started using _autrainer_, the [quickstart guide](https://autrainer.github.io/autrainer/usage/quickstart.html) outlines the creation of a simple training configuration
+and [tutorials](https://autrainer.github.io/autrainer/usage/tutorials.html) provide examples for implementing custom modules including their configurations.
+
+For a complete list of available CLI commands, refer to the [CLI reference](https://autrainer.github.io/autrainer/usage/cli_reference.html) or the [CLI wrapper](https://autrainer.github.io/autrainer/usage/cli_wrapper.html).

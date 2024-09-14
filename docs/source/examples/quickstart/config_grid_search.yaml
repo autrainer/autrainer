@@ -1,0 +1,17 @@
+defaults:
+  - _autrainer_
+  - _self_
+
+results_dir: results
+experiment_id: default
+iterations: 5
+
+hydra:
+  sweeper:
+    params:
+      +seed: 1, 2, 3 # 3 seeds to compare
+      +batch_size: 32
+      +learning_rate: 0.001
+      dataset: ToyTabular-C
+      model: ToyFFNN, Three-Layer-FFNN # 2 models to compare
+      optimizer: Adam

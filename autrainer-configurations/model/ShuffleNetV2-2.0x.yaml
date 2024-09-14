@@ -1,0 +1,6 @@
+id: ShuffleNetV2-2.0x
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: shufflenet_v2_x2_0
+transfer: false
+transform:
+  type: image

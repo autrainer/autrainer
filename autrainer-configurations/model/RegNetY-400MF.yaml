@@ -1,0 +1,6 @@
+id: RegNetY-400MF
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: regnet_y_400mf
+transfer: false
+transform:
+  type: image

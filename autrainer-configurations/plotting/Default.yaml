@@ -1,0 +1,13 @@
+figsize: [10, 5]
+latex: false
+filetypes: [png]
+pickle: false
+context: notebook
+palette: colorblind
+replace_none: false
+add_titles: true
+add_xlabels: true
+add_ylabels: true
+
+rcParams:
+  legend.fontsize: 9

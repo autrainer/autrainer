@@ -1,0 +1,23 @@
+id: SpeechCommands-wav
+_target_: autrainer.datasets.SpeechCommands
+
+path: data/SpeechCommands
+features_subdir: default
+index_column: path
+target_column: label
+file_type: wav
+file_handler: autrainer.datasets.utils.AudioFileHandler
+
+criterion: autrainer.criterions.BalancedCrossEntropyLoss
+metrics: 
+  - autrainer.metrics.Accuracy
+  - autrainer.metrics.UAR
+  - autrainer.metrics.F1
+tracking_metric: autrainer.metrics.Accuracy
+
+transform:
+  type: raw
+  base:
+    - autrainer.transforms.Expand:
+        size: 16000
+        axis: -1 

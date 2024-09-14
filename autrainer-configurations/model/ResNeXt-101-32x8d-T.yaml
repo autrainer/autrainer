@@ -1,0 +1,6 @@
+id: ResNeXt-101-32x8d-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: resnext101_32x8d
+transfer: true
+transform:
+  type: image

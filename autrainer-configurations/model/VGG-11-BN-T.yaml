@@ -1,0 +1,6 @@
+id: VGG-11-BN-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: vgg11_bn
+transfer: true
+transform:
+  type: image

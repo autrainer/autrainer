@@ -1,0 +1,9 @@
+file_handler:
+  autrainer.datasets.utils.AudioFileHandler:
+    target_sample_rate: 16000
+pipeline:
+  - autrainer.transforms.StereoToMono
+  - autrainer.transforms.OpenSMILE:
+      feature_set: eGeMAPSv02
+      sample_rate: 16000
+      functionals: true

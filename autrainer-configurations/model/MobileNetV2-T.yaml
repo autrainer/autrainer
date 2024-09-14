@@ -1,0 +1,6 @@
+id: MobileNetV2-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: mobilenet_v2
+transfer: true
+transform:
+  type: image

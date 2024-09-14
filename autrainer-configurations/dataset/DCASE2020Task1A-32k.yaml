@@ -1,0 +1,26 @@
+id: DCASE2020Task1A-32k
+_target_: autrainer.datasets.DCASE2020Task1A
+
+dev_split: 0.1
+dev_split_seed: 0
+stratify:
+  - scene_label
+  - city
+  - device
+
+path: data/DCASE2020Task1A
+features_subdir: log_mel_32k
+index_column: filename
+target_column: scene_label
+file_type: npy
+file_handler: autrainer.datasets.utils.NumpyFileHandler
+
+criterion: autrainer.criterions.BalancedCrossEntropyLoss
+metrics:
+  - autrainer.metrics.Accuracy
+  - autrainer.metrics.UAR
+  - autrainer.metrics.F1
+tracking_metric: autrainer.metrics.Accuracy
+
+transform:
+  type: grayscale

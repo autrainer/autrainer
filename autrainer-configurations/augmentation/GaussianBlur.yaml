@@ -1,0 +1,10 @@
+id: GaussianBlur
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.TorchvisionAugmentation:
+      name: GaussianBlur
+      kernel_size: 3
+      sigma: [0.1, 2]

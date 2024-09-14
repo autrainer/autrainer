@@ -1,0 +1,10 @@
+id: MaxViT-T-T
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: maxvit_t
+transfer: true
+transform:
+  type: image
+  base:
+    - autrainer.transforms.Resize:  
+        height: 224
+        width: 224

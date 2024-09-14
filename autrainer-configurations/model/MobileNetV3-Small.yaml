@@ -1,0 +1,6 @@
+id: MobileNetV3-Small
+_target_: autrainer.models.TorchvisionModel
+torchvision_name: mobilenet_v3_small
+transfer: false
+transform:
+  type: image

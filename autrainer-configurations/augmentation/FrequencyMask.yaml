@@ -1,0 +1,9 @@
+id: FrequencyMask
+_target_: autrainer.augmentations.AugmentationPipeline
+
+generator_seed: 0
+
+pipeline:
+  - autrainer.augmentations.FrequencyMask:
+      freq_mask: 10
+      axis: 1
