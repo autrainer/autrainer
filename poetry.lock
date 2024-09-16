@@ -152,20 +152,20 @@ tqdm = "*"
 
 [[package]]
 name = "audformat"
-version = "1.3.0"
+version = "1.3.1"
 description = "Python implementation of audformat"
 optional = true
 python-versions = ">=3.9"
 files = [
-    {file = "audformat-1.3.0-py3-none-any.whl", hash = "sha256:66dab31fb6c1f9fa7ba204cc4950d1d2f0d01b1fb9d747463b9764054bd6590b"},
-    {file = "audformat-1.3.0.tar.gz", hash = "sha256:b7678521dab2bf77b6c3503818fb9e1c6dae87ca0b05907dace0d286ca6f4cef"},
+    {file = "audformat-1.3.1-py3-none-any.whl", hash = "sha256:105d3da6b48bf99138d526d773968539a5d987698b71ec12e2c08a961538a234"},
+    {file = "audformat-1.3.1.tar.gz", hash = "sha256:c175fcda7ce8d3a0b0d87a69877ef946263c9e04e7653f5815a165daa7118dfb"},
 ]
 
 [package.dependencies]
 audeer = ">=2.0.0"
 audiofile = ">=0.4.0"
-iso-639 = "*"
 iso3166 = "*"
+iso639-lang = "*"
 oyaml = "*"
 pandas = ">=2.1.0"
 pyarrow = ">=10.0.1"
@@ -1483,13 +1483,13 @@ pyyaml = ">=5.1"
 
 [[package]]
 name = "identify"
-version = "2.6.0"
+version = "2.6.1"
 description = "File identification library for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "identify-2.6.0-py2.py3-none-any.whl", hash = "sha256:e79ae4406387a9d300332b5fd366d8994f1525e8414984e1a59e058b2eda2dd0"},
-    {file = "identify-2.6.0.tar.gz", hash = "sha256:cb171c685bdc31bcc4c1734698736a7d5b6c8bf2e0c15117f4d469c8640ae5cf"},
+    {file = "identify-2.6.1-py2.py3-none-any.whl", hash = "sha256:53863bcac7caf8d2ed85bd20312ea5dcfc22226800f6d6881f232d861db5a8f0"},
+    {file = "identify-2.6.1.tar.gz", hash = "sha256:91478c5fb7c3aac5ff7bf9b4344f803843dc586832d5f110d672b19aa1984c98"},
 ]
 
 [package.extras]
@@ -1497,14 +1497,17 @@ license = ["ukkonen"]
 
 [[package]]
 name = "idna"
-version = "3.8"
+version = "3.10"
 description = "Internationalized Domain Names in Applications (IDNA)"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "idna-3.8-py3-none-any.whl", hash = "sha256:050b4e5baadcd44d760cedbd2b8e639f2ff89bbc7a5730fcc662954303377aac"},
-    {file = "idna-3.8.tar.gz", hash = "sha256:d838c2c0ed6fced7693d5e8ab8e734d5f8fda53a039c0164afb0b82e771e3603"},
+    {file = "idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"},
+    {file = "idna-3.10.tar.gz", hash = "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9"},
 ]
+
+[package.extras]
+all = ["flake8 (>=7.1.1)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "ruff (>=0.6.2)"]
 
 [[package]]
 name = "imageio"
@@ -1607,21 +1610,6 @@ files = [
 ]
 
 [[package]]
-name = "iso-639"
-version = "0.4.5"
-description = "Python library for ISO 639 standard"
-optional = true
-python-versions = "*"
-files = []
-develop = false
-
-[package.source]
-type = "git"
-url = "https://github.com/noumar/iso639.git"
-reference = "0.4.5"
-resolved_reference = "2175cf04b8b8cec79d99a6c4ad31295d67c22cd6"
-
-[[package]]
 name = "iso3166"
 version = "2.1.1"
 description = "Self-contained ISO 3166-1 country definitions."
@@ -1630,6 +1618,17 @@ python-versions = ">=3.6"
 files = [
     {file = "iso3166-2.1.1-py3-none-any.whl", hash = "sha256:263660b36f8471c42acd1ff673d28a3715edbce7d24b1550d0cf010f6816c47f"},
     {file = "iso3166-2.1.1.tar.gz", hash = "sha256:fcd551b8dda66b44e9f9e6d6bbbee3a1145a22447c0a556e5d0fb1ad1e491719"},
+]
+
+[[package]]
+name = "iso639-lang"
+version = "2.3.0"
+description = "A simple, yet powerful ISO 639 library."
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "iso639_lang-2.3.0-py3-none-any.whl", hash = "sha256:df53b9f4c6dbf7201c3f6d03cd636ee42437ef1f796b98568551148a3f3056ef"},
+    {file = "iso639_lang-2.3.0.tar.gz", hash = "sha256:42a84816e4c4d457451befb87882d0ccf3db1c192ace58e87841eb4c3adfddd3"},
 ]
 
 [[package]]
@@ -2078,13 +2077,13 @@ dev = ["meson-python (>=0.13.1)", "numpy (>=1.25)", "pybind11 (>=2.6)", "setupto
 
 [[package]]
 name = "mlflow"
-version = "2.16.0"
+version = "2.16.1"
 description = "MLflow is an open source platform for the complete machine learning lifecycle"
 optional = true
 python-versions = ">=3.8"
 files = [
-    {file = "mlflow-2.16.0-py3-none-any.whl", hash = "sha256:9f27ef6ae7a82d7ecd67b6b4a4d50637a5e8160639115570fbc689758f9c0b54"},
-    {file = "mlflow-2.16.0.tar.gz", hash = "sha256:82ea1a2e800f404f1586783b7636091c0a5754cf9ff45afeadf3a5e467f5168f"},
+    {file = "mlflow-2.16.1-py3-none-any.whl", hash = "sha256:c27f37f3d7d6acffaa495b9376d1e41b758cb2654a3df27dcba2ec4a366e6173"},
+    {file = "mlflow-2.16.1.tar.gz", hash = "sha256:a2e2352cfde2eff493aa678f500101e9b2f6978c9c018c60f7086043ba796bb9"},
 ]
 
 [package.dependencies]
@@ -2099,7 +2098,7 @@ Jinja2 = [
 ]
 markdown = ">=3.3,<4"
 matplotlib = "<4"
-mlflow-skinny = "2.16.0"
+mlflow-skinny = "2.16.1"
 numpy = "<3"
 pandas = "<3"
 pyarrow = ">=4.0.0,<18"
@@ -2121,13 +2120,13 @@ xethub = ["mlflow-xethub"]
 
 [[package]]
 name = "mlflow-skinny"
-version = "2.16.0"
+version = "2.16.1"
 description = "MLflow is an open source platform for the complete machine learning lifecycle"
 optional = true
 python-versions = ">=3.8"
 files = [
-    {file = "mlflow_skinny-2.16.0-py3-none-any.whl", hash = "sha256:c55541f50efd0f6637377b10e8a654847a3fcd815b8680a95f02e0ca6bd7700c"},
-    {file = "mlflow_skinny-2.16.0.tar.gz", hash = "sha256:9b823173063743783b4e7b6c52bdadcc7d9dab48eb883ac454c0d56609df6b2d"},
+    {file = "mlflow_skinny-2.16.1-py3-none-any.whl", hash = "sha256:bd7ac045fc2656f7c80535dfd1bdd5071454a7207a94d87f8f0c54755fd0ebc5"},
+    {file = "mlflow_skinny-2.16.1.tar.gz", hash = "sha256:6bbd0e8dacd2ca222bdeba309c7a38b6d36b110becb6cbfded5602240705dce1"},
 ]
 
 [package.dependencies]
@@ -2781,13 +2780,13 @@ tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "pa
 
 [[package]]
 name = "platformdirs"
-version = "4.3.2"
+version = "4.3.3"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "platformdirs-4.3.2-py3-none-any.whl", hash = "sha256:eb1c8582560b34ed4ba105009a4badf7f6f85768b30126f351328507b2beb617"},
-    {file = "platformdirs-4.3.2.tar.gz", hash = "sha256:9e5e27a08aa095dd127b9f2e764d74254f482fef22b0970773bfba79d091ab8c"},
+    {file = "platformdirs-4.3.3-py3-none-any.whl", hash = "sha256:50a5450e2e84f44539718293cbb1da0a0885c9d14adf21b77bae4e66fc99d9b5"},
+    {file = "platformdirs-4.3.3.tar.gz", hash = "sha256:d4e0b7d8ec176b341fb03cb11ca12d0276faa8c485f9cd218f613840463fc2c0"},
 ]
 
 [package.extras]
@@ -3924,18 +3923,18 @@ files = [
 
 [[package]]
 name = "setuptools"
-version = "74.1.2"
+version = "75.0.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "setuptools-74.1.2-py3-none-any.whl", hash = "sha256:5f4c08aa4d3ebcb57a50c33b1b07e94315d7fc7230f7115e47fc99776c8ce308"},
-    {file = "setuptools-74.1.2.tar.gz", hash = "sha256:95b40ed940a1c67eb70fc099094bd6e99c6ee7c23aa2306f4d2697ba7916f9c6"},
+    {file = "setuptools-75.0.0-py3-none-any.whl", hash = "sha256:791ae94f04f78c880b5e614e560dd32d4b4af5d151bd9e7483e3377846caf90a"},
+    {file = "setuptools-75.0.0.tar.gz", hash = "sha256:25af69c809d9334cd8e653d385277abeb5a102dca255954005a7092d282575ea"},
 ]
 
 [package.extras]
 check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)", "ruff (>=0.5.2)"]
-core = ["importlib-metadata (>=6)", "importlib-resources (>=5.10.2)", "jaraco.text (>=3.7)", "more-itertools (>=8.8)", "packaging (>=24)", "platformdirs (>=2.6.2)", "tomli (>=2.0.1)", "wheel (>=0.43.0)"]
+core = ["importlib-metadata (>=6)", "importlib-resources (>=5.10.2)", "jaraco.collections", "jaraco.functools", "jaraco.text (>=3.7)", "more-itertools", "more-itertools (>=8.8)", "packaging", "packaging (>=24)", "platformdirs (>=2.6.2)", "tomli (>=2.0.1)", "wheel (>=0.43.0)"]
 cover = ["pytest-cov"]
 doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "pyproject-hooks (!=1.1)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier", "towncrier (<24.7)"]
 enabler = ["pytest-enabler (>=2.2)"]
@@ -5139,13 +5138,13 @@ files = [
 
 [[package]]
 name = "zipp"
-version = "3.20.1"
+version = "3.20.2"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "zipp-3.20.1-py3-none-any.whl", hash = "sha256:9960cd8967c8f85a56f920d5d507274e74f9ff813a0ab8889a5b5be2daf44064"},
-    {file = "zipp-3.20.1.tar.gz", hash = "sha256:c22b14cc4763c5a5b04134207736c107db42e9d3ef2d9779d465f5f1bcba572b"},
+    {file = "zipp-3.20.2-py3-none-any.whl", hash = "sha256:a817ac80d6cf4b23bf7f2828b7cabf326f15a001bea8b1f9b49631780ba28350"},
+    {file = "zipp-3.20.2.tar.gz", hash = "sha256:bc9eb26f4506fda01b81bcde0ca78103b6e62f991b381fec825435c836edbc29"},
 ]
 
 [package.extras]
@@ -5162,10 +5161,10 @@ all = ["albumentations", "latex", "mlflow", "opensmile", "tensorboard", "torch-a
 audiomentations = ["torch-audiomentations"]
 latex = ["latex"]
 mlflow = ["mlflow"]
-opensmile = ["iso-639", "opensmile"]
+opensmile = ["opensmile"]
 tensorboard = ["tensorboard"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "2995f8cc26524b9dbfd336a8770ee3dcf49d29a687a9070fc3f72330af9c0ca9"
+content-hash = "efb50b1c1ad27ffee6b0d23c7d7595da79f3c2966ad712ec9cf5aab1d1226b48"

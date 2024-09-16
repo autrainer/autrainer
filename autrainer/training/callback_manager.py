@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-import inspect
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -248,7 +247,6 @@ class CallbackManager:
             obj_cb_function = getattr(obj, callback_name, None)
             if not obj_cb_function:
                 continue
-            self._check_signature(obj, obj_cb_function, callback_name)
             self.callbacks[callback_name].append(obj_cb_function)
 
     def register_multiple(self, *objs: object) -> None:
@@ -260,51 +258,3 @@ class CallbackManager:
             raise ValueError(f"Callback position {position} not found.")
         for cb in self.callbacks[position]:
             cb(**kwargs)
-
-    def _check_signature(
-        self, module: object, func: Callable, callback_name: str
-    ) -> None:
-        template_method = getattr(CallbackSignature, callback_name, None)
-        if template_method is None:
-            raise ValueError(
-                f"Callback {callback_name} not found in CallbackSignature."
-            )
-        func_sig = inspect.signature(func)
-        template_sig = inspect.signature(template_method)
-        template_params = list(template_sig.parameters.values())[1:]
-        modified_template_sig = template_sig.replace(
-            parameters=template_params
-        )
-        if func_sig.parameters != modified_template_sig.parameters:
-            self._raise_type_error(
-                "Parameter signature",
-                module.__class__.__name__,
-                callback_name,
-                str(func_sig),
-                str(modified_template_sig),
-            )
-        if (
-            func_sig.return_annotation
-            != modified_template_sig.return_annotation
-        ):
-            self._raise_type_error(
-                "Return type signature",
-                module.__class__.__name__,
-                callback_name,
-                str(func_sig.return_annotation),
-                str(modified_template_sig.return_annotation),
-            )
-
-    def _raise_type_error(
-        self,
-        reason: str,
-        module_name: object,
-        callback_name: str,
-        got: str,
-        expected: str,
-    ) -> None:
-        raise TypeError(
-            f"{reason} for callback {callback_name} in {module_name}.\n"
-            f"\tGot: {got}\n"
-            f"\tExpected: {expected}"
-        )
