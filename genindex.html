@@ -1,0 +1,1175 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/theme.css?v=93fba4f5" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <script src="_static/external_links.js?v=919ee35f"></script>
+    <script src="_static/highlight_cli.js?v=d9429fbe"></script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo_light.webp" class="logo__image only-light" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>
+    <script>document.write(`<img src="_static/logo_dark.webp" class="logo__image only-dark" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>`);</script>
+  
+  
+    <p class="title logo__title">autrainer</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<h3><a href="index.html">Table of Contents</a></h3>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/cli_reference.html">CLI Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/cli_wrapper.html">CLI Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/hydra_configurations.html">Hydra Configurations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules/augmentations.html">Augmentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/criterions.html">Criterions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/dataset_utils.html">Dataset Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/optimizers.html">Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/schedulers.html">Schedulers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/serving.html">Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/training.html">Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/transforms.html">Transforms</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development/reproducibility_guide.html">Reproducibility Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development/citing.html">Citing <cite>autrainer</cite></a></li>
+</ul>
+</div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/transforms.html#autrainer.transforms.SmartCompose.__add__">__add__() (autrainer.transforms.SmartCompose method)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AbstractAugmentation.__call__">__call__() (autrainer.augmentations.AbstractAugmentation method)</a>
+
+      <ul>
+        <li><a href="modules/metrics.html#autrainer.metrics.AbstractMetric.__call__">(autrainer.metrics.AbstractMetric method)</a>
+</li>
+        <li><a href="modules/transforms.html#autrainer.transforms.AbstractTransform.__call__">(autrainer.transforms.AbstractTransform method)</a>
+</li>
+        <li><a href="modules/transforms.html#autrainer.transforms.SmartCompose.__call__">(autrainer.transforms.SmartCompose method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.DatasetWrapper.__getitem__">__getitem__() (autrainer.datasets.utils.DatasetWrapper method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AbstractAugmentation">AbstractAugmentation (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset">AbstractDataset (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractFileHandler">AbstractFileHandler (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger">AbstractLogger (class in autrainer.loggers)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.AbstractMetric">AbstractMetric (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.AbstractModel">AbstractModel (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform">AbstractTargetTransform (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.AbstractTransform">AbstractTransform (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.Accuracy">Accuracy (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/postprocessing.html#autrainer.postprocessing.AggregateGrid.aggregate">aggregate() (autrainer.postprocessing.AggregateGrid method)</a>
+</li>
+      <li><a href="modules/postprocessing.html#autrainer.postprocessing.AggregateGrid">AggregateGrid (class in autrainer.postprocessing)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AIBO">AIBO (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AlbumentationsAugmentation">AlbumentationsAugmentation (class in autrainer.augmentations)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/transforms.html#autrainer.transforms.AnyToTensor">AnyToTensor (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AbstractAugmentation.apply">apply() (autrainer.augmentations.AbstractAugmentation method)</a>
+
+      <ul>
+        <li><a href="modules/augmentations.html#autrainer.augmentations.Choice.apply">(autrainer.augmentations.Choice method)</a>
+</li>
+        <li><a href="modules/augmentations.html#autrainer.augmentations.Sequential.apply">(autrainer.augmentations.Sequential method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/models.html#autrainer.models.ASTModel">ASTModel (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AudioFileHandler">AudioFileHandler (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AudiomentationsAugmentation">AudiomentationsAugmentation (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.AudioRNNModel">AudioRNNModel (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AugmentationManager">AugmentationManager (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AugmentationPipeline">AugmentationPipeline (class in autrainer.augmentations)</a>
+</li>
+      <li>
+    autrainer.postprocessing
+
+      <ul>
+        <li><a href="modules/postprocessing.html#module-autrainer.postprocessing">module</a>
+</li>
+      </ul></li>
+      <li>
+    autrainer.transforms
+
+      <ul>
+        <li><a href="modules/transforms.html#module-autrainer.transforms">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/criterions.html#autrainer.criterions.BalancedCrossEntropyLoss">BalancedCrossEntropyLoss (class in autrainer.criterions)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.BaseAscendingMetric">BaseAscendingMetric (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.BaseClassificationDataset">BaseClassificationDataset (class in autrainer.datasets)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/metrics.html#autrainer.metrics.BaseDescendingMetric">BaseDescendingMetric (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.BaseMLClassificationDataset">BaseMLClassificationDataset (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.BaseRegressionDataset">BaseRegressionDataset (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping">Bookkeeping (class in autrainer.core.utils)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature">CallbackSignature (class in autrainer.training)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_iteration_begin">cb_on_iteration_begin() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_iteration_end">cb_on_iteration_end() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_loader_exhausted">cb_on_loader_exhausted() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_step_begin">cb_on_step_begin() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_step_end">cb_on_step_end() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_test_begin">cb_on_test_begin() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_test_end">cb_on_test_end() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_test_step_begin">cb_on_test_step_begin() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_test_step_end">cb_on_test_step_end() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_train_begin">cb_on_train_begin() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_train_end">cb_on_train_end() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_val_begin">cb_on_val_begin() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_val_end">cb_on_val_end() (autrainer.training.CallbackSignature method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_val_step_begin">cb_on_val_step_begin() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_val_step_end">cb_on_val_step_end() (autrainer.training.CallbackSignature method)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.CCC">CCC (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.ModularTaskTrainer.cfg">cfg (autrainer.training.ModularTaskTrainer property)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.Choice">Choice (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.Cnn10">Cnn10 (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.Cnn14">Cnn14 (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.AbstractMetric.compare">compare() (autrainer.metrics.AbstractMetric static method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.constants.CONFIG_FOLDERS">CONFIG_FOLDERS (in module autrainer.core.constants)</a>
+</li>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.create">create() (in module autrainer.cli)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.create_folder">create_folder() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AugmentationPipeline.create_pipeline">create_pipeline() (autrainer.augmentations.AugmentationPipeline method)</a>
+</li>
+      <li><a href="modules/criterions.html#autrainer.criterions.CrossEntropyLoss">CrossEntropyLoss (class in autrainer.criterions)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.CutMix">CutMix (class in autrainer.augmentations)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.DatasetWrapper">DatasetWrapper (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.DCASE2016Task1">DCASE2016Task1 (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.DCASE2018Task3">DCASE2018Task3 (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.DCASE2020Task1A">DCASE2020Task1A (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.decode">decode() (autrainer.datasets.utils.AbstractTargetTransform method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder.decode">(autrainer.datasets.utils.LabelEncoder method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler.decode">(autrainer.datasets.utils.MinMaxScaler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.decode">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.dev_dataset">dev_dataset (autrainer.datasets.AbstractDataset property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.dev_loader">dev_loader (autrainer.datasets.AbstractDataset property)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.download">download() (autrainer.datasets.AbstractDataset static method)</a>
+
+      <ul>
+        <li><a href="modules/datasets.html#autrainer.datasets.AIBO.download">(autrainer.datasets.AIBO static method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2016Task1.download">(autrainer.datasets.DCASE2016Task1 static method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2018Task3.download">(autrainer.datasets.DCASE2018Task3 static method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2020Task1A.download">(autrainer.datasets.DCASE2020Task1A static method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.EDANSA2019.download">(autrainer.datasets.EDANSA2019 static method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.EmoDB.download">(autrainer.datasets.EmoDB static method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.SpeechCommands.download">(autrainer.datasets.SpeechCommands static method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ZipDownloadManager.download">(autrainer.datasets.utils.ZipDownloadManager method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/datasets.html#autrainer.datasets.EDANSA2019">EDANSA2019 (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/serving.html#autrainer.serving.Inference.embed_directory">embed_directory() (autrainer.serving.Inference method)</a>
+</li>
+      <li><a href="modules/serving.html#autrainer.serving.Inference.embed_file">embed_file() (autrainer.serving.Inference method)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.AbstractModel.embeddings">embeddings() (autrainer.models.AbstractModel method)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.EmoDB">EmoDB (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.encode">encode() (autrainer.datasets.utils.AbstractTargetTransform method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder.encode">(autrainer.datasets.utils.LabelEncoder method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler.encode">(autrainer.datasets.utils.MinMaxScaler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.encode">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.end_run">end_run() (autrainer.loggers.AbstractLogger method)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.ModularTaskTrainer.evaluate">evaluate() (autrainer.training.ModularTaskTrainer method)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.Expand">Expand (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.abstract_logger.EXPORT_ARTIFACTS">EXPORT_ARTIFACTS (in module autrainer.loggers.abstract_logger)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.abstract_logger.EXPORT_IGNORE_PARAMS">EXPORT_IGNORE_PARAMS (in module autrainer.loggers.abstract_logger)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.abstract_logger.EXPORT_LOGGING_DEPTH">EXPORT_LOGGING_DEPTH (in module autrainer.loggers.abstract_logger)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ZipDownloadManager.extract">extract() (autrainer.datasets.utils.ZipDownloadManager method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/metrics.html#autrainer.metrics.F1">F1 (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.FallbackLogger">FallbackLogger (class in autrainer.loggers)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.FeatureExtractor">FeatureExtractor (class in autrainer.transforms)</a>
+</li>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.fetch">fetch() (in module autrainer.cli)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/models.html#autrainer.models.FFNN">FFNN (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/criterions.html#autrainer.criterions.CrossEntropyLoss.forward">forward() (autrainer.criterions.CrossEntropyLoss method)</a>
+
+      <ul>
+        <li><a href="modules/criterions.html#autrainer.criterions.MSELoss.forward">(autrainer.criterions.MSELoss method)</a>
+</li>
+        <li><a href="modules/models.html#autrainer.models.AbstractModel.forward">(autrainer.models.AbstractModel method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.FrequencyMask">FrequencyMask (class in autrainer.augmentations)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.GaussianNoise">GaussianNoise (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AugmentationManager.get_augmentations">get_augmentations() (autrainer.augmentations.AugmentationManager method)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.AbstractMetric.get_best">get_best() (autrainer.metrics.AbstractMetric static method)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.AbstractMetric.get_best_pos">get_best_pos() (autrainer.metrics.AbstractMetric static method)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.SmartCompose.get_collate_fn">get_collate_fn() (autrainer.transforms.SmartCompose method)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.get_evaluation_data">get_evaluation_data() (autrainer.datasets.AbstractDataset method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.get_hardware_info">get_hardware_info() (in module autrainer.core.utils)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/core.html#autrainer.core.utils.Timer.get_mean_seconds">get_mean_seconds() (autrainer.core.utils.Timer method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Timer.get_time_log">get_time_log() (autrainer.core.utils.Timer method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Timer.get_total_seconds">get_total_seconds() (autrainer.core.utils.Timer method)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.TransformManager.get_transforms">get_transforms() (autrainer.transforms.TransformManager method)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.GrayscaleToRGB">GrayscaleToRGB (class in autrainer.transforms)</a>
+</li>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.group">group() (in module autrainer.cli)</a>
+</li>
+      <li><a href="modules/postprocessing.html#autrainer.postprocessing.GroupGrid.group_runs">group_runs() (autrainer.postprocessing.GroupGrid method)</a>
+</li>
+      <li><a href="modules/postprocessing.html#autrainer.postprocessing.GroupGrid">GroupGrid (class in autrainer.postprocessing)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.IdentityFileHandler">IdentityFileHandler (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ImageFileHandler">ImageFileHandler (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/serving.html#autrainer.serving.Inference">Inference (class in autrainer.serving)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.inference">inference() (in module autrainer.cli)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.instantiate">instantiate() (in module autrainer)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.instantiate_shorthand">instantiate_shorthand() (in module autrainer)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.constants.INVALID_AGGREGATIONS">INVALID_AGGREGATIONS (in module autrainer.core.constants)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder">LabelEncoder (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.LEAFNet">LEAFNet (class in autrainer.models)</a>
+</li>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.list">list() (in module autrainer.cli)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractFileHandler.load">load() (autrainer.datasets.utils.AbstractFileHandler method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AudioFileHandler.load">(autrainer.datasets.utils.AudioFileHandler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.IdentityFileHandler.load">(autrainer.datasets.utils.IdentityFileHandler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ImageFileHandler.load">(autrainer.datasets.utils.ImageFileHandler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.NumpyFileHandler.load">(autrainer.datasets.utils.NumpyFileHandler method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.load_dataframes">load_dataframes() (autrainer.datasets.AbstractDataset method)</a>
+
+      <ul>
+        <li><a href="modules/datasets.html#autrainer.datasets.AIBO.load_dataframes">(autrainer.datasets.AIBO method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2016Task1.load_dataframes">(autrainer.datasets.DCASE2016Task1 method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2018Task3.load_dataframes">(autrainer.datasets.DCASE2018Task3 method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2020Task1A.load_dataframes">(autrainer.datasets.DCASE2020Task1A method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.EmoDB.load_dataframes">(autrainer.datasets.EmoDB method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.load_state">load_state() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.log">log() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.log_and_update_metrics">log_and_update_metrics() (autrainer.loggers.AbstractLogger method)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.log_artifact">log_artifact() (autrainer.loggers.AbstractLogger method)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.log_metrics">log_metrics() (autrainer.loggers.AbstractLogger method)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.log_params">log_params() (autrainer.loggers.AbstractLogger method)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.log_timers">log_timers() (autrainer.loggers.AbstractLogger method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.log_to_file">log_to_file() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/metrics.html#autrainer.metrics.MAE">MAE (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.main">main() (in module autrainer)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.majority_vote">majority_vote() (autrainer.datasets.utils.AbstractTargetTransform method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder.majority_vote">(autrainer.datasets.utils.LabelEncoder method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler.majority_vote">(autrainer.datasets.utils.MinMaxScaler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.majority_vote">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler">MinMaxScaler (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.MixUp">MixUp (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.MLAccuracy">MLAccuracy (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.MLF1Macro">MLF1Macro (class in autrainer.metrics)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/metrics.html#autrainer.metrics.MLF1Micro">MLF1Micro (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.MLF1Weighted">MLF1Weighted (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.MLFlowLogger">MLFlowLogger (in module autrainer.loggers)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.ModularTaskTrainer">ModularTaskTrainer (class in autrainer.training)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="modules/postprocessing.html#module-autrainer.postprocessing">autrainer.postprocessing</a>
+</li>
+        <li><a href="modules/transforms.html#module-autrainer.transforms">autrainer.transforms</a>
+</li>
+      </ul></li>
+      <li><a href="modules/metrics.html#autrainer.metrics.MSE">MSE (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/criterions.html#autrainer.criterions.MSELoss">MSELoss (class in autrainer.criterions)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder">MultiLabelEncoder (class in autrainer.datasets.utils)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/core.html#autrainer.core.constants.NAMING_CONVENTION">NAMING_CONVENTION (in module autrainer.core.constants)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.Normalize">Normalize (class in autrainer.transforms)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.NumpyFileHandler">NumpyFileHandler (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.NumpyToTensor">NumpyToTensor (class in autrainer.transforms)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/transforms.html#autrainer.transforms.OpenSMILE">OpenSMILE (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.output_dim">output_dim (autrainer.datasets.AbstractDataset property)</a>
+
+      <ul>
+        <li><a href="modules/datasets.html#autrainer.datasets.BaseClassificationDataset.output_dim">(autrainer.datasets.BaseClassificationDataset property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.BaseMLClassificationDataset.output_dim">(autrainer.datasets.BaseMLClassificationDataset property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.BaseRegressionDataset.output_dim">(autrainer.datasets.BaseRegressionDataset property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/transforms.html#autrainer.transforms.PannMel">PannMel (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.PCC">PCC (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.plotting.PlotMetrics.plot_aggregated_bars">plot_aggregated_bars() (autrainer.core.plotting.PlotMetrics method)</a>
+
+      <ul>
+        <li><a href="modules/postprocessing.html#autrainer.postprocessing.SummarizeGrid.plot_aggregated_bars">(autrainer.postprocessing.SummarizeGrid method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/core.html#autrainer.core.plotting.PlotMetrics.plot_metric">plot_metric() (autrainer.core.plotting.PlotMetrics method)</a>
+</li>
+      <li><a href="modules/postprocessing.html#autrainer.postprocessing.SummarizeGrid.plot_metrics">plot_metrics() (autrainer.postprocessing.SummarizeGrid method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.plotting.PlotMetrics.plot_run">plot_run() (autrainer.core.plotting.PlotMetrics method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.plotting.PlotBase">PlotBase (class in autrainer.core.plotting)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.plotting.PlotMetrics">PlotMetrics (class in autrainer.core.plotting)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.postprocess">postprocess() (in module autrainer.cli)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.predict_batch">predict_batch() (autrainer.datasets.utils.AbstractTargetTransform method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder.predict_batch">(autrainer.datasets.utils.LabelEncoder method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler.predict_batch">(autrainer.datasets.utils.MinMaxScaler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.predict_batch">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/serving.html#autrainer.serving.Inference.predict_directory">predict_directory() (autrainer.serving.Inference method)</a>
+</li>
+      <li><a href="modules/serving.html#autrainer.serving.Inference.predict_file">predict_file() (autrainer.serving.Inference method)</a>
+</li>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.preprocess">preprocess() (in module autrainer.cli)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Timer.pretty_time">pretty_time() (autrainer.core.utils.Timer class method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/transforms.html#autrainer.transforms.RandomCrop">RandomCrop (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.Resample">Resample (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.Resize">Resize (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.RGBAToGrayscale">RGBAToGrayscale (class in autrainer.transforms)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/transforms.html#autrainer.transforms.RGBAToRGB">RGBAToRGB (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.RGBToGrayscale">RGBToGrayscale (class in autrainer.transforms)</a>
+</li>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.rm_failed">rm_failed() (in module autrainer.cli)</a>
+</li>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.rm_states">rm_states() (in module autrainer.cli)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/optimizers.html#autrainer.optimizers.SAM">SAM (class in autrainer.optimizers)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.SampleGaussianWhiteNoise">SampleGaussianWhiteNoise (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Timer.save">save() (autrainer.core.utils.Timer method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractFileHandler.save">(autrainer.datasets.utils.AbstractFileHandler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AudioFileHandler.save">(autrainer.datasets.utils.AudioFileHandler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.IdentityFileHandler.save">(autrainer.datasets.utils.IdentityFileHandler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ImageFileHandler.save">(autrainer.datasets.utils.ImageFileHandler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.NumpyFileHandler.save">(autrainer.datasets.utils.NumpyFileHandler method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.save_audobject">save_audobject() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.save_best_results">save_best_results() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/serving.html#autrainer.serving.Inference.save_embeddings">save_embeddings() (autrainer.serving.Inference static method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.save_hardware_info">save_hardware_info() (in module autrainer.core.utils)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.save_model_summary">save_model_summary() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.plotting.PlotBase.save_plot">save_plot() (autrainer.core.plotting.PlotBase method)</a>
+</li>
+      <li><a href="modules/serving.html#autrainer.serving.Inference.save_prediction_results">save_prediction_results() (autrainer.serving.Inference static method)</a>
+</li>
+      <li><a href="modules/serving.html#autrainer.serving.Inference.save_prediction_yaml">save_prediction_yaml() (autrainer.serving.Inference static method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.save_results_df">save_results_df() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.save_results_dict">save_results_dict() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.save_results_np">save_results_np() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.save_state">save_state() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.ScaleRange">ScaleRange (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.SeqFFNN">SeqFFNN (class in autrainer.models)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.Sequential">Sequential (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.set_seed">set_seed() (in module autrainer.core.utils)</a>
+</li>
+      <li><a href="modules/criterions.html#autrainer.criterions.BalancedCrossEntropyLoss.setup">setup() (autrainer.criterions.BalancedCrossEntropyLoss method)</a>
+
+      <ul>
+        <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.setup">(autrainer.loggers.AbstractLogger method)</a>
+</li>
+      </ul></li>
+      <li><a href="usage/cli_wrapper.html#autrainer.cli.show">show() (in module autrainer.cli)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.silence">silence() (in module autrainer.core.utils)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.SmartCompose">SmartCompose (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.SpecAugment">SpecAugment (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.SpectToImage">SpectToImage (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.SpeechCommands">SpeechCommands (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.SquarePadCrop">SquarePadCrop (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Timer.start">start() (autrainer.core.utils.Timer method)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.AbstractMetric.starting_metric">starting_metric (autrainer.metrics.AbstractMetric property)</a>
+
+      <ul>
+        <li><a href="modules/metrics.html#autrainer.metrics.BaseAscendingMetric.starting_metric">(autrainer.metrics.BaseAscendingMetric property)</a>
+</li>
+        <li><a href="modules/metrics.html#autrainer.metrics.BaseDescendingMetric.starting_metric">(autrainer.metrics.BaseDescendingMetric property)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/transforms.html#autrainer.transforms.StereoToMono">StereoToMono (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Timer.stop">stop() (autrainer.core.utils.Timer method)</a>
+</li>
+      <li><a href="modules/metrics.html#autrainer.metrics.AbstractMetric.suffix">suffix (autrainer.metrics.AbstractMetric property)</a>
+
+      <ul>
+        <li><a href="modules/metrics.html#autrainer.metrics.BaseAscendingMetric.suffix">(autrainer.metrics.BaseAscendingMetric property)</a>
+</li>
+        <li><a href="modules/metrics.html#autrainer.metrics.BaseDescendingMetric.suffix">(autrainer.metrics.BaseDescendingMetric property)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/postprocessing.html#autrainer.postprocessing.AggregateGrid.summarize">summarize() (autrainer.postprocessing.AggregateGrid method)</a>
+
+      <ul>
+        <li><a href="modules/postprocessing.html#autrainer.postprocessing.SummarizeGrid.summarize">(autrainer.postprocessing.SummarizeGrid method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/postprocessing.html#autrainer.postprocessing.SummarizeGrid">SummarizeGrid (class in autrainer.postprocessing)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.target_transform">target_transform (autrainer.datasets.AbstractDataset property)</a>
+
+      <ul>
+        <li><a href="modules/datasets.html#autrainer.datasets.BaseClassificationDataset.target_transform">(autrainer.datasets.BaseClassificationDataset property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.BaseMLClassificationDataset.target_transform">(autrainer.datasets.BaseMLClassificationDataset property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.BaseRegressionDataset.target_transform">(autrainer.datasets.BaseRegressionDataset property)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/models.html#autrainer.models.TDNNFFNN">TDNNFFNN (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/loggers.html#autrainer.loggers.TensorBoardLogger">TensorBoardLogger (in module autrainer.loggers)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.test_dataset">test_dataset (autrainer.datasets.AbstractDataset property)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.test_loader">test_loader (autrainer.datasets.AbstractDataset property)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.TimeMask">TimeMask (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Timer">Timer (class in autrainer.core.utils)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.TimeShift">TimeShift (class in autrainer.augmentations)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.TimeWarp">TimeWarp (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.TimmModel">TimmModel (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.TorchaudioAugmentation">TorchaudioAugmentation (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.TorchvisionAugmentation">TorchvisionAugmentation (class in autrainer.augmentations)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.TorchvisionModel">TorchvisionModel (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.ToyDataset">ToyDataset (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/training.html#autrainer.training.ModularTaskTrainer.train">train() (autrainer.training.ModularTaskTrainer method)</a>
+
+      <ul>
+        <li><a href="usage/cli_wrapper.html#autrainer.cli.train">(in module autrainer.cli)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.train_dataset">train_dataset (autrainer.datasets.AbstractDataset property)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.train_loader">train_loader (autrainer.datasets.AbstractDataset property)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.TransformManager">TransformManager (class in autrainer.transforms)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/metrics.html#autrainer.metrics.UAR">UAR (class in autrainer.metrics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/core.html#autrainer.core.constants.VALID_AGGREGATIONS">VALID_AGGREGATIONS (in module autrainer.core.constants)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/models.html#autrainer.models.W2V2FFNN">W2V2FFNN (class in autrainer.models)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/models.html#autrainer.models.WhisperFFNN">WhisperFFNN (class in autrainer.models)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ZipDownloadManager">ZipDownloadManager (class in autrainer.datasets.utils)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

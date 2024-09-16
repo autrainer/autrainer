@@ -1,0 +1,812 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Hydra Configurations &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/hydra_configurations';</script>
+    <script src="../_static/external_links.js?v=919ee35f"></script>
+    <script src="../_static/highlight_cli.js?v=d9429fbe"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Augmentations" href="../modules/augmentations.html" />
+    <link rel="prev" title="CLI Wrapper" href="cli_wrapper.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo_light.webp" class="logo__image only-light" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>
+    <script>document.write(`<img src="../_static/logo_dark.webp" class="logo__image only-dark" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>`);</script>
+  
+  
+    <p class="title logo__title">autrainer</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<h3><a href="../index.html">Table of Contents</a></h3>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_reference.html">CLI Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_wrapper.html">CLI Wrapper</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hydra Configurations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/augmentations.html">Augmentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/criterions.html">Criterions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/dataset_utils.html">Dataset Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/optimizers.html">Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/schedulers.html">Schedulers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/serving.html">Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/training.html">Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/transforms.html">Transforms</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/reproducibility_guide.html">Reproducibility Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/citing.html">Citing <cite>autrainer</cite></a></li>
+</ul>
+</div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Hydra Configurations</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="hydra-configurations">
+<span id="id1"></span><h1>Hydra Configurations<a class="headerlink" href="#hydra-configurations" title="Link to this heading">#</a></h1>
+<p><cite>autrainer</cite> uses <a class="reference external" href="https://hydra.cc/docs/intro/">Hydra</a> to configure training experiments.
+All configurations are stored in the <code class="file docutils literal notranslate"><span class="pre">conf/</span></code> directory and are defined as YAML files.</p>
+<section id="main-configuration">
+<span id="id2"></span><h2>Main Configuration<a class="headerlink" href="#main-configuration" title="Link to this heading">#</a></h2>
+<p>The main entry point of <cite>autrainer</cite> is the <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code> file by default.
+This file defines the configuration of the training experiments over which a grid search is performed.</p>
+<div class="literal-block-wrapper docutils container" id="default-config">
+<div class='code-block-caption'><span class='caption-text'>conf/config.yaml</span><a class='headerlink' href='#default-config' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">defaults</span><span class="p">:</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_autrainer_</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="nt">results_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">results</span>
+<span class="linenos"> 6</span><span class="nt">experiment_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="linenos"> 7</span><span class="nt">iterations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">hydra</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">sweeper</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nt">params</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">      </span><span class="nt">+seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">13</span><span class="w">      </span><span class="nt">+batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="linenos">14</span><span class="w">      </span><span class="nt">+learning_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span>
+<span class="linenos">15</span><span class="w">      </span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyTabular-C</span>
+<span class="linenos">16</span><span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyFFNN</span>
+<span class="linenos">17</span><span class="w">      </span><span class="nt">optimizer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adam</span>
+</pre></div>
+</div>
+</div><p>The main configuration file defines the following parameters:</p>
+<ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">defaults</span></code>: A list of default configurations (see <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a>, <a class="reference internal" href="#optional-defaults-list"><span class="std std-ref">Optional Defaults and Overrides</span></a>, and <a class="reference internal" href="#autrainer-defaults"><span class="std std-ref">autrainer Defaults</span></a>).</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">results_dir</span></code>: The directory where the results of the training experiments are stored.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">experiment_id</span></code>: The ID of the experiment.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">hydra/sweeper/params</span></code>: The parameters of the sweep.</p>
+<ul>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">&lt;attr&gt;</span></code>: An attribute to sweep over from the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a> (with comma-separated values, e.g. a list of models).</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">+&lt;attr&gt;</span></code>: An attribute to sweep over that is not in the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a> (with comma-separated values, e.g. a list of batch sizes).</p></li>
+</ul>
+</li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">hydra/sweeper/filters</span></code>: A list of filters to filter out unwanted hyperparameter combinations (see <a class="reference internal" href="#hydra-sweeper-plugins"><span class="std std-ref">Sweeper Plugins</span></a>).</p></li>
+</ul>
+<p>Some parameters of the main configuration file are outsourced to the <a class="reference internal" href="#autrainer-defaults"><span class="std std-ref">_autrainer_.yaml defaults</span></a>
+file in order to simplify the configuration.</p>
+<p>For more information on configuring Hydra, see the <a class="reference external" href="https://hydra.cc/docs/patterns/configuring_experiments/">Hydra documentation</a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To use a different configuration file as the entry point for training experiments,
+use the <cite>-cn/–config-name</cite> argument for the <a class="reference internal" href="cli_reference.html#cli-training"><span class="std std-ref">autrainer train</span></a> CLI command:</p>
+<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">train</span> <span class="o">-cn</span> some_other_config.yaml
+</pre></div>
+</div>
+<p>Alternatively, use the <code class="xref py py-attr docutils literal notranslate"><span class="pre">config_name</span></code> parameter for the <a class="reference internal" href="cli_wrapper.html#autrainer.cli.train" title="autrainer.cli.train"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train()</span></code></a> CLI wrapper function (without the file extension):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">autrainer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;some_other_config&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information on command line flags, see
+<a class="reference external" href="https://hydra.cc/docs/advanced/hydra-command-line-flags/">Hydra’s command line flags documentation</a>.</p>
+</div>
+</section>
+<section id="configuration-directories">
+<span id="id3"></span><h2>Configuration Directories<a class="headerlink" href="#configuration-directories" title="Link to this heading">#</a></h2>
+<p>Configuration files imported through the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a> are stored in the <code class="file docutils literal notranslate"><span class="pre">conf/</span></code> directory.
+The configuration files are organized in subdirectories (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/dataset/</span></code>, <code class="file docutils literal notranslate"><span class="pre">conf/model/</span></code>, <code class="file docutils literal notranslate"><span class="pre">conf/optimizer/</span></code>, etc.).
+This directory structure tells Hydra where to look for the configuration files.
+The following configuration subdirectories are available:</p>
+<ul class="simple">
+<li><p><code class="file docutils literal notranslate"><span class="pre">conf/augmentation/</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">conf/dataset/</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">conf/model/</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">conf/optimizer/</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">conf/plotting</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">conf/preprocessing/</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">conf/scheduler/</span></code></p></li>
+</ul>
+</section>
+<section id="creating-configurations">
+<span id="id4"></span><h2>Creating Configurations<a class="headerlink" href="#creating-configurations" title="Link to this heading">#</a></h2>
+<p><cite>autrainer</cite> provides a number of default configurations for models, datasets, optimizers, etc.
+that can be used out of the box without creating custom configurations.
+To use a default configuration e.g. a <cite>MobileNetV3-Large-T</cite> model, add it to the <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code> file:</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
+<span class="linenos">2</span><span class="l l-Scalar l-Scalar-Plain">hydra</span>
+<span class="linenos">3</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">sweeper</span><span class="p p-Indicator">:</span>
+<span class="linenos">4</span><span class="w">    </span><span class="nt">params</span><span class="p">:</span>
+<span class="linenos">5</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="linenos">6</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">model</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MobileNetV3-Large-T</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To discover configurations that are available by default, use the <a class="reference internal" href="cli_reference.html#cli-autrainer-list"><span class="std std-ref">autrainer list</span></a> CLI command
+or the <a class="reference internal" href="cli_wrapper.html#autrainer.cli.list" title="autrainer.cli.list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list()</span></code></a> CLI wrapper function.
+For example, to discover all available <cite>MobileNet</cite> configurations, use the following command with a glob pattern:</p>
+<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">list</span> model <span class="o">--pattern</span>=&quot;MobileNet*&quot;
+</pre></div>
+</div>
+<p>Alternatively, use the <a class="reference internal" href="cli_wrapper.html#autrainer.cli.list" title="autrainer.cli.list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list()</span></code></a> CLI wrapper function with the <code class="xref py py-attr docutils literal notranslate"><span class="pre">pattern</span></code> parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">autrainer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;MobileNet*&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>To create a new configuration, create a new YAML file in the appropriate configuration subdirectory.
+Every configuration file should have:</p>
+<ul class="simple">
+<li><p>A unique file name.</p></li>
+<li><p>A unique <code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code> attribute that matches the file name.</p></li>
+<li><p>A <code class="xref py py-attr docutils literal notranslate"><span class="pre">_target_</span></code> attribute that specifies the python import path of the class to be instantiated.</p></li>
+<li><p>Optional attributes that are passed to the class constructor as keyword arguments.</p></li>
+</ul>
+<p>For example, to create a new model configuration, create a new YAML file in the <code class="file docutils literal notranslate"><span class="pre">conf/model/</span></code> directory:</p>
+<div class="literal-block-wrapper docutils container" id="default-mobilenetv3-large-t">
+<div class='code-block-caption'><span class='caption-text'>conf/model/MobileNetV3-Large-T.yaml</span><a class='headerlink' href='#default-mobilenetv3-large-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MobileNetV3-Large-T</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.TorchvisionModel</span>
+<span class="linenos">3</span><span class="nt">torchvision_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mobilenet_v3_large</span>
+<span class="linenos">4</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">5</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">6</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image</span>
+</pre></div>
+</div>
+</div><p>For more information on how to create custom models, see <a class="reference internal" href="../modules/models.html#models"><span class="std std-ref">Models</span></a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To modify an existing configuration provided by <cite>autrainer</cite>, create a new YAML file with the name in the subdirectory.
+The new configuration will override the existing configuration.</p>
+<p>To easily override a configuration, save a local copy of it using the <a class="reference internal" href="cli_reference.html#cli-autrainer-show"><span class="std std-ref">autrainer show</span></a> command:</p>
+<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">show</span> model &quot;MobileNetV3<span class="o">-Large-T</span>&quot; <span class="o">--save</span>
+</pre></div>
+</div>
+<p>Alternatively, use the <a class="reference internal" href="cli_wrapper.html#autrainer.cli.show" title="autrainer.cli.show"><code class="xref py py-meth docutils literal notranslate"><span class="pre">show()</span></code></a> CLI wrapper function with the <code class="xref py py-attr docutils literal notranslate"><span class="pre">save</span></code> parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">autrainer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;MobileNetV3-Large-T&quot;</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="shorthand-syntax">
+<span id="id5"></span><h2>Shorthand Syntax<a class="headerlink" href="#shorthand-syntax" title="Link to this heading">#</a></h2>
+<p>For configurations that are not primitive types (e.g. numbers or strings) and are not included in the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a>,
+shorthand syntax is used to reduce the number of configuration files required.
+Instead of a configuration file, shorthand syntax configurations can be either a string or a dictionary.</p>
+<ul class="simple">
+<li><p>If the configurations is a string, it is interpreted as the python import path of the class to be instantiated.</p></li>
+<li><p>If the configuration is a dictionary, the key is interpreted as the python import path of the class to be instantiated,
+and its values are passed as keyword arguments to the class constructor.</p></li>
+</ul>
+<p>For example, in a dataset configuration, the <code class="xref py py-attr docutils literal notranslate"><span class="pre">tracking_metric</span></code> and the list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">metrics</span></code> are specified with shorthand syntax:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">conf/dataset/ExampleDataset.yaml</span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExampleDataset</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example_dataset.ExampleDataset</span>
+<span class="linenos"> 3</span><span class="nn">...</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
+<span class="linenos"> 6</span><span class="nt">metrics</span><span class="p">:</span>
+<span class="linenos"> 7</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
+<span class="linenos"> 8</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.UAR</span>
+<span class="linenos"> 9</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.F1</span>
+<span class="linenos">10</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">custom_metric.CustomMetric</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">      </span><span class="nt">param1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">12</span><span class="w">      </span><span class="nt">param2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</pre></div>
+</div>
+</div>
+<p>Shorthand syntax is used to specify the pipeline of <a class="reference internal" href="../modules/augmentations.html#augmentations"><span class="std std-ref">Augmentations</span></a>, the <a class="reference internal" href="../modules/loggers.html#loggers"><span class="std std-ref">Loggers</span></a>, the <a class="reference internal" href="../modules/metrics.html#metrics"><span class="std std-ref">Metrics</span></a> for the dataset,
+and the model as well as <a class="reference internal" href="../modules/transforms.html#transforms"><span class="std std-ref">Transforms</span></a>.</p>
+</section>
+<section id="interpolation-syntax">
+<span id="id6"></span><h2>Interpolation Syntax<a class="headerlink" href="#interpolation-syntax" title="Link to this heading">#</a></h2>
+<p><cite>autrainer</cite> supports <a class="reference external" href="https://omegaconf.readthedocs.io/en/2.3_branch/index.html">OmegaConf</a>
+variable interpolation to reference attributes from anywhere in the configuration.</p>
+<p>For example, the <a class="reference internal" href="tutorials.html#tut-loggers"><span class="std std-ref">custom loggers tutorial</span></a> uses the OmegaConf interpolation syntax to reference the <code class="xref py py-attr docutils literal notranslate"><span class="pre">results_dir</span></code>
+from the <a class="reference internal" href="#main-configuration"><span class="std std-ref">main configuration</span></a> file to set the output directory of the <code class="xref py py-class docutils literal notranslate"><span class="pre">WandBLogger</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
+<span class="linenos">2</span><span class="nt">loggers</span><span class="p">:</span>
+<span class="linenos">3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">wandb_logger.WandBLogger</span><span class="p">:</span>
+<span class="linenos">4</span><span class="w">      </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${results_dir}/.wandb</span>
+<span class="linenos">5</span><span class="nn">...</span>
+</pre></div>
+</div>
+</div>
+<p>For more information on variable interpolation, refer to the
+<a class="reference external" href="https://omegaconf.readthedocs.io/en/2.3_branch/usage.html#variable-interpolation">OmegaConf documentation</a>.</p>
+</section>
+<section id="defaults-list">
+<span id="id7"></span><h2>Defaults List<a class="headerlink" href="#defaults-list" title="Link to this heading">#</a></h2>
+<p>The defaults list instructs Hydra to import configurations from other YAML files to build the final configuration.
+For more information on the defaults list, see <a class="reference external" href="https://hydra.cc/docs/advanced/defaults_list/">Hydra’s defaults list documentation</a>.</p>
+<p>For brevity, the defaults list is outsourced to <a class="reference internal" href="#autrainer-defaults"><span class="std std-ref">_autrainer_.yaml defaults</span></a>
+file with the following imports:</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">_autrainer_.yaml</span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">defaults</span><span class="p">:</span>
+<span class="linenos">2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
+<span class="linenos">3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span><span class="w"> </span><span class="c1"># placeholder</span>
+<span class="linenos">4</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span><span class="w"> </span><span class="c1"># placeholder</span>
+<span class="linenos">5</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">optimizer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span><span class="w"> </span><span class="c1"># placeholder</span>
+<span class="linenos">6</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">scheduler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># optional default</span>
+<span class="linenos">7</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">augmentation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># optional default</span>
+<span class="linenos">8</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">plotting</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Default</span><span class="w"> </span><span class="c1"># optional default</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="optional-defaults-and-overrides">
+<span id="optional-defaults-list"></span><h2>Optional Defaults and Overrides<a class="headerlink" href="#optional-defaults-and-overrides" title="Link to this heading">#</a></h2>
+<p>Optional defaults like <code class="xref py py-attr docutils literal notranslate"><span class="pre">scheduler</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">augmentation</span></code> are set to <code class="xref py py-attr docutils literal notranslate"><span class="pre">None</span></code>
+by default and not required to be defined in the main configuration.
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">None</span></code> is a special value that tells Hydra to ignore the default and e.g. not use a <a class="reference internal" href="../modules/schedulers.html#schedulers"><span class="std std-ref">scheduler</span></a>
+or <a class="reference internal" href="../modules/augmentations.html#augmentations"><span class="std std-ref">augmentation</span></a> for training.</p>
+<p>Optional defaults which are not overridden in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">hydra/sweeper/params</span></code> configuration, can be overridden using the <code class="xref py py-attr docutils literal notranslate"><span class="pre">override</span></code>
+keyword in the defaults list of the <a class="reference internal" href="#main-configuration"><span class="std std-ref">main configuration</span></a> file.
+This includes the <a class="reference internal" href="../modules/core.html#core-plotting"><span class="std std-ref">plotting</span></a> configuration or Hydra plugins like <a class="reference internal" href="#hydra-sweeper-plugins"><span class="std std-ref">sweepers</span></a>
+and <a class="reference internal" href="#hydra-launcher-plugins"><span class="std std-ref">launchers</span></a>.</p>
+<p>For more information on overriding defaults, refer to the
+<a class="reference external" href="https://hydra.cc/docs/advanced/defaults_list/#overriding-config-group-options">Hydra overriding documentation</a>.</p>
+</section>
+<section id="autrainer-defaults">
+<span id="id8"></span><h2>autrainer Defaults<a class="headerlink" href="#autrainer-defaults" title="Link to this heading">#</a></h2>
+<p>The <code class="file docutils literal notranslate"><span class="pre">_autrainer_.yaml</span></code> file contains further default configurations to simplify the <a class="reference internal" href="#main-configuration"><span class="std std-ref">main configuration</span></a>,
+which includes:</p>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="#defaults-list"><span class="std std-ref">defaults list</span></a> and <a class="reference internal" href="#optional-defaults-list"><span class="std std-ref">optional defaults list</span></a>.</p></li>
+<li><p>Global default parameters for <a class="reference internal" href="../modules/training.html#training"><span class="std std-ref">training</span></a>.</p></li>
+<li><p>Hydra configurations for always starting a <a class="reference external" href="https://hydra.cc/docs/1.0/tutorials/basic/running_your_app/multi-run/">Hydra multirun</a> (grid search)
+and setting the output directory and experiment name according to the current configuration.</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Any global default parameter can be overridden in the <a class="reference internal" href="#main-configuration"><span class="std std-ref">main configuration</span></a> file by redefining it.</p>
+</div>
+<div class="literal-block-wrapper docutils container" id="default-_autrainer_">
+<div class='code-block-caption'><span class='caption-text'>conf/_autrainer_.yaml</span><a class='headerlink' href='#default-_autrainer_' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">defaults</span><span class="p">:</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span>
+<span class="linenos"> 4</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span>
+<span class="linenos"> 5</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">optimizer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span>
+<span class="linenos"> 6</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">scheduler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="linenos"> 7</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">augmentation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="linenos"> 8</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">plotting</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Default</span>
+<span class="linenos"> 9</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">override hydra/sweeper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer_filter_sweeper</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">training_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">epoch</span>
+<span class="linenos">12</span><span class="nt">eval_frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">13</span><span class="nt">save_frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${eval_frequency}</span>
+<span class="linenos">14</span><span class="nt">inference_batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${batch_size}</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="nt">progress_bar</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">17</span><span class="nt">continue_training</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">18</span><span class="nt">remove_continued_runs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">19</span><span class="nt">save_train_outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">20</span><span class="nt">save_dev_outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">21</span><span class="nt">save_test_outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="nt">hydra</span><span class="p">:</span>
+<span class="linenos">24</span><span class="w">  </span><span class="nt">output_subdir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="linenos">25</span><span class="w">  </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MULTIRUN</span>
+<span class="linenos">26</span><span class="w">  </span><span class="nt">sweep</span><span class="p">:</span>
+<span class="linenos">27</span><span class="w">    </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${results_dir}/${experiment_id}/training/</span>
+<span class="linenos">28</span><span class="w">    </span><span class="nt">subdir</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\</span>
+<span class="linenos">29</span><span class="w">      </span><span class="s">${dataset.id}_\</span>
+<span class="linenos">30</span><span class="w">      </span><span class="s">${model.id}_\</span>
+<span class="linenos">31</span><span class="w">      </span><span class="s">${optimizer.id}_\</span>
+<span class="linenos">32</span><span class="w">      </span><span class="s">${learning_rate}_\</span>
+<span class="linenos">33</span><span class="w">      </span><span class="s">${batch_size}_\</span>
+<span class="linenos">34</span><span class="w">      </span><span class="s">${training_type}_\</span>
+<span class="linenos">35</span><span class="w">      </span><span class="s">${iterations}_\</span>
+<span class="linenos">36</span><span class="w">      </span><span class="s">${scheduler.id}_\</span>
+<span class="linenos">37</span><span class="w">      </span><span class="s">${augmentation.id}_\</span>
+<span class="linenos">38</span><span class="w">      </span><span class="s">${seed}&quot;</span>
+</pre></div>
+</div>
+</div></section>
+<section id="hydra-plugings">
+<span id="hydra-plugins"></span><h2>Hydra Plugings<a class="headerlink" href="#hydra-plugings" title="Link to this heading">#</a></h2>
+<p>Any Hydra <a class="reference internal" href="#hydra-sweeper-plugins"><span class="std std-ref">sweeper</span></a> or <a class="reference internal" href="#hydra-launcher-plugins"><span class="std std-ref">launcher</span></a> plugin can be used to customize
+the hyperparameter search or parallelize the training jobs.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Sweepers and launchers can be combined to perform more complex hyperparameter optimizations and parallelize training jobs.</p>
+</div>
+<section id="sweeper-plugins">
+<span id="hydra-sweeper-plugins"></span><h3>Sweeper Plugins<a class="headerlink" href="#sweeper-plugins" title="Link to this heading">#</a></h3>
+<p>By default, <cite>autrainer</cite> uses the <a class="reference external" href="https://github.com/autrainer/hydra-filter-sweeper">hydra-filter-sweeper</a>
+plugin to sweep over hyperparameter configurations.
+This plugin allows to specify a list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">filters</span></code> in the configuration file to filter out unwanted hyperparameter combinations.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To specify custom <code class="xref py py-attr docutils literal notranslate"><span class="pre">filters</span></code>, refer to the <a class="reference internal" href="quickstart.html#quick-grid-filters"><span class="std std-ref">filtering out configurations quickstart guide</span></a> and the
+<a class="reference external" href="https://github.com/autrainer/hydra-filter-sweeper">hydra-filter-sweeper documentation</a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If no <code class="xref py py-attr docutils literal notranslate"><span class="pre">filters</span></code> are specified, the plugin will not filter out any configurations and resemble the behavior of the default
+<a class="reference external" href="https://hydra.cc/docs/tutorials/basic/running_your_app/multi-run/#sweeper">Hydra basic sweeper</a> plugin.</p>
+</div>
+<p>To perform more complex hyperparameter sweeps, different sweeper plugins can be used.</p>
+<p>For example, the <a class="reference external" href="https://hydra.cc/docs/plugins/optuna_sweeper/">Hydra Optuna Sweeper plugin</a>
+can be used to perform hyperparameter optimization using <a class="reference external" href="https://optuna.org/">Optuna</a>.</p>
+<p>To install the Optuna Sweeper plugin, run the following command:</p>
+<div class="highlight-pip notranslate"><div class="highlight"><pre><span></span><span class="nb">pip</span> <span class="k">install</span> <span class="nf">hydra-optuna-sweeper</span>
+</pre></div>
+</div>
+<p>The following configuration uses the Optuna Sweeper plugin to perform 10 trials with different learning rates:</p>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id13" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">defaults</span><span class="p">:</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_autrainer_</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
+<span class="linenos"> 4</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">override hydra/sweeper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optuna</span><span class="w"> </span><span class="c1"># override the sweeper to optuna</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="nt">results_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">results</span>
+<span class="linenos"> 7</span><span class="nt">experiment_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="linenos"> 8</span><span class="nt">iterations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nt">hydra</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">sweeper</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nt">n_trials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"> </span><span class="c1"># total number of function evaluations</span>
+<span class="linenos">13</span><span class="w">    </span><span class="nt">n_jobs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"> </span><span class="c1"># number of parallel jobs</span>
+<span class="linenos">14</span><span class="w">    </span><span class="nt">direction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">maximize</span><span class="w"> </span><span class="c1"># direction of optimization (depending on the tracking metric)</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nt">params</span><span class="p">:</span>
+<span class="linenos">16</span><span class="w">      </span><span class="nt">+seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">17</span><span class="w">      </span><span class="nt">+batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="linenos">18</span><span class="w">      </span><span class="nt">+learning_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">range(0.001, 0.1, step=0.001)</span><span class="w"> </span><span class="c1"># range of values</span>
+<span class="linenos">19</span><span class="w">      </span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyTabular-C</span>
+<span class="linenos">20</span><span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyFFNN</span>
+<span class="linenos">21</span><span class="w">      </span><span class="nt">optimizer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adam</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>autrainer</cite> returns the best validation value of the dataset <a class="reference internal" href="../modules/metrics.html#metrics"><span class="std std-ref">tracking metric</span></a> as the objective for optimization.
+The optimization <code class="xref py py-attr docutils literal notranslate"><span class="pre">direction</span></code> attribute in the configuration file can be set to <cite>minimize</cite> or <cite>maximize</cite>
+according to the dataset tracking metric.</p>
+</div>
+</section>
+<section id="launcher-plugins">
+<span id="hydra-launcher-plugins"></span><h3>Launcher Plugins<a class="headerlink" href="#launcher-plugins" title="Link to this heading">#</a></h3>
+<p>By default, <cite>autrainer</cite> uses the Hydra basic launcher to sequentially launch the jobs defined in the configuration file.</p>
+<p>To parallelize the training jobs, different launcher plugins can be used.</p>
+<p>For example, the <a class="reference external" href="https://hydra.cc/docs/plugins/submitit_launcher/">Hydra Submitit Launcher plugin</a>
+can be used to parallelize the training jobs using <a class="reference external" href="https://github.com/facebookincubator/submitit">Submitit</a>.</p>
+<p>To install the Submitit Launcher plugin, run the following command:</p>
+<div class="highlight-pip notranslate"><div class="highlight"><pre><span></span><span class="nb">pip</span> <span class="k">install</span> <span class="nf">hydra-submitit-launcher</span>
+</pre></div>
+</div>
+<p>The following configuration uses the Submitit Launcher plugin to parallelize the training jobs:</p>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id14" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">defaults</span><span class="p">:</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_autrainer_</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
+<span class="linenos"> 4</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">override hydra/launcher</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">submitit_slurm</span><span class="w"> </span><span class="c1"># override the launcher to submitit_slurm</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="nt">results_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">results</span>
+<span class="linenos"> 7</span><span class="nt">experiment_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="linenos"> 8</span><span class="nt">iterations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nt">hydra</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">sweeper</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nt">params</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">      </span><span class="nt">+seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">14</span><span class="w">      </span><span class="nt">+batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="linenos">15</span><span class="w">      </span><span class="nt">+learning_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span>
+<span class="linenos">16</span><span class="w">      </span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyTabular-C</span>
+<span class="linenos">17</span><span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyFFNN</span>
+<span class="linenos">18</span><span class="w">      </span><span class="nt">optimizer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adam</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#main-configuration">Main Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-directories">Configuration Directories</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-configurations">Creating Configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shorthand-syntax">Shorthand Syntax</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpolation-syntax">Interpolation Syntax</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defaults-list">Defaults List</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-defaults-and-overrides">Optional Defaults and Overrides</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-defaults">autrainer Defaults</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hydra-plugings">Hydra Plugings</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sweeper-plugins">Sweeper Plugins</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#launcher-plugins">Launcher Plugins</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

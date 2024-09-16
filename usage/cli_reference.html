@@ -1,0 +1,982 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CLI Reference &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/cli_reference';</script>
+    <script src="../_static/external_links.js?v=919ee35f"></script>
+    <script src="../_static/highlight_cli.js?v=d9429fbe"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CLI Wrapper" href="cli_wrapper.html" />
+    <link rel="prev" title="Tutorials" href="tutorials.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo_light.webp" class="logo__image only-light" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>
+    <script>document.write(`<img src="../_static/logo_dark.webp" class="logo__image only-dark" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>`);</script>
+  
+  
+    <p class="title logo__title">autrainer</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<h3><a href="../index.html">Table of Contents</a></h3>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CLI Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_wrapper.html">CLI Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydra_configurations.html">Hydra Configurations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/augmentations.html">Augmentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/criterions.html">Criterions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/dataset_utils.html">Dataset Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/optimizers.html">Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/schedulers.html">Schedulers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/serving.html">Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/training.html">Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/transforms.html">Transforms</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/reproducibility_guide.html">Reproducibility Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/citing.html">Citing <cite>autrainer</cite></a></li>
+</ul>
+</div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">CLI Reference</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="cli-reference">
+<span id="id1"></span><h1>CLI Reference<a class="headerlink" href="#cli-reference" title="Link to this heading">#</a></h1>
+<p><cite>autrainer</cite> provides a command line interface (CLI) to manage the entire training process,
+including <a class="reference internal" href="#cli-configuration-management"><span class="std std-ref">configuration management</span></a>,
+<a class="reference internal" href="#cli-preprocessing"><span class="std std-ref">data preprocessing</span></a>,
+<a class="reference internal" href="#cli-training"><span class="std std-ref">model training</span></a>,
+<a class="reference internal" href="#cli-inference"><span class="std std-ref">inference</span></a>,
+and <a class="reference internal" href="#cli-postprocessing"><span class="std std-ref">postprocessing</span></a>.</p>
+<p>In addition to the CLI, <cite>autrainer</cite> provides an <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span class="std std-ref">CLI wrapper</span></a> to manage configurations, data, training, inference,
+and postprocessing programmatically with the same functionality as the CLI.</p>
+<section id="autrainer">
+<span id="cli-autrainer"></span><h2>autrainer<a class="headerlink" href="#autrainer" title="Link to this heading">#</a></h2>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> [<span class="o">-h</span>] [<span class="o">-v</span>] &lt;command&gt; ...
+</pre></div>
+</div>
+<p><p>A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span> <span class="o">...</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h3>
+<dl class="option-list">
+<dt><kbd>&lt;command&gt;</kbd></dt>
+<dd><p>Possible choices: create, list, show, fetch, preprocess, train, inference, postprocess, rm-failed, rm-states, group</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h3>
+<dl class="option-list">
+<dt><kbd>-v, --version</kbd></dt>
+<dd><p>show program’s version number and exit</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="configuration-management">
+<span id="cli-configuration-management"></span><h2>Configuration Management<a class="headerlink" href="#configuration-management" title="Link to this heading">#</a></h2>
+<p>To manage configurations, <a class="reference internal" href="#cli-autrainer-create"><span class="std std-ref">autrainer create</span></a>, <a class="reference internal" href="#cli-autrainer-list"><span class="std std-ref">autrainer list</span></a>,
+and <a class="reference internal" href="#cli-autrainer-show"><span class="std std-ref">autrainer show</span></a> allow for the creation of the project structure and the discovery
+as well as saving of default configurations provided by <cite>autrainer</cite>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Default configurations can be discovered both through the <a class="reference internal" href="#cli-reference"><span class="std std-ref">CLI</span></a>,
+the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span class="std std-ref">CLI wrapper</span></a>, and the respective module documentation.</p>
+</div>
+<section id="autrainer-create">
+<span id="cli-autrainer-create"></span><h3>autrainer create<a class="headerlink" href="#autrainer-create" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">create</span> [<span class="o">-h</span>] [<span class="o">-e</span>] [<span class="o">-a</span>] [<span class="o">-f</span>] [directories ...]
+</pre></div>
+</div>
+<p><p>Create a new project with default configurations.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span> <span class="p">[</span><span class="n">directories</span> <span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>directories</kbd></dt>
+<dd><dl class="simple">
+<dt>Configuration directories to create. One or more of:</dt><dd><ul class="simple">
+<li><p>augmentation</p></li>
+<li><p>dataset</p></li>
+<li><p>model</p></li>
+<li><p>optimizer</p></li>
+<li><p>plotting</p></li>
+<li><p>preprocessing</p></li>
+<li><p>scheduler</p></li>
+<li><p>sharpness</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>-e, --empty</kbd></dt>
+<dd><p>Create an empty project without any configuration directory.</p>
+</dd>
+<dt><kbd>-a, --all</kbd></dt>
+<dd><p>Create a project with all configuration directories.</p>
+</dd>
+<dt><kbd>-f, --force</kbd></dt>
+<dd><p>Force overwrite if the configuration directory already exists.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="autrainer-list">
+<span id="cli-autrainer-list"></span><h3>autrainer list<a class="headerlink" href="#autrainer-list" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">list</span> [<span class="o">-h</span>] [<span class="o">-l</span>] [<span class="o">-g</span>] [<span class="o">-p</span> P] directory
+</pre></div>
+</div>
+<p><p>List local and global configurations.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="n">directory</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>directory</kbd></dt>
+<dd><dl class="simple">
+<dt>The directory to list configurations from. Choose from:</dt><dd><ul class="simple">
+<li><p>augmentation</p></li>
+<li><p>dataset</p></li>
+<li><p>model</p></li>
+<li><p>optimizer</p></li>
+<li><p>plotting</p></li>
+<li><p>preprocessing</p></li>
+<li><p>scheduler</p></li>
+<li><p>sharpness</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>-l, --local-only</kbd></dt>
+<dd><p>List local configurations only.</p>
+</dd>
+<dt><kbd>-g, --global-only</kbd></dt>
+<dd><p>List global configurations only.</p>
+</dd>
+<dt><kbd>-p, --pattern</kbd></dt>
+<dd><p>Glob pattern to filter configurations.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="autrainer-show">
+<span id="cli-autrainer-show"></span><h3>autrainer show<a class="headerlink" href="#autrainer-show" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">show</span> [<span class="o">-h</span>] [<span class="o">-s</span>] [<span class="o">-f</span>] directory config
+</pre></div>
+</div>
+<p><p>Show and save a global configuration.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">show</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span> <span class="n">directory</span> <span class="n">config</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>directory</kbd></dt>
+<dd><dl class="simple">
+<dt>The directory to list configurations from. Choose from:</dt><dd><ul class="simple">
+<li><p>augmentation</p></li>
+<li><p>dataset</p></li>
+<li><p>model</p></li>
+<li><p>optimizer</p></li>
+<li><p>plotting</p></li>
+<li><p>preprocessing</p></li>
+<li><p>scheduler</p></li>
+<li><p>sharpness</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt><kbd>config</kbd></dt>
+<dd><p>The global configuration to show. Configurations can be discovered using the ‘autrainer list’ command.</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>-s, --save</kbd></dt>
+<dd><p>Save the global configuration to the local conf/ directory.</p>
+</dd>
+<dt><kbd>-f, --force</kbd></dt>
+<dd><p>Force overwrite local configuration if it exists in combination with -s/–save.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+<section id="preprocessing">
+<span id="cli-preprocessing"></span><h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h2>
+<p>To avoid race conditions when using <a class="reference internal" href="hydra_configurations.html#hydra-launcher-plugins"><span class="std std-ref">Launcher Plugins</span></a> that may run multiple training jobs in parallel,
+<a class="reference internal" href="#cli-autrainer-fetch"><span class="std std-ref">autrainer fetch</span></a> and <a class="reference internal" href="#cli-autrainer-preprocess"><span class="std std-ref">autrainer preprocess</span></a> are allow for the
+downloading and <a class="reference internal" href="../modules/transforms.html#preprocessing-transforms"><span class="std std-ref">preprocessing</span></a> of <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">Datasets</span></a> (and pretrained model states) before training.</p>
+<p>Both commands are based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>),
+such that the specified models and datasets are fetched and preprocessed accordingly.
+If a model or dataset is already fetched or preprocessed, it will be skipped.</p>
+<section id="autrainer-fetch">
+<span id="cli-autrainer-fetch"></span><h3>autrainer fetch<a class="headerlink" href="#autrainer-fetch" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">fetch</span> [<span class="o">-h</span>] [<span class="o">-b</span>]
+</pre></div>
+</div>
+<p><p>Fetch the datasets and models specified in a training configuration (Hydra).
+For more information on Hydra’s command line line flags, see:
+<a class="reference external" href="https://hydra.cc/docs/advanced/hydra-command-line-flags/">https://hydra.cc/docs/advanced/hydra-command-line-flags/</a>.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">fetch</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>-l, --cfg-launcher</kbd></dt>
+<dd><p>Use the launcher specified in the configuration instead of the Hydra basic launcher. Defaults to False.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="autrainer-preprocess">
+<span id="cli-autrainer-preprocess"></span><h3>autrainer preprocess<a class="headerlink" href="#autrainer-preprocess" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">preprocess</span> [<span class="o">-h</span>] [<span class="o">-b</span>] [<span class="o">-n</span> N] [<span class="o">-p</span> P] [<span class="o">-s</span>]
+</pre></div>
+</div>
+<p><p>Launch a data preprocessing configuration (Hydra).
+For more information on Hydra’s command line line flags, see:
+<a class="reference external" href="https://hydra.cc/docs/advanced/hydra-command-line-flags/">https://hydra.cc/docs/advanced/hydra-command-line-flags/</a>.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">preprocess</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>-l, --cfg-launcher</kbd></dt>
+<dd><p>Use the launcher specified in the configuration instead of the Hydra basic launcher. Defaults to False.</p>
+</dd>
+<dt><kbd>-n, --num-workers</kbd></dt>
+<dd><p>Number of workers to use for preprocessing. Defaults to -1.</p>
+</dd>
+<dt><kbd>-p, --pbar-frequency</kbd></dt>
+<dd><p>Frequency of progress bar updates. Defaults to 100.</p>
+</dd>
+<dt><kbd>-s, --silent</kbd></dt>
+<dd><p>Disable progress bar output.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+<section id="training">
+<span id="cli-training"></span><h2>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h2>
+<p>Training is managed by <a class="reference internal" href="#cli-autrainer-train"><span class="std std-ref">autrainer train</span></a>, which starts the training process
+based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>).</p>
+<section id="autrainer-train">
+<span id="cli-autrainer-train"></span><h3>autrainer train<a class="headerlink" href="#autrainer-train" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">train</span> [<span class="o">-h</span>]
+</pre></div>
+</div>
+<p><p>Launch a training configuration (Hydra).
+For more information on Hydra’s command line line flags, see:
+<a class="reference external" href="https://hydra.cc/docs/advanced/hydra-command-line-flags/">https://hydra.cc/docs/advanced/hydra-command-line-flags/</a>.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">train</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="inference">
+<span id="cli-inference"></span><h2>Inference<a class="headerlink" href="#inference" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="#cli-autrainer-inference"><span class="std std-ref">autrainer inference</span></a> allows for the (sliding window) inference of audio data using a trained model.</p>
+<p>Both local paths and <a class="reference external" href="https://huggingface.co/">Hugging Face Hub</a> links are supported for the model.
+Hugging Face Hub links are automatically downloaded and cached in the torch cache directory.</p>
+<p>The following syntax is supported for Hugging Face Hub links: <code class="code docutils literal notranslate"><span class="pre">hf:repo_id[&#64;revision][:subdir]#local_dir</span></code>.
+This syntax consists of the following components:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">hf</span></code>: The Hugging Face Hub prefix indicating that the model is fetched from the Hugging Face Hub.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">repo_id</span></code>: The repository ID of the model consisting of the user name and the model card name separated by a slash
+(e.g. <code class="code docutils literal notranslate"><span class="pre">autrainer/example</span></code>).</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">revision</span></code> (<cite>optional</cite>): The revision as a commit hash, branch name, or tag name (e.g. <code class="code docutils literal notranslate"><span class="pre">main</span></code>).
+If not specified, the latest revision is used.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">subdir</span></code> (<cite>optional</cite>): The subdirectory of the repository containing the model directory (e.g. <code class="code docutils literal notranslate"><span class="pre">AudioModel</span></code>).
+If not specified, the model directory is automatically inferred.
+If multiple models are present in the <code class="code docutils literal notranslate"><span class="pre">repo_id</span></code>, <code class="code docutils literal notranslate"><span class="pre">subdir</span></code> must be specified, as the correct model cannot be automatically inferred.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">local_dir</span></code> (<cite>optional</cite>): The local directory to which the model is downloaded to (e.g. <code class="code docutils literal notranslate"><span class="pre">.hf_local</span></code>).
+If not specified, the model is placed in the
+<a class="reference external" href="https://pytorch.org/docs/stable/hub.html#where-are-my-downloaded-models-saved">torch hub cache directory</a>.</p></li>
+</ul>
+<p>For example, to download the model from the repository <code class="code docutils literal notranslate"><span class="pre">autrainer/example</span></code>
+at the revision <code class="code docutils literal notranslate"><span class="pre">main</span></code> from the subdirectory <code class="code docutils literal notranslate"><span class="pre">AudioModel</span></code> and save it to the local directory <code class="code docutils literal notranslate"><span class="pre">.hf_local</span></code>,
+the following <a class="reference internal" href="#cli-autrainer-inference"><span class="std std-ref">autrainer inference</span></a> CLI command can be used:</p>
+<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">inference</span> hf:autrainer/example@main:AudioModel#.hf_local input/ output/ <span class="o">-d</span> cuda:0
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To access private repositories, the environment variable <code class="code docutils literal notranslate"><span class="pre">HF_HOME</span></code> should point to the
+<a class="reference external" href="https://huggingface.co/docs/hub/security-tokens">Hugging Face User Access Token</a>.</p>
+<p>To use a custom endpoint (e.g. for a <a class="reference external" href="https://huggingface.co/enterprise">self-hosted hub</a>),
+the environment variable <code class="code docutils literal notranslate"><span class="pre">HF_ENDPOINT</span></code> should point to the desired endpoint URL.</p>
+</div>
+<p>To use a local model path, the following <a class="reference internal" href="#cli-autrainer-inference"><span class="std std-ref">autrainer inference</span></a> CLI command can be used:</p>
+<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">inference</span> /path/to/AudioModel input/ output/ <span class="o">-d</span> cuda:0
+</pre></div>
+</div>
+<section id="autrainer-inference">
+<span id="cli-autrainer-inference"></span><h3>autrainer inference<a class="headerlink" href="#autrainer-inference" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">inference</span> [<span class="o">-h</span>] [<span class="o">-c</span> C] [<span class="o">-d</span> D] [<span class="o">-e</span> E] [<span class="o">-r</span>] [<span class="o">-emb</span>] [<span class="o">-p</span> P] [<span class="o">-w</span> W] [<span class="o">-s</span> S] [<span class="o">-m</span> M] [<span class="o">-sr</span> SR] model input output
+</pre></div>
+</div>
+<p><p>Perform inference on a trained model.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">inference</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">emb</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">w</span> <span class="n">W</span><span class="p">]</span>
+                           <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">M</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">sr</span> <span class="n">SR</span><span class="p">]</span>
+                           <span class="n">model</span> <span class="nb">input</span> <span class="n">output</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>model</kbd></dt>
+<dd><p>Local path to model directory or Hugging Face link of the format: <cite>hf:repo_id[&#64;revision][:subdir]#local_dir</cite>. Should contain at least one state subdirectory, the <cite>model.yaml</cite>, <cite>file_handler.yaml</cite>, <cite>target_transform.yaml</cite>, and <cite>inference_transform.yaml</cite> files.</p>
+</dd>
+<dt><kbd>input</kbd></dt>
+<dd><p>Path to input directory. Should contain audio files of the specified extension.</p>
+</dd>
+<dt><kbd>output</kbd></dt>
+<dd><p>Path to output directory. Output includes a YAML file with predictions and a CSV file with model outputs.</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>-c, --checkpoint</kbd></dt>
+<dd><p>Checkpoint to use for evaluation. Defaults to ‘_best’ (on validation set).</p>
+</dd>
+<dt><kbd>-d, --device</kbd></dt>
+<dd><p>CUDA-enabled device to use for processing. Defaults to ‘cpu’.</p>
+</dd>
+<dt><kbd>-e, --extension</kbd></dt>
+<dd><p>Type of file to look for in the input directory. Defaults to ‘wav’.</p>
+</dd>
+<dt><kbd>-r, --recursive</kbd></dt>
+<dd><p>Recursively search for files in the input directory. Defaults to False.</p>
+</dd>
+<dt><kbd>-emb, --embeddings</kbd></dt>
+<dd><p>Extract embeddings from the model in addition to predictions.For each file, a .pt file with embeddings will be saved.Defaults to False.</p>
+</dd>
+<dt><kbd>-p, --preprocess-cfg</kbd></dt>
+<dd><p>Preprocessing configuration to apply to input. Can be a path to a YAML file or the name of the preprocessing configuration in the local or autrainer ‘conf/preprocessing’ directory. If None, no preprocessing will be applied. Defaults to None.</p>
+</dd>
+<dt><kbd>-w, --window-length</kbd></dt>
+<dd><p>Window length for sliding window inference in seconds. If None, the entire input will be processed at once. Defaults to None.</p>
+</dd>
+<dt><kbd>-s, --stride-length</kbd></dt>
+<dd><p>Stride length for sliding window inference in seconds. If None, the entire input will be processed at once. Defaults to None.</p>
+</dd>
+<dt><kbd>-m, --min-length</kbd></dt>
+<dd><p>Minimum length of audio file to process in seconds. Files shorter than the minimum length are padded with zeros. If None, no minimum length is enforced. Defaults to None.</p>
+</dd>
+<dt><kbd>-sr, --sample-rate</kbd></dt>
+<dd><p>Sample rate of audio files in Hz. Has to be specified for sliding window inference. Defaults to None.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+<section id="postprocessing">
+<span id="cli-postprocessing"></span><h2>Postprocessing<a class="headerlink" href="#postprocessing" title="Link to this heading">#</a></h2>
+<p>Postprocessing allows for the summarization, visualization, and aggregation of the training results using <a class="reference internal" href="#cli-autrainer-postprocess"><span class="std std-ref">autrainer postprocess</span></a>.
+Several cleanup utilities are provided by <a class="reference internal" href="#cli-autrainer-rm-failed"><span class="std std-ref">autrainer rm-failed</span></a> and <a class="reference internal" href="#cli-autrainer-rm-states"><span class="std std-ref">autrainer rm-states</span></a>.
+Manual grouping of the training results can be done using <a class="reference internal" href="#cli-autrainer-group"><span class="std std-ref">autrainer group</span></a>.</p>
+<section id="autrainer-postprocess">
+<span id="cli-autrainer-postprocess"></span><h3>autrainer postprocess<a class="headerlink" href="#autrainer-postprocess" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">postprocess</span> [<span class="o">-h</span>] [<span class="o">-m</span> N] [<span class="o">-a</span> A [A ...]] results_dir experiment_id
+</pre></div>
+</div>
+<p><p>Postprocess grid search results.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">postprocess</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">A</span> <span class="p">[</span><span class="n">A</span> <span class="o">...</span><span class="p">]]</span>
+                             <span class="n">results_dir</span> <span class="n">experiment_id</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>results_dir</kbd></dt>
+<dd><p>Path to grid search results directory.</p>
+</dd>
+<dt><kbd>experiment_id</kbd></dt>
+<dd><p>ID of experiment to postprocess.</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>-m, --max-runs</kbd></dt>
+<dd><p>Maximum number of best runs to plot.</p>
+</dd>
+<dt><kbd>-a, --aggregate</kbd></dt>
+<dd><dl class="simple">
+<dt>Configurations to aggregate. One or more of:</dt><dd><ul class="simple">
+<li><p>batch_size</p></li>
+<li><p>learning_rate</p></li>
+<li><p>scheduler</p></li>
+<li><p>model</p></li>
+<li><p>iterations</p></li>
+<li><p>optimizer</p></li>
+<li><p>augmentation</p></li>
+<li><p>dataset</p></li>
+<li><p>seed</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+<section id="autrainer-rm-failed">
+<span id="cli-autrainer-rm-failed"></span><h3>autrainer rm-failed<a class="headerlink" href="#autrainer-rm-failed" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">rm-failed</span> [<span class="o">-h</span>] [<span class="o">-f</span>] results_dir experiment_id
+</pre></div>
+</div>
+<p><p>Delete failed runs from an experiment.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">rm</span><span class="o">-</span><span class="n">failed</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span> <span class="n">results_dir</span> <span class="n">experiment_id</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>results_dir</kbd></dt>
+<dd><p>Path to grid search results directory.</p>
+</dd>
+<dt><kbd>experiment_id</kbd></dt>
+<dd><p>ID of experiment to postprocess.</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>-f, --force</kbd></dt>
+<dd><p>Force deletion of failed runs without confirmation. Defaults to False.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="autrainer-rm-states">
+<span id="cli-autrainer-rm-states"></span><h3>autrainer rm-states<a class="headerlink" href="#autrainer-rm-states" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">rm-states</span> [<span class="o">-h</span>] [<span class="o">-b</span>] [<span class="o">-r</span> R [R ...]] [<span class="o">-i</span> I [I ...]] results_dir experiment_id
+</pre></div>
+</div>
+<p><p>Delete states (.pt files) from an experiment.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">rm</span><span class="o">-</span><span class="n">states</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">R</span> <span class="p">[</span><span class="n">R</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">I</span> <span class="p">[</span><span class="n">I</span> <span class="o">...</span><span class="p">]]</span>
+                           <span class="n">results_dir</span> <span class="n">experiment_id</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>results_dir</kbd></dt>
+<dd><p>Path to grid search results directory.</p>
+</dd>
+<dt><kbd>experiment_id</kbd></dt>
+<dd><p>ID of experiment to postprocess.</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>-b, --keep-best</kbd></dt>
+<dd><p>Keep best states. Defaults to True.</p>
+</dd>
+<dt><kbd>-r, --keep-runs</kbd></dt>
+<dd><p>Runs to keep.</p>
+</dd>
+<dt><kbd>-i, --keep-iterations</kbd></dt>
+<dd><p>Iterations to keep.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="autrainer-group">
+<span id="cli-autrainer-group"></span><h3>autrainer group<a class="headerlink" href="#autrainer-group" title="Link to this heading">#</a></h3>
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">group</span> [<span class="o">-h</span>]
+</pre></div>
+</div>
+<p><p>Launch a manual grouping of multiple grid search results (Hydra).
+For more information on Hydra’s command line line flags, see:
+<a class="reference external" href="https://hydra.cc/docs/advanced/hydra-command-line-flags/">https://hydra.cc/docs/advanced/hydra-command-line-flags/</a>.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">group</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer">autrainer</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-management">Configuration Management</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-create">autrainer create</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-list">autrainer list</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-show">autrainer show</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocessing">Preprocessing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-fetch">autrainer fetch</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-preprocess">autrainer preprocess</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-train">autrainer train</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inference">Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-inference">autrainer inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#postprocessing">Postprocessing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-postprocess">autrainer postprocess</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-rm-failed">autrainer rm-failed</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-rm-states">autrainer rm-states</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-group">autrainer group</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

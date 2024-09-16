@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overview: module code &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/index';</script>
+    <script src="../_static/external_links.js?v=919ee35f"></script>
+    <script src="../_static/highlight_cli.js?v=d9429fbe"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo_light.webp" class="logo__image only-light" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>
+    <script>document.write(`<img src="../_static/logo_dark.webp" class="logo__image only-dark" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>`);</script>
+  
+  
+    <p class="title logo__title">autrainer</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<h3><a href="../index.html">Table of Contents</a></h3>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/cli_reference.html">CLI Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/cli_wrapper.html">CLI Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/hydra_configurations.html">Hydra Configurations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/augmentations.html">Augmentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/criterions.html">Criterions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/dataset_utils.html">Dataset Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/optimizers.html">Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/schedulers.html">Schedulers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/serving.html">Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/training.html">Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/transforms.html">Transforms</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/reproducibility_guide.html">Reproducibility Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/citing.html">Citing <cite>autrainer</cite></a></li>
+</ul>
+</div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Overview:...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>All modules for which code is available</h1>
+<ul><li><a href="autrainer/augmentations/abstract_augmentation.html">autrainer.augmentations.abstract_augmentation</a></li>
+<li><a href="autrainer/augmentations/augmentation_manager.html">autrainer.augmentations.augmentation_manager</a></li>
+<li><a href="autrainer/augmentations/augmentation_pipeline.html">autrainer.augmentations.augmentation_pipeline</a></li>
+<li><a href="autrainer/augmentations/augmentation_wrappers.html">autrainer.augmentations.augmentation_wrappers</a></li>
+<li><a href="autrainer/augmentations/choice_augmentation.html">autrainer.augmentations.choice_augmentation</a></li>
+<li><a href="autrainer/augmentations/image_augmentations.html">autrainer.augmentations.image_augmentations</a></li>
+<li><a href="autrainer/augmentations/sequential_augmentation.html">autrainer.augmentations.sequential_augmentation</a></li>
+<li><a href="autrainer/augmentations/spectrogram_augmentations.html">autrainer.augmentations.spectrogram_augmentations</a></li>
+<li><a href="autrainer/core/plotting/plot_base.html">autrainer.core.plotting.plot_base</a></li>
+<li><a href="autrainer/core/plotting/plot_metrics.html">autrainer.core.plotting.plot_metrics</a></li>
+<li><a href="autrainer/core/scripts/create_script.html">autrainer.core.scripts.create_script</a></li>
+<li><a href="autrainer/core/scripts/delete_failed_script.html">autrainer.core.scripts.delete_failed_script</a></li>
+<li><a href="autrainer/core/scripts/delete_states_script.html">autrainer.core.scripts.delete_states_script</a></li>
+<li><a href="autrainer/core/scripts/fetch_script.html">autrainer.core.scripts.fetch_script</a></li>
+<li><a href="autrainer/core/scripts/group_script.html">autrainer.core.scripts.group_script</a></li>
+<li><a href="autrainer/core/scripts/inference_script.html">autrainer.core.scripts.inference_script</a></li>
+<li><a href="autrainer/core/scripts/postprocess_script.html">autrainer.core.scripts.postprocess_script</a></li>
+<li><a href="autrainer/core/scripts/preprocess_script.html">autrainer.core.scripts.preprocess_script</a></li>
+<li><a href="autrainer/core/scripts/show_script.html">autrainer.core.scripts.show_script</a></li>
+<li><a href="autrainer/core/scripts/train_script.html">autrainer.core.scripts.train_script</a></li>
+<li><a href="autrainer/core/utils/bookkeeping.html">autrainer.core.utils.bookkeeping</a></li>
+<li><a href="autrainer/core/utils/hardware_info.html">autrainer.core.utils.hardware_info</a></li>
+<li><a href="autrainer/core/utils/set_seed.html">autrainer.core.utils.set_seed</a></li>
+<li><a href="autrainer/core/utils/silence.html">autrainer.core.utils.silence</a></li>
+<li><a href="autrainer/core/utils/timer.html">autrainer.core.utils.timer</a></li>
+<li><a href="autrainer/core/wrappers/instantiate.html">autrainer.core.wrappers.instantiate</a></li>
+<li><a href="autrainer/core/wrappers/main.html">autrainer.core.wrappers.main</a></li>
+<li><a href="autrainer/criterions/criterion_wrappers.html">autrainer.criterions.criterion_wrappers</a></li>
+<li><a href="autrainer/datasets/abstract_dataset.html">autrainer.datasets.abstract_dataset</a></li>
+<li><a href="autrainer/datasets/aibo.html">autrainer.datasets.aibo</a></li>
+<li><a href="autrainer/datasets/dcase_2016_t1.html">autrainer.datasets.dcase_2016_t1</a></li>
+<li><a href="autrainer/datasets/dcase_2018_t3.html">autrainer.datasets.dcase_2018_t3</a></li>
+<li><a href="autrainer/datasets/dcase_2020_t1a.html">autrainer.datasets.dcase_2020_t1a</a></li>
+<li><a href="autrainer/datasets/edansa2019.html">autrainer.datasets.edansa2019</a></li>
+<li><a href="autrainer/datasets/emo_db.html">autrainer.datasets.emo_db</a></li>
+<li><a href="autrainer/datasets/speech_commands.html">autrainer.datasets.speech_commands</a></li>
+<li><a href="autrainer/datasets/toy_dataset.html">autrainer.datasets.toy_dataset</a></li>
+<li><a href="autrainer/datasets/utils/dataset_wrapper.html">autrainer.datasets.utils.dataset_wrapper</a></li>
+<li><a href="autrainer/datasets/utils/file_handlers.html">autrainer.datasets.utils.file_handlers</a></li>
+<li><a href="autrainer/datasets/utils/target_transforms.html">autrainer.datasets.utils.target_transforms</a></li>
+<li><a href="autrainer/datasets/utils/zip_download_manager.html">autrainer.datasets.utils.zip_download_manager</a></li>
+<li><a href="autrainer/loggers/abstract_logger.html">autrainer.loggers.abstract_logger</a></li>
+<li><a href="autrainer/loggers/fallback_logger.html">autrainer.loggers.fallback_logger</a></li>
+<li><a href="autrainer/loggers/mlflow_logger.html">autrainer.loggers.mlflow_logger</a></li>
+<li><a href="autrainer/loggers/tensorboard_logger.html">autrainer.loggers.tensorboard_logger</a></li>
+<li><a href="autrainer/metrics/abstract_metric.html">autrainer.metrics.abstract_metric</a></li>
+<li><a href="autrainer/metrics/classification.html">autrainer.metrics.classification</a></li>
+<li><a href="autrainer/metrics/multi_label_classification.html">autrainer.metrics.multi_label_classification</a></li>
+<li><a href="autrainer/metrics/regression.html">autrainer.metrics.regression</a></li>
+<li><a href="autrainer/models/abstract_model.html">autrainer.models.abstract_model</a></li>
+<li><a href="autrainer/models/ast_model.html">autrainer.models.ast_model</a></li>
+<li><a href="autrainer/models/cnn_10.html">autrainer.models.cnn_10</a></li>
+<li><a href="autrainer/models/cnn_14.html">autrainer.models.cnn_14</a></li>
+<li><a href="autrainer/models/end2you.html">autrainer.models.end2you</a></li>
+<li><a href="autrainer/models/ffnn.html">autrainer.models.ffnn</a></li>
+<li><a href="autrainer/models/leaf.html">autrainer.models.leaf</a></li>
+<li><a href="autrainer/models/sequential.html">autrainer.models.sequential</a></li>
+<li><a href="autrainer/models/tdnn.html">autrainer.models.tdnn</a></li>
+<li><a href="autrainer/models/timm_wrapper.html">autrainer.models.timm_wrapper</a></li>
+<li><a href="autrainer/models/torchvision_wrapper.html">autrainer.models.torchvision_wrapper</a></li>
+<li><a href="autrainer/models/w2v2.html">autrainer.models.w2v2</a></li>
+<li><a href="autrainer/models/whisper.html">autrainer.models.whisper</a></li>
+<li><a href="autrainer/optimizers/sam.html">autrainer.optimizers.sam</a></li>
+<li><a href="autrainer/postprocessing/aggregate.html">autrainer.postprocessing.aggregate</a></li>
+<li><a href="autrainer/postprocessing/group.html">autrainer.postprocessing.group</a></li>
+<li><a href="autrainer/postprocessing/summarize.html">autrainer.postprocessing.summarize</a></li>
+<li><a href="autrainer/serving/serving.html">autrainer.serving.serving</a></li>
+<li><a href="autrainer/training/callback_manager.html">autrainer.training.callback_manager</a></li>
+<li><a href="autrainer/training/training.html">autrainer.training.training</a></li>
+<li><a href="autrainer/transforms/abstract_transform.html">autrainer.transforms.abstract_transform</a></li>
+<li><a href="autrainer/transforms/smart_compose.html">autrainer.transforms.smart_compose</a></li>
+<li><a href="autrainer/transforms/specific_transforms.html">autrainer.transforms.specific_transforms</a></li>
+<li><a href="autrainer/transforms/transform_manager.html">autrainer.transforms.transform_manager</a></li>
+</ul>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>
