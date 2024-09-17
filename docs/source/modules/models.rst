@@ -23,6 +23,19 @@ To avoid race conditions when using :ref:`hydra_launcher_plugins` that may run m
    The weights for all pretrained models that are provided by `autrainer` can be automatically downloaded using the
    :ref:`autrainer fetch <cli_autrainer_fetch>` CLI command or the :meth:`~autrainer.cli.fetch` CLI wrapper function.
 
+To optionally use model, optimizer, or scheduler checkpoints, the following attributes can be set in any model configuration file:
+
+* :attr:`model_checkpoint`: The path to the model checkpoint file.
+  If the output dimensions between the checkpoint and the model configuration do not match,
+  the checkpoint will be loaded without the last linear layer.
+* :attr:`optimizer_checkpoint`: The path to the optimizer checkpoint file.
+  If the output dimensions between the checkpoint and the model configuration do not match,
+  the checkpoint will be loaded without the last linear layer, similar to the model checkpoint.
+  If no model checkpoint is provided, :attr:`skip_last_layer` is automatically set to ``True``.
+* :attr:`scheduler_checkpoint`: The path to the scheduler checkpoint file.
+* :attr:`skip_last_layer`: Whether to explicitly skip loading the checkpoint of the last linear layer for both the model and optimizer.
+  This is useful when the number of output dimensions has not changed, but the last linear layer should be reinitialized.
+  
 
 Abstract Model
 --------------
