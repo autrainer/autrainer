@@ -27,6 +27,8 @@ from .continue_training import ContinueTraining
 from .outputs_tracker import init_trackers
 from .utils import (
     format_results,
+    load_pretrained_model_state,
+    load_pretrained_optim_state,
 )
 
 
@@ -130,12 +132,11 @@ class ModularTaskTrainer:
             self.criterion.setup(self.data)
         self.criterion.to(self.DEVICE)
 
-        # ? Load Pretrained Model and Optimizer Checkpoints if specified
-        model_checkpoint = model_config.pop("pretrained", None)
-        optimizer_config = self.cfg.optimizer
-        optimizer_checkpoint = optimizer_config.pop("pretrained", None)
-        scheduler_config = self.cfg.scheduler
-        scheduler_checkpoint = scheduler_config.pop("pretrained", None)
+        # ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints
+        model_checkpoint = model_config.pop("model_checkpoint", None)
+        skip_last_layer = model_config.pop("skip_last_layer", False)
+        optimizer_checkpoint = model_config.pop("optimizer_checkpoint", None)
+        scheduler_checkpoint = model_config.pop("scheduler_checkpoint", None)
 
         # ? Load Model
         self.output_dim = self.data.output_dim
@@ -145,12 +146,15 @@ class ModularTaskTrainer:
             output_dim=self.output_dim,
         )
         if model_checkpoint:
-            self.model.load_state_dict(
-                torch.load(
-                    model_checkpoint,
-                    map_location="cpu",
-                    weights_only=True,
-                )
+            state_dict = torch.load(
+                model_checkpoint,
+                map_location="cpu",
+                weights_only=True,
+            )
+            skip_last_layer = load_pretrained_model_state(
+                self.model,
+                state_dict,
+                skip_last_layer,
             )
         self.bookkeeping.save_model_summary(
             self.model, self.train_dataset, "model_summary.txt"
@@ -158,23 +162,26 @@ class ModularTaskTrainer:
 
         # ? Load Optimizer
         self.optimizer = autrainer.instantiate(
-            config=optimizer_config,
+            config=self.cfg.optimizer,
             instance_of=torch.optim.Optimizer,
             params=self.model.parameters(),
             lr=self.cfg.learning_rate,
         )
         if optimizer_checkpoint:
-            self.optimizer.load_state_dict(
-                torch.load(
-                    optimizer_checkpoint,
-                    map_location="cpu",
-                    weights_only=True,
-                )
+            state_dict = torch.load(
+                optimizer_checkpoint,
+                map_location="cpu",
+                weights_only=True,
+            )
+            load_pretrained_optim_state(
+                self.optimizer,
+                state_dict,
+                skip_last_layer or not model_checkpoint,
             )
 
         # ? Load Scheduler
         self.scheduler = autrainer.instantiate(
-            config=scheduler_config,
+            config=self.cfg.scheduler,
             instance_of=torch.optim.lr_scheduler.LRScheduler,
             optimizer=self.optimizer,
         )
