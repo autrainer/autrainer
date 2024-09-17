@@ -1,7 +1,7 @@
 from copy import deepcopy
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -25,6 +25,9 @@ from autrainer.transforms import TransformManager
 from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
 from .outputs_tracker import init_trackers
+from .utils import (
+    format_results,
+)
 
 
 class ModularTaskTrainer:
@@ -355,15 +358,22 @@ class ModularTaskTrainer:
             "_best",
         )
         self.bookkeeping.log(
-            self.format_results(
+            format_results(
                 self.metrics.loc[self.best_iteration]
                 .drop("iteration")
                 .to_dict(),
                 "Best",
+                self.cfg.training_type,
                 self.best_iteration,
             )
         )
-        self.bookkeeping.log(self.format_results(test_results, "Test"))
+        self.bookkeeping.log(
+            format_results(
+                test_results,
+                "Test",
+                self.cfg.training_type,
+            )
+        )
 
         # ? Save Timers
         self.train_timer.save()
@@ -611,9 +621,10 @@ class ModularTaskTrainer:
 
         if dev_evaluation:
             self.bookkeeping.log(
-                self.format_results(
+                format_results(
                     self.metrics.loc[iteration].to_dict(),
                     "Dev",
+                    self.cfg.training_type,
                     iteration,
                 )
             )
@@ -765,21 +776,3 @@ class ModularTaskTrainer:
             Copy of the configuration.
         """
         return deepcopy(self._cfg)
-
-    def format_results(
-        self,
-        results: Dict[str, float],
-        results_type: str,
-        iteration: Optional[int] = None,
-    ) -> str:
-        s = f"{results_type} results"
-        s += f" at {self.cfg.training_type} {iteration}" if iteration else ""
-        s += ":\n"
-        max_key_len = max([len(k) for k in results.keys()])
-        s += "\n".join(
-            [
-                f"{(k+':').ljust(max_key_len+1)} {v:.4f}"
-                for k, v in results.items()
-            ]
-        )
-        return s
