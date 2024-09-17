@@ -29,6 +29,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
 ]
+repository = "https://github.com/autrainer/autrainer"
+documentation = "https://autrainer.github.io/autrainer/"
 
 [tool.poetry.dependencies]
 python = "^3.9"
