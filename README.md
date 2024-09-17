@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/source/_static/logo_banner.png" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks">
+  <img src="https://autrainer.github.io/autrainer/_images/logo_banner.png" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks">
 </div>
 
 # autrainer
