@@ -1,5 +1,6 @@
 import glob
 import os
+import sys
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import warnings
 
@@ -57,6 +58,7 @@ class Inference:
         self._stride_length = stride_length
         self._min_length = min_length
         self._sample_rate = sample_rate
+        sys.path.append(os.getcwd())
 
         self.model = audobject.from_yaml(
             os.path.join(self._model_path, "model.yaml")
