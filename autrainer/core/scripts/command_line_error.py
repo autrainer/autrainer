@@ -1,10 +1,6 @@
 import argparse
-from functools import wraps
 import sys
-from typing import Any, Callable, NoReturn, TypeVar
-
-
-F = TypeVar("F", bound=Callable[..., Any])
+from typing import Callable, NoReturn
 
 
 class CommandLineError(Exception):
@@ -62,14 +58,3 @@ def print_help_on_error(
         raise CommandLineError(parser, message)
 
     return closure
-
-
-def catch_cli_errors(func: F) -> F:
-    @wraps(func)
-    def wrapper(*args: Any, **kwargs: Any) -> Any:
-        try:
-            return func(*args, **kwargs)
-        except CommandLineError as e:
-            print(e.message, file=sys.stderr)
-
-    return wrapper

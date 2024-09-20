@@ -4,13 +4,18 @@ from typing import Any, List, Optional
 from omegaconf import DictConfig, OmegaConf
 
 import autrainer
+from autrainer.core.scripts.abstract_script import MockParser
 
 from .abstract_preprocess_script import (
     AbstractPreprocessScript,
     PreprocessArgs,
 )
-from .command_line_error import catch_cli_errors
-from .utils import run_autrainer_hydra_cmd
+from .utils import (
+    add_hydra_args_to_sys,
+    catch_cli_errors,
+    run_hydra_cmd,
+    running_in_notebook,
+)
 
 
 @dataclass
@@ -251,10 +256,19 @@ def preprocess(
             config files. If config_path is None no directory is added to the
             search path. Defaults to None.
     """
-    cmd = "preprocess"
-    if cfg_launcher:
-        cmd += " -l"
-    if silent:
-        cmd += " -s"
-    cmd += f" -n {num_workers} -p {pbar_frequency}"
-    run_autrainer_hydra_cmd(cmd, override_kwargs, config_name, config_path)
+    if running_in_notebook():
+        cmd = "preprocess"
+        if cfg_launcher:
+            cmd += " -l"
+        if silent:
+            cmd += " -s"
+        cmd += f" -n {num_workers} -p {pbar_frequency}"
+        run_hydra_cmd(cmd, override_kwargs, config_name, config_path)
+
+    else:
+        add_hydra_args_to_sys(override_kwargs, config_name, config_path)
+        script = PreprocessScript()
+        script.parser = MockParser()
+        script.main(
+            PreprocessArgs(cfg_launcher, num_workers, pbar_frequency, silent)
+        )

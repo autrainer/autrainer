@@ -1,4 +1,5 @@
 import os
+from unittest.mock import patch
 
 from omegaconf import DictConfig, OmegaConf
 import pytest
@@ -59,13 +60,15 @@ class TestCLIIntegration(BaseIndividualTempDir):
 
     @staticmethod
     def _train_postprocess(capfd: pytest.CaptureFixture) -> None:
-        autrainer.cli.train()
+        with patch("sys.argv", [""]):
+            autrainer.cli.train()
         out, _ = capfd.readouterr()
         print(out)
         assert "Best results at" in out, "Should print training results."
         assert "Test results:" in out, "Should print test results."
 
-        autrainer.cli.train()
+        with patch("sys.argv", [""]):
+            autrainer.cli.train()
         out, _ = capfd.readouterr()
         assert "Filtered:" in out, "Should print skipping message."
 
