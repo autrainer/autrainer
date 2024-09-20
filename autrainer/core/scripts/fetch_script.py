@@ -9,8 +9,7 @@ from .abstract_preprocess_script import (
     AbstractPreprocessScript,
     PreprocessArgs,
 )
-from .command_line_error import catch_cli_errors
-from .utils import run_autrainer_hydra_cmd
+from .utils import catch_cli_errors, run_hydra_cmd
 
 
 class FetchScript(AbstractPreprocessScript):
@@ -92,7 +91,7 @@ def fetch(
             search path. Defaults to None.
     """
 
-    run_autrainer_hydra_cmd(
+    run_hydra_cmd(
         "fetch -l" if cfg_launcher else "fetch",
         override_kwargs,
         config_name,

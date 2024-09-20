@@ -6,7 +6,8 @@ from typing import Optional
 import autrainer
 
 from .abstract_script import AbstractScript, MockParser
-from .command_line_error import CommandLineError, catch_cli_errors
+from .command_line_error import CommandLineError
+from .utils import catch_cli_errors
 
 
 @dataclass

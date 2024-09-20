@@ -1,21 +1,25 @@
-from typing import Optional
+from functools import wraps
+import sys
+from typing import Any, Callable, Optional, TypeVar
 
 from .command_line_error import CommandLineError
 
 
+F = TypeVar("F", bound=Callable[..., Any])
 TQDM_LINE_ENDINGS = ["it/s]", "s/it]", "B/s]"]
 
 
-def run_autrainer_hydra_cmd(
+def run_hydra_cmd(
     cmd: str,
     override_kwargs: Optional[dict] = None,
     config_name: str = "config",
     config_path: Optional[str] = None,
+    cmd_prefix: str = "autrainer",
 ) -> None:
-    """Run an autrainer Hydra command in a subprocess and print the output.
+    """Run a Hydra command in a subprocess and print the output.
 
     Args:
-        cmd: The autrainer Hydra command to run.
+        cmd: The Hydra command to run.
         override_kwargs: Additional Hydra override arguments to pass to the
             train script.
         config_name: The name of the config (usually the file name without the
@@ -23,10 +27,11 @@ def run_autrainer_hydra_cmd(
         config_path: The config path, a directory where Hydra will search for
             config files. If config_path is None no directory is added to the
             search path. Defaults to None.
+        cmd_prefix: The command prefix to use. Defaults to "autrainer".
     """
     import subprocess
 
-    cmd = f"autrainer {cmd} -cn {config_name}.yaml"
+    cmd = f"{cmd_prefix} {cmd} -cn {config_name}.yaml"
     if config_path is not None:
         cmd += f" -cp {config_path}"
     if override_kwargs is not None:
@@ -66,3 +71,14 @@ def run_autrainer_hydra_cmd(
 
     process.stdout.close()
     process.wait()
+
+
+def catch_cli_errors(func: F) -> F:
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        try:
+            return func(*args, **kwargs)
+        except CommandLineError as e:
+            print(e.message, file=sys.stderr)
+
+    return wrapper

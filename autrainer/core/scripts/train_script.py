@@ -5,8 +5,7 @@ from omegaconf import DictConfig, OmegaConf
 import autrainer
 
 from .abstract_script import AbstractScript
-from .command_line_error import catch_cli_errors
-from .utils import run_autrainer_hydra_cmd
+from .utils import catch_cli_errors, run_hydra_cmd
 
 
 class TrainScript(AbstractScript):
@@ -88,4 +87,4 @@ def train(
             config files. If config_path is None no directory is added to the
             search path. Defaults to None.
     """
-    run_autrainer_hydra_cmd("train", override_kwargs, config_name, config_path)
+    run_hydra_cmd("train", override_kwargs, config_name, config_path)

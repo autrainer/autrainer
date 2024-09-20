@@ -9,8 +9,7 @@ from .abstract_preprocess_script import (
     AbstractPreprocessScript,
     PreprocessArgs,
 )
-from .command_line_error import catch_cli_errors
-from .utils import run_autrainer_hydra_cmd
+from .utils import catch_cli_errors, run_hydra_cmd
 
 
 @dataclass
@@ -257,4 +256,4 @@ def preprocess(
     if silent:
         cmd += " -s"
     cmd += f" -n {num_workers} -p {pbar_frequency}"
-    run_autrainer_hydra_cmd(cmd, override_kwargs, config_name, config_path)
+    run_hydra_cmd(cmd, override_kwargs, config_name, config_path)

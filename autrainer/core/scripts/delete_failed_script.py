@@ -4,12 +4,12 @@ import shutil
 from typing import List
 
 from autrainer.core.scripts.abstract_script import MockParser
-from autrainer.core.scripts.command_line_error import catch_cli_errors
 
 from .abstract_postprocess_script import (
     AbstractPostprocessArgs,
     AbstractPostprocessScript,
 )
+from .utils import catch_cli_errors
 
 
 @dataclass
