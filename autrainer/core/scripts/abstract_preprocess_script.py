@@ -25,6 +25,7 @@ class AbstractPreprocessScript(AbstractScript):
         )
 
     def _override_launcher(self, args: PreprocessArgs) -> None:
+        self._pre_sys_argv = sys.argv.copy()
         if not args.cfg_launcher:
             sys.argv = sys.argv + ["hydra/launcher=basic"]
 
@@ -38,6 +39,7 @@ class AbstractPreprocessScript(AbstractScript):
 
     def _clean_up(self) -> None:
         shutil.rmtree(self.tempdir)
+        sys.argv = self._pre_sys_argv
 
     @staticmethod
     def _id_in_dict(d: dict, id: str) -> bool:
