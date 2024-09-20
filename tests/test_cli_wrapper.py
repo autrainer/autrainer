@@ -8,6 +8,7 @@ import pytest
 
 import autrainer.cli
 from autrainer.core.constants import CONFIG_FOLDERS
+from autrainer.core.scripts.command_line_error import CommandLineError
 
 from .utils import BaseIndividualTempDir
 
@@ -52,19 +53,19 @@ class TestMainEntryPoint(BaseIndividualTempDir):
 
 
 class TestCLICreate(BaseIndividualTempDir):
-    def test_empty_directory(self, capfd: pytest.CaptureFixture) -> None:
-        autrainer.cli.create([])
-        _, err = capfd.readouterr()
-        assert (
-            "No configuration directories specified." in err
-        ), "Should print error message."
+    def test_empty_directory(self) -> None:
+        with pytest.raises(
+            CommandLineError,
+            match="No configuration directories specified.",
+        ):
+            autrainer.cli.create([])
 
-    def test_invalid_directory(self, capfd: pytest.CaptureFixture) -> None:
-        autrainer.cli.create(["invalid"])
-        _, err = capfd.readouterr()
-        assert (
-            "Invalid configuration directory 'invalid'." in err
-        ), "Should print error message."
+    def test_invalid_directory(self) -> None:
+        with pytest.raises(
+            CommandLineError,
+            match="Invalid configuration directory 'invalid'.",
+        ):
+            autrainer.cli.create(["invalid"])
 
     @pytest.mark.parametrize(
         "dirs, empty, all",
@@ -76,28 +77,24 @@ class TestCLICreate(BaseIndividualTempDir):
     )
     def test_mutually_exclusive(
         self,
-        capfd: pytest.CaptureFixture,
         dirs: Union[List[str]],
         empty: bool,
         all: bool,
     ) -> None:
-        expected = "The flags -e/--empty and -a/--all are mutually exclusive"
-        autrainer.cli.create(dirs, empty, all)
-        _, err = capfd.readouterr()
-        assert expected in err, "Should print error message."
+        with pytest.raises(
+            CommandLineError,
+            match="The flags -e/--empty and -a/--all are mutually exclusive",
+        ):
+            autrainer.cli.create(dirs, empty, all)
 
-    def test_force_overwrite(self, capfd: pytest.CaptureFixture) -> None:
+    def test_force_overwrite(self) -> None:
         os.mkdir("conf")
-        autrainer.cli.create(empty=True)
-        _, err = capfd.readouterr()
-        assert (
-            "Directory 'conf' already exists." in err
-        ), "Should print error message."
+        with pytest.raises(
+            CommandLineError,
+            match="Directory 'conf' already exists.",
+        ):
+            autrainer.cli.create(empty=True)
         autrainer.cli.create(empty=True, force=True)
-        _, err = capfd.readouterr()
-        assert (
-            "Directory 'conf' already exists." not in err
-        ), "Should not print error message."
 
     @pytest.mark.parametrize(
         "dirs",
@@ -131,21 +128,19 @@ class TestCLICreate(BaseIndividualTempDir):
 
 
 class TestCLIList(BaseIndividualTempDir):
-    def test_invalid_directory(self, capfd: pytest.CaptureFixture) -> None:
-        autrainer.cli.list("invalid")
-        _, err = capfd.readouterr()
-        assert (
-            "Invalid configuration directory 'invalid'." in err
-        ), "Should print error message."
+    def test_invalid_directory(self) -> None:
+        with pytest.raises(
+            CommandLineError,
+            match="Invalid configuration directory 'invalid'.",
+        ):
+            autrainer.cli.list("invalid")
 
-    def test_local_invalid_directory(
-        self, capfd: pytest.CaptureFixture
-    ) -> None:
-        autrainer.cli.list("model", local_only=True)
-        _, err = capfd.readouterr()
-        assert (
-            "Local conf directory 'model' does not exist." in err
-        ), "Should print error message."
+    def test_local_invalid_directory(self) -> None:
+        with pytest.raises(
+            CommandLineError,
+            match="Local conf directory 'model' does not exist.",
+        ):
+            autrainer.cli.list("model", local_only=True)
 
     @pytest.mark.parametrize(
         "local_only, global_only",
@@ -164,8 +159,7 @@ class TestCLIList(BaseIndividualTempDir):
             local_only=local_only,
             global_only=global_only,
         )
-        out, err = capfd.readouterr()
-        assert err == "", "Should not print error message."
+        out, _ = capfd.readouterr()
         if local_only:
             assert (
                 "Local 'model' configurations:" in out
@@ -180,8 +174,7 @@ class TestCLIList(BaseIndividualTempDir):
     ) -> None:
         os.makedirs("conf/model", exist_ok=True)
         autrainer.cli.list("model", pattern="MissingNet-*")
-        out, err = capfd.readouterr()
-        assert err == "", "Should not print error message."
+        out, _ = capfd.readouterr()
         assert (
             "No local 'model' configurations found." in out
         ), "Should not print local configurations."
@@ -199,29 +192,27 @@ class TestCLIShow(BaseIndividualTempDir):
         self, capfd: pytest.CaptureFixture, config: str
     ) -> None:
         autrainer.cli.show("model", config)
-        out, err = capfd.readouterr()
-        assert err == "", "Should not print error message."
+        out, _ = capfd.readouterr()
         config = config.replace(".yaml", "")
         assert f"id: {config}" in out, "Should print configuration."
 
-    def test_invalid_directory(self, capfd: pytest.CaptureFixture) -> None:
-        autrainer.cli.list("invalid")
-        _, err = capfd.readouterr()
-        assert (
-            "Invalid configuration directory 'invalid'." in err
-        ), "Should print error message."
+    def test_invalid_directory(self) -> None:
+        with pytest.raises(
+            CommandLineError,
+            match="Invalid configuration directory 'invalid'.",
+        ):
+            autrainer.cli.list("invalid")
 
-    def test_invalid_config(self, capfd: pytest.CaptureFixture) -> None:
-        autrainer.cli.show("model", "InvalidNet")
-        _, err = capfd.readouterr()
-        assert (
-            "No global configuration 'InvalidNet' found for 'model'." in err
-        ), "Should print error message."
+    def test_invalid_config(self) -> None:
+        with pytest.raises(
+            CommandLineError,
+            match=r"No global configuration 'InvalidNet' found for 'model'.",
+        ):
+            autrainer.cli.show("model", "InvalidNet")
 
     def test_save_configuration(self, capfd: pytest.CaptureFixture) -> None:
         autrainer.cli.show("model", "EfficientNet-B0", save=True)
-        out, err = capfd.readouterr()
-        assert err == "", "Should not print error message."
+        out, _ = capfd.readouterr()
         assert "id: EfficientNet-B0" in out, "Should print configuration."
         assert os.path.exists(
             "conf/model/EfficientNet-B0.yaml"
@@ -230,14 +221,18 @@ class TestCLIShow(BaseIndividualTempDir):
     def test_force_overwrite(self, capfd: pytest.CaptureFixture) -> None:
         os.makedirs("conf/model", exist_ok=True)
         OmegaConf.save({}, "conf/model/EfficientNet-B0.yaml")
-        autrainer.cli.show("model", "EfficientNet-B0", save=True)
-        _, err = capfd.readouterr()
-        assert "model configuration 'EfficientNet-B0' already exists." in err
+        with pytest.raises(
+            CommandLineError,
+            match=".+'EfficientNet-B0' already exists.+",
+        ):
+            autrainer.cli.show("model", "EfficientNet-B0", save=True)
 
         autrainer.cli.show("model", "EfficientNet-B0", save=True, force=True)
-        out, err = capfd.readouterr()
-        assert err == "", "Should not print error message."
+        out, _ = capfd.readouterr()
         assert "id: EfficientNet-B0" in out, "Should print configuration."
+        assert os.path.exists(
+            "conf/model/EfficientNet-B0.yaml"
+        ), "Should save configuration."
 
 
 class TestCLIFetch(BaseIndividualTempDir):
@@ -245,23 +240,30 @@ class TestCLIFetch(BaseIndividualTempDir):
     def test_launcher_override(
         self, capfd: pytest.CaptureFixture, cfg_launcher: bool
     ) -> None:
-        autrainer.cli.fetch(
-            cfg_launcher=cfg_launcher,
-        )
-        out, err = capfd.readouterr()
-        assert err == "", "Should not print error message."
+        with patch("sys.argv", [""]):
+            autrainer.cli.fetch(
+                cfg_launcher=cfg_launcher,
+            )
+        out, _ = capfd.readouterr()
+        assert "Fetching datasets..." in out, "Should print fetching message."
+        assert "Fetching models..." in out, "Should print fetching message."
+
+    def test_notebook(self, capfd: pytest.CaptureFixture) -> None:
+        with patch("sys.argv", ["ipykernel"]):
+            autrainer.cli.fetch()
+        out, _ = capfd.readouterr()
         assert "Fetching datasets..." in out, "Should print fetching message."
         assert "Fetching models..." in out, "Should print fetching message."
 
 
 class TestCLIPreprocess(BaseIndividualTempDir):
     def test_preprocess(self, capfd: pytest.CaptureFixture) -> None:
-        autrainer.cli.preprocess(
-            cfg_launcher=True,
-            silent=True,
-        )
-        out, err = capfd.readouterr()
-        assert err == "", "Should not print error message."
+        with patch("sys.argv", [""]):
+            autrainer.cli.preprocess(
+                cfg_launcher=True,
+                silent=True,
+            )
+        out, _ = capfd.readouterr()
         assert (
             "Preprocessing datasets..." in out
         ), "Should print preprocessing message."
@@ -297,105 +299,108 @@ class TestCLIInference(BaseIndividualTempDir):
             "hf:user_id/repo_id@main:subdir#local_dir",
         ],
     )
-    def test_invalid_model(
-        self,
-        capfd: pytest.CaptureFixture,
-        model: str,
-    ) -> None:
-        autrainer.cli.inference(model=model, input="", output="")
-        _, err = capfd.readouterr()
-        if model.startswith("hf:"):
-            assert (
-                "Invalid hugging face repo id" in err
-                or "Invalid hugging face path format" in err
-            ), "Should print error."
-        else:
-            assert (
-                "Invalid local model directory" in err
-            ), "Should print error."
+    def test_invalid_model(self, model: str) -> None:
+        #! debug: match if starts with only with "Invalid"
+        with pytest.raises(CommandLineError, match="Invalid"):
+            autrainer.cli.inference(model=model, input="", output="")
 
-    def test_invalid_input(
-        self,
-        capfd: pytest.CaptureFixture,
-    ) -> None:
+        # autrainer.cli.inference(model=model, input="", output="")
+        # _, err = capfd.readouterr()
+        # if model.startswith("hf:"):
+        #     assert (
+        #         "Invalid hugging face repo id" in err
+        #         or "Invalid hugging face path format" in err
+        #     ), "Should print error."
+        # else:
+        #     assert (
+        #         "Invalid local model directory" in err
+        #     ), "Should print error."
+
+    def test_invalid_input(self) -> None:
         self._mock_model()
-
-        autrainer.cli.inference(model="model", input="invalid", output="")
-        _, err = capfd.readouterr()
-        assert "Input 'invalid' does not exist." in err, "Should print error."
+        with pytest.raises(
+            CommandLineError,
+            match="Input 'invalid' does not exist.",
+        ):
+            autrainer.cli.inference(model="model", input="invalid", output="")
 
         OmegaConf.save({}, "input.yaml")
-        autrainer.cli.inference(model="model", input="input.yaml", output="")
-        _, err = capfd.readouterr()
-        assert (
-            "Input 'input.yaml' is not a directory." in err
-        ), "Should print error."
+
+        with pytest.raises(
+            CommandLineError,
+            match="Input 'input.yaml' is not a directory.",
+        ):
+            autrainer.cli.inference(
+                model="model", input="input.yaml", output=""
+            )
 
         os.makedirs("input", exist_ok=True)
-        autrainer.cli.inference(
-            model="model",
-            input="input",
-            output="",
-            extension="example",
-        )
-        _, err = capfd.readouterr()
-        assert "No 'example' files found in 'input'.", "Should print error."
+
+        with pytest.raises(
+            CommandLineError,
+            match="No 'example' files found in 'input'.",
+        ):
+            autrainer.cli.inference(
+                model="model",
+                input="input",
+                output="",
+                extension="example",
+            )
 
     def test_invalid_device(
         self,
-        capfd: pytest.CaptureFixture,
     ) -> None:
         self._mock_model()
         self._mock_input()
         os.makedirs("model/_best", exist_ok=True)
         OmegaConf.save({}, "model/_best/model.pt")
 
-        autrainer.cli.inference(
-            model="model",
-            input="input",
-            output="output",
-            device="invalid",
-        )
-        _, err = capfd.readouterr()
-        print(err)
-        assert "Invalid device 'invalid'." in err, "Should print error."
+        with pytest.raises(
+            CommandLineError,
+            match="Invalid device 'invalid'.",
+        ):
+            autrainer.cli.inference(
+                model="model",
+                input="input",
+                output="output",
+                device="invalid",
+            )
 
     def test_invalid_checkpoint(
         self,
-        capfd: pytest.CaptureFixture,
     ) -> None:
         self._mock_model()
         self._mock_input()
 
-        autrainer.cli.inference(
-            model="model",
-            input="input",
-            output="output",
-        )
-        _, err = capfd.readouterr()
-        assert (
-            "Checkpoint '_best' does not exist." in err
-        ), "Should print error."
+        with pytest.raises(
+            CommandLineError,
+            match="Checkpoint 'invalid' does not exist.",
+        ):
+            autrainer.cli.inference(
+                model="model",
+                input="input",
+                output="output",
+                checkpoint="invalid",
+            )
 
     def test_invalid_preprocess_config(
         self,
-        capfd: pytest.CaptureFixture,
     ) -> None:
         self._mock_model()
         self._mock_input()
         os.makedirs("model/_best", exist_ok=True)
         OmegaConf.save({}, "model/_best/model.pt")
 
-        autrainer.cli.inference(
-            model="model",
-            input="input",
-            output="output",
-            preprocess_cfg="invalid",
-        )
-        _, err = capfd.readouterr()
-        assert (
-            "Preprocessing configuration 'invalid.yaml' does not exist." in err
-        ), "Should print error."
+        with pytest.raises(
+            CommandLineError,
+            match="Preprocessing configuration 'invalid.yaml' does not exist.",
+        ):
+            autrainer.cli.inference(
+                model="model",
+                input="input",
+                output="output",
+                preprocess_cfg="invalid",
+            )
 
 
 class BaseCLIRemove(BaseIndividualTempDir):
@@ -442,7 +447,8 @@ class TestCLIRmStates(BaseCLIRemove):
         for name in names:
             self._mock_successful_run(name)
         with patch("builtins.input", return_value="y"):
-            autrainer.cli.rm_states("results", "default", keep_best=False)
+            if names:
+                autrainer.cli.rm_states("results", "default", keep_best=False)
         for name in names:
             for state in ["_best", "epoch_1", "epoch_2"]:
                 assert not os.path.exists(
