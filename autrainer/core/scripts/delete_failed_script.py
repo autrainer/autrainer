@@ -87,11 +87,17 @@ def rm_failed(
 ) -> None:
     """Delete failed runs from an experiment.
 
+    If called in a notebook, the function will not raise an error and print
+    the error message instead.
+
     Args:
         results_dir: Path to grid search results directory.
         experiment_id: ID of experiment to postprocess.
         force: Force deletion of failed runs without confirmation.
             Defaults to False.
+
+    Raises:
+        CommandLineError: If the results directory or experiment ID dont exist.
     """
     script = DeleteFailedScript()
     script.parser = MockParser()

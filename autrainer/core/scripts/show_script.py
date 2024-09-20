@@ -121,6 +121,9 @@ def show(
 ) -> None:
     """Show and save a global configuration.
 
+    If called in a notebook, the function will not raise an error and print
+    the error message instead.
+
     Args:
         directory: The directory to list configurations from. Choose from:
             :const:`~autrainer.core.constants.CONFIG_FOLDERS`.
@@ -130,6 +133,11 @@ def show(
             Defaults to False.
         force: Force overwrite local configuration if it exists in combination
             with save=True. Defaults to False.
+
+    Raises:
+        CommandLineError: If the global configuration does not exist.
+        CommandLineError: If while saving the local configuration, the
+            configuration already exists and force is not set.
     """
     script = ShowScript()
     script.parser = MockParser()

@@ -149,12 +149,18 @@ def rm_states(
 ) -> None:
     """Delete states (.pt files) from an experiment.
 
+    If called in a notebook, the function will not raise an error and print
+    the error message instead.
+
     Args:
         results_dir: Path to grid search results directory.
         experiment_id: ID of experiment to postprocess.
         keep_best: Keep best states. Defaults to True.
         keep_runs: Runs to keep. Defaults to None.
         keep_iterations: Iterations to keep. Defaults to None.
+
+    Raises:
+        CommandLineError: If the results directory or experiment ID dont exist.
     """
     script = DeleteStatesScript()
     script.parser = MockParser()

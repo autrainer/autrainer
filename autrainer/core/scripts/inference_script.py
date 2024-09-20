@@ -355,6 +355,9 @@ def inference(
 ) -> None:
     """Perform inference on a trained model.
 
+    If called in a notebook, the function will not raise an error and print
+    the error message instead.
+
     Args:
         model: Local path to model directory or Hugging Face link of the
             format: `hf:repo_id[@revision][:subdir]#local_dir`.
@@ -390,6 +393,10 @@ def inference(
             If None, no minimum length is enforced. Defaults to None.
         sample_rate: Sample rate of audio files in Hz. Has to be specified for
             sliding window inference. Defaults to None.
+
+    Raises:
+        CommandLineError: If the model, input, or preprocessing configuration
+            does not exist, or if the device is invalid.
     """
     script = InferenceScript()
     script.parser = MockParser()

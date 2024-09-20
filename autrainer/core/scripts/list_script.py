@@ -127,12 +127,19 @@ def list_configs(
 ) -> None:
     """List local and global configurations.
 
+    If called in a notebook, the function will not raise an error and print
+    the error message instead.
+
     Args:
         directory: The directory to list configurations from. Choose from:
             :const:`~autrainer.core.constants.CONFIG_FOLDERS`.
         local_only: List local configurations only. Defaults to False.
         global_only: List global configurations only. Defaults to False.
         pattern: Glob pattern to filter configurations. Defaults to "*".
+
+    Raises:
+        CommandLineError: If the local configuration directory does not exist
+            and local_only is True.
     """
 
     script = ListScript()
