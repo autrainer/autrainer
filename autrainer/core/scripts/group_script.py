@@ -4,8 +4,13 @@ from omegaconf import DictConfig, OmegaConf
 
 import autrainer
 
-from .abstract_script import AbstractScript
-from .utils import catch_cli_errors, run_hydra_cmd
+from .abstract_script import AbstractScript, MockParser
+from .utils import (
+    add_hydra_args_to_sys,
+    catch_cli_errors,
+    run_hydra_cmd,
+    running_in_notebook,
+)
 
 
 class GroupScript(AbstractScript):
@@ -62,4 +67,10 @@ def group(
             config files. If config_path is None no directory is added to the
             search path. Defaults to None.
     """
-    run_hydra_cmd("group", override_kwargs, config_name, config_path)
+    if running_in_notebook():
+        run_hydra_cmd("group", override_kwargs, config_name, config_path)
+    else:
+        add_hydra_args_to_sys(override_kwargs, config_name, config_path)
+        script = GroupScript()
+        script.parser = MockParser()
+        script.main({})

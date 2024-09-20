@@ -4,12 +4,18 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 
 import autrainer
+from autrainer.core.scripts.abstract_script import MockParser
 
 from .abstract_preprocess_script import (
     AbstractPreprocessScript,
     PreprocessArgs,
 )
-from .utils import catch_cli_errors, run_hydra_cmd
+from .utils import (
+    add_hydra_args_to_sys,
+    catch_cli_errors,
+    run_hydra_cmd,
+    running_in_notebook,
+)
 
 
 class FetchScript(AbstractPreprocessScript):
@@ -90,10 +96,16 @@ def fetch(
             config files. If config_path is None no directory is added to the
             search path. Defaults to None.
     """
+    if running_in_notebook():
+        run_hydra_cmd(
+            "fetch -l" if cfg_launcher else "fetch",
+            override_kwargs,
+            config_name,
+            config_path,
+        )
 
-    run_hydra_cmd(
-        "fetch -l" if cfg_launcher else "fetch",
-        override_kwargs,
-        config_name,
-        config_path,
-    )
+    else:
+        add_hydra_args_to_sys(override_kwargs, config_name, config_path)
+        script = FetchScript()
+        script.parser = MockParser()
+        script.main(PreprocessArgs(cfg_launcher))

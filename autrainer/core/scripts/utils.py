@@ -73,12 +73,31 @@ def run_hydra_cmd(
     process.wait()
 
 
+def running_in_notebook() -> bool:
+    return any("jupyter" in arg or "ipykernel" in arg for arg in sys.argv)
+
+
 def catch_cli_errors(func: F) -> F:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return func(*args, **kwargs)
         except CommandLineError as e:
+            if not running_in_notebook():
+                raise e
             print(e.message, file=sys.stderr)
 
     return wrapper
+
+
+def add_hydra_args_to_sys(
+    override_kwargs: Optional[dict] = None,
+    config_name: str = "config",
+    config_path: Optional[str] = None,
+) -> None:
+    if config_name.replace(".yaml", "") != "config":
+        sys.argv.extend(["-cn", config_name])
+    if config_path is not None:
+        sys.argv.extend(["-cp", config_path])
+    if override_kwargs is not None:
+        sys.argv.extend(f"{k}={v}" for k, v in override_kwargs.items())
