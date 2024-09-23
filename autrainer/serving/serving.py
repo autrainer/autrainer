@@ -1,5 +1,6 @@
 import glob
 import os
+import sys
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import warnings
 
@@ -14,6 +15,7 @@ from autrainer.datasets.utils import (
     AbstractFileHandler,
     AbstractTargetTransform,
 )
+from autrainer.models import AbstractModel
 from autrainer.transforms import SmartCompose
 
 
@@ -57,8 +59,9 @@ class Inference:
         self._stride_length = stride_length
         self._min_length = min_length
         self._sample_rate = sample_rate
+        sys.path.append(os.getcwd())
 
-        self.model = audobject.from_yaml(
+        self.model: AbstractModel = audobject.from_yaml(
             os.path.join(self._model_path, "model.yaml")
         )
         with warnings.catch_warnings():

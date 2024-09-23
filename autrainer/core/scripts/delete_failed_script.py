@@ -4,12 +4,12 @@ import shutil
 from typing import List
 
 from autrainer.core.scripts.abstract_script import MockParser
-from autrainer.core.scripts.command_line_error import catch_cli_errors
 
 from .abstract_postprocess_script import (
     AbstractPostprocessArgs,
     AbstractPostprocessScript,
 )
+from .utils import catch_cli_errors
 
 
 @dataclass
@@ -87,11 +87,17 @@ def rm_failed(
 ) -> None:
     """Delete failed runs from an experiment.
 
+    If called in a notebook, the function will not raise an error and print
+    the error message instead.
+
     Args:
         results_dir: Path to grid search results directory.
         experiment_id: ID of experiment to postprocess.
         force: Force deletion of failed runs without confirmation.
             Defaults to False.
+
+    Raises:
+        CommandLineError: If the results directory or experiment ID dont exist.
     """
     script = DeleteFailedScript()
     script.parser = MockParser()

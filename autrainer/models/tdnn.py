@@ -1,4 +1,5 @@
 import os
+import warnings
 
 from speechbrain.inference.classifiers import EncoderClassifier
 import torch
@@ -35,11 +36,13 @@ class TDNNFFNN(AbstractModel):
         self.dropout = dropout
         checkpoint_dir = os.path.join(torch.hub.get_dir(), "speechbrain")
         os.makedirs(checkpoint_dir, exist_ok=True)
-        tdnn = EncoderClassifier.from_hparams(
-            source="speechbrain/spkrec-ecapa-voxceleb",
-            freeze_params=False,
-            savedir=checkpoint_dir,
-        )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=FutureWarning)
+            tdnn = EncoderClassifier.from_hparams(
+                source="speechbrain/spkrec-ecapa-voxceleb",
+                freeze_params=False,
+                savedir=checkpoint_dir,
+            )
         self.backbone = tdnn.mods["embedding_model"]
         self.features = tdnn.mods["compute_features"]
         self.frontend = FFNN(

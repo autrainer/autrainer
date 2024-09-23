@@ -8,7 +8,8 @@ from .abstract_postprocess_script import (
     AbstractPostprocessArgs,
     AbstractPostprocessScript,
 )
-from .command_line_error import CommandLineError, catch_cli_errors
+from .command_line_error import CommandLineError
+from .utils import catch_cli_errors
 
 
 @dataclass
@@ -100,6 +101,9 @@ def postprocess(
 ) -> None:
     """Postprocess grid search results.
 
+    If called in a notebook, the function will not raise an error and print
+    the error message instead.
+
     Args:
         results_dir: Path to grid search results directory.
         experiment_id: ID of experiment to postprocess.
@@ -107,6 +111,9 @@ def postprocess(
         aggregate: Configurations to aggregate. One or more of:
             :const:`~autrainer.core.constants.VALID_AGGREGATIONS`.
             Defaults to None.
+
+    Raises:
+        CommandLineError: If the results directory or experiment ID dont exist.
     """
     script = PostprocessScript()
     script.parser = MockParser()

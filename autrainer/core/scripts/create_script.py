@@ -7,7 +7,8 @@ import autrainer
 from autrainer.core.constants import CONFIG_FOLDERS
 
 from .abstract_script import AbstractScript, MockParser
-from .command_line_error import CommandLineError, catch_cli_errors
+from .command_line_error import CommandLineError
+from .utils import catch_cli_errors
 
 
 @dataclass
@@ -144,6 +145,9 @@ def create(
 ) -> None:
     """Create a new project with default configurations.
 
+    If called in a notebook, the function will not raise an error and print
+    the error message instead.
+
     Args:
         directories: Configuration directories to create. One or more of:
             :const:`~autrainer.core.constants.CONFIG_FOLDERS`.
@@ -154,6 +158,15 @@ def create(
             Defaults to False.
         force: Force overwrite if the configuration directory already exists.
             Defaults to False.
+
+    Raises:
+        CommandLineError: If no configuration directories are specified and
+            neither the empty nor all flags are set.
+        CommandLineError: If the empty and all flags are set at the same time.
+        CommandLineError: If the empty or all flags are set in combination with
+            configuration directories.
+        CommandLineError: If the configuration directory already exists and the
+            force flag is not set.
     """
 
     script = CreateScript()
