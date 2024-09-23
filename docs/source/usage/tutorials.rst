@@ -539,6 +539,33 @@ To add the :class:`WandBLogger`, specify it in the :ref:`main configuration <mai
    ...
 
 
+.. _tut_callbacks:
+
+Custom Callbacks
+----------------
+
+To create a custom :ref:`callback <callbacks>`, implement a class that specifies any of the callback functions defined in
+:class:`~autrainer.training.CallbackSignature`.
+
+For example, the following callback tracks learning rate changes at the beginning of each iteration:
+
+.. literalinclude:: ../examples/tutorials/lr_tracker_callback.py
+   :language: python
+   :caption: lr_tracker_callback.py
+   :linenos:
+
+To add the :class:`LRTrackerCallback`, specify it in the :ref:`main configuration <main_configuration>` by adding a list of :attr:`callbacks`:
+
+.. code-block:: yaml
+   :caption: conf/config.yaml
+   :linenos:
+
+   ...
+   callbacks:
+     - lr_tracker_callback.LRTrackerCallback
+   ...
+
+
 .. _tut_plotting:
 
 Custom Plotting

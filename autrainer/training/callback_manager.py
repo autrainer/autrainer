@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 
 if TYPE_CHECKING:
@@ -128,7 +128,7 @@ class CallbackSignature:
     def cb_on_loader_exhausted(
         self, trainer: "ModularTaskTrainer", iteration: int
     ) -> None:
-        """Called when the data loader is exhausted.
+        """Called when the training data loader is exhausted.
 
         Args:
             trainer: Mutable reference to the trainer.
@@ -138,23 +138,34 @@ class CallbackSignature:
         """
 
     @abstractmethod
-    def cb_on_val_begin(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_val_begin(
+        self,
+        trainer: "ModularTaskTrainer",
+        iteration: int,
+    ) -> None:
         """Called at the beginning of the validation loop.
 
         Args:
             trainer: Mutable reference to the trainer.
+            iteration: Current iteration number. For epoch-based training,
+                this is the epoch number. For step-based training, this is the
+                step number.
         """
 
     @abstractmethod
     def cb_on_val_end(
         self,
         trainer: "ModularTaskTrainer",
+        iteration: int,
         val_results: dict,
     ) -> None:
         """Called at the end of the validation loop.
 
         Args:
             trainer: Mutable reference to the trainer.
+            iteration: Current iteration number. For epoch-based training,
+                this is the epoch number. For step-based training, this is the
+                step number.
             val_results: Dictionary of validation results for the entire
                 validation loop of the current iteration.
         """
@@ -240,7 +251,7 @@ class CallbackManager:
     def __init__(self):
         self.callbacks = {cb: [] for cb in CALLBACK_FUNCTIONS}
 
-    def register(self, obj: object = None) -> None:
+    def register(self, obj: Optional[object] = None) -> None:
         if not obj:
             return
         for callback_name in CALLBACK_FUNCTIONS:
@@ -249,7 +260,7 @@ class CallbackManager:
                 continue
             self.callbacks[callback_name].append(obj_cb_function)
 
-    def register_multiple(self, *objs: object) -> None:
+    def register_multiple(self, objs: List[Optional[object]]) -> None:
         for obj in objs:
             self.register(obj)
 

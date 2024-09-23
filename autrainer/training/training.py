@@ -34,7 +34,6 @@ class ModularTaskTrainer:
         output_directory: str,
         experiment_id: str = None,
         run_name: str = None,
-        callbacks: List[object] = None,
     ) -> None:
         """Modular Task Trainer.
 
@@ -46,8 +45,6 @@ class ModularTaskTrainer:
                 directory. Defaults to None.
             run_name: Run name for the run. If None, the name is automatically
                 set based on the output directory. Defaults to None.
-            callbacks: List of additional callbacks to be used during training.
-                Defaults to None.
         """
         self._cfg = cfg
         self._cfg.criterion = self._cfg.dataset.pop("criterion")
@@ -59,7 +56,6 @@ class ModularTaskTrainer:
         set_seed(training_seed)
         save_hardware_info(output_directory)
         self.output_directory = Path(output_directory)
-        self.callbacks = callbacks or []
         self.initial_iteration = 1
 
         # ? Save current requirements.txt
@@ -185,7 +181,6 @@ class ModularTaskTrainer:
             )
 
         # ? Create Dataloaders
-
         self.train_loader = self.data.train_loader
         self.dev_loader = self.data.dev_loader
         self.test_loader = self.data.test_loader
@@ -258,17 +253,29 @@ class ModularTaskTrainer:
                 )
             )
 
-        # ? Create Callback Manager
+        # ? Create Callbacks and Callback Manager
+        callbacks = self.cfg.get("callbacks", [])
+        self.callbacks = []
+        for callback in callbacks:
+            self.callbacks.append(
+                autrainer.instantiate_shorthand(
+                    config=callback,
+                    instance_of=object,
+                )
+            )
+
         self.callback_manager = CallbackManager()
         self.callback_manager.register_multiple(
-            self.data,
-            self.model,
-            self.optimizer,
-            self.scheduler,
-            self.criterion,
-            self.continue_training,
-            *self.loggers,
-            *self.callbacks,
+            [
+                self.data,
+                self.model,
+                self.optimizer,
+                self.scheduler,
+                self.criterion,
+                self.continue_training,
+                *self.loggers,
+                *self.callbacks,
+            ]
         )
 
         # ? Create Plot Metrics
@@ -440,6 +447,7 @@ class ModularTaskTrainer:
                 self.callback_manager.callback(
                     position="cb_on_val_end",
                     trainer=self,
+                    iteration=epoch,
                     val_results=self.metrics.loc[epoch].to_dict(),
                 )
                 self.callback_manager.callback(
@@ -528,6 +536,7 @@ class ModularTaskTrainer:
                 self.callback_manager.callback(
                     position="cb_on_val_end",
                     trainer=self,
+                    iteration=step,
                     val_results=self.metrics.loc[step].to_dict(),
                 )
                 self.callback_manager.callback(
@@ -586,8 +595,11 @@ class ModularTaskTrainer:
             Dictionary containing the evaluation results.
         """
         cb_type = "val" if dev_evaluation else "test"
+        kwargs = {"iteration": iteration} if dev_evaluation else {}
         self.callback_manager.callback(
-            position=f"cb_on_{cb_type}_begin", trainer=self
+            position=f"cb_on_{cb_type}_begin",
+            trainer=self,
+            **kwargs,
         )
         self.model.eval()
         results = self._evaluate(

@@ -180,8 +180,6 @@ class Bookkeeping:
                 f"save_state of type {type(obj)} is not supported."
             )
 
-        if isinstance(obj, torch.nn.Module):
-            obj = obj.cpu()
         os.makedirs(os.path.join(self.output_directory, path), exist_ok=True)
         torch.save(obj.state_dict(), p)
 
