@@ -54,6 +54,9 @@ The :attr:`cfg` of the trainer is the composed main configuration file (e.g. :fi
 .. autoclass:: autrainer.training.ModularTaskTrainer
    :members:
 
+
+.. _callbacks:
+
 Callbacks
 ---------
 
@@ -71,6 +74,11 @@ For more control over the training process, custom callbacks can be defined and 
 callback classes using :ref:`shorthand syntax <shorthand_syntax>` in the :attr:`callbacks` attribute of the
 :ref:`main configuration <main_configuration>` file.
 Each callback class can specify any number of callback functions following the signatures defined in :class:`~autrainer.training.CallbackSignature`.
+
+.. tip::
+
+   To create custom callbacks, refer to the :ref:`custom callbacks tutorial <tut_callbacks>`.
+
 
 .. autoclass:: autrainer.training.CallbackSignature
    :members:
