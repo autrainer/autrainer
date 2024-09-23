@@ -128,7 +128,7 @@ class CallbackSignature:
     def cb_on_loader_exhausted(
         self, trainer: "ModularTaskTrainer", iteration: int
     ) -> None:
-        """Called when the data loader is exhausted.
+        """Called when the training data loader is exhausted.
 
         Args:
             trainer: Mutable reference to the trainer.
