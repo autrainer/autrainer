@@ -185,7 +185,7 @@ class ModularTaskTrainer:
             instance_of=torch.optim.lr_scheduler.LRScheduler,
             optimizer=self.optimizer,
         )
-        if scheduler_checkpoint:
+        if self.scheduler is not None and scheduler_checkpoint:
             self.scheduler.load_state_dict(
                 torch.load(
                     scheduler_checkpoint,
@@ -195,7 +195,6 @@ class ModularTaskTrainer:
             )
 
         # ? Create Dataloaders
-
         self.train_loader = self.data.train_loader
         self.dev_loader = self.data.dev_loader
         self.test_loader = self.data.test_loader
