@@ -25,17 +25,19 @@ To avoid race conditions when using :ref:`hydra_launcher_plugins` that may run m
 
 To optionally use model, optimizer, or scheduler checkpoints, the following attributes can be set in any model configuration file:
 
-* :attr:`model_checkpoint`: The path to the model checkpoint file.
-  If the output dimensions between the checkpoint and the model configuration do not match,
-  the checkpoint will be loaded without the last linear layer.
-* :attr:`optimizer_checkpoint`: The path to the optimizer checkpoint file.
-  If the output dimensions between the checkpoint and the model configuration do not match,
-  the checkpoint will be loaded without the last linear layer, similar to the model checkpoint.
-  If no model checkpoint is provided, :attr:`skip_last_layer` is automatically set to ``True``.
-* :attr:`scheduler_checkpoint`: The path to the scheduler checkpoint file.
-* :attr:`skip_last_layer`: Whether to explicitly skip loading the checkpoint of the last linear layer for both the model and optimizer.
-  This is useful when the number of output dimensions has not changed, but the last linear layer should be reinitialized.
-  
+* :attr:`model_checkpoint`: The path to the model checkpoint file. Defaults to None.
+* :attr:`optimizer_checkpoint`: The path to the optimizer checkpoint file. Defaults to None.
+* :attr:`scheduler_checkpoint`: The path to the scheduler checkpoint file. Defaults to None.
+* :attr:`skip_last_layer`: Whether to skip loading the state of the last linear or convolutional layer.
+  When set to True, the state of the last layer (if present) is omitted from both the model and optimizer,
+  allowing for training on a different target dataset with varying output dimensions. 
+  Defaults to True.
+
+.. note::
+
+   Loading a checkpoint assumes that the model architecture is the same as the one used to create the checkpoint and
+   that the last layer of the model is specified as the final :class:`~torch.nn.Linear` or :class:`~torch.nn.modules.conv._ConvNd` module.
+   If the last layer is not the final layer in the module order, it may not be correctly identified for skipping.
 
 Abstract Model
 --------------
