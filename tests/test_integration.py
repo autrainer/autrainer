@@ -103,7 +103,8 @@ class TestCheckpointsIntegration(BaseIndividualTempDir):
 
     def test_checkpoints(self) -> None:
         autrainer.cli.create(empty=True)
-        autrainer.cli.train({"scheduler": "StepLR"})
+        with patch("sys.argv", [""]):
+            autrainer.cli.train({"scheduler": "StepLR"})
         run_dirs = [
             f
             for f in os.listdir("results/default/training")
@@ -126,13 +127,14 @@ class TestCheckpointsIntegration(BaseIndividualTempDir):
         dataset_cfg["num_targets"] = 7
         OmegaConf.save(dataset_cfg, "conf/dataset/ToyTabular-C-7.yaml")
 
-        autrainer.cli.train(
-            {
-                "dataset": "ToyTabular-C-7",
-                "model": "ToyFFNN-CKPT",
-                "scheduler": "StepLR",
-            }
-        )
+        with patch("sys.argv", [""]):
+            autrainer.cli.train(
+                {
+                    "dataset": "ToyTabular-C-7",
+                    "model": "ToyFFNN-CKPT",
+                    "scheduler": "StepLR",
+                }
+            )
         run_dirs = [
             f
             for f in os.listdir("results/default/training")
