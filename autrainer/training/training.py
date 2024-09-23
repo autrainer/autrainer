@@ -261,14 +261,16 @@ class ModularTaskTrainer:
         # ? Create Callback Manager
         self.callback_manager = CallbackManager()
         self.callback_manager.register_multiple(
-            self.data,
-            self.model,
-            self.optimizer,
-            self.scheduler,
-            self.criterion,
-            self.continue_training,
-            *self.loggers,
-            *self.callbacks,
+            [
+                self.data,
+                self.model,
+                self.optimizer,
+                self.scheduler,
+                self.criterion,
+                self.continue_training,
+                *self.loggers,
+                *self.callbacks,
+            ]
         )
 
         # ? Create Plot Metrics

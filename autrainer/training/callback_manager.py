@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 
 if TYPE_CHECKING:
@@ -240,7 +240,7 @@ class CallbackManager:
     def __init__(self):
         self.callbacks = {cb: [] for cb in CALLBACK_FUNCTIONS}
 
-    def register(self, obj: object = None) -> None:
+    def register(self, obj: Optional[object] = None) -> None:
         if not obj:
             return
         for callback_name in CALLBACK_FUNCTIONS:
@@ -249,7 +249,7 @@ class CallbackManager:
                 continue
             self.callbacks[callback_name].append(obj_cb_function)
 
-    def register_multiple(self, *objs: object) -> None:
+    def register_multiple(self, objs: List[Optional[object]]) -> None:
         for obj in objs:
             self.register(obj)
 
