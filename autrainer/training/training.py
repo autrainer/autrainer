@@ -442,6 +442,7 @@ class ModularTaskTrainer:
                 self.callback_manager.callback(
                     position="cb_on_val_end",
                     trainer=self,
+                    iteration=epoch,
                     val_results=self.metrics.loc[epoch].to_dict(),
                 )
                 self.callback_manager.callback(
@@ -530,6 +531,7 @@ class ModularTaskTrainer:
                 self.callback_manager.callback(
                     position="cb_on_val_end",
                     trainer=self,
+                    iteration=step,
                     val_results=self.metrics.loc[step].to_dict(),
                 )
                 self.callback_manager.callback(
@@ -588,8 +590,11 @@ class ModularTaskTrainer:
             Dictionary containing the evaluation results.
         """
         cb_type = "val" if dev_evaluation else "test"
+        kwargs = {"iteration": iteration} if dev_evaluation else {}
         self.callback_manager.callback(
-            position=f"cb_on_{cb_type}_begin", trainer=self
+            position=f"cb_on_{cb_type}_begin",
+            trainer=self,
+            **kwargs,
         )
         self.model.eval()
         results = self._evaluate(
