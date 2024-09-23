@@ -134,9 +134,9 @@ class ModularTaskTrainer:
 
         # ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints
         model_checkpoint = model_config.pop("model_checkpoint", None)
-        skip_last_layer = model_config.pop("skip_last_layer", False)
         optimizer_checkpoint = model_config.pop("optimizer_checkpoint", None)
         scheduler_checkpoint = model_config.pop("scheduler_checkpoint", None)
+        skip_last_layer = model_config.pop("skip_last_layer", True)
 
         # ? Load Model
         self.output_dim = self.data.output_dim
@@ -151,7 +151,7 @@ class ModularTaskTrainer:
                 map_location="cpu",
                 weights_only=True,
             )
-            skip_last_layer = load_pretrained_model_state(
+            load_pretrained_model_state(
                 self.model,
                 state_dict,
                 skip_last_layer,
@@ -176,7 +176,7 @@ class ModularTaskTrainer:
             load_pretrained_optim_state(
                 self.optimizer,
                 state_dict,
-                skip_last_layer or not model_checkpoint,
+                skip_last_layer,
             )
 
         # ? Load Scheduler

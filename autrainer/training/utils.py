@@ -2,6 +2,7 @@ import os
 from typing import Dict, Optional
 
 import torch
+import torch.nn.common_types
 
 
 def format_results(
@@ -23,61 +24,49 @@ def format_results(
 def load_pretrained_model_state(
     model: torch.nn.Module,
     state_dict: Dict[str, torch.Tensor],
-    skip_last_layer: bool = False,
-) -> bool:
-    """Load a pretrained model state dict for a model and skip the last linear
-    layer if the output dimension of the model differs or skip_last_layer is
-    True.
+    skip_last_layer: bool = True,
+) -> None:
+    """Load a pretrained model state dict for a model.
 
     Args:
         model: Model to load the state dict into.
         state_dict: State dict to load into the model.
-        skip_last_layer: Whether to always skip the last linear layer when
-            loading the state dict, irrespective of the shape.
-            Defaults to False.
-
-    Returns:
-        True if the last linear layer was skipped, otherwise False.
+        skip_last_layer: Whether to skip loading the state dict of the
+            last linear or convolutional layer. Defaults to True.
+    Raises:
+        RuntimeError: If the shapes of the model and state dict do not match.
     """
-    last_linear_layer = None
+    last_layer = None
+    strict = True
     for name, layer in model.named_modules():
-        if isinstance(layer, torch.nn.Linear):
-            last_linear_layer = name
+        if isinstance(layer, (torch.nn.Linear, torch.nn.modules.conv._ConvNd)):
+            last_layer = name
 
-    if last_linear_layer is None:
-        raise ValueError("No linear layers found in the model.")
+    if last_layer is not None and skip_last_layer:
+        state_dict.pop(last_layer + ".weight", None)
+        state_dict.pop(last_layer + ".bias", None)
+        strict = False
 
-    module_state_dict: Dict[str, torch.Tensor] = model.state_dict()
-    module_shape = module_state_dict[last_linear_layer + ".weight"].shape
-    state_dict_shape = state_dict[last_linear_layer + ".weight"].shape
-
-    if module_shape != state_dict_shape or skip_last_layer:
-        state_dict.pop(last_linear_layer + ".weight", None)
-        state_dict.pop(last_linear_layer + ".bias", None)
-        skip_last_layer = True
-
-    model.load_state_dict(state_dict, strict=False)
-    return skip_last_layer
+    model.load_state_dict(state_dict, strict=strict)
 
 
 def load_pretrained_optim_state(
     optim: torch.optim.Optimizer,
     state_dict: Dict[str, torch.Tensor],
-    skip_last_layer: bool = False,
+    skip_last_layer: bool = True,
 ) -> None:
-    """Load a pretrained optimizer state dict for an optimizer and skip the
-    last linear layer when loading the state dict.
+    """Load a pretrained optimizer state dict for an optimizer.
 
     Args:
         optim: Optimizer to load the state dict into.
         state_dict: State dict to load into the optimizer.
-        skip_last_layer: Whether to skip the last linear layer when loading
-            the state dict. Defaults to False.
+        skip_last_layer: Whether to skip loading the state dict of the
+            last layer. Defaults to True.
     """
     if skip_last_layer:
-        state_len = len(state_dict["state"])
-        state_dict["state"].pop(state_len - 1, None)  # bias
-        state_dict["state"].pop(state_len - 2, None)  # weight
+        keys = list(state_dict["state"].keys())
+        state_dict["state"].pop(keys[-1], None)  # bias
+        state_dict["state"].pop(keys[-2], None)  # weight
 
     optim.load_state_dict(state_dict)
 
