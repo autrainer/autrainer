@@ -24,6 +24,7 @@ from autrainer.augmentations import (
     TimeShift,
     TimeWarp,
     TorchaudioAugmentation,
+    TorchAudiomentationsAugmentation,
     TorchvisionAugmentation,
 )
 from autrainer.augmentations.image_augmentations import BaseMixUpCutMix
@@ -40,7 +41,7 @@ AUGMENTATION_FIXTURES = [
     ),
     (
         AudiomentationsAugmentation,
-        {"name": "AddColoredNoise", "sample_rate": 16000, "min_f_decay": -1},
+        {"name": "PitchShift", "sample_rate": 16000},
         (1, 16000),
         (1, 16000),
     ),
@@ -80,6 +81,12 @@ AUGMENTATION_FIXTURES = [
         {"name": "FrequencyMasking", "freq_mask_param": 10},
         (1, 101, 64),
         (1, 101, 64),
+    ),
+    (
+        TorchAudiomentationsAugmentation,
+        {"name": "AddColoredNoise", "sample_rate": 16000, "min_f_decay": -1},
+        (1, 16000),
+        (1, 16000),
     ),
     (
         TorchvisionAugmentation,

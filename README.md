@@ -36,6 +36,7 @@ The following optional dependencies can be installed to enable additional featur
 - `tensorboard` for [TensorBoard](https://www.tensorflow.org/tensorboard) logging.
 - `opensmile` for audio feature extraction with [openSMILE](https://audeering.com/opensmile/).
 - `albumentations` for image augmentations with [Albumentations](https://albumentations.ai/).
+- `audiomentations` for audio augmentations with [audiomentations](https://github.com/iver56/audiomentations).
 - `torch-audiomentations` for audio augmentations with [torch-audiomentations](https://github.com/asteroid-team/torch-audiomentations).
 
 To install _autrainer_ with all optional dependencies, use the following command:

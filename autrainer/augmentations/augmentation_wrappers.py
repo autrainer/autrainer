@@ -15,11 +15,18 @@ except ImportError:  # pragma: no cover
     ALBUMENTATIONS_AVAILABLE = False  # pragma: no cover
 
 try:
-    import torch_audiomentations  # noqa: F401
+    import audiomentations  # noqa: F401
 
     AUDIOMENTATIONS_AVAILABLE = True
 except ImportError:  # pragma: no cover
     AUDIOMENTATIONS_AVAILABLE = False  # pragma: no cover
+
+try:
+    import torch_audiomentations  # noqa: F401
+
+    TORCHAUDIOMENTATIONS_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    TORCHAUDIOMENTATIONS_AVAILABLE = False  # pragma: no cover
 
 
 class AugmentationWrapper(AbstractAugmentation):
@@ -182,6 +189,10 @@ class AlbumentationsAugmentation(AugmentationWrapper):
         """Wrapper around albumentations transforms, which are specified by
         their class name and keyword arguments.
 
+        Albumentations operates on numpy arrays, so the input tensor is
+        converted to a numpy array before applying the augmentation, and the
+        output numpy array is converted back to a tensor.
+
         Important: While the probability of applying the augmentation is
         deterministic if the generator_seed is set, the actual augmentation
         applied is not deterministic. This is because the internal random
@@ -228,6 +239,70 @@ class AudiomentationsAugmentation(AugmentationWrapper):
     def __init__(
         self,
         name: str,
+        sample_rate: Optional[int] = None,
+        order: int = 0,
+        p: float = 1.0,
+        generator_seed: Optional[int] = None,
+        **kwargs,
+    ) -> None:
+        """Wrapper around audiomentations transforms, which are specified
+        by their class name and keyword arguments.
+
+        Audiomentations operates on numpy arrays, so the input tensor is
+        converted to a numpy array before applying the augmentation, and the
+        output numpy array is converted back to a tensor.
+
+        Important: While the probability of applying the augmentation is
+        deterministic if the generator_seed is set, the actual augmentation
+        applied is not deterministic. This is because the internal random
+        number generator of the augmentation is not seeded.
+
+        Args:
+            name: Name of the torchaudio augmentation. Must be a valid
+                audiomentations transform class name.
+            sample_rate: The sample rate of the audio data. Should be specified
+                for most audio augmentations. If None, the sample rate is not
+                passed to the augmentation. Defaults to None.
+            order: The order of the augmentation in the transformation pipeline.
+                Defaults to 0.
+            p: The probability of applying the augmentation. Defaults to 1.0.
+            generator_seed: The initial seed for the internal random number
+                generator drawing the probability. If None, the generator is
+                not seeded. Defaults to None.
+            kwargs: Keyword arguments passed to the audiomentations
+                augmentation.
+        """
+        if not AUDIOMENTATIONS_AVAILABLE:
+            raise ImportError(
+                "Audiomentations is not installed. Install the required "
+                "extras with 'pip install autrainer[audiomentations]'."
+            )  # pragma: no cover
+
+        self.name = name
+        self.sample_rate = sample_rate
+        self._aug_kwargs = {}
+        if self.sample_rate is not None:
+            self._aug_kwargs["sample_rate"] = self.sample_rate
+        super().__init__(
+            augmentation_import_path=f"audiomentations.{self.name}",
+            order=order,
+            p=p,
+            generator_seed=generator_seed,
+            pass_index=False,
+            probability_attr="p",
+            **kwargs,
+        )
+
+    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+        device = x.device
+        x = self.augmentation(x.cpu().numpy(), **self._aug_kwargs)
+        return torch.from_numpy(x).to(device)
+
+
+class TorchAudiomentationsAugmentation(AugmentationWrapper):
+    def __init__(
+        self,
+        name: str,
         sample_rate: int,
         order: int = 0,
         p: float = 1.0,
@@ -255,10 +330,10 @@ class AudiomentationsAugmentation(AugmentationWrapper):
             kwargs: Keyword arguments passed to the torch_audiomentations
                 augmentation.
         """
-        if not AUDIOMENTATIONS_AVAILABLE:
+        if not TORCHAUDIOMENTATIONS_AVAILABLE:
             raise ImportError(
-                "Audiomentations is not installed. Install the required extras "
-                "with 'pip install autrainer[audiomentations]'."
+                "torch-audiomentations is not installed. Install the required "
+                "extras with 'pip install autrainer[torch-audiomentations]'."
             )  # pragma: no cover
 
         self.name = name

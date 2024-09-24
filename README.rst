@@ -40,6 +40,7 @@ The following optional dependencies can be installed to enable additional featur
 * :attr:`tensorboard` for `TensorBoard <https://www.tensorflow.org/tensorboard>`_ logging.
 * :attr:`opensmile` for audio feature extraction with `openSMILE <https://audeering.com/opensmile/>`_.
 * :attr:`albumentations` for image augmentations with `Albumentations <https://albumentations.ai/>`_.
+* :attr:`audiomentations` for audio augmentations with `audiomentations <https://github.com/iver56/audiomentations>`_.
 * :attr:`torch-audiomentations` for audio augmentations with `torch-audiomentations <https://github.com/asteroid-team/torch-audiomentations>`_.
 
 .. code-block:: pip
@@ -49,6 +50,7 @@ The following optional dependencies can be installed to enable additional featur
    pip install autrainer[tensorboard]
    pip install autrainer[opensmile]
    pip install autrainer[albumentations]
+   pip install autrainer[audiomentations]
    pip install autrainer[torch-audiomentations]
 
 To install `autrainer` with all optional dependencies, use the following command:

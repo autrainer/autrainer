@@ -6,6 +6,7 @@ from .augmentation_wrappers import (
     AudiomentationsAugmentation,
     AugmentationWrapper,
     TorchaudioAugmentation,
+    TorchAudiomentationsAugmentation,
     TorchvisionAugmentation,
 )
 from .choice_augmentation import Choice
@@ -40,5 +41,6 @@ __all__ = [
     "TimeShift",
     "TimeWarp",
     "TorchaudioAugmentation",
+    "TorchAudiomentationsAugmentation",
     "TorchvisionAugmentation",
 ]
