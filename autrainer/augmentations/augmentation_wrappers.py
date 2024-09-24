@@ -17,9 +17,9 @@ except ImportError:  # pragma: no cover
 try:
     import torch_audiomentations  # noqa: F401
 
-    AUDIOMENTATIONS_AVAILABLE = True
+    TORCHAUDIOMENTATIONS_AVAILABLE = True
 except ImportError:  # pragma: no cover
-    AUDIOMENTATIONS_AVAILABLE = False  # pragma: no cover
+    TORCHAUDIOMENTATIONS_AVAILABLE = False  # pragma: no cover
 
 
 class AugmentationWrapper(AbstractAugmentation):
@@ -224,7 +224,7 @@ class AlbumentationsAugmentation(AugmentationWrapper):
         return x
 
 
-class AudiomentationsAugmentation(AugmentationWrapper):
+class TorchAudiomentationsAugmentation(AugmentationWrapper):
     def __init__(
         self,
         name: str,
@@ -255,10 +255,10 @@ class AudiomentationsAugmentation(AugmentationWrapper):
             kwargs: Keyword arguments passed to the torch_audiomentations
                 augmentation.
         """
-        if not AUDIOMENTATIONS_AVAILABLE:
+        if not TORCHAUDIOMENTATIONS_AVAILABLE:
             raise ImportError(
-                "Audiomentations is not installed. Install the required extras "
-                "with 'pip install autrainer[audiomentations]'."
+                "torch-audiomentations is not installed. Install the required "
+                "extras with 'pip install autrainer[torch-audiomentations]'."
             )  # pragma: no cover
 
         self.name = name

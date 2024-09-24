@@ -3,9 +3,9 @@ from .augmentation_manager import AugmentationManager
 from .augmentation_pipeline import AugmentationPipeline
 from .augmentation_wrappers import (
     AlbumentationsAugmentation,
-    AudiomentationsAugmentation,
     AugmentationWrapper,
     TorchaudioAugmentation,
+    TorchAudiomentationsAugmentation,
     TorchvisionAugmentation,
 )
 from .choice_augmentation import Choice
@@ -24,7 +24,7 @@ from .spectrogram_augmentations import (
 __all__ = [
     "AbstractAugmentation",
     "AlbumentationsAugmentation",
-    "AudiomentationsAugmentation",
+    "TorchAudiomentationsAugmentation",
     "AugmentationManager",
     "AugmentationPipeline",
     "AugmentationWrapper",

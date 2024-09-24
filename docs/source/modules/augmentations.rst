@@ -93,7 +93,7 @@ Both `torch-audiomentations` and `albumentations` augmentations are optional and
          :configs: AugMix GaussianBlur RandAugment RandGrayscale RandomRotation
          :headline:
 
-.. autoclass:: autrainer.augmentations.AudiomentationsAugmentation
+.. autoclass:: autrainer.augmentations.TorchAudiomentationsAugmentation
 
    .. dropdown:: Default Configurations
 

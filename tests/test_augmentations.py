@@ -10,7 +10,6 @@ import torch
 from autrainer.augmentations import (
     AbstractAugmentation,
     AlbumentationsAugmentation,
-    AudiomentationsAugmentation,
     AugmentationManager,
     Choice,
     CutMix,
@@ -24,6 +23,7 @@ from autrainer.augmentations import (
     TimeShift,
     TimeWarp,
     TorchaudioAugmentation,
+    TorchAudiomentationsAugmentation,
     TorchvisionAugmentation,
 )
 from autrainer.augmentations.image_augmentations import BaseMixUpCutMix
@@ -37,12 +37,6 @@ AUGMENTATION_FIXTURES = [
         {"name": "Posterize"},
         (3, 32, 32),
         (3, 32, 32),
-    ),
-    (
-        AudiomentationsAugmentation,
-        {"name": "AddColoredNoise", "sample_rate": 16000, "min_f_decay": -1},
-        (1, 16000),
-        (1, 16000),
     ),
     (
         Choice,
@@ -80,6 +74,12 @@ AUGMENTATION_FIXTURES = [
         {"name": "FrequencyMasking", "freq_mask_param": 10},
         (1, 101, 64),
         (1, 101, 64),
+    ),
+    (
+        TorchAudiomentationsAugmentation,
+        {"name": "AddColoredNoise", "sample_rate": 16000, "min_f_decay": -1},
+        (1, 16000),
+        (1, 16000),
     ),
     (
         TorchvisionAugmentation,

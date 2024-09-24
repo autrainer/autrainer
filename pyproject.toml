@@ -69,7 +69,7 @@ transformers = "^4.34.0"
 
 [tool.poetry.extras]
 albumentations = ["albumentations"]
-audiomentations = ["torch-audiomentations"]
+torch-audiomentations = ["torch-audiomentations"]
 latex = ["latex"]
 mlflow = ["mlflow"]
 opensmile = ["opensmile"]
