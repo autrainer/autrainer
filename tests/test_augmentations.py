@@ -10,6 +10,7 @@ import torch
 from autrainer.augmentations import (
     AbstractAugmentation,
     AlbumentationsAugmentation,
+    AudiomentationsAugmentation,
     AugmentationManager,
     Choice,
     CutMix,
@@ -37,6 +38,12 @@ AUGMENTATION_FIXTURES = [
         {"name": "Posterize"},
         (3, 32, 32),
         (3, 32, 32),
+    ),
+    (
+        AudiomentationsAugmentation,
+        {"name": "PitchShift", "sample_rate": 16000},
+        (1, 16000),
+        (1, 16000),
     ),
     (
         Choice,

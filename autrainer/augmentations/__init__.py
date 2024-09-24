@@ -3,6 +3,7 @@ from .augmentation_manager import AugmentationManager
 from .augmentation_pipeline import AugmentationPipeline
 from .augmentation_wrappers import (
     AlbumentationsAugmentation,
+    AudiomentationsAugmentation,
     AugmentationWrapper,
     TorchaudioAugmentation,
     TorchAudiomentationsAugmentation,
@@ -24,7 +25,7 @@ from .spectrogram_augmentations import (
 __all__ = [
     "AbstractAugmentation",
     "AlbumentationsAugmentation",
-    "TorchAudiomentationsAugmentation",
+    "AudiomentationsAugmentation",
     "AugmentationManager",
     "AugmentationPipeline",
     "AugmentationWrapper",
@@ -40,5 +41,6 @@ __all__ = [
     "TimeShift",
     "TimeWarp",
     "TorchaudioAugmentation",
+    "TorchAudiomentationsAugmentation",
     "TorchvisionAugmentation",
 ]
