@@ -189,6 +189,10 @@ class AlbumentationsAugmentation(AugmentationWrapper):
         """Wrapper around albumentations transforms, which are specified by
         their class name and keyword arguments.
 
+        Albumentations operates on numpy arrays, so the input tensor is
+        converted to a numpy array before applying the augmentation, and the
+        output numpy array is converted back to a tensor.
+
         Important: While the probability of applying the augmentation is
         deterministic if the generator_seed is set, the actual augmentation
         applied is not deterministic. This is because the internal random
@@ -243,6 +247,10 @@ class AudiomentationsAugmentation(AugmentationWrapper):
     ) -> None:
         """Wrapper around audiomentations transforms, which are specified
         by their class name and keyword arguments.
+
+        Audiomentations operates on numpy arrays, so the input tensor is
+        converted to a numpy array before applying the augmentation, and the
+        output numpy array is converted back to a tensor.
 
         Important: While the probability of applying the augmentation is
         deterministic if the generator_seed is set, the actual augmentation
