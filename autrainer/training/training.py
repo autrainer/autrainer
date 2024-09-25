@@ -15,6 +15,7 @@ from autrainer.core.utils import (
     Bookkeeping,
     Timer,
     save_hardware_info,
+    set_device,
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
@@ -54,7 +55,8 @@ class ModularTaskTrainer:
         else:
             training_seed = dataset_seed = self.cfg.seed
         set_seed(training_seed)
-        save_hardware_info(output_directory)
+        self.DEVICE = set_device(self.cfg.device)
+        save_hardware_info(output_directory, device=self.DEVICE)
         self.output_directory = Path(output_directory)
         self.initial_iteration = 1
 
@@ -110,9 +112,6 @@ class ModularTaskTrainer:
         self.task = self.data.task
 
         # ? Misc Training Parameters
-        self.DEVICE = torch.device(
-            "cuda:0" if torch.cuda.is_available() else "cpu"
-        )
         self.disable_progress_bar = not self.cfg.get("progress_bar", False)
 
         self.criterion = autrainer.instantiate_shorthand(

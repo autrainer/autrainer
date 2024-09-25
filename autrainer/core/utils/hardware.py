@@ -1,3 +1,4 @@
+import logging
 import os
 import platform
 from typing import Optional
@@ -7,8 +8,11 @@ import psutil
 import torch
 
 
-def get_gpu_info() -> Optional[dict]:
+def get_gpu_info(device: torch.device) -> Optional[dict]:
     """Get GPU information of the current system.
+
+    Args:
+        device: Device to get the GPU information from.
 
     Returns:
         Dictionary containing GPU information. None if no GPU is available.
@@ -16,7 +20,7 @@ def get_gpu_info() -> Optional[dict]:
     if not torch.cuda.is_available():
         return None
 
-    gpu = torch.cuda.get_device_properties(0)
+    gpu = torch.cuda.get_device_properties(device)
     return {
         "name": gpu.name,
         "memory_gb": round(gpu.total_memory / (1024**3)),
@@ -53,26 +57,51 @@ def get_system_info() -> dict:
     return s
 
 
-def get_hardware_info() -> dict:
+def get_hardware_info(device: torch.device) -> dict:
     """Get hardware information of the current system.
+
+    Args:
+        device: Device to get the hardware information from.
 
     Returns:
         Dictionary containing system and GPU information.
     """
     return {
         "system": get_system_info(),
-        "gpu": get_gpu_info(),
+        "gpu": get_gpu_info(device) if device.type == "cuda" else None,
     }
 
 
-def save_hardware_info(output_directory: str) -> None:
+def save_hardware_info(output_directory: str, device: torch.device) -> None:
     """Save hardware information to a hardware.yaml file.
 
     Args:
         output_directory: Directory to save the hardware information to.
+        device: Device to get the hardware information from.
     """
     os.makedirs(output_directory, exist_ok=True)
     OmegaConf.save(
-        get_hardware_info(),
+        get_hardware_info(device),
         os.path.join(output_directory, "hardware.yaml"),
     )
+
+
+def set_device(device_name: str) -> torch.device:
+    """Set the device to use. If the specified CUDA device is unavailable,
+    automatically fall back to CPU.
+
+    Args:
+        device_name: Name of the device to use.
+
+    Returns:
+        Specified device if available, otherwise CPU.
+    """
+    try:
+        device = torch.device(device_name)
+        torch.tensor(1).to(device)
+    except RuntimeError:
+        device = torch.device("cpu")
+        logging.warning(
+            f"Device '{device_name}' is not available. Falling back to CPU.",
+        )
+    return device

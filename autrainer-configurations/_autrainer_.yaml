@@ -12,6 +12,7 @@ training_type: epoch
 eval_frequency: 1
 save_frequency: ${eval_frequency}
 inference_batch_size: ${batch_size}
+device: cuda:0
 
 progress_bar: true
 continue_training: true

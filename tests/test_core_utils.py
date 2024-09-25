@@ -14,6 +14,7 @@ from autrainer.core.utils import (
     Timer,
     get_hardware_info,
     save_hardware_info,
+    set_device,
     set_seed,
     silence,
 )
@@ -217,16 +218,38 @@ class TestTimer(BaseIndividualTempDir):
             timer.stop()
 
 
-class TestHardwareInfo(BaseIndividualTempDir):
+class TestHardware(BaseIndividualTempDir):
+    @classmethod
+    def setup_class(cls) -> None:
+        cls.device = torch.device(
+            "cuda:0" if torch.cuda.is_available() else "cpu"
+        )
+
     def test_get_hardware_info(self) -> dict:
-        hardware_info = get_hardware_info()
+        hardware_info = get_hardware_info(self.device)
         assert hardware_info, "Should get hardware info."
 
     def test_save_hardware_info(self) -> None:
-        save_hardware_info(self.temp_dir)
+        save_hardware_info(self.temp_dir, device=self.device)
         assert os.path.isfile(
             os.path.join(self.temp_dir, "hardware.yaml")
         ), "Should save hardware info."
+
+    def test_set_device(self) -> torch.device:
+        if torch.cuda.is_available():
+            device = set_device("cuda:0")
+            assert device.type == "cuda", "Should set CUDA device."
+        device = set_device("cpu")
+        assert device.type == "cpu", "Should set CPU device."
+
+    def test_fallback_device(self, caplog: pytest.CaptureFixture) -> None:
+        with caplog.at_level(logging.WARNING):
+            device = set_device("invalid")
+        assert device.type == "cpu", "Should fall back to CPU."
+        assert (
+            "Device 'invalid' is not available. Falling back to CPU."
+            in caplog.text
+        ), "Should log warning."
 
 
 class TestSetSeed:

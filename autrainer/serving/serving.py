@@ -11,6 +11,7 @@ import torch
 import yaml
 
 import autrainer
+from autrainer.core.utils import set_device
 from autrainer.datasets.utils import (
     AbstractFileHandler,
     AbstractTargetTransform,
@@ -53,7 +54,7 @@ class Inference:
         """
         self._model_path = model_path
         self._checkpoint = checkpoint
-        self._device = torch.device(device)
+        self._device = set_device(device)
         self._preprocess_cfg = preprocess_cfg
         self._window_length = window_length
         self._stride_length = stride_length
