@@ -19,14 +19,11 @@ class OutputsTracker:
         criterion: DictConfig,
         bookkeeping: Bookkeeping = None,
     ) -> None:
-        self._device = torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu"
-        )
         self._export = export
         self._prefix = prefix
         self._data = data
         self._bookkeeping = bookkeeping
-        self._tracker_criterion = copy.deepcopy(criterion).to(self._device)
+        self._tracker_criterion = copy.deepcopy(criterion).cpu()
         self._tracker_criterion.reduction = "none"
         self.reset()
 
@@ -46,15 +43,15 @@ class OutputsTracker:
         target: torch.Tensor,
         sample_idx: torch.Tensor,
     ) -> None:
-        self._outputs = torch.cat([self._outputs, output.cpu()], dim=0)
-        self._targets = torch.cat([self._targets, target.cpu()], dim=0)
+        output = output.cpu()
+        target = target.cpu()
+        self._outputs = torch.cat([self._outputs, output], dim=0)
+        self._targets = torch.cat([self._targets, target], dim=0)
         self._indices = torch.cat([self._indices, sample_idx], dim=0)
 
         with torch.no_grad():
-            loss = self._tracker_criterion(
-                output.to(self._device), target.to(self._device)
-            )
-            self._losses = torch.cat([self._losses, loss.cpu()], dim=0)
+            loss = self._tracker_criterion(output, target)
+            self._losses = torch.cat([self._losses, loss], dim=0)
 
     def save(self, iteration_folder: str, reset=True) -> None:
         results = {
