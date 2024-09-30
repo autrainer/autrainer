@@ -247,7 +247,7 @@ The :file:`_autrainer_.yaml` file contains further default configurations to sim
 which includes:
 
 * The :ref:`defaults list <defaults_list>` and :ref:`optional defaults list <optional_defaults_list>`.
-* Global default parameters for :ref:`training <training>`.
+* Global default parameters for :ref:`training <training>`, such as the evaluation frequency, save frequency, inference batch size, CUDA-enabled device, etc.
 * Hydra configurations for always starting a `Hydra multirun <https://hydra.cc/docs/1.0/tutorials/basic/running_your_app/multi-run/>`_ (grid search)
   and setting the output directory and experiment name according to the current configuration.
 

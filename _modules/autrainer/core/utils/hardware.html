@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>autrainer.core.utils.hardware_info &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+    <title>autrainer.core.utils.hardware &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
   
   
   
@@ -39,13 +39,13 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/core/utils/hardware_info';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/core/utils/hardware';</script>
     <script src="../../../../_static/external_links.js?v=919ee35f"></script>
     <script src="../../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
@@ -352,8 +352,9 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for autrainer.core.utils.hardware_info</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+  <h1>Source code for autrainer.core.utils.hardware</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
@@ -362,8 +363,11 @@ document.write(`
 <span class="kn">import</span> <span class="nn">torch</span>
 
 
-<span class="k">def</span> <span class="nf">get_gpu_info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">get_gpu_info</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get GPU information of the current system.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        device: Device to get the GPU information from.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dictionary containing GPU information. None if no GPU is available.</span>
@@ -371,7 +375,7 @@ document.write(`
     <span class="k">if</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="n">gpu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_properties</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">gpu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_properties</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">gpu</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="s2">&quot;memory_gb&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">gpu</span><span class="o">.</span><span class="n">total_memory</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)),</span>
@@ -410,33 +414,58 @@ document.write(`
 
 <div class="viewcode-block" id="get_hardware_info">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.get_hardware_info">[docs]</a>
-<span class="k">def</span> <span class="nf">get_hardware_info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">get_hardware_info</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get hardware information of the current system.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        device: Device to get the hardware information from.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dictionary containing system and GPU information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">get_system_info</span><span class="p">(),</span>
-        <span class="s2">&quot;gpu&quot;</span><span class="p">:</span> <span class="n">get_gpu_info</span><span class="p">(),</span>
+        <span class="s2">&quot;gpu&quot;</span><span class="p">:</span> <span class="n">get_gpu_info</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">}</span></div>
 
 
 
 <div class="viewcode-block" id="save_hardware_info">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.save_hardware_info">[docs]</a>
-<span class="k">def</span> <span class="nf">save_hardware_info</span><span class="p">(</span><span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">save_hardware_info</span><span class="p">(</span><span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save hardware information to a hardware.yaml file.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        output_directory: Directory to save the hardware information to.</span>
+<span class="sd">        device: Device to get the hardware information from.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">OmegaConf</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-        <span class="n">get_hardware_info</span><span class="p">(),</span>
+        <span class="n">get_hardware_info</span><span class="p">(</span><span class="n">device</span><span class="p">),</span>
         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;hardware.yaml&quot;</span><span class="p">),</span>
     <span class="p">)</span></div>
 
+
+
+<span class="k">def</span> <span class="nf">set_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the device to use. If the specified CUDA device is unavailable,</span>
+<span class="sd">    automatically fall back to CPU.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        device_name: Name of the device to use.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Specified device if available, otherwise CPU.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Device &#39;</span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&#39; is not available. Falling back to CPU.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">device</span>
 </pre></div>
 
                 </article>

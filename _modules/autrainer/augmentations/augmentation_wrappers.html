@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -370,11 +370,18 @@ document.write(`
     <span class="n">ALBUMENTATIONS_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># pragma: no cover</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">torch_audiomentations</span>  <span class="c1"># noqa: F401</span>
+    <span class="kn">import</span> <span class="nn">audiomentations</span>  <span class="c1"># noqa: F401</span>
 
     <span class="n">AUDIOMENTATIONS_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="n">AUDIOMENTATIONS_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># pragma: no cover</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">torch_audiomentations</span>  <span class="c1"># noqa: F401</span>
+
+    <span class="n">TORCHAUDIOMENTATIONS_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">TORCHAUDIOMENTATIONS_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># pragma: no cover</span>
 
 
 <span class="k">class</span> <span class="nc">AugmentationWrapper</span><span class="p">(</span><span class="n">AbstractAugmentation</span><span class="p">):</span>
@@ -545,6 +552,10 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper around albumentations transforms, which are specified by</span>
 <span class="sd">        their class name and keyword arguments.</span>
 
+<span class="sd">        Albumentations operates on numpy arrays, so the input tensor is</span>
+<span class="sd">        converted to a numpy array before applying the augmentation, and the</span>
+<span class="sd">        output numpy array is converted back to a tensor.</span>
+
 <span class="sd">        Important: While the probability of applying the augmentation is</span>
 <span class="sd">        deterministic if the generator_seed is set, the actual augmentation</span>
 <span class="sd">        applied is not deterministic. This is because the internal random</span>
@@ -594,6 +605,73 @@ document.write(`
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">sample_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">generator_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper around audiomentations transforms, which are specified</span>
+<span class="sd">        by their class name and keyword arguments.</span>
+
+<span class="sd">        Audiomentations operates on numpy arrays, so the input tensor is</span>
+<span class="sd">        converted to a numpy array before applying the augmentation, and the</span>
+<span class="sd">        output numpy array is converted back to a tensor.</span>
+
+<span class="sd">        Important: While the probability of applying the augmentation is</span>
+<span class="sd">        deterministic if the generator_seed is set, the actual augmentation</span>
+<span class="sd">        applied is not deterministic. This is because the internal random</span>
+<span class="sd">        number generator of the augmentation is not seeded.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name of the torchaudio augmentation. Must be a valid</span>
+<span class="sd">                audiomentations transform class name.</span>
+<span class="sd">            sample_rate: The sample rate of the audio data. Should be specified</span>
+<span class="sd">                for most audio augmentations. If None, the sample rate is not</span>
+<span class="sd">                passed to the augmentation. Defaults to None.</span>
+<span class="sd">            order: The order of the augmentation in the transformation pipeline.</span>
+<span class="sd">                Defaults to 0.</span>
+<span class="sd">            p: The probability of applying the augmentation. Defaults to 1.0.</span>
+<span class="sd">            generator_seed: The initial seed for the internal random number</span>
+<span class="sd">                generator drawing the probability. If None, the generator is</span>
+<span class="sd">                not seeded. Defaults to None.</span>
+<span class="sd">            kwargs: Keyword arguments passed to the audiomentations</span>
+<span class="sd">                augmentation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">AUDIOMENTATIONS_AVAILABLE</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;Audiomentations is not installed. Install the required &quot;</span>
+                <span class="s2">&quot;extras with &#39;pip install autrainer[audiomentations]&#39;.&quot;</span>
+            <span class="p">)</span>  <span class="c1"># pragma: no cover</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sample_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aug_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_aug_kwargs</span><span class="p">[</span><span class="s2">&quot;sample_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">augmentation_import_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;audiomentations.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+            <span class="n">generator_seed</span><span class="o">=</span><span class="n">generator_seed</span><span class="p">,</span>
+            <span class="n">pass_index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">probability_attr</span><span class="o">=</span><span class="s2">&quot;p&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmentation</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_aug_kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TorchAudiomentationsAugmentation">
+<a class="viewcode-back" href="../../../modules/augmentations.html#autrainer.augmentations.TorchAudiomentationsAugmentation">[docs]</a>
+<span class="k">class</span> <span class="nc">TorchAudiomentationsAugmentation</span><span class="p">(</span><span class="n">AugmentationWrapper</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -621,10 +699,10 @@ document.write(`
 <span class="sd">            kwargs: Keyword arguments passed to the torch_audiomentations</span>
 <span class="sd">                augmentation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">AUDIOMENTATIONS_AVAILABLE</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">TORCHAUDIOMENTATIONS_AVAILABLE</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-                <span class="s2">&quot;Audiomentations is not installed. Install the required extras &quot;</span>
-                <span class="s2">&quot;with &#39;pip install autrainer[audiomentations]&#39;.&quot;</span>
+                <span class="s2">&quot;torch-audiomentations is not installed. Install the required &quot;</span>
+                <span class="s2">&quot;extras with &#39;pip install autrainer[torch-audiomentations]&#39;.&quot;</span>
             <span class="p">)</span>  <span class="c1"># pragma: no cover</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>

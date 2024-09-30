@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -805,25 +805,31 @@ output directory. Defaults to “”.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autrainer.core.utils.get_hardware_info">
-<span class="sig-prename descclassname"><span class="pre">autrainer.core.utils.</span></span><span class="sig-name descname"><span class="pre">get_hardware_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/utils/hardware_info.html#get_hardware_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.utils.get_hardware_info" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">autrainer.core.utils.</span></span><span class="sig-name descname"><span class="pre">get_hardware_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/utils/hardware.html#get_hardware_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.utils.get_hardware_info" title="Link to this definition">#</a></dt>
 <dd><p>Get hardware information of the current system.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>device</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code></span>) – Device to get the hardware information from.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary containing system and GPU information.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing system and GPU information.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autrainer.core.utils.save_hardware_info">
-<span class="sig-prename descclassname"><span class="pre">autrainer.core.utils.</span></span><span class="sig-name descname"><span class="pre">save_hardware_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/utils/hardware_info.html#save_hardware_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.utils.save_hardware_info" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">autrainer.core.utils.</span></span><span class="sig-name descname"><span class="pre">save_hardware_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/utils/hardware.html#save_hardware_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.utils.save_hardware_info" title="Link to this definition">#</a></dt>
 <dd><p>Save hardware information to a hardware.yaml file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>output_directory</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Directory to save the hardware information to.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_directory</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Directory to save the hardware information to.</p></li>
+<li><p><strong>device</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code></span>) – Device to get the hardware information from.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
@@ -1059,7 +1065,7 @@ The argument must be an iterable if specified.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="autrainer.core.constants.VALID_AGGREGATIONS">
-<span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">VALID_AGGREGATIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['batch_size',</span> <span class="pre">'learning_rate',</span> <span class="pre">'scheduler',</span> <span class="pre">'model',</span> <span class="pre">'iterations',</span> <span class="pre">'optimizer',</span> <span class="pre">'augmentation',</span> <span class="pre">'dataset',</span> <span class="pre">'seed']</span></em><a class="headerlink" href="#autrainer.core.constants.VALID_AGGREGATIONS" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">VALID_AGGREGATIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['dataset',</span> <span class="pre">'optimizer',</span> <span class="pre">'iterations',</span> <span class="pre">'seed',</span> <span class="pre">'augmentation',</span> <span class="pre">'learning_rate',</span> <span class="pre">'batch_size',</span> <span class="pre">'model',</span> <span class="pre">'scheduler']</span></em><a class="headerlink" href="#autrainer.core.constants.VALID_AGGREGATIONS" title="Link to this definition">#</a></dt>
 <dd><p>Built-in mutable sequence.</p>
 <p>If no argument is given, the constructor creates a new empty list.
 The argument must be an iterable if specified.</p>

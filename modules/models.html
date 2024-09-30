@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -372,6 +372,22 @@ To ensure compatibility with any number of output dimensions, the last linear la
 the correct number of output dimensions and will therefore <strong>not</strong> be pretrained.</p>
 <p>The weights for all pretrained models that are provided by <cite>autrainer</cite> can be automatically downloaded using the
 <a class="reference internal" href="../usage/cli_reference.html#cli-autrainer-fetch"><span class="std std-ref">autrainer fetch</span></a> CLI command or the <a class="reference internal" href="../usage/cli_wrapper.html#autrainer.cli.fetch" title="autrainer.cli.fetch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fetch()</span></code></a> CLI wrapper function.</p>
+</div>
+<p>To optionally use model, optimizer, or scheduler checkpoints, the following attributes can be set in any model configuration file:</p>
+<ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">model_checkpoint</span></code>: The path to the model checkpoint file. Defaults to None.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">optimizer_checkpoint</span></code>: The path to the optimizer checkpoint file. Defaults to None.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">scheduler_checkpoint</span></code>: The path to the scheduler checkpoint file. Defaults to None.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">skip_last_layer</span></code>: Whether to skip loading the state of the last linear or convolutional layer.
+When set to True, the state of the last layer (if present) is omitted from both the model and optimizer,
+allowing for training on a different target dataset with varying output dimensions.
+Defaults to True.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Loading a checkpoint assumes that the model architecture is the same as the one used to create the checkpoint and
+that the last layer of the model is specified as the final <code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">_ConvNd</span></code> module.
+If the last layer is not the final layer in the module order, it may not be correctly identified for skipping.</p>
 </div>
 <section id="abstract-model">
 <h2>Abstract Model<a class="headerlink" href="#abstract-model" title="Link to this heading">#</a></h2>

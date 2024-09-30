@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -359,9 +359,13 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">autrainer</span>
 
-<span class="kn">from</span> <span class="nn">.abstract_script</span> <span class="kn">import</span> <span class="n">AbstractScript</span>
-<span class="kn">from</span> <span class="nn">.command_line_error</span> <span class="kn">import</span> <span class="n">catch_cli_errors</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">run_autrainer_hydra_cmd</span>
+<span class="kn">from</span> <span class="nn">.abstract_script</span> <span class="kn">import</span> <span class="n">AbstractScript</span><span class="p">,</span> <span class="n">MockParser</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">add_hydra_args_to_sys</span><span class="p">,</span>
+    <span class="n">catch_cli_errors</span><span class="p">,</span>
+    <span class="n">run_hydra_cmd</span><span class="p">,</span>
+    <span class="n">running_in_notebook</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">GroupScript</span><span class="p">(</span><span class="n">AbstractScript</span><span class="p">):</span>
@@ -420,7 +424,13 @@ document.write(`
 <span class="sd">            config files. If config_path is None no directory is added to the</span>
 <span class="sd">            search path. Defaults to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">run_autrainer_hydra_cmd</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="n">override_kwargs</span><span class="p">,</span> <span class="n">config_name</span><span class="p">,</span> <span class="n">config_path</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">running_in_notebook</span><span class="p">():</span>
+        <span class="n">run_hydra_cmd</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="n">override_kwargs</span><span class="p">,</span> <span class="n">config_name</span><span class="p">,</span> <span class="n">config_path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">add_hydra_args_to_sys</span><span class="p">(</span><span class="n">override_kwargs</span><span class="p">,</span> <span class="n">config_name</span><span class="p">,</span> <span class="n">config_path</span><span class="p">)</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="n">GroupScript</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">MockParser</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">main</span><span class="p">({})</span></div>
 
 </pre></div>
 

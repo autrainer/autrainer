@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -401,7 +401,7 @@ It also logs the training process and saves the model, optimizer, and scheduler 
 <p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">cfg</span></code> of the trainer is the composed main configuration file (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>) for each training configuration in the sweep.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.training.ModularTaskTrainer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.training.</span></span><span class="sig-name descname"><span class="pre">ModularTaskTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/training/training.html#ModularTaskTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.training.ModularTaskTrainer" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.training.</span></span><span class="sig-name descname"><span class="pre">ModularTaskTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/training/training.html#ModularTaskTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.training.ModularTaskTrainer" title="Link to this definition">#</a></dt>
 <dd><p>Modular Task Trainer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -413,8 +413,6 @@ automatically set based on the parent directory of the output
 directory. Defaults to None.</p></li>
 <li><p><strong>run_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Run name for the run. If None, the name is automatically
 set based on the output directory. Defaults to None.</p></li>
-<li><p><strong>callbacks</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>]]</span>) – List of additional callbacks to be used during training.
-Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -476,10 +474,23 @@ Defaults to True.</p></li>
 
 </section>
 <section id="callbacks">
-<h2>Callbacks<a class="headerlink" href="#callbacks" title="Link to this heading">#</a></h2>
-<p>Any model, dataset, criterion, … of the trainer can specify callbacks.
-Each callback is automatically called at the appropriate time during training.
-Callbacks are functions of the same signature as any of the following callbacks:</p>
+<span id="id2"></span><h2>Callbacks<a class="headerlink" href="#callbacks" title="Link to this heading">#</a></h2>
+<p>Any <a class="reference internal" href="datasets.html#datasets"><span class="std std-ref">dataset</span></a>,
+<a class="reference internal" href="models.html#models"><span class="std std-ref">model</span></a>,
+<a class="reference internal" href="optimizers.html#optimizers"><span class="std std-ref">optimizer</span></a>,
+<a class="reference internal" href="schedulers.html#schedulers"><span class="std std-ref">scheduler</span></a>,
+<a class="reference internal" href="criterions.html#criterions"><span class="std std-ref">criterion</span></a>,
+or <a class="reference internal" href="loggers.html#loggers"><span class="std std-ref">logger</span></a> can specify callback functions which start with <code class="xref py py-meth docutils literal notranslate"><span class="pre">cb_on_*()</span></code>.</p>
+<p>Each callback is automatically invoked at the appropriate time during training.
+The function signature of each callback is defined in <a class="reference internal" href="#autrainer.training.CallbackSignature" title="autrainer.training.CallbackSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallbackSignature</span></code></a>.</p>
+<p>For more control over the training process, custom callbacks can be defined and added to the trainer by specifying a list of
+callback classes using <a class="reference internal" href="../usage/hydra_configurations.html#shorthand-syntax"><span class="std std-ref">shorthand syntax</span></a> in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">callbacks</span></code> attribute of the
+<a class="reference internal" href="../usage/hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file.
+Each callback class can specify any number of callback functions following the signatures defined in <a class="reference internal" href="#autrainer.training.CallbackSignature" title="autrainer.training.CallbackSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallbackSignature</span></code></a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To create custom callbacks, refer to the <a class="reference internal" href="../usage/tutorials.html#tut-callbacks"><span class="std std-ref">custom callbacks tutorial</span></a>.</p>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.training.CallbackSignature">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.training.</span></span><span class="sig-name descname"><span class="pre">CallbackSignature</span></span><a class="reference internal" href="../_modules/autrainer/training/callback_manager.html#CallbackSignature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.training.CallbackSignature" title="Link to this definition">#</a></dt>
@@ -603,7 +614,7 @@ evaluation frequency.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.training.CallbackSignature.cb_on_loader_exhausted">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cb_on_loader_exhausted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/training/callback_manager.html#CallbackSignature.cb_on_loader_exhausted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.training.CallbackSignature.cb_on_loader_exhausted" title="Link to this definition">#</a></dt>
-<dd><p>Called when the data loader is exhausted.</p>
+<dd><p>Called when the training data loader is exhausted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -621,11 +632,16 @@ step number.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.training.CallbackSignature.cb_on_val_begin">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cb_on_val_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/training/callback_manager.html#CallbackSignature.cb_on_val_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.training.CallbackSignature.cb_on_val_begin" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cb_on_val_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/training/callback_manager.html#CallbackSignature.cb_on_val_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.training.CallbackSignature.cb_on_val_begin" title="Link to this definition">#</a></dt>
 <dd><p>Called at the beginning of the validation loop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training,
+this is the epoch number. For step-based training, this is the
+step number.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
@@ -635,12 +651,15 @@ step number.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.training.CallbackSignature.cb_on_val_end">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cb_on_val_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/training/callback_manager.html#CallbackSignature.cb_on_val_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.training.CallbackSignature.cb_on_val_end" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cb_on_val_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/training/callback_manager.html#CallbackSignature.cb_on_val_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.training.CallbackSignature.cb_on_val_end" title="Link to this definition">#</a></dt>
 <dd><p>Called at the end of the validation loop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training,
+this is the epoch number. For step-based training, this is the
+step number.</p></li>
 <li><p><strong>val_results</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span>) – Dictionary of validation results for the entire
 validation loop of the current iteration.</p></li>
 </ul>

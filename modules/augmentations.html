@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -679,7 +679,47 @@ not seeded. Defaults to None.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.augmentations.AudiomentationsAugmentation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.augmentations.</span></span><span class="sig-name descname"><span class="pre">AudiomentationsAugmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/augmentation_wrappers.html#AudiomentationsAugmentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AudiomentationsAugmentation" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.augmentations.</span></span><span class="sig-name descname"><span class="pre">AudiomentationsAugmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/augmentation_wrappers.html#AudiomentationsAugmentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AudiomentationsAugmentation" title="Link to this definition">#</a></dt>
+<dd><p>Wrapper around audiomentations transforms, which are specified
+by their class name and keyword arguments.</p>
+<p>Audiomentations operates on numpy arrays, so the input tensor is
+converted to a numpy array before applying the augmentation, and the
+output numpy array is converted back to a tensor.</p>
+<p>Important: While the probability of applying the augmentation is
+deterministic if the generator_seed is set, the actual augmentation
+applied is not deterministic. This is because the internal random
+number generator of the augmentation is not seeded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the torchaudio augmentation. Must be a valid
+audiomentations transform class name.</p></li>
+<li><p><strong>sample_rate</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – The sample rate of the audio data. Should be specified
+for most audio augmentations. If None, the sample rate is not
+passed to the augmentation. Defaults to None.</p></li>
+<li><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the augmentation in the transformation pipeline.
+Defaults to 0.</p></li>
+<li><p><strong>p</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The probability of applying the augmentation. Defaults to 1.0.</p></li>
+<li><p><strong>generator_seed</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – The initial seed for the internal random number
+generator drawing the probability. If None, the generator is
+not seeded. Defaults to None.</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to the audiomentations
+augmentation.</p></li>
+</ul>
+</dd>
+</dl>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Default Configurations</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">No default configurations are provided for <cite>audiomentations</cite> augmentations.
+To discover the available <cite>audiomentations</cite> augmentations,
+refer to the <a class="reference external" href="https://iver56.github.io/audiomentations/">audiomentations documentation</a>.</p>
+</div>
+</details></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.augmentations.TorchAudiomentationsAugmentation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.augmentations.</span></span><span class="sig-name descname"><span class="pre">TorchAudiomentationsAugmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/augmentation_wrappers.html#TorchAudiomentationsAugmentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.TorchAudiomentationsAugmentation" title="Link to this definition">#</a></dt>
 <dd><p>Wrapper around torch_audiomentations transforms, which are specified
 by their class name and keyword arguments.</p>
 <p>Important: While the probability of applying the augmentation is
@@ -717,6 +757,9 @@ refer to the <a class="reference external" href="https://github.com/asteroid-tea
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.augmentations.</span></span><span class="sig-name descname"><span class="pre">AlbumentationsAugmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/augmentation_wrappers.html#AlbumentationsAugmentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AlbumentationsAugmentation" title="Link to this definition">#</a></dt>
 <dd><p>Wrapper around albumentations transforms, which are specified by
 their class name and keyword arguments.</p>
+<p>Albumentations operates on numpy arrays, so the input tensor is
+converted to a numpy array before applying the augmentation, and the
+output numpy array is converted back to a tensor.</p>
 <p>Important: While the probability of applying the augmentation is
 deterministic if the generator_seed is set, the actual augmentation
 applied is not deterministic. This is because the internal random
@@ -1311,6 +1354,7 @@ not seeded. Defaults to None.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.TorchaudioAugmentation"><code class="docutils literal notranslate"><span class="pre">TorchaudioAugmentation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.TorchvisionAugmentation"><code class="docutils literal notranslate"><span class="pre">TorchvisionAugmentation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.AudiomentationsAugmentation"><code class="docutils literal notranslate"><span class="pre">AudiomentationsAugmentation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.TorchAudiomentationsAugmentation"><code class="docutils literal notranslate"><span class="pre">TorchAudiomentationsAugmentation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.AlbumentationsAugmentation"><code class="docutils literal notranslate"><span class="pre">AlbumentationsAugmentation</span></code></a></li>
 </ul>
 </li>

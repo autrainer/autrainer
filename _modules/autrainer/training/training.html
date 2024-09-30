@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -356,7 +356,7 @@ document.write(`
 <span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -370,6 +370,7 @@ document.write(`
     <span class="n">Bookkeeping</span><span class="p">,</span>
     <span class="n">Timer</span><span class="p">,</span>
     <span class="n">save_hardware_info</span><span class="p">,</span>
+    <span class="n">set_device</span><span class="p">,</span>
     <span class="n">set_seed</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">autrainer.datasets</span> <span class="kn">import</span> <span class="n">AbstractDataset</span>
@@ -380,6 +381,11 @@ document.write(`
 <span class="kn">from</span> <span class="nn">.callback_manager</span> <span class="kn">import</span> <span class="n">CallbackManager</span>
 <span class="kn">from</span> <span class="nn">.continue_training</span> <span class="kn">import</span> <span class="n">ContinueTraining</span>
 <span class="kn">from</span> <span class="nn">.outputs_tracker</span> <span class="kn">import</span> <span class="n">init_trackers</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">format_results</span><span class="p">,</span>
+    <span class="n">load_pretrained_model_state</span><span class="p">,</span>
+    <span class="n">load_pretrained_optim_state</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="ModularTaskTrainer">
@@ -391,7 +397,6 @@ document.write(`
         <span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">experiment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">callbacks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Modular Task Trainer.</span>
 
@@ -403,8 +408,6 @@ document.write(`
 <span class="sd">                directory. Defaults to None.</span>
 <span class="sd">            run_name: Run name for the run. If None, the name is automatically</span>
 <span class="sd">                set based on the output directory. Defaults to None.</span>
-<span class="sd">            callbacks: List of additional callbacks to be used during training.</span>
-<span class="sd">                Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span> <span class="o">=</span> <span class="n">cfg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;criterion&quot;</span><span class="p">)</span>
@@ -414,9 +417,9 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="n">training_seed</span> <span class="o">=</span> <span class="n">dataset_seed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">seed</span>
         <span class="n">set_seed</span><span class="p">(</span><span class="n">training_seed</span><span class="p">)</span>
-        <span class="n">save_hardware_info</span><span class="p">(</span><span class="n">output_directory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span> <span class="o">=</span> <span class="n">set_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">save_hardware_info</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_directory</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="n">callbacks</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initial_iteration</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="c1"># ? Save current requirements.txt</span>
@@ -471,9 +474,6 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">task</span>
 
         <span class="c1"># ? Misc Training Parameters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span>
-            <span class="s2">&quot;cuda:0&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
-        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_progress_bar</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;progress_bar&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span>
@@ -484,12 +484,11 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
 
-        <span class="c1"># ? Load Pretrained Model and Optimizer Checkpoints if specified</span>
-        <span class="n">model_checkpoint</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;pretrained&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">optimizer_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span>
-        <span class="n">optimizer_checkpoint</span> <span class="o">=</span> <span class="n">optimizer_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;pretrained&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">scheduler_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">scheduler</span>
-        <span class="n">scheduler_checkpoint</span> <span class="o">=</span> <span class="n">scheduler_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;pretrained&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints</span>
+        <span class="n">model_checkpoint</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;model_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">optimizer_checkpoint</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;optimizer_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">scheduler_checkpoint</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scheduler_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">skip_last_layer</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;skip_last_layer&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># ? Load Model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">output_dim</span>
@@ -499,12 +498,15 @@ document.write(`
             <span class="n">output_dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dim</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">model_checkpoint</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-                    <span class="n">model_checkpoint</span><span class="p">,</span>
-                    <span class="n">map_location</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
-                    <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
+            <span class="n">state_dict</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+                <span class="n">model_checkpoint</span><span class="p">,</span>
+                <span class="n">map_location</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+                <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">load_pretrained_model_state</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                <span class="n">state_dict</span><span class="p">,</span>
+                <span class="n">skip_last_layer</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_model_summary</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">,</span> <span class="s2">&quot;model_summary.txt&quot;</span>
@@ -512,27 +514,30 @@ document.write(`
 
         <span class="c1"># ? Load Optimizer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="n">optimizer_config</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
             <span class="n">instance_of</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
             <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">optimizer_checkpoint</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-                    <span class="n">optimizer_checkpoint</span><span class="p">,</span>
-                    <span class="n">map_location</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
-                    <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
+            <span class="n">state_dict</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+                <span class="n">optimizer_checkpoint</span><span class="p">,</span>
+                <span class="n">map_location</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+                <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">load_pretrained_optim_state</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
+                <span class="n">state_dict</span><span class="p">,</span>
+                <span class="n">skip_last_layer</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="c1"># ? Load Scheduler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="n">scheduler_config</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span>
             <span class="n">instance_of</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">,</span>
             <span class="n">optimizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">scheduler_checkpoint</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">scheduler_checkpoint</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span>
                 <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
                     <span class="n">scheduler_checkpoint</span><span class="p">,</span>
@@ -542,7 +547,6 @@ document.write(`
             <span class="p">)</span>
 
         <span class="c1"># ? Create Dataloaders</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">train_loader</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dev_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dev_loader</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">test_loader</span>
@@ -615,17 +619,29 @@ document.write(`
                 <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="c1"># ? Create Callback Manager</span>
+        <span class="c1"># ? Create Callbacks and Callback Manager</span>
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;callbacks&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span>
+                    <span class="n">config</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
+                    <span class="n">instance_of</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span> <span class="o">=</span> <span class="n">CallbackManager</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">register_multiple</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span><span class="p">,</span>
-            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">,</span>
-            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span><span class="p">,</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">,</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">,</span>
+            <span class="p">]</span>
         <span class="p">)</span>
 
         <span class="c1"># ? Create Plot Metrics</span>
@@ -714,15 +730,22 @@ document.write(`
             <span class="s2">&quot;_best&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">format_results</span><span class="p">(</span>
+            <span class="n">format_results</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span><span class="p">]</span>
                 <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
                 <span class="s2">&quot;Best&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_results</span><span class="p">(</span><span class="n">test_results</span><span class="p">,</span> <span class="s2">&quot;Test&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+            <span class="n">format_results</span><span class="p">(</span>
+                <span class="n">test_results</span><span class="p">,</span>
+                <span class="s2">&quot;Test&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="c1"># ? Save Timers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -800,6 +823,7 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                     <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_val_end&quot;</span><span class="p">,</span>
                     <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
                     <span class="n">val_results</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">epoch</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
@@ -888,6 +912,7 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                     <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_val_end&quot;</span><span class="p">,</span>
                     <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">iteration</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
                     <span class="n">val_results</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
@@ -948,8 +973,11 @@ document.write(`
 <span class="sd">            Dictionary containing the evaluation results.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cb_type</span> <span class="o">=</span> <span class="s2">&quot;val&quot;</span> <span class="k">if</span> <span class="n">dev_evaluation</span> <span class="k">else</span> <span class="s2">&quot;test&quot;</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;iteration&quot;</span><span class="p">:</span> <span class="n">iteration</span><span class="p">}</span> <span class="k">if</span> <span class="n">dev_evaluation</span> <span class="k">else</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-            <span class="n">position</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cb_on_</span><span class="si">{</span><span class="n">cb_type</span><span class="si">}</span><span class="s2">_begin&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span>
+            <span class="n">position</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cb_on_</span><span class="si">{</span><span class="n">cb_type</span><span class="si">}</span><span class="s2">_begin&quot;</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
@@ -973,9 +1001,10 @@ document.write(`
 
         <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">format_results</span><span class="p">(</span>
+                <span class="n">format_results</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">iteration</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
                     <span class="s2">&quot;Dev&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span><span class="p">,</span>
                     <span class="n">iteration</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -1127,25 +1156,7 @@ document.write(`
 <span class="sd">        Returns:</span>
 <span class="sd">            Copy of the configuration.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">format_results</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
-        <span class="n">results_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">iteration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">results_type</span><span class="si">}</span><span class="s2"> results&quot;</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">iteration</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">max_key_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">max_key_len</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">s</span></div>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">)</span></div>
 
 </pre></div>
 

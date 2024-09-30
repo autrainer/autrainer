@@ -97,6 +97,14 @@ Both `torch-audiomentations` and `albumentations` augmentations are optional and
 
    .. dropdown:: Default Configurations
 
+      No default configurations are provided for `audiomentations` augmentations.
+      To discover the available `audiomentations` augmentations,
+      refer to the `audiomentations documentation <https://iver56.github.io/audiomentations/>`_.
+
+.. autoclass:: autrainer.augmentations.TorchAudiomentationsAugmentation
+
+   .. dropdown:: Default Configurations
+
       No default configurations are provided for `torch-audiomentations` augmentations.
       To discover the available `torch-audiomentations` augmentations,
       refer to the `torch-audiomentations documentation <https://github.com/asteroid-team/torch-audiomentations>`_.

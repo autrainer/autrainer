@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -362,7 +362,8 @@ document.write(`
 <span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">CONFIG_FOLDERS</span>
 
 <span class="kn">from</span> <span class="nn">.abstract_script</span> <span class="kn">import</span> <span class="n">AbstractScript</span><span class="p">,</span> <span class="n">MockParser</span>
-<span class="kn">from</span> <span class="nn">.command_line_error</span> <span class="kn">import</span> <span class="n">CommandLineError</span><span class="p">,</span> <span class="n">catch_cli_errors</span>
+<span class="kn">from</span> <span class="nn">.command_line_error</span> <span class="kn">import</span> <span class="n">CommandLineError</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">catch_cli_errors</span>
 
 
 <span class="nd">@dataclass</span>
@@ -501,6 +502,9 @@ document.write(`
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new project with default configurations.</span>
 
+<span class="sd">    If called in a notebook, the function will not raise an error and print</span>
+<span class="sd">    the error message instead.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        directories: Configuration directories to create. One or more of:</span>
 <span class="sd">            :const:`~autrainer.core.constants.CONFIG_FOLDERS`.</span>
@@ -511,6 +515,15 @@ document.write(`
 <span class="sd">            Defaults to False.</span>
 <span class="sd">        force: Force overwrite if the configuration directory already exists.</span>
 <span class="sd">            Defaults to False.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        CommandLineError: If no configuration directories are specified and</span>
+<span class="sd">            neither the empty nor all flags are set.</span>
+<span class="sd">        CommandLineError: If the empty and all flags are set at the same time.</span>
+<span class="sd">        CommandLineError: If the empty or all flags are set in combination with</span>
+<span class="sd">            configuration directories.</span>
+<span class="sd">        CommandLineError: If the configuration directory already exists and the</span>
+<span class="sd">            force flag is not set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">script</span> <span class="o">=</span> <span class="n">CreateScript</span><span class="p">()</span>
