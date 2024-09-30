@@ -6,6 +6,6 @@ from autrainer.core.wrappers import (
 )
 
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = ["HydraConvertEnum", "instantiate", "instantiate_shorthand", "main"]
