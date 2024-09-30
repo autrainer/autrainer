@@ -1,7 +1,7 @@
 from copy import deepcopy
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -26,6 +26,11 @@ from autrainer.transforms import TransformManager
 from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
 from .outputs_tracker import init_trackers
+from .utils import (
+    format_results,
+    load_pretrained_model_state,
+    load_pretrained_optim_state,
+)
 
 
 class ModularTaskTrainer:
@@ -122,12 +127,11 @@ class ModularTaskTrainer:
             self.criterion.setup(self.data)
         self.criterion.to(self.DEVICE)
 
-        # ? Load Pretrained Model and Optimizer Checkpoints if specified
-        model_checkpoint = model_config.pop("pretrained", None)
-        optimizer_config = self.cfg.optimizer
-        optimizer_checkpoint = optimizer_config.pop("pretrained", None)
-        scheduler_config = self.cfg.scheduler
-        scheduler_checkpoint = scheduler_config.pop("pretrained", None)
+        # ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints
+        model_checkpoint = model_config.pop("model_checkpoint", None)
+        optimizer_checkpoint = model_config.pop("optimizer_checkpoint", None)
+        scheduler_checkpoint = model_config.pop("scheduler_checkpoint", None)
+        skip_last_layer = model_config.pop("skip_last_layer", True)
 
         # ? Load Model
         self.output_dim = self.data.output_dim
@@ -137,12 +141,15 @@ class ModularTaskTrainer:
             output_dim=self.output_dim,
         )
         if model_checkpoint:
-            self.model.load_state_dict(
-                torch.load(
-                    model_checkpoint,
-                    map_location="cpu",
-                    weights_only=True,
-                )
+            state_dict = torch.load(
+                model_checkpoint,
+                map_location="cpu",
+                weights_only=True,
+            )
+            load_pretrained_model_state(
+                self.model,
+                state_dict,
+                skip_last_layer,
             )
         self.bookkeeping.save_model_summary(
             self.model, self.train_dataset, "model_summary.txt"
@@ -150,27 +157,30 @@ class ModularTaskTrainer:
 
         # ? Load Optimizer
         self.optimizer = autrainer.instantiate(
-            config=optimizer_config,
+            config=self.cfg.optimizer,
             instance_of=torch.optim.Optimizer,
             params=self.model.parameters(),
             lr=self.cfg.learning_rate,
         )
         if optimizer_checkpoint:
-            self.optimizer.load_state_dict(
-                torch.load(
-                    optimizer_checkpoint,
-                    map_location="cpu",
-                    weights_only=True,
-                )
+            state_dict = torch.load(
+                optimizer_checkpoint,
+                map_location="cpu",
+                weights_only=True,
+            )
+            load_pretrained_optim_state(
+                self.optimizer,
+                state_dict,
+                skip_last_layer,
             )
 
         # ? Load Scheduler
         self.scheduler = autrainer.instantiate(
-            config=scheduler_config,
+            config=self.cfg.scheduler,
             instance_of=torch.optim.lr_scheduler.LRScheduler,
             optimizer=self.optimizer,
         )
-        if scheduler_checkpoint:
+        if self.scheduler is not None and scheduler_checkpoint:
             self.scheduler.load_state_dict(
                 torch.load(
                     scheduler_checkpoint,
@@ -361,15 +371,22 @@ class ModularTaskTrainer:
             "_best",
         )
         self.bookkeeping.log(
-            self.format_results(
+            format_results(
                 self.metrics.loc[self.best_iteration]
                 .drop("iteration")
                 .to_dict(),
                 "Best",
+                self.cfg.training_type,
                 self.best_iteration,
             )
         )
-        self.bookkeeping.log(self.format_results(test_results, "Test"))
+        self.bookkeeping.log(
+            format_results(
+                test_results,
+                "Test",
+                self.cfg.training_type,
+            )
+        )
 
         # ? Save Timers
         self.train_timer.save()
@@ -622,9 +639,10 @@ class ModularTaskTrainer:
 
         if dev_evaluation:
             self.bookkeeping.log(
-                self.format_results(
+                format_results(
                     self.metrics.loc[iteration].to_dict(),
                     "Dev",
+                    self.cfg.training_type,
                     iteration,
                 )
             )
@@ -776,21 +794,3 @@ class ModularTaskTrainer:
             Copy of the configuration.
         """
         return deepcopy(self._cfg)
-
-    def format_results(
-        self,
-        results: Dict[str, float],
-        results_type: str,
-        iteration: Optional[int] = None,
-    ) -> str:
-        s = f"{results_type} results"
-        s += f" at {self.cfg.training_type} {iteration}" if iteration else ""
-        s += ":\n"
-        max_key_len = max([len(k) for k in results.keys()])
-        s += "\n".join(
-            [
-                f"{(k+':').ljust(max_key_len+1)} {v:.4f}"
-                for k, v in results.items()
-            ]
-        )
-        return s

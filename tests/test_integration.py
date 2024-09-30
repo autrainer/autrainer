@@ -1,10 +1,13 @@
 import os
 from unittest.mock import patch
+import warnings
 
 from omegaconf import DictConfig, OmegaConf
 import pytest
+import torch
 
 import autrainer.cli
+from autrainer.models import FFNN
 
 from .utils import BaseIndividualTempDir
 
@@ -82,3 +85,69 @@ class TestCLIIntegration(BaseIndividualTempDir):
             if os.path.isdir(os.path.join("results/default/training", f))
         ]
         assert len(run_dirs) == 1, "Should have only one run directory."
+
+
+class TestCheckpointsIntegration(BaseIndividualTempDir):
+    @staticmethod
+    def _load_state(module: torch.nn.Module, name: str, subdir: str) -> None:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=UserWarning)
+            module.load_state_dict(
+                torch.load(
+                    f"results/default/training/{name}/{subdir}/model.pt",
+                    map_location="cpu",
+                    weights_only=True,
+                )
+            )
+        module.eval()
+
+    def test_checkpoints(self) -> None:
+        autrainer.cli.create(empty=True)
+        with patch("sys.argv", [""]):
+            autrainer.cli.train({"scheduler": "StepLR"})
+        run_dirs = [
+            f
+            for f in os.listdir("results/default/training")
+            if os.path.isdir(os.path.join("results/default/training", f))
+        ]
+        assert len(run_dirs) == 1, "Should have only one run directory."
+
+        autrainer.cli.show("model", "ToyFFNN", save=True)
+        model_cfg = OmegaConf.load("conf/model/ToyFFNN.yaml")
+        run_dir = f"results/default/training/{run_dirs[0]}/_best"
+        model_cfg["id"] = "ToyFFNN-CKPT"
+        model_cfg["model_checkpoint"] = f"{run_dir}/model.pt"
+        model_cfg["optimizer_checkpoint"] = f"{run_dir}/optimizer.pt"
+        model_cfg["scheduler_checkpoint"] = f"{run_dir}/scheduler.pt"
+        OmegaConf.save(model_cfg, "conf/model/ToyFFNN-CKPT.yaml")
+
+        autrainer.cli.show("dataset", "ToyTabular-C", save=True)
+        dataset_cfg = OmegaConf.load("conf/dataset/ToyTabular-C.yaml")
+        dataset_cfg["id"] = "ToyTabular-C-7"
+        dataset_cfg["num_targets"] = 7
+        OmegaConf.save(dataset_cfg, "conf/dataset/ToyTabular-C-7.yaml")
+
+        with patch("sys.argv", [""]):
+            autrainer.cli.train(
+                {
+                    "dataset": "ToyTabular-C-7",
+                    "model": "ToyFFNN-CKPT",
+                    "scheduler": "StepLR",
+                }
+            )
+        run_dirs = [
+            f
+            for f in os.listdir("results/default/training")
+            if os.path.isdir(os.path.join("results/default/training", f))
+        ]
+        assert len(run_dirs) == 2, "Should have two run directories."
+        r1 = next(r for r in run_dirs if "ToyFFNN-CKPT" not in r)
+        r2 = next(r for r in run_dirs if "ToyFFNN-CKPT" in r)
+        m1 = FFNN(10, 64, 64)
+        self._load_state(m1, r1, "_best")
+        m2 = FFNN(7, 64, 64)
+        self._load_state(m2, r2, "_initial")
+        x = torch.randn(4, 64)
+        assert torch.allclose(
+            m1.embeddings(x), m2.embeddings(x)
+        ), "Should have same embeddings."
