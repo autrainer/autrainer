@@ -1,4 +1,6 @@
 import os
+import shutil
+import tempfile
 
 from omegaconf import OmegaConf
 import torch
@@ -21,18 +23,34 @@ class MockSqueezeFirstDim(AbstractTransform):
 
 
 class TestInference(BaseIndividualTempDir):
-    def _mock_model_setup(self) -> None:
+    @classmethod
+    def setup_class(cls) -> None:
+        cls.base_dir = tempfile.TemporaryDirectory()
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
         model.eval()
         file_handler = NumpyFileHandler()
         target_t = LabelEncoder([f"target_{i}" for i in range(10)])
         inference_t = SmartCompose([MockSqueezeFirstDim()])
-        bookkeeping = Bookkeeping("TestModel")
+        bookkeeping = Bookkeeping(os.path.join(cls.base_dir.name, "TestModel"))
         bookkeeping.save_audobject(model, "model.yaml")
         bookkeeping.save_state(model, "model.pt", "_best")
         bookkeeping.save_audobject(file_handler, "file_handler.yaml")
         bookkeeping.save_audobject(target_t, "target_transform.yaml")
         bookkeeping.save_audobject(inference_t, "inference_transform.yaml")
+        bookkeeping.save_audobject(
+            file_handler, "preprocess_file_handler.yaml"
+        )
+        bookkeeping.save_audobject(inference_t, "preprocess_pipeline.yaml")
+
+    @classmethod
+    def teardown_class(cls) -> None:
+        cls.base_dir.cleanup()
+
+    def _mock_model_setup(self) -> None:
+        shutil.copytree(
+            os.path.join(self.base_dir.name, "TestModel"),
+            "TestModel",
+        )
 
     def _mock_data_setup(self) -> None:
         os.makedirs("input", exist_ok=True)
