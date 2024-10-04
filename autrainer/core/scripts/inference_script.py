@@ -130,12 +130,14 @@ class InferenceScript(AbstractScript):
             type=str,
             metavar="P",
             required=False,
-            default=None,
+            default="default",
             help=(
                 "Preprocessing configuration to apply to input. Can be a path "
                 "to a YAML file or the name of the preprocessing configuration "
                 "in the local or autrainer 'conf/preprocessing' directory. "
-                "If None, no preprocessing will be applied. Defaults to None."
+                "If 'default', the default preprocessing configuration used "
+                "during training will be applied. If 'None', no preprocessing "
+                "will be applied. Defaults to 'default'."
             ),
         )
         self.parser.add_argument(
@@ -195,7 +197,7 @@ class InferenceScript(AbstractScript):
         self._assert_valid_input(args)
         self._assert_valid_device(args)
         self._assert_valid_checkpoint(args)
-        self._assert_preprocess_cfg_exists(args)
+        self._assert_and_set_preprocess_path(args)
         self._inference(args)
 
     def _assert_model_exists(self, args: InferenceArgs) -> str:
@@ -266,8 +268,12 @@ class InferenceScript(AbstractScript):
             code=1,
         )
 
-    def _assert_preprocess_cfg_exists(self, args: InferenceArgs) -> None:
-        if args.preprocess_cfg is None:
+    def _assert_and_set_preprocess_path(self, args: InferenceArgs) -> None:
+        if args.preprocess_cfg == "default":
+            return
+
+        if args.preprocess_cfg == "None" or args.preprocess_cfg is None:
+            args.preprocess_cfg = None
             return
 
         if not args.preprocess_cfg.endswith(".yaml"):
@@ -347,7 +353,7 @@ def inference(
     extension: str = "wav",
     recursive: bool = False,
     embeddings: bool = False,
-    preprocess_cfg: Optional[str] = None,
+    preprocess_cfg: Optional[str] = "default",
     window_length: Optional[float] = None,
     stride_length: Optional[float] = None,
     min_length: Optional[float] = None,
@@ -380,8 +386,9 @@ def inference(
         preprocess_cfg: Preprocessing configuration to apply to input. Can be
             a path to a YAML file or the name of the preprocessing
             configuration in the local or autrainer 'conf/preprocessing'
-            directory. If None, no preprocessing will be applied.
-            Defaults to None.
+            directory. If "default", the default preprocessing configuration
+            used during training will be applied. If None, no preprocessing
+            will be applied. Defaults to "default".
         window_length: Window length for sliding window inference in seconds.
             If None, the entire input will be processed at once.
             Defaults to None.

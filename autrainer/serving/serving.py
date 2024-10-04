@@ -26,7 +26,7 @@ class Inference:
         model_path: str,
         checkpoint: str = "_best",
         device: str = "cpu",
-        preprocess_cfg: Optional[str] = None,
+        preprocess_cfg: Optional[str] = "default",
         window_length: Optional[float] = None,
         stride_length: Optional[float] = None,
         min_length: Optional[float] = None,
@@ -41,7 +41,10 @@ class Inference:
             checkpoint: Checkpoint directory containing a model.pt file.
                 Defaults to "_best".
             device: Device to run inference on. Defaults to "cpu".
-            preprocess_cfg: Preprocessing configuration file. Defaults to None.
+            preprocess_cfg: Preprocessing configuration file. If "default",
+                the default preprocessing pipeline used during training is
+                applied. If None, no preprocessing is applied. Defaults to
+                "default".
             window_length: Window length in seconds for sliding window
                 inference. Defaults to None.
             stride_length: Stride length in seconds for sliding window
@@ -86,7 +89,14 @@ class Inference:
         )
 
         self.preprocess_pipeline = SmartCompose([])
-        if self._preprocess_cfg is not None:
+        if self._preprocess_cfg == "default":
+            self.file_handler: AbstractFileHandler = audobject.from_yaml(
+                os.path.join(self._model_path, "preprocess_file_handler.yaml")
+            )
+            self.preprocess_pipeline: SmartCompose = audobject.from_yaml(
+                os.path.join(self._model_path, "preprocess_pipeline.yaml")
+            )
+        elif self._preprocess_cfg is not None:
             preprocess_cfg = OmegaConf.to_container(
                 OmegaConf.load(self._preprocess_cfg)
             )
