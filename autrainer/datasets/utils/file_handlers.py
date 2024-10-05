@@ -132,7 +132,11 @@ class NumpyFileHandler(AbstractFileHandler):
 
 
 class AudioFileHandler(AbstractFileHandler):
-    def __init__(self, target_sample_rate: Optional[int] = None, **kwargs):
+    def __init__(
+        self,
+        target_sample_rate: Optional[int] = None,
+        **kwargs,
+    ) -> None:
         """Audio file handler with optional resampling.
 
         Args:
@@ -143,6 +147,9 @@ class AudioFileHandler(AbstractFileHandler):
             **kwargs: Additional keyword arguments passed to
                 torchaudio.transforms.Resample.
         """
+        # ? audobject passes _object_root_ to the object, which is not a valid
+        # ? argument for the file handler.
+        kwargs.pop("_object_root_", None)
         self.target_sample_rate = target_sample_rate
         self.kwargs = kwargs
 
