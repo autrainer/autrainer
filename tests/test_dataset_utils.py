@@ -112,7 +112,7 @@ class TestMultiLabelEncoder:
 
     def test_predict_batch(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
-        x = torch.Tensor([0.1, 0.9, 0.6])
+        x = torch.Tensor([-0.1, 0.9, 0.6])
         assert encoder.predict_batch(x) == [
             0,
             1,

@@ -197,7 +197,7 @@ class MultiLabelEncoder(AbstractTargetTransform):
         Returns:
             Binary tensor of encoded predictions.
         """
-        return (x > self.threshold).int().squeeze().tolist()
+        return (torch.sigmoid(x) > self.threshold).int().squeeze().tolist()
 
     def majority_vote(self, x: List[List[str]]) -> List[str]:
         """Get the majority vote from a list of lists of decoded target labels
