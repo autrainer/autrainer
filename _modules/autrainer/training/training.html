@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+    <script src="../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -358,7 +358,8 @@ document.write(`
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span>
+<span class="kn">import</span> <span class="nn">hydra</span>
+<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
@@ -374,9 +375,10 @@ document.write(`
     <span class="n">set_seed</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">autrainer.datasets</span> <span class="kn">import</span> <span class="n">AbstractDataset</span>
+<span class="kn">from</span> <span class="nn">autrainer.datasets.utils</span> <span class="kn">import</span> <span class="n">AbstractFileHandler</span>
 <span class="kn">from</span> <span class="nn">autrainer.loggers</span> <span class="kn">import</span> <span class="n">AbstractLogger</span>
 <span class="kn">from</span> <span class="nn">autrainer.models</span> <span class="kn">import</span> <span class="n">AbstractModel</span>
-<span class="kn">from</span> <span class="nn">autrainer.transforms</span> <span class="kn">import</span> <span class="n">TransformManager</span>
+<span class="kn">from</span> <span class="nn">autrainer.transforms</span> <span class="kn">import</span> <span class="n">SmartCompose</span><span class="p">,</span> <span class="n">TransformManager</span>
 
 <span class="kn">from</span> <span class="nn">.callback_manager</span> <span class="kn">import</span> <span class="n">CallbackManager</span>
 <span class="kn">from</span> <span class="nn">.continue_training</span> <span class="kn">import</span> <span class="n">ContinueTraining</span>
@@ -532,8 +534,16 @@ document.write(`
             <span class="p">)</span>
 
         <span class="c1"># ? Load Scheduler</span>
+        <span class="n">_scheduler_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">scheduler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">=</span> <span class="n">_scheduler_cfg</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+            <span class="s2">&quot;step_frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;batch&quot;</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Scheduler frequency </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span><span class="si">}</span><span class="s2"> not supported&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="n">_scheduler_cfg</span><span class="p">,</span>
             <span class="n">instance_of</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">,</span>
             <span class="n">optimizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
         <span class="p">)</span>
@@ -586,6 +596,32 @@ document.write(`
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">file_handler</span><span class="p">,</span> <span class="s2">&quot;file_handler.yaml&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># ? Load and Save Preprocessing Pipeline if specified</span>
+        <span class="n">_preprocess_pipe</span> <span class="o">=</span> <span class="n">SmartCompose</span><span class="p">([])</span>
+        <span class="n">_file_handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">file_handler</span>
+        <span class="n">_features_subdir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;features_subdir&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_features_subdir</span> <span class="o">!=</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+            <span class="n">_preprocess</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span>
+                <span class="n">hydra</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;preprocessing/</span><span class="si">{</span><span class="n">_features_subdir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="p">)[</span><span class="s2">&quot;preprocessing&quot;</span><span class="p">]</span>
+            <span class="n">_file_handler</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">_preprocess</span><span class="p">[</span><span class="s2">&quot;file_handler&quot;</span><span class="p">],</span>
+                <span class="n">instance_of</span><span class="o">=</span><span class="n">AbstractFileHandler</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_preprocess_pipe</span> <span class="o">=</span> <span class="n">SmartCompose</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_preprocess</span><span class="p">[</span><span class="s2">&quot;pipeline&quot;</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">(</span>
+            <span class="n">_preprocess_pipe</span><span class="p">,</span> <span class="s2">&quot;preprocess_pipeline.yaml&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">(</span>
+            <span class="n">_file_handler</span><span class="p">,</span> <span class="s2">&quot;preprocess_file_handler.yaml&quot;</span>
         <span class="p">)</span>
 
         <span class="c1"># ? Create Timers</span>
@@ -795,6 +831,8 @@ document.write(`
                     <span class="n">target</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
                 <span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;batch&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sample_idx</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                     <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_end&quot;</span><span class="p">,</span>
@@ -804,9 +842,9 @@ document.write(`
                     <span class="n">loss</span><span class="o">=</span><span class="n">l</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">train_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">epoch_folder</span><span class="p">)</span>
                 <span class="n">train_loss</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">train_loss</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loss</span><span class="p">)</span>
@@ -882,6 +920,8 @@ document.write(`
                 <span class="n">target</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;batch&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sample_idx</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                 <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_end&quot;</span><span class="p">,</span>
@@ -891,9 +931,9 @@ document.write(`
                 <span class="n">loss</span><span class="o">=</span><span class="n">l</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">train_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
                 <span class="n">step_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;step_</span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">create_folder</span><span class="p">(</span><span class="n">step_folder</span><span class="p">)</span>

@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=938c9ccc"></script>
+    <script src="../../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -525,7 +525,11 @@ document.write(`
 <div class="viewcode-block" id="AudioFileHandler">
 <a class="viewcode-back" href="../../../../modules/dataset_utils.html#autrainer.datasets.utils.AudioFileHandler">[docs]</a>
 <span class="k">class</span> <span class="nc">AudioFileHandler</span><span class="p">(</span><span class="n">AbstractFileHandler</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_sample_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">target_sample_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Audio file handler with optional resampling.</span>
 
 <span class="sd">        Args:</span>
@@ -536,6 +540,9 @@ document.write(`
 <span class="sd">            **kwargs: Additional keyword arguments passed to</span>
 <span class="sd">                torchaudio.transforms.Resample.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ? audobject passes _object_root_ to the object, which is not a valid</span>
+        <span class="c1"># ? argument for the file handler.</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_object_root_&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_sample_rate</span> <span class="o">=</span> <span class="n">target_sample_rate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 

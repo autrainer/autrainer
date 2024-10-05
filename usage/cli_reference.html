@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+    <script src="../_static/documentation_options.js?v=e259d695"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -697,7 +697,7 @@ the environment variable <code class="code docutils literal notranslate"><span c
 <dd><p>Extract embeddings from the model in addition to predictions.For each file, a .pt file with embeddings will be saved.Defaults to False.</p>
 </dd>
 <dt><kbd>-p, --preprocess-cfg</kbd></dt>
-<dd><p>Preprocessing configuration to apply to input. Can be a path to a YAML file or the name of the preprocessing configuration in the local or autrainer ‘conf/preprocessing’ directory. If None, no preprocessing will be applied. Defaults to None.</p>
+<dd><p>Preprocessing configuration to apply to input. Can be a path to a YAML file or the name of the preprocessing configuration in the local or autrainer ‘conf/preprocessing’ directory. If ‘default’, the default preprocessing configuration used during training will be applied. If ‘None’, no preprocessing will be applied. Defaults to ‘default’.</p>
 </dd>
 <dt><kbd>-w, --window-length</kbd></dt>
 <dd><p>Window length for sliding window inference in seconds. If None, the entire input will be processed at once. Defaults to None.</p>
@@ -751,15 +751,15 @@ Manual grouping of the training results can be done using <a class="reference in
 <dt><kbd>-a, --aggregate</kbd></dt>
 <dd><dl class="simple">
 <dt>Configurations to aggregate. One or more of:</dt><dd><ul class="simple">
+<li><p>scheduler</p></li>
 <li><p>dataset</p></li>
-<li><p>optimizer</p></li>
-<li><p>iterations</p></li>
-<li><p>seed</p></li>
 <li><p>augmentation</p></li>
+<li><p>seed</p></li>
+<li><p>model</p></li>
+<li><p>optimizer</p></li>
 <li><p>learning_rate</p></li>
 <li><p>batch_size</p></li>
-<li><p>model</p></li>
-<li><p>scheduler</p></li>
+<li><p>iterations</p></li>
 </ul>
 </dd>
 </dl>

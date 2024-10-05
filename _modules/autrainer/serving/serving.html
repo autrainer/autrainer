@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+    <script src="../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -383,7 +383,7 @@ document.write(`
         <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">checkpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_best&quot;</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
-        <span class="n">preprocess_cfg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">preprocess_cfg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
         <span class="n">window_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">stride_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">min_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -398,7 +398,10 @@ document.write(`
 <span class="sd">            checkpoint: Checkpoint directory containing a model.pt file.</span>
 <span class="sd">                Defaults to &quot;_best&quot;.</span>
 <span class="sd">            device: Device to run inference on. Defaults to &quot;cpu&quot;.</span>
-<span class="sd">            preprocess_cfg: Preprocessing configuration file. Defaults to None.</span>
+<span class="sd">            preprocess_cfg: Preprocessing configuration file. If &quot;default&quot;,</span>
+<span class="sd">                the default preprocessing pipeline used during training is</span>
+<span class="sd">                applied. If None, no preprocessing is applied. Defaults to</span>
+<span class="sd">                &quot;default&quot;.</span>
 <span class="sd">            window_length: Window length in seconds for sliding window</span>
 <span class="sd">                inference. Defaults to None.</span>
 <span class="sd">            stride_length: Stride length in seconds for sliding window</span>
@@ -443,7 +446,14 @@ document.write(`
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_pipeline</span> <span class="o">=</span> <span class="n">SmartCompose</span><span class="p">([])</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_cfg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_cfg</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="p">:</span> <span class="n">AbstractFileHandler</span> <span class="o">=</span> <span class="n">audobject</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_path</span><span class="p">,</span> <span class="s2">&quot;preprocess_file_handler.yaml&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_pipeline</span><span class="p">:</span> <span class="n">SmartCompose</span> <span class="o">=</span> <span class="n">audobject</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_path</span><span class="p">,</span> <span class="s2">&quot;preprocess_pipeline.yaml&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_cfg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">preprocess_cfg</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span>
                 <span class="n">OmegaConf</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_cfg</span><span class="p">)</span>
             <span class="p">)</span>

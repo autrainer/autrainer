@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=938c9ccc"></script>
+    <script src="../../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -485,12 +485,14 @@ document.write(`
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="p">(</span>
                 <span class="s2">&quot;Preprocessing configuration to apply to input. Can be a path &quot;</span>
                 <span class="s2">&quot;to a YAML file or the name of the preprocessing configuration &quot;</span>
                 <span class="s2">&quot;in the local or autrainer &#39;conf/preprocessing&#39; directory. &quot;</span>
-                <span class="s2">&quot;If None, no preprocessing will be applied. Defaults to None.&quot;</span>
+                <span class="s2">&quot;If &#39;default&#39;, the default preprocessing configuration used &quot;</span>
+                <span class="s2">&quot;during training will be applied. If &#39;None&#39;, no preprocessing &quot;</span>
+                <span class="s2">&quot;will be applied. Defaults to &#39;default&#39;.&quot;</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -550,7 +552,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_valid_input</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_valid_device</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_valid_checkpoint</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_preprocess_cfg_exists</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_and_set_preprocess_path</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_assert_model_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">InferenceArgs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -621,8 +623,12 @@ document.write(`
             <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_assert_preprocess_cfg_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">InferenceArgs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">preprocess_cfg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_assert_and_set_preprocess_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">InferenceArgs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">preprocess_cfg</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">preprocess_cfg</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">preprocess_cfg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">preprocess_cfg</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">preprocess_cfg</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.yaml&quot;</span><span class="p">):</span>
@@ -704,7 +710,7 @@ document.write(`
     <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wav&quot;</span><span class="p">,</span>
     <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">embeddings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">preprocess_cfg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">preprocess_cfg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
     <span class="n">window_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">stride_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">min_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -737,8 +743,9 @@ document.write(`
 <span class="sd">        preprocess_cfg: Preprocessing configuration to apply to input. Can be</span>
 <span class="sd">            a path to a YAML file or the name of the preprocessing</span>
 <span class="sd">            configuration in the local or autrainer &#39;conf/preprocessing&#39;</span>
-<span class="sd">            directory. If None, no preprocessing will be applied.</span>
-<span class="sd">            Defaults to None.</span>
+<span class="sd">            directory. If &quot;default&quot;, the default preprocessing configuration</span>
+<span class="sd">            used during training will be applied. If None, no preprocessing</span>
+<span class="sd">            will be applied. Defaults to &quot;default&quot;.</span>
 <span class="sd">        window_length: Window length for sliding window inference in seconds.</span>
 <span class="sd">            If None, the entire input will be processed at once.</span>
 <span class="sd">            Defaults to None.</span>
