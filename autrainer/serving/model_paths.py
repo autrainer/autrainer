@@ -112,8 +112,7 @@ class HubModelPath(AbstractModelPath):
             or os.path.join(
                 torch.hub.get_dir(),
                 "autrainer",
-                repo_id.replace("/", "--"),
-                f"--{revision or 'main'}",
+                repo_id.replace("/", "--") + f"--{revision or 'main'}",
             )
         ).as_posix()
         self.files = [
