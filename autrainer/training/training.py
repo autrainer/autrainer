@@ -177,8 +177,16 @@ class ModularTaskTrainer:
             )
 
         # ? Load Scheduler
+        _scheduler_cfg = self.cfg.scheduler
+        self.scheduler_frequency = _scheduler_cfg.pop(
+            "step_frequency", "evaluation"
+        )
+        if self.scheduler_frequency not in ["batch", "evaluation"]:
+            raise ValueError(
+                f"Scheduler frequency {self.scheduler_frequency} not supported"
+            )
         self.scheduler = autrainer.instantiate(
-            config=self.cfg.scheduler,
+            config=_scheduler_cfg,
             instance_of=torch.optim.lr_scheduler.LRScheduler,
             optimizer=self.optimizer,
         )
@@ -463,6 +471,8 @@ class ModularTaskTrainer:
                     target,
                     self.criterion,
                 )
+                if self.scheduler and self.scheduler_frequency == "batch":
+                    self.scheduler.step()
                 self.train_tracker.update(o, target, sample_idx)
                 self.callback_manager.callback(
                     position="cb_on_step_end",
@@ -472,9 +482,9 @@ class ModularTaskTrainer:
                     loss=l,
                 )
                 train_loss.append(l)
-            if self.scheduler:
-                self.scheduler.step()
             if epoch % self.cfg.eval_frequency == 0:
+                if self.scheduler and self.scheduler_frequency == "evaluation":
+                    self.scheduler.step()
                 self.train_timer.stop()
                 self.train_tracker.save(epoch_folder)
                 train_loss = sum(train_loss) / len(train_loss)
@@ -550,6 +560,8 @@ class ModularTaskTrainer:
                 target,
                 self.criterion,
             )
+            if self.scheduler and self.scheduler_frequency == "batch":
+                self.scheduler.step()
             self.train_tracker.update(o, target, sample_idx)
             self.callback_manager.callback(
                 position="cb_on_step_end",
@@ -559,9 +571,9 @@ class ModularTaskTrainer:
                 loss=l,
             )
             train_loss.append(l)
-            if self.scheduler:
-                self.scheduler.step()
             if step % self.cfg.eval_frequency == 0:
+                if self.scheduler and self.scheduler_frequency == "evaluation":
+                    self.scheduler.step()
                 self.train_timer.stop()
                 step_folder = f"step_{step}"
                 self.bookkeeping.create_folder(step_folder)
