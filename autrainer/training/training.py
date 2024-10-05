@@ -3,7 +3,8 @@ import os
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-from omegaconf import DictConfig
+import hydra
+from omegaconf import DictConfig, OmegaConf
 import pandas as pd
 import torch
 from tqdm import tqdm
@@ -19,9 +20,10 @@ from autrainer.core.utils import (
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
+from autrainer.datasets.utils import AbstractFileHandler
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
-from autrainer.transforms import TransformManager
+from autrainer.transforms import SmartCompose, TransformManager
 
 from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
@@ -229,6 +231,32 @@ class ModularTaskTrainer:
         )
         self.bookkeeping.save_audobject(
             self.data.file_handler, "file_handler.yaml"
+        )
+
+        # ? Load and Save Preprocessing Pipeline if specified
+        _preprocess_pipe = SmartCompose([])
+        _file_handler = self.data.file_handler
+        _features_subdir = cfg.dataset.get("features_subdir", "default")
+        if _features_subdir != "default":
+            _preprocess = OmegaConf.to_container(
+                hydra.compose(f"preprocessing/{_features_subdir}")
+            )["preprocessing"]
+            _file_handler = autrainer.instantiate_shorthand(
+                config=_preprocess["file_handler"],
+                instance_of=AbstractFileHandler,
+            )
+            _preprocess_pipe = SmartCompose(
+                [
+                    autrainer.instantiate_shorthand(t)
+                    for t in _preprocess["pipeline"]
+                ]
+            )
+
+        self.bookkeeping.save_audobject(
+            _preprocess_pipe, "preprocess_pipeline.yaml"
+        )
+        self.bookkeeping.save_audobject(
+            _file_handler, "preprocess_file_handler.yaml"
         )
 
         # ? Create Timers

@@ -10,6 +10,8 @@ MODEL_FILES = [
     "file_handler.yaml",
     "target_transform.yaml",
     "inference_transform.yaml",
+    "preprocess_file_handler.yaml",
+    "preprocess_pipeline.yaml",
 ]
 SAVE_FILES = tuple(["model.pt"] + MODEL_FILES)
 

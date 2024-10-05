@@ -278,6 +278,8 @@ class TestCLIInference(BaseIndividualTempDir):
             "file_handler.yaml",
             "target_transform.yaml",
             "inference_transform.yaml",
+            "preprocess_file_handler.yaml",
+            "preprocess_pipeline.yaml",
         ]:
             OmegaConf.save({}, f"model/{file}")
 
