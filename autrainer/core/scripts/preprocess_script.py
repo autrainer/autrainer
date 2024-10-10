@@ -69,6 +69,8 @@ class PreprocessScript(AbstractPreprocessScript):
         )
 
     def main(self, args: PreprocessArgs) -> None:
+        self._assert_num_workers(args.num_workers)
+
         import hydra
 
         self.num_workers = args.num_workers
@@ -101,6 +103,12 @@ class PreprocessScript(AbstractPreprocessScript):
         main()
         self._preprocess_datasets()
         self._clean_up()
+
+    def _assert_num_workers(self, num_workers: int) -> None:
+        if num_workers < 1:
+            raise ValueError(
+                f"Number of workers '{num_workers}' must be >= 1."
+            )
 
     def _preprocess_datasets(self) -> None:
         from concurrent.futures import ThreadPoolExecutor
