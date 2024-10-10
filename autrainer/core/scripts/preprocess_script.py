@@ -45,10 +45,13 @@ class PreprocessScript(AbstractPreprocessScript):
             "-n",
             "--num-workers",
             type=int,
-            default=-1,
+            default=1,
             metavar="N",
             required=False,
-            help="Number of workers to use for preprocessing. Defaults to -1.",
+            help=(
+                "Number of workers (threads) to use for preprocessing. "
+                "Defaults to 1."
+            ),
         )
         self.parser.add_argument(
             "-p",
@@ -138,18 +141,14 @@ class PreprocessScript(AbstractPreprocessScript):
             return pd.concat(dfs, ignore_index=True)[column].unique().tolist()
 
         def _create_subdirs(path: str, files: List[str]) -> None:
-            for f in files:
-                os.makedirs(
-                    os.path.dirname(os.path.join(path, f)),
-                    exist_ok=True,
-                )
+            dirs = {os.path.dirname(os.path.join(path, f)) for f in files}
 
-        def _get_num_chunks() -> int:
-            if self.num_workers == -1:
-                return os.cpu_count() or 1
-            return self.num_workers
+            for d in dirs:
+                os.makedirs(d, exist_ok=True)
 
         def _split_chunks(files: List[str], chunks: int) -> List[List[str]]:
+            if chunks == 1:
+                return [files]
             avg = len(files) / chunks
             out = []
             last = 0
@@ -215,13 +214,14 @@ class PreprocessScript(AbstractPreprocessScript):
                 os.path.join(dataset["path"], dataset["features_subdir"]),
                 unique_files,
             )
-            num_chunks = _get_num_chunks()
-            chunks = _split_chunks(unique_files, num_chunks)
+            chunks = _split_chunks(unique_files, self.num_workers)
             lock = tqdm.get_lock()
             with tqdm(
-                total=len(unique_files), desc=name, disable=self.silent
+                total=len(unique_files),
+                desc=name,
+                disable=self.silent,
             ) as pbar:
-                with ThreadPoolExecutor(max_workers=num_chunks) as executor:
+                with ThreadPoolExecutor(self.num_workers) as executor:
                     futures = [
                         executor.submit(
                             _process_chunk,
@@ -240,7 +240,7 @@ class PreprocessScript(AbstractPreprocessScript):
 @catch_cli_errors
 def preprocess(
     override_kwargs: Optional[dict] = None,
-    num_workers: int = -1,
+    num_workers: int = 1,
     pbar_frequency: int = 100,
     silent: bool = False,
     cfg_launcher: bool = False,
@@ -252,8 +252,8 @@ def preprocess(
     Args:
         override_kwargs: Additional Hydra override arguments to pass to the
             train script.
-        num_workers: Number of workers to use for preprocessing.
-            Defaults to -1.
+        num_workers: Number of workers (threads) to use for preprocessing.
+            Defaults to 1.
         pbar_frequency: Frequency of progress bar updates. Defaults to 100.
         silent: Disable progress bar output. Defaults to False.
         cfg_launcher: Use the launcher specified in the configuration instead
