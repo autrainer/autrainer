@@ -190,6 +190,7 @@ class PreprocessScript(AbstractPreprocessScript):
                 data = file_handler.load(in_path)
                 data = pipeline(data, 0)
                 output_file_handler.save(out_path, data)
+                del data
                 file_count += 1
                 if file_count % self.pbar_frequency == 0:
                     with lock:
