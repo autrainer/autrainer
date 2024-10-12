@@ -8,6 +8,10 @@ target_column: category
 file_type: npy
 file_handler: autrainer.datasets.utils.NumpyFileHandler
 
+train_folds: [1, 2, 3]
+dev_folds: [4]
+test_folds: [5]
+
 criterion: autrainer.criterions.BalancedCrossEntropyLoss
 metrics: 
   - autrainer.metrics.Accuracy
