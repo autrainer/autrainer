@@ -48,6 +48,20 @@ the :meth:`~autrainer.datasets.AbstractDataset.load_dataframes` method can be ov
 * :attr:`tracking_metric`: The :ref:`metric <metrics>` to track for early stopping and model selection.
 * :attr:`transform`: The :ref:`online transforms <online_transforms>` to apply to the data and the output :attr:`type` of the dataset.
 
+.. note::
+
+   The following attributes are automatically passed to the dataset during initialization and determined at runtime:
+   
+   * :attr:`train_transform`, :attr:`dev_transform`, and :attr:`test_transform`: The :class:`~autrainer.transforms.SmartCompose`
+     transformation pipelines (which may include possible :ref:`online transforms <online_transforms>` or :ref:`augmentations <augmentations>`).
+   * :attr:`seed`: The random seed for reproducibility during training.
+   * :attr:`batch_size`, :attr:`inference_batch_size`: The batch sizes for training and inference (dev, test).
+
+   The :attr:`transform` attribute in the configuration is not passed to the dataset during initialization
+   and is used to specify the :ref:`type of data <online_transforms>` the dataset provides as well as any
+   :ref:`online transforms <online_transforms>` to be applied to the data at runtime.
+
+
 To avoid race conditions when using :ref:`hydra_launcher_plugins` that may run multiple training jobs in parallel,
 :ref:`autrainer fetch <cli_autrainer_fetch>` and :ref:`autrainer preprocess <cli_preprocessing>`
 or :meth:`~autrainer.cli.fetch` and :meth:`~autrainer.cli.preprocess`

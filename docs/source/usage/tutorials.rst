@@ -140,18 +140,6 @@ This dataset assumes that the :file:`data/SpectrogramDataset` directory contains
 * :file:`train.csv`, :file:`dev.csv`, and :file:`test.csv` files containing the file paths relative to the :file:`default/` directory
   in the :attr:`index_column` column and the corresponding labels in the :attr:`target_column` column.
 
-.. note::
-
-   The following attributes are automatically passed to the dataset during initialization and determined at runtime:
-   
-   * :attr:`train_transform`, :attr:`dev_transform`, and :attr:`test_transform`: The :class:`~autrainer.transforms.SmartCompose`
-     transformation pipelines (which may include possible :ref:`online transforms <online_transforms>` or :ref:`augmentations <augmentations>`).
-   * :attr:`seed`: The random seed for reproducibility during training.
-   * :attr:`batch_size`, :attr:`inference_batch_size`: The batch sizes for training and inference (dev, test).
-
-   The :attr:`transform` attribute in the configuration is not passed to the dataset during initialization
-   and is used to specify the :ref:`type of data <online_transforms>` the dataset provides as well as any
-   :ref:`online transforms <online_transforms>` to be applied to the data at runtime.
 
 .. _tut_metrics:
 
