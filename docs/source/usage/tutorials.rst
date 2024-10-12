@@ -97,9 +97,11 @@ For example, the `ESC-50 <https://github.com/karolpiczak/ESC-50>`_ dataset is an
    :linenos:
 
 The dataset provides audio files by default (which are moved to the :file:`default/` directory in the
-:meth:`~autrainer.datasets.AbstractDataset.download` method).
-As the resulting dataset structure follows the standard format outlined in the :ref:`dataset documentation <datasets>`,
-no further implementation or overrides are necessary.
+:meth:`~autrainer.datasets.AbstractDataset.download` method) and the corresponding metadata of the dataset is stored in the :file:`esc50.csv` file.
+
+To allow the the specification of custom folds, the :meth:`~autrainer.datasets.AbstractDataset.load_dataframes`
+method is overridden to split the :file:`esc50.csv` file into the respective train, dev, and test dataframes.
+This also allows for cross-validation by creating multiple configurations with different folds.
 
 To extract log-Mel spectrograms from the audio files, a :ref:`preprocessing transform <preprocessing_transforms>`
 can be applied to the data before training.
