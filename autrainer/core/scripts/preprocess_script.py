@@ -235,7 +235,7 @@ class PreprocessScript(AbstractPreprocessScript):
 def preprocess(
     override_kwargs: Optional[dict] = None,
     num_workers: int = 1,
-    frequency: int = 100,
+    frequency: int = 1,
     cfg_launcher: bool = False,
     config_name: str = "config",
     config_path: Optional[str] = None,

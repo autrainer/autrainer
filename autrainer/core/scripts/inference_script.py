@@ -20,6 +20,7 @@ class InferenceArgs:
     extension: str
     recursive: bool
     embeddings: bool
+    frequency: int
     preprocess_cfg: Optional[str]
     window_length: Optional[float]
     stride_length: Optional[float]
@@ -123,7 +124,18 @@ class InferenceScript(AbstractScript):
                 "Defaults to False."
             ),
         )
-
+        self.parser.add_argument(
+            "-f",
+            "--frequency",
+            type=int,
+            default=1,
+            metavar="F",
+            required=False,
+            help=(
+                "Frequency of progress bar updates. "
+                "If 0, the progress bar will be disabled. Defaults to 1."
+            ),
+        )
         self.parser.add_argument(
             "-p",
             "--preprocess-cfg",
@@ -324,6 +336,7 @@ class InferenceScript(AbstractScript):
             args.input,
             extension=args.extension,
             recursive=args.recursive,
+            frequency=args.frequency,
         )
         inference.save_prediction_yaml(results, args.output)
         inference.save_prediction_results(results, args.output)
@@ -335,6 +348,7 @@ class InferenceScript(AbstractScript):
             args.input,
             extension=args.extension,
             recursive=args.recursive,
+            frequency=args.frequency,
         )
         inference.save_embeddings(
             results,
@@ -353,6 +367,7 @@ def inference(
     extension: str = "wav",
     recursive: bool = False,
     embeddings: bool = False,
+    frequency: int = 1,
     preprocess_cfg: Optional[str] = "default",
     window_length: Optional[float] = None,
     stride_length: Optional[float] = None,
@@ -383,6 +398,8 @@ def inference(
         embeddings: Extract embeddings from the model in addition to
             predictions. For each file, a .pt file with embeddings will be
             saved. Defaults to False.
+        frequency: Frequency of progress bar updates. If 0, the progress bar
+            will be disabled. Defaults to 1.
         preprocess_cfg: Preprocessing configuration to apply to input. Can be
             a path to a YAML file or the name of the preprocessing
             configuration in the local or autrainer 'conf/preprocessing'
@@ -417,6 +434,7 @@ def inference(
             extension,
             recursive,
             embeddings,
+            frequency,
             preprocess_cfg,
             window_length,
             stride_length,
