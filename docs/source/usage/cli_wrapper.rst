@@ -50,7 +50,7 @@ Preprocessing
 -------------
 
 To avoid race conditions when using :ref:`hydra_launcher_plugins` that may run multiple training jobs in parallel,
-:meth:`~autrainer.cli.fetch` and :meth:`~autrainer.cli.preprocess` are allow for the
+:meth:`~autrainer.cli.fetch` and :meth:`~autrainer.cli.preprocess` allow for
 downloading and :ref:`preprocessing <preprocessing_transforms>` of :ref:`datasets` (and pretrained model states) before training.
 
 Both commands are based on the :ref:`main configuration <main_configuration>` file (e.g. :file:`conf/config.yaml`),
