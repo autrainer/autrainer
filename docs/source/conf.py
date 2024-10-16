@@ -19,7 +19,7 @@ sys.path.append(os.path.abspath("../extensions"))
 project = pyroject["tool"]["poetry"]["name"]
 description = pyroject["tool"]["poetry"]["description"]
 author = build_authors(pyroject["tool"]["poetry"]["authors"])
-copyright = f"{datetime.datetime.now().year}, {author}"
+copyright = f"{datetime.datetime.now().year} (MIT) {author}"
 release = pyroject["tool"]["poetry"]["version"]
 
 
