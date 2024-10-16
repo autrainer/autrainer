@@ -1,12 +1,43 @@
 from functools import wraps
 import sys
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, Dict, Optional, TypeVar
 
 from .command_line_error import CommandLineError
 
 
 F = TypeVar("F", bound=Callable[..., Any])
 TQDM_LINE_ENDINGS = ["it/s]", "s/it]", "B/s]"]
+
+
+def encode_override_kwargs(override_kwargs: Dict[str, Any]) -> Dict[str, str]:
+    """Encode Hydra override kwargs by converting all values to strings.
+    List values are converted to strings by joining the elements with commas.
+    Boolean values are converted to lowercase strings.
+    Duplicate keys are automatically overwritten.
+
+    Args:
+        override_kwargs: The override kwargs to encode.
+
+    Returns:
+        Encoded override kwargs.
+
+    Raises:
+        CommandLineError: If any override argument values are not of type list,
+            str, int, float, or bool.
+    """
+    encoded_kwargs = {}
+    for key, value in override_kwargs.items():
+        if isinstance(value, list):
+            value = ",".join(map(str, value))
+        elif isinstance(value, bool):
+            value = str(value).lower()
+        if not isinstance(value, (str, int, float)):
+            raise CommandLineError(
+                f"Hydra override argument values must be of type list, "
+                f"str, int, float, or bool, but got {type(value)}."
+            )
+        encoded_kwargs[key] = str(value)
+    return encoded_kwargs
 
 
 def run_hydra_cmd(
@@ -35,14 +66,7 @@ def run_hydra_cmd(
     if config_path is not None:
         cmd += f" -cp {config_path}"
     if override_kwargs is not None:
-        for key, value in override_kwargs.items():
-            if isinstance(value, list):
-                value = ",".join(map(str, value))
-            if not isinstance(value, (str, int, float, bool)):
-                raise CommandLineError(
-                    f"Hydra override argument values must be of type list, "
-                    f"str, int, float, or bool, but got {type(value)}."
-                )
+        for key, value in encode_override_kwargs(override_kwargs).items():
             cmd += f" {key}={value}"
 
     with subprocess.Popen(
@@ -100,4 +124,7 @@ def add_hydra_args_to_sys(
     if config_path is not None:
         sys.argv.extend(["-cp", config_path])
     if override_kwargs is not None:
-        sys.argv.extend(f"{k}={v}" for k, v in override_kwargs.items())
+        sys.argv.extend(
+            f"{k}={v}"
+            for k, v in encode_override_kwargs(override_kwargs).items()
+        )
