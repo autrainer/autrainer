@@ -4,8 +4,8 @@ from typing import Dict, List, Union
 from omegaconf import DictConfig
 import wandb
 
+from autrainer.core.constants import ExportConstants
 from autrainer.loggers import (
-    EXPORT_ARTIFACTS,
     AbstractLogger,
     get_params_to_export,
 )
@@ -19,7 +19,9 @@ class WandBLogger(AbstractLogger):
         run_name: str,
         metrics: List[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[Union[str, Dict[str, str]]] = EXPORT_ARTIFACTS,
+        artifacts: List[
+            Union[str, Dict[str, str]]
+        ] = ExportConstants().ARTIFACTS,
         output_dir: str = "wandb",
     ) -> None:
         super().__init__(
