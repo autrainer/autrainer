@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import pandas as pd
 
-from autrainer.core.constants import NAMING_CONVENTION
+from autrainer.core.constants import NamingConstants
 from autrainer.postprocessing.postprocessing_utils import (
     get_run_names,
     load_yaml,
@@ -63,7 +63,10 @@ class ContinueTraining:
     @staticmethod
     def _create_run_config(run: str) -> dict:
         run_values = run.split("_")
-        return {n: v for n, v in zip(NAMING_CONVENTION, run_values)}
+        return {
+            n: v
+            for n, v in zip(NamingConstants().NAMING_CONVENTION, run_values)
+        }
 
     def _copy_dirs(self, trainer: ModularTaskTrainer, run: str) -> None:
         dirs = ["_best", "_initial"]

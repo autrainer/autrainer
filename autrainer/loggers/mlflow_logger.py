@@ -5,10 +5,10 @@ import warnings
 
 from omegaconf import DictConfig
 
+from autrainer.core.constants import ExportConstants
 from autrainer.metrics import AbstractMetric
 
 from .abstract_logger import (
-    EXPORT_ARTIFACTS,
     AbstractLogger,
     get_params_to_export,
 )
@@ -32,7 +32,9 @@ class MLFlowLogger(AbstractLogger):
         run_name: str,
         metrics: List[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[Union[str, Dict[str, str]]] = EXPORT_ARTIFACTS,
+        artifacts: List[
+            Union[str, Dict[str, str]]
+        ] = ExportConstants().ARTIFACTS,
         output_dir: str = "mlruns",
     ) -> None:
         super().__init__(

@@ -9,6 +9,7 @@ import torch
 from torch.utils.data import DataLoader
 
 import autrainer
+from autrainer.core.constants import TrainingConstants
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 
@@ -23,7 +24,6 @@ from .utils import (
 
 
 T = TypeVar("T")
-TASKS = ["classification", "regression", "ml-classification"]
 
 
 class AbstractDataset(ABC):
@@ -52,8 +52,8 @@ class AbstractDataset(ABC):
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
             seed: Seed for reproducibility.
-            task: Task of the dataset in ['classification', 'regression',
-                'ml-classification'].
+            task: Task of the dataset in
+                :const:`~autrainer.core.constants.TrainingConstants.TASKS`.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
             index_column: Index column of the dataframe.
@@ -96,7 +96,7 @@ class AbstractDataset(ABC):
 
     @staticmethod
     def _assert_task(task: str) -> None:
-        if task not in TASKS:
+        if task not in TrainingConstants().TASKS:
             raise ValueError(f"Task '{task}' not supported.")
 
     @staticmethod

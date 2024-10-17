@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from autrainer.core.constants import VALID_AGGREGATIONS
+from autrainer.core.constants import NamingConstants
 from autrainer.core.scripts.abstract_script import MockParser
 
 from .abstract_postprocess_script import (
@@ -47,7 +47,7 @@ class PostprocessScript(AbstractPostprocessScript):
             nargs="+",
             action="append",
             help="Configurations to aggregate. One or more of:"
-            + "\n - ".join([""] + VALID_AGGREGATIONS),
+            + "\n - ".join([""] + NamingConstants().VALID_AGGREGATIONS),
         )
 
     def main(self, args: PostprocessArgs) -> None:
@@ -60,7 +60,7 @@ class PostprocessScript(AbstractPostprocessScript):
             return
         for agg in args.aggregate:
             for a in agg:
-                if a not in VALID_AGGREGATIONS:
+                if a not in NamingConstants().VALID_AGGREGATIONS:
                     m = f"Invalid configuration to aggregate: '{a}'."
                     raise CommandLineError(self.parser, m)
 
@@ -109,7 +109,7 @@ def postprocess(
         experiment_id: ID of experiment to postprocess.
         max_runs: Maximum number of best runs to plot. Defaults to None.
         aggregate: Configurations to aggregate. One or more of:
-            :const:`~autrainer.core.constants.VALID_AGGREGATIONS`.
+            :const:`~autrainer.core.constants.NamingConstants.VALID_AGGREGATIONS`.
             Defaults to None.
 
     Raises:

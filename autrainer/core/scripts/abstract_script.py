@@ -3,7 +3,7 @@ import argparse
 import sys
 from typing import Any, Dict, List, Optional, Type, TypeVar
 
-from autrainer.core.constants import CONFIG_FOLDERS
+from autrainer.core.constants import NamingConstants
 
 from .command_line_error import CommandLineError
 
@@ -97,7 +97,7 @@ class AbstractScript(ABC):
         Raises:
             CommandLineError: If the configuration directory is invalid.
         """
-        if directory not in CONFIG_FOLDERS:
+        if directory not in NamingConstants().CONFIG_DIRS:
             raise CommandLineError(
                 parser=self.parser,
                 message=f"Invalid configuration directory '{directory}'.",

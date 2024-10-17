@@ -6,7 +6,7 @@ from omegaconf import DictConfig, OmegaConf
 import pandas as pd
 
 import autrainer
-from autrainer.core.constants import NAMING_CONVENTION
+from autrainer.core.constants import NamingConstants
 from autrainer.core.plotting import PlotMetrics
 from autrainer.loggers import get_params_to_export
 from autrainer.metrics import AbstractMetric
@@ -195,7 +195,7 @@ class SummarizeGrid:
             df = pd.read_csv(metrics_path)
             last_row = df.iloc[-1:]
             run_details = n.split("_")
-            for i, param in enumerate(NAMING_CONVENTION):
+            for i, param in enumerate(NamingConstants().NAMING_CONVENTION):
                 last_row.insert(i, param, run_details[i])
             metrics_df = pd.concat((metrics_df, last_row), ignore_index=True)
         for metric in metrics_to_plot:
