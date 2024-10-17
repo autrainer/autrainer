@@ -7,7 +7,7 @@ from omegaconf import OmegaConf
 import pytest
 
 import autrainer.cli
-from autrainer.core.constants import CONFIG_FOLDERS
+from autrainer.core.constants import NamingConstants
 from autrainer.core.scripts.command_line_error import CommandLineError
 
 from .utils import BaseIndividualTempDir
@@ -102,7 +102,7 @@ class TestCLICreate(BaseIndividualTempDir):
             ["model"],
             ["model", "dataset"],
             ["model", "dataset", "optimizer", "scheduler"],
-            CONFIG_FOLDERS,
+            NamingConstants().CONFIG_DIRS,
         ],
     )
     def test_create_directories(self, dirs: List[str]) -> None:
@@ -122,7 +122,8 @@ class TestCLICreate(BaseIndividualTempDir):
     def test_create_all(self) -> None:
         autrainer.cli.create(all=True)
         assert all(
-            os.path.exists(f"conf/{directory}") for directory in CONFIG_FOLDERS
+            os.path.exists(f"conf/{directory}")
+            for directory in NamingConstants().CONFIG_DIRS
         ), "Should create all directories."
         assert os.path.exists("conf/config.yaml"), "Should create config.yaml."
 
