@@ -314,14 +314,14 @@ class Inference:
         pattern = f"**/*.{extension}" if recursive else f"*.{extension}"
         return glob.glob(os.path.join(directory, pattern), recursive=True)
 
-    def _preprocess_file(self, x: Union[torch.Tensor]) -> torch.Tensor:
+    def _preprocess_file(self, x: torch.Tensor) -> torch.Tensor:
         x = self._pad_audio(x)
         x = self.preprocess_pipeline(x, 0)
         x = self.inference_transform(x, 0)
         x = x.unsqueeze(0).to(self._device)
         return x
 
-    def _predict(self, x: Union[torch.Tensor]) -> Tuple[Any, torch.Tensor]:
+    def _predict(self, x: torch.Tensor) -> Tuple[Any, torch.Tensor]:
         x = self._preprocess_file(x)
         with torch.inference_mode():
             output = self.model(x).cpu()
@@ -329,7 +329,7 @@ class Inference:
         prediction = self.target_transform.decode(prediction)
         return prediction, output
 
-    def _embed(self, x: Union[torch.Tensor]) -> torch.Tensor:
+    def _embed(self, x: torch.Tensor) -> torch.Tensor:
         x = self._preprocess_file(x)
         with torch.inference_mode():
             embedding = self.model.embeddings(x).cpu().squeeze()
@@ -343,7 +343,7 @@ class Inference:
 
     def _predict_windowed(
         self,
-        x: Union[torch.Tensor],
+        x: torch.Tensor,
     ) -> Tuple[Dict[str, Any], Dict[str, torch.Tensor]]:
         results = {}
         outputs = {}
@@ -361,10 +361,7 @@ class Inference:
         outputs["majority"] = torch.empty(0)
         return results, outputs
 
-    def _embed_windowed(
-        self,
-        x: Union[torch.Tensor],
-    ) -> Dict[str, torch.Tensor]:
+    def _embed_windowed(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
         results = {}
         w_len, s_len, num_windows = self._create_windows(x)
         for i in range(num_windows):
@@ -376,7 +373,7 @@ class Inference:
             results[f"{start_time:.2f}-{end_time:.2f}"] = embedding
         return results
 
-    def _pad_audio(self, x: Union[torch.Tensor]) -> Union[torch.Tensor]:
+    def _pad_audio(self, x: torch.Tensor) -> torch.Tensor:
         if not self._min_length:
             return x
         min_length = int(self._min_length * self._sample_rate)

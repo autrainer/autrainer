@@ -167,6 +167,8 @@ class MultiLabelEncoder(AbstractTargetTransform):
         Returns:
             Binary tensor of encoded target labels.
         """
+        if len(x) == 0:
+            return torch.zeros(len(self.labels))
         if isinstance(x, (torch.Tensor, np.ndarray)) or all(
             isinstance(i, (int, float)) for i in x
         ):

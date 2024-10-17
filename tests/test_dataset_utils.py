@@ -110,6 +110,18 @@ class TestMultiLabelEncoder:
             "jazz",
         ], "Should encode and decode."
 
+    def test_empty_encode(self) -> None:
+        encoder = MultiLabelEncoder(0.5, self.labels)
+        assert torch.all(
+            encoder([]) == torch.zeros(3)
+        ), "Should encode an empty list."
+
+    def test_empty_decode(self) -> None:
+        encoder = MultiLabelEncoder(0.5, self.labels)
+        assert (
+            encoder.decode(encoder([]).tolist()) == []
+        ), "Should decode an empty list."
+
     def test_predict_batch(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
         x = torch.Tensor([-0.1, 0.9, 0.6])
