@@ -47,7 +47,9 @@ class PostprocessScript(AbstractPostprocessScript):
             nargs="+",
             action="append",
             help="Configurations to aggregate. One or more of:"
-            + "\n - ".join([""] + NamingConstants().VALID_AGGREGATIONS),
+            + "\n - ".join(
+                [""] + sorted(NamingConstants().VALID_AGGREGATIONS)
+            ),
         )
 
     def main(self, args: PostprocessArgs) -> None:

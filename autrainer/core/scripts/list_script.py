@@ -32,7 +32,7 @@ class ListScript(AbstractScript):
             "directory",
             type=str,
             help="The directory to list configurations from. Choose from:"
-            + "\n - ".join([""] + NamingConstants().CONFIG_DIRS),
+            + "\n - ".join([""] + sorted(NamingConstants().CONFIG_DIRS)),
         )
         self.parser.add_argument(
             "-l",

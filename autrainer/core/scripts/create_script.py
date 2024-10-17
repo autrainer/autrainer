@@ -34,7 +34,7 @@ class CreateScript(AbstractScript):
             type=str,
             nargs="*",
             help="Configuration directories to create. One or more of:"
-            + "\n - ".join([""] + NamingConstants().CONFIG_DIRS),
+            + "\n - ".join([""] + sorted(NamingConstants().CONFIG_DIRS)),
         )
         self.parser.add_argument(
             "-e",
