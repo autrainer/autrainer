@@ -14,8 +14,6 @@ class TDNNFFNN(AbstractModel):
         output_dim: int,
         hidden_size: int,
         num_layers: int = 2,
-        sigmoid: bool = False,
-        softmax: bool = False,
         dropout: float = 0.5,
     ) -> None:
         """Time Delay Neural Network with FFNN frontend.
@@ -24,15 +22,11 @@ class TDNNFFNN(AbstractModel):
             output_dim: Output dimension.
             hidden_size: Hidden size.
             num_layers: Number of layers. Defaults to 2.
-            sigmoid: Whether to use sigmoid activation. Defaults to False.
-            softmax: Whether to use softmax activation. Defaults to False.
             dropout: Dropout rate. Defaults to 0.5.
         """
         super().__init__(output_dim)
         self.hidden_size = hidden_size
         self.num_layers = num_layers
-        self.sigmoid = sigmoid
-        self.softmax = softmax
         self.dropout = dropout
         checkpoint_dir = os.path.join(torch.hub.get_dir(), "speechbrain")
         os.makedirs(checkpoint_dir, exist_ok=True)
@@ -50,8 +44,6 @@ class TDNNFFNN(AbstractModel):
             hidden_size=hidden_size,
             output_dim=output_dim,
             num_layers=num_layers,
-            sigmoid=sigmoid,
-            softmax=softmax,
             dropout=dropout,
         )
 
