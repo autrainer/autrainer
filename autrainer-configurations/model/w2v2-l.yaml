@@ -4,8 +4,6 @@ model_name: facebook/wav2vec2-large
 freeze_extractor: true
 hidden_size: 512
 num_layers: 2
-sigmoid: false
-softmax: false
 dropout: 0.5
 
 transform:
