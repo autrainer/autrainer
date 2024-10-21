@@ -1,5 +1,4 @@
 from abc import ABC
-import inspect
 from typing import Any, Type
 
 
@@ -8,6 +7,7 @@ class AbstractConstants(ABC):
     `autrainer`.
     """
 
+    _name = "AbstractConstants"
     _instance = None
 
     def __new__(cls):
@@ -15,13 +15,17 @@ class AbstractConstants(ABC):
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    @staticmethod
-    def _assert_type(value: Any, value_type: Type[Any], msg: str = "") -> None:
+    def _assert_type(
+        self,
+        value: Any,
+        value_type: Type[Any],
+        constant: str,
+        msg: str = "",
+    ) -> None:
         if not isinstance(value, value_type):
-            prop = inspect.currentframe().f_back.f_code.co_qualname
             msg = f" {msg}" if msg else ""
             raise ValueError(
-                f"Invalid type for '{prop}'{msg}: "
+                f"Invalid type for '{self._name}.{constant}'{msg}: "
                 f"expected '{value_type.__name__}', "
                 f"but got '{type(value).__name__}' with value '{value}'."
             )

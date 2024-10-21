@@ -7,6 +7,7 @@ class ExportConstants(AbstractConstants):
     """Singleton for managing the export and logging configurations of
     `autrainer`."""
 
+    _name = "ExportConstants"
     _logging_depth = 2
     _ignore_params = [
         "results_dir",
@@ -53,11 +54,9 @@ class ExportConstants(AbstractConstants):
         Raises:
             ValueError: If the logging depth is not an integer or is negative.
         """
-        self._assert_type(logging_depth, int)
+        self._assert_type(logging_depth, int, "LOGGING_DEPTH")
         if logging_depth < 0:
-            raise ValueError(
-                "ExportConstants.LOGGING_DEPTH must be non-negative."
-            )
+            raise ValueError("LOGGING_DEPTH must be non-negative.")
         self._logging_depth = logging_depth
 
     @property
@@ -85,9 +84,9 @@ class ExportConstants(AbstractConstants):
         Raises:
             ValueError: If the ignored parameters are not a list of strings.
         """
-        self._assert_type(ignore_params, list)
+        self._assert_type(ignore_params, list, "IGNORE_PARAMS")
         for t in ignore_params:
-            self._assert_type(t, str, "in ignored parameters")
+            self._assert_type(t, str, "IGNORE_PARAMS", "in ignored parameters")
         self._ignore_params = ignore_params
 
     @property
@@ -112,12 +111,12 @@ class ExportConstants(AbstractConstants):
             ValueError: If the artifacts are not a list of strings or
                 dictionaries.
         """
-        self._assert_type(artifacts, list)
+        self._assert_type(artifacts, list, "ARTIFACTS")
         for a in artifacts:
             if isinstance(a, dict):
                 for k, v in a.items():
-                    self._assert_type(k, str, "in artifacts")
-                    self._assert_type(v, str, "in artifacts")
+                    self._assert_type(k, str, "ARTIFACTS", "in artifacts")
+                    self._assert_type(v, str, "ARTIFACTS", "in artifacts")
             else:
-                self._assert_type(a, str, "in artifacts")
+                self._assert_type(a, str, "ARTIFACTS", "in artifacts")
         self._artifacts = artifacts

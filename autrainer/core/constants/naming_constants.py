@@ -6,6 +6,7 @@ from .abstract_constants import AbstractConstants
 class NamingConstants(AbstractConstants):
     """Singleton for managing the naming configurations of `autrainer`."""
 
+    _name = "NamingConstants"
     _naming_convention = [
         "dataset",
         "model",
@@ -54,9 +55,14 @@ class NamingConstants(AbstractConstants):
         Raises:
             ValueError: If the naming convention is not a list of strings.
         """
-        self._assert_type(naming_convention, list)
+        self._assert_type(naming_convention, list, "NAMING_CONVENTION")
         for n in naming_convention:
-            self._assert_type(n, str, "in naming convention")
+            self._assert_type(
+                n,
+                str,
+                "NAMING_CONVENTION",
+                "in naming convention",
+            )
         self._naming_convention = naming_convention
 
     @property
@@ -79,9 +85,14 @@ class NamingConstants(AbstractConstants):
         Raises:
             ValueError: If the invalid aggregations are not a list of strings.
         """
-        self._assert_type(invalid_aggregations, list)
+        self._assert_type(invalid_aggregations, list, "INVALID_AGGREGATIONS")
         for i in invalid_aggregations:
-            self._assert_type(i, str, "in invalid aggregations")
+            self._assert_type(
+                i,
+                str,
+                "INVALID_AGGREGATIONS",
+                "in invalid aggregations",
+            )
         self._invalid_aggregations = invalid_aggregations
 
     @property
@@ -106,9 +117,14 @@ class NamingConstants(AbstractConstants):
         Raises:
             ValueError: If the valid aggregations are not a list of strings.
         """
-        self._assert_type(valid_aggregations, list)
+        self._assert_type(valid_aggregations, list, "VALID_AGGREGATIONS")
         for v in valid_aggregations:
-            self._assert_type(v, str, "in valid aggregations")
+            self._assert_type(
+                v,
+                str,
+                "VALID_AGGREGATIONS",
+                "in valid aggregations",
+            )
         self._valid_aggregations = valid_aggregations
 
     @property
@@ -133,7 +149,12 @@ class NamingConstants(AbstractConstants):
             ValueError: If the configuration directories are not a list of
                 strings.
         """
-        self._assert_type(config_dirs, list)
+        self._assert_type(config_dirs, list, "CONFIG_DIRS")
         for c in config_dirs:
-            self._assert_type(c, str, "in configuration directories")
+            self._assert_type(
+                c,
+                str,
+                "CONFIG_DIRS",
+                "in configuration directories",
+            )
         self._config_dirs = config_dirs
