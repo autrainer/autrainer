@@ -8,6 +8,7 @@ import audobject
 from omegaconf import OmegaConf
 import pandas as pd
 import torch
+from tqdm import tqdm
 import yaml
 
 import autrainer
@@ -114,6 +115,7 @@ class Inference:
         directory: str,
         extension: str,
         recursive: bool = False,
+        update_frequency: int = 1,
     ) -> pd.DataFrame:
         """Obtain the model predictions for all files in a directory.
 
@@ -122,6 +124,8 @@ class Inference:
             extension: File extension of the audio files.
             recursive: Whether to search recursively for audio files in
                 subdirectories. Defaults to False.
+            update_frequency: Frequency of progress bar updates. If 0, the
+                progress bar will be disabled. Defaults to 1.
 
         Returns:
             DataFrame containing the filename, prediction, and output for
@@ -130,7 +134,12 @@ class Inference:
         """
         files = self._collect_files(directory, extension, recursive)
         records = []
-        for file in files:
+        for file in tqdm(
+            files,
+            disable=update_frequency == 0,
+            miniters=update_frequency,
+            desc="Inference prediction",
+        ):
             prediction, output = self.predict_file(file)
             if isinstance(prediction, dict):
                 for (offset, pred), out in zip(
@@ -159,6 +168,7 @@ class Inference:
         directory: str,
         extension: str,
         recursive: bool = False,
+        update_frequency: int = 1,
     ) -> pd.DataFrame:
         """Obtain the model embeddings for all files in a directory.
 
@@ -167,6 +177,8 @@ class Inference:
             extension: File extension of the audio files.
             recursive: Whether to search recursively for audio files in
                 subdirectories. Defaults to False.
+            update_frequency: Frequency of progress bar updates. If 0, the
+            progress bar will be disabled. Defaults to 1.
 
         Returns:
             DataFrame containing the filename and embedding for each file.
@@ -175,7 +187,12 @@ class Inference:
         """
         files = self._collect_files(directory, extension, recursive)
         records = []
-        for file in files:
+        for file in tqdm(
+            files,
+            disable=update_frequency == 0,
+            miniters=update_frequency,
+            desc="Inference embedding",
+        ):
             embedding = self.embed_file(file)
             if isinstance(embedding, dict):
                 for offset, emb in embedding.items():
