@@ -41,7 +41,7 @@ class DCASE2016Task1(BaseClassificationDataset):
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
         index_column: str,
-        target_column: Union[str, List[str]],
+        target_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
