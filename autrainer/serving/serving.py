@@ -115,7 +115,7 @@ class Inference:
         directory: str,
         extension: str,
         recursive: bool = False,
-        frequency: int = 1,
+        update_frequency: int = 1,
     ) -> pd.DataFrame:
         """Obtain the model predictions for all files in a directory.
 
@@ -124,8 +124,8 @@ class Inference:
             extension: File extension of the audio files.
             recursive: Whether to search recursively for audio files in
                 subdirectories. Defaults to False.
-            frequency: Frequency of progress bar updates. If 0, the progress
-                bar will be disabled. Defaults to 1.
+            update_frequency: Frequency of progress bar updates. If 0, the
+                progress bar will be disabled. Defaults to 1.
 
         Returns:
             DataFrame containing the filename, prediction, and output for
@@ -136,8 +136,8 @@ class Inference:
         records = []
         for file in tqdm(
             files,
-            disable=frequency == 0,
-            miniters=frequency,
+            disable=update_frequency == 0,
+            miniters=update_frequency,
             desc="Inference prediction",
         ):
             prediction, output = self.predict_file(file)
@@ -168,7 +168,7 @@ class Inference:
         directory: str,
         extension: str,
         recursive: bool = False,
-        frequency: int = 1,
+        update_frequency: int = 1,
     ) -> pd.DataFrame:
         """Obtain the model embeddings for all files in a directory.
 
@@ -177,8 +177,8 @@ class Inference:
             extension: File extension of the audio files.
             recursive: Whether to search recursively for audio files in
                 subdirectories. Defaults to False.
-            frequency: Frequency of progress bar updates. If 0, the progress
-                bar will be disabled. Defaults to 1.
+            update_frequency: Frequency of progress bar updates. If 0, the
+            progress bar will be disabled. Defaults to 1.
 
         Returns:
             DataFrame containing the filename and embedding for each file.
@@ -189,8 +189,8 @@ class Inference:
         records = []
         for file in tqdm(
             files,
-            disable=frequency == 0,
-            miniters=frequency,
+            disable=update_frequency == 0,
+            miniters=update_frequency,
             desc="Inference embedding",
         ):
             embedding = self.embed_file(file)

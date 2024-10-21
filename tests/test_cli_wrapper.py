@@ -259,7 +259,7 @@ class TestCLIFetch(BaseIndividualTempDir):
 class TestCLIPreprocess(BaseIndividualTempDir):
     def test_preprocess(self, capfd: pytest.CaptureFixture) -> None:
         with patch("sys.argv", [""]):
-            autrainer.cli.preprocess(cfg_launcher=True, frequency=0)
+            autrainer.cli.preprocess(cfg_launcher=True, update_frequency=0)
         out, _ = capfd.readouterr()
         assert (
             "Preprocessing datasets..." in out

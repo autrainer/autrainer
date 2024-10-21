@@ -21,7 +21,7 @@ from .utils import (
 @dataclass
 class PreprocessArgs(PreprocessArgs):
     num_workers: int
-    frequency: int
+    update_frequency: int
 
 
 class PreprocessScript(AbstractPreprocessScript):
@@ -53,14 +53,14 @@ class PreprocessScript(AbstractPreprocessScript):
             ),
         )
         self.parser.add_argument(
-            "-f",
-            "--frequency",
+            "-u",
+            "--update-frequency",
             type=int,
             default=1,
             metavar="F",
             required=False,
             help=(
-                "Frequency of progress bar updates for each worker. "
+                "Frequency of progress bar updates for each worker (thread). "
                 "If 0, the progress bar will be disabled. Defaults to 1."
             ),
         )
@@ -71,7 +71,7 @@ class PreprocessScript(AbstractPreprocessScript):
         import hydra
 
         self.num_workers = args.num_workers
-        self.frequency = args.frequency
+        self.update_frequency = args.update_frequency
         self._override_launcher(args)
         self.datasets = {}
         self.preprocessing = {}
@@ -185,11 +185,11 @@ class PreprocessScript(AbstractPreprocessScript):
                 output_file_handler.save(out_path, data)
                 del data
                 file_count += 1
-                if file_count % self.frequency == 0:
+                if file_count % self.update_frequency == 0:
                     with lock:
-                        pbar.update(self.frequency)
+                        pbar.update(self.update_frequency)
             with lock:
-                pbar.update(file_count % self.frequency)
+                pbar.update(file_count % self.update_frequency)
 
         print("Preprocessing datasets...")
         for (name, dataset), preprocess in zip(
@@ -213,7 +213,7 @@ class PreprocessScript(AbstractPreprocessScript):
             with tqdm(
                 total=len(unique_files),
                 desc=name,
-                disable=self.frequency == 0,
+                disable=self.update_frequency == 0,
             ) as pbar:
                 with ThreadPoolExecutor(self.num_workers) as executor:
                     futures = [
@@ -235,7 +235,7 @@ class PreprocessScript(AbstractPreprocessScript):
 def preprocess(
     override_kwargs: Optional[dict] = None,
     num_workers: int = 1,
-    frequency: int = 1,
+    update_frequency: int = 1,
     cfg_launcher: bool = False,
     config_name: str = "config",
     config_path: Optional[str] = None,
@@ -247,8 +247,8 @@ def preprocess(
             train script.
         num_workers: Number of workers (threads) to use for preprocessing.
             Defaults to 1.
-        frequency: Frequency of progress bar updates for each worker. If 0, the
-            progress bar will be disabled. Defaults to 1.
+        update_frequency: Frequency of progress bar updates for each worker
+            (thread). If 0, the progress bar will be disabled. Defaults to 1.
         cfg_launcher: Use the launcher specified in the configuration instead
             of the Hydra basic launcher. Defaults to False.
         config_name: The name of the config (usually the file name without the
@@ -261,11 +261,13 @@ def preprocess(
         cmd = "preprocess"
         if cfg_launcher:
             cmd += " -l"
-        cmd += f" -n {num_workers} -f {frequency}"
+        cmd += f" -n {num_workers} -f {update_frequency}"
         run_hydra_cmd(cmd, override_kwargs, config_name, config_path)
 
     else:
         add_hydra_args_to_sys(override_kwargs, config_name, config_path)
         script = PreprocessScript()
         script.parser = MockParser()
-        script.main(PreprocessArgs(cfg_launcher, num_workers, frequency))
+        script.main(
+            PreprocessArgs(cfg_launcher, num_workers, update_frequency)
+        )
