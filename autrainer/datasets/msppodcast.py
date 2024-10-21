@@ -48,7 +48,7 @@ class MSPPodcast(AbstractDataset):
         
         .. note::
             Note that after v1.7, the dataset features two test sets.
-            We only use ``test1'', as ``test2'' was found to be biased
+            We only use ``Test1``, as ``Test2`` was found to be biased
             with respect to gender. 
             See https://doi.org/10.21437/Interspeech.2019-1708.
 
