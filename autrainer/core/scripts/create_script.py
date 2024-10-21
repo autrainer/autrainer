@@ -4,7 +4,7 @@ import shutil
 from typing import List, Optional
 
 import autrainer
-from autrainer.core.constants import CONFIG_FOLDERS
+from autrainer.core.constants import NamingConstants
 
 from .abstract_script import AbstractScript, MockParser
 from .command_line_error import CommandLineError
@@ -34,7 +34,7 @@ class CreateScript(AbstractScript):
             type=str,
             nargs="*",
             help="Configuration directories to create. One or more of:"
-            + "\n - ".join([""] + CONFIG_FOLDERS),
+            + "\n - ".join([""] + sorted(NamingConstants().CONFIG_DIRS)),
         )
         self.parser.add_argument(
             "-e",
@@ -116,7 +116,8 @@ class CreateScript(AbstractScript):
             directories.append("conf")
         elif args.all:
             directories.extend(
-                f"conf/{directory}" for directory in CONFIG_FOLDERS
+                f"conf/{directory}"
+                for directory in NamingConstants().CONFIG_DIRS
             )
         else:
             directories.extend(
@@ -150,7 +151,7 @@ def create(
 
     Args:
         directories: Configuration directories to create. One or more of:
-            :const:`~autrainer.core.constants.CONFIG_FOLDERS`.
+            :const:`~autrainer.core.constants.NamingConstants.CONFIG_DIRS`.
             Defaults to None.
         empty: Create an empty project without any configuration directory.
             Defaults to False.

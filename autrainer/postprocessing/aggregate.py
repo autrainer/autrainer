@@ -7,7 +7,7 @@ from omegaconf import DictConfig, OmegaConf
 import pandas as pd
 
 import autrainer
-from autrainer.core.constants import NAMING_CONVENTION, VALID_AGGREGATIONS
+from autrainer.core.constants import NamingConstants
 from autrainer.core.plotting import PlotMetrics
 from autrainer.core.utils import Timer
 from autrainer.loggers import AbstractLogger
@@ -120,12 +120,14 @@ class AggregateGrid:
 
     def _check_if_valid_aggregation(self, over: list) -> None:
         for o in over:
-            if o not in VALID_AGGREGATIONS:
+            if o not in NamingConstants().VALID_AGGREGATIONS:
                 raise ValueError(f"Invalid aggregation: {o}")
 
     def _aggregate_run_names(self, over: list) -> dict:
         self._check_if_valid_aggregation(over)
-        param_dict = {p: i for i, p in enumerate(NAMING_CONVENTION)}
+        param_dict = {
+            p: i for i, p in enumerate(NamingConstants().NAMING_CONVENTION)
+        }
         over_idxs = [param_dict[p] for p in over]
         aggregated = defaultdict(list)
         for run_name in self.run_names:

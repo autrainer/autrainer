@@ -5,7 +5,7 @@ import shutil
 from omegaconf import OmegaConf
 
 import autrainer
-from autrainer.core.constants import CONFIG_FOLDERS
+from autrainer.core.constants import NamingConstants
 
 from .abstract_script import AbstractScript, MockParser
 from .command_line_error import CommandLineError
@@ -34,7 +34,7 @@ class ShowScript(AbstractScript):
             "directory",
             type=str,
             help="The directory to list configurations from. Choose from:"
-            + "\n - ".join([""] + CONFIG_FOLDERS),
+            + "\n - ".join([""] + sorted(NamingConstants().CONFIG_DIRS)),
         )
         self.parser.add_argument(
             "config",
@@ -126,7 +126,7 @@ def show(
 
     Args:
         directory: The directory to list configurations from. Choose from:
-            :const:`~autrainer.core.constants.CONFIG_FOLDERS`.
+            :const:`~autrainer.core.constants.NamingConstants.CONFIG_DIRS`.
         config: The global configuration to show. Configurations can be
             discovered using the 'autrainer list' command.
         save: Save the global configuration to the local conf directory.

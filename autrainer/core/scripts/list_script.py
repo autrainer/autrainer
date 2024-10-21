@@ -3,7 +3,7 @@ import fnmatch
 import os
 
 import autrainer
-from autrainer.core.constants import CONFIG_FOLDERS
+from autrainer.core.constants import NamingConstants
 
 from .abstract_script import AbstractScript, MockParser
 from .command_line_error import CommandLineError
@@ -32,7 +32,7 @@ class ListScript(AbstractScript):
             "directory",
             type=str,
             help="The directory to list configurations from. Choose from:"
-            + "\n - ".join([""] + CONFIG_FOLDERS),
+            + "\n - ".join([""] + sorted(NamingConstants().CONFIG_DIRS)),
         )
         self.parser.add_argument(
             "-l",
@@ -132,7 +132,7 @@ def list_configs(
 
     Args:
         directory: The directory to list configurations from. Choose from:
-            :const:`~autrainer.core.constants.CONFIG_FOLDERS`.
+            :const:`~autrainer.core.constants.NamingConstants.CONFIG_DIRS`.
         local_only: List local configurations only. Defaults to False.
         global_only: List global configurations only. Defaults to False.
         pattern: Glob pattern to filter configurations. Defaults to "*".

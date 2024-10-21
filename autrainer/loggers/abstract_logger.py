@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Dict, List, Union
 
 from omegaconf import DictConfig
 
+from autrainer.core.constants import ExportConstants
 from autrainer.core.utils import Timer
 from autrainer.metrics import AbstractMetric
 
@@ -12,43 +13,12 @@ if TYPE_CHECKING:
     from autrainer.training import ModularTaskTrainer  # pragma: no cover
 
 
-EXPORT_IGNORE_PARAMS = [
-    "results_dir",
-    "experiment_id",
-    "model.dataset",
-    "training_type",
-    "save_frequency",
-    "dataset.metrics",
-    "plotting",
-    "model.transform",
-    "dataset.transform",
-    "augmentation.steps",
-    "loggers",
-    "progress_bar",
-    "continue_training",
-    "remove_continued_runs",
-    "save_train_outputs",
-    "save_dev_outputs",
-    "save_test_outputs",
-]
-"""Ignored configuration parameters for logging."""
-
-EXPORT_LOGGING_DEPTH = 2
-"""Depth of logging for configuration parameters."""
-
-EXPORT_ARTIFACTS: List[Union[str, Dict[str, str]]] = [
-    "model_summary.txt",
-    "metrics.csv",
-    {"config.yaml": ".hydra"},
-]
-"""Artifacts to log for runs."""
-
-
 def get_params_to_export(
     params: Union[dict, DictConfig], prefix: str = ""
 ) -> Dict[str, Union[int, float, str]]:
     """Get parameters to export as a flattened dictionary filtered by
-    EXPORT_IGNORE_PARAMS and depth of EXPORT_LOGGING_DEPTH.
+    :const:`~autrainer.core.constants.ExportConstants.IGNORE_PARAMS`
+    and :const:`~autrainer.core.constants.ExportConstants.LOGGING_DEPTH`.
 
     Private parameters (starting with "_") are also ignored except for
     "_target_".
@@ -64,9 +34,9 @@ def get_params_to_export(
     for k, v in params.items():
         full_key = f"{prefix}.{k}" if prefix else k
         if (
-            full_key in EXPORT_IGNORE_PARAMS
-            or prefix in EXPORT_IGNORE_PARAMS
-            or len(full_key.split(".")) > EXPORT_LOGGING_DEPTH
+            full_key in ExportConstants().IGNORE_PARAMS
+            or prefix in ExportConstants().IGNORE_PARAMS
+            or len(full_key.split(".")) > ExportConstants().LOGGING_DEPTH
             or prefix.startswith("_")
             or (k.startswith("_") and k != "_target_")
         ):
@@ -96,7 +66,9 @@ class AbstractLogger(ABC):
         run_name: str,
         metrics: List[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[Union[str, Dict[str, str]]] = EXPORT_ARTIFACTS,
+        artifacts: List[
+            Union[str, Dict[str, str]]
+        ] = ExportConstants().ARTIFACTS,
     ) -> None:
         """Base class for loggers.
 
@@ -105,7 +77,8 @@ class AbstractLogger(ABC):
             run_name: The name of the run.
             metrics: The metrics to log.
             tracking_metric: The metric to determine the best results.
-            artifacts: The artifacts to log. Defaults to EXPORT_ARTIFACTS.
+            artifacts: The artifacts to log. Defaults to
+                :const:`~autrainer.core.constants.ExportConstants.ARTIFACTS`.
         """
         self.run_name = run_name
         self.exp_name = exp_name

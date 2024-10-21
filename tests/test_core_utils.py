@@ -9,6 +9,11 @@ import pandas as pd
 import pytest
 import torch
 
+from autrainer.core.constants import (
+    ExportConstants,
+    NamingConstants,
+    TrainingConstants,
+)
 from autrainer.core.utils import (
     Bookkeeping,
     Timer,
@@ -280,3 +285,164 @@ class TestSilence:
         out, _ = capfd.readouterr()
         assert "Should print." in out, "Should print."
         assert "Should not print." not in out, "Should not print."
+
+
+class TestExportConstants:
+    @classmethod
+    def setup_class(cls) -> None:
+        cls.c = ExportConstants()
+        cls._logging_depth = cls.c.LOGGING_DEPTH
+        cls._ignore_params = cls.c.IGNORE_PARAMS.copy()
+        cls._artifacts = cls.c.ARTIFACTS.copy()
+
+    @classmethod
+    def teardown_class(cls) -> None:
+        cls.c.LOGGING_DEPTH = cls._logging_depth
+        cls.c.IGNORE_PARAMS = cls._ignore_params
+        cls.c.ARTIFACTS = cls._artifacts
+
+    @pytest.mark.parametrize("depth", [-1, "invalid"])
+    def test_invalid_logging_depth(self, depth: int) -> None:
+        with pytest.raises(ValueError):
+            self.c.LOGGING_DEPTH = depth
+
+    @pytest.mark.parametrize("depth", [1, 2, 3, 100])
+    def test_logging_depth(self, depth: int) -> None:
+        self.c.LOGGING_DEPTH = depth
+        assert (
+            ExportConstants().LOGGING_DEPTH == depth
+        ), f"Should set logging depth to {depth}."
+
+    @pytest.mark.parametrize("ignore_params", ["invalid", [1, "param"]])
+    def test_invalid_ignore_params(self, ignore_params: list) -> None:
+        with pytest.raises(ValueError):
+            self.c.IGNORE_PARAMS = ignore_params
+
+    @pytest.mark.parametrize("ignore_params", [[], ["param1", "param2"]])
+    def test_ignore_params(self, ignore_params: list) -> None:
+        self.c.IGNORE_PARAMS = ignore_params
+        assert (
+            ExportConstants().IGNORE_PARAMS == ignore_params
+        ), f"Should set ignore params to {ignore_params}."
+
+    @pytest.mark.parametrize(
+        "artifacts",
+        [[1, "artifact"], ["artifact", {"invalid": 1}]],
+    )
+    def test_invalid_artifacts(self, artifacts: list) -> None:
+        with pytest.raises(ValueError):
+            self.c.ARTIFACTS = artifacts
+
+    @pytest.mark.parametrize(
+        "artifacts",
+        [["artifact"], ["artifact", {"artifact": "artifact"}]],
+    )
+    def test_artifacts(self, artifacts: list) -> None:
+        self.c.ARTIFACTS = artifacts
+        assert (
+            ExportConstants().ARTIFACTS == artifacts
+        ), f"Should set artifacts to {artifacts}."
+
+
+class TestNamingConstants:
+    @classmethod
+    def setup_class(cls) -> None:
+        cls.c = NamingConstants()
+        cls._config_dirs = cls.c.CONFIG_DIRS.copy()
+        cls._naming_convention = cls.c.NAMING_CONVENTION.copy()
+        cls._valid_aggregations = cls.c.VALID_AGGREGATIONS.copy()
+        cls._invalid_aggregations = cls.c.INVALID_AGGREGATIONS.copy()
+
+    @classmethod
+    def teardown_class(cls) -> None:
+        cls.c.CONFIG_DIRS = cls._config_dirs
+        cls.c.NAMING_CONVENTION = cls._naming_convention
+        cls.c.VALID_AGGREGATIONS = cls._valid_aggregations
+        cls.c.INVALID_AGGREGATIONS = cls._invalid_aggregations
+
+    @pytest.mark.parametrize("config_dirs", ["invalid", [1, "invalid"]])
+    def test_invalid_config_dirs(self, config_dirs: list) -> None:
+        with pytest.raises(ValueError):
+            self.c.CONFIG_DIRS = config_dirs
+
+    @pytest.mark.parametrize("config_dirs", [["dir1", "dir2"]])
+    def test_config_dirs(self, config_dirs: list) -> None:
+        self.c.CONFIG_DIRS = config_dirs
+        assert (
+            NamingConstants().CONFIG_DIRS == config_dirs
+        ), f"Should set config dirs to {config_dirs}."
+
+    @pytest.mark.parametrize("naming_convention", ["invalid", [1, "invalid"]])
+    def test_invalid_naming_convention(self, naming_convention: list) -> None:
+        with pytest.raises(ValueError):
+            self.c.NAMING_CONVENTION = naming_convention
+
+    @pytest.mark.parametrize("naming_convention", [["dir1", "dir2"]])
+    def test_naming_convention(self, naming_convention: list) -> None:
+        self.c.NAMING_CONVENTION = naming_convention
+        assert (
+            NamingConstants().NAMING_CONVENTION == naming_convention
+        ), f"Should set naming convention to {naming_convention}."
+
+    @pytest.mark.parametrize(
+        "valid_aggregations",
+        ["invalid", [1, "invalid"]],
+    )
+    def test_invalid_valid_aggregations(
+        self, valid_aggregations: list
+    ) -> None:
+        with pytest.raises(ValueError):
+            self.c.VALID_AGGREGATIONS = valid_aggregations
+
+    @pytest.mark.parametrize(
+        "valid_aggregations",
+        [["model", "dataset"]],
+    )
+    def test_valid_aggregations(self, valid_aggregations: list) -> None:
+        self.c.VALID_AGGREGATIONS = valid_aggregations
+        assert (
+            NamingConstants().VALID_AGGREGATIONS == valid_aggregations
+        ), f"Should set valid aggregations to {valid_aggregations}."
+
+    @pytest.mark.parametrize(
+        "invalid_aggregations",
+        ["invalid", [1, "invalid"]],
+    )
+    def test_invalid_invalid_aggregations(
+        self, invalid_aggregations: list
+    ) -> None:
+        with pytest.raises(ValueError):
+            self.c.INVALID_AGGREGATIONS = invalid_aggregations
+
+    @pytest.mark.parametrize(
+        "invalid_aggregations",
+        [["model", "dataset"]],
+    )
+    def test_invalid_aggregations(self, invalid_aggregations: list) -> None:
+        self.c.INVALID_AGGREGATIONS = invalid_aggregations
+        assert (
+            NamingConstants().INVALID_AGGREGATIONS == invalid_aggregations
+        ), f"Should set invalid aggregations to {invalid_aggregations}."
+
+
+class TestTrainingConstants:
+    @classmethod
+    def setup_class(cls) -> None:
+        cls.c = TrainingConstants()
+        cls._tasks = cls.c.TASKS.copy()
+
+    @classmethod
+    def teardown_class(cls) -> None:
+        cls.c.TASKS = cls._tasks
+
+    @pytest.mark.parametrize("tasks", ["invalid", [1, "invalid"]])
+    def test_invalid_tasks(self, tasks: list) -> None:
+        with pytest.raises(ValueError):
+            self.c.TASKS = tasks
+
+    @pytest.mark.parametrize("tasks", [["task1", "task2"]])
+    def test_tasks(self, tasks: list) -> None:
+        self.c.TASKS = tasks
+        assert (
+            TrainingConstants().TASKS == tasks
+        ), f"Should set tasks to {tasks}."
