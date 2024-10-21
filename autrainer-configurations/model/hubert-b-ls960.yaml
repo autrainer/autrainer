@@ -4,8 +4,6 @@ model_name: facebook/hubert-base-ls960
 freeze_extractor: true
 hidden_size: 512
 num_layers: 2
-sigmoid: false
-softmax: false
 dropout: 0.5
 
 transform:

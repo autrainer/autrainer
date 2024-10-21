@@ -34,8 +34,6 @@ class WhisperFFNN(AbstractModel):
         model_name: str,
         hidden_size: int,
         num_layers: int = 2,
-        sigmoid: bool = False,
-        softmax: bool = False,
         dropout: float = 0.5,
     ) -> None:
         """Whisper model with FFNN frontend adapted for audio classification.
@@ -47,16 +45,12 @@ class WhisperFFNN(AbstractModel):
             hidden_size: Hidden size of the FFNN.
             output_dim: Output dimension of the FFNN.
             num_layers: Number of layers of the FFNN. Defaults to 2.
-            sigmoid: Whether to apply sigmoid activation. Defaults to False.
-            softmax: Whether to apply softmax activation. Defaults to False.
             dropout: Dropout rate. Defaults to 0.5.
         """
         super().__init__(output_dim)
         self.model_name = model_name
         self.hidden_size = hidden_size
         self.num_layers = num_layers
-        self.sigmoid = sigmoid
-        self.softmax = softmax
         self.dropout = dropout
         self.backbone = WhisperBackbone(model_name=model_name)
         self.frontend = FFNN(
@@ -64,8 +58,6 @@ class WhisperFFNN(AbstractModel):
             hidden_size=hidden_size,
             output_dim=output_dim,
             num_layers=num_layers,
-            sigmoid=sigmoid,
-            softmax=softmax,
             dropout=dropout,
         )
 

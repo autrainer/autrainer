@@ -11,8 +11,6 @@ class Cnn10(AbstractModel):
     def __init__(
         self,
         output_dim: int,
-        sigmoid_output: bool = False,
-        sigmoid_predictions: bool = False,
         segmentwise: bool = False,
         in_channels: int = 1,
         transfer: Optional[str] = None,
@@ -22,10 +20,6 @@ class Cnn10(AbstractModel):
 
         Args:
             output_dim: Output dimension of the model.
-            sigmoid_output: Whether to apply sigmoid activation to the output.
-                Defaults to False.
-            sigmoid_predictions: Whether to apply sigmoid activation during
-                inference. Defaults to False.
             segmentwise: Whether to use segmentwise path or clipwise path.
                 Defaults to False.
             in_channels: Number of input channels. Defaults to 1.
@@ -33,8 +27,6 @@ class Cnn10(AbstractModel):
                 weights will be randomly initialized. Defaults to None.
         """
         super().__init__(output_dim)
-        self.sigmoid_output = sigmoid_output
-        self.sigmoid_predictions = sigmoid_predictions
         self.segmentwise = segmentwise
         self.in_channels = in_channels
         self.transfer = transfer
@@ -101,10 +93,4 @@ class Cnn10(AbstractModel):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.embeddings(x)
         x = self.out(x)
-        if self.sigmoid_output:
-            x = torch.sigmoid(x)
-        if (not self.training) and self.sigmoid_predictions:
-            # sigmoid output for multi-label classification
-            if not self.sigmoid_output:  # avoid double op
-                x = torch.sigmoid(x)
         return x

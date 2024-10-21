@@ -56,8 +56,6 @@ class SeqFFNN(AbstractModel):
         backbone_num_layers: int,
         hidden_size: int,
         num_layers: int = 2,
-        sigmoid: bool = False,
-        softmax: bool = False,
         dropout: float = 0.5,
         backbone_dropout: float = 0.5,
         backbone_cell: str = "LSTM",
@@ -73,8 +71,6 @@ class SeqFFNN(AbstractModel):
             backbone_num_layers: Number of layers of the backbone.
             hidden_size: Hidden size of the FFNN.
             num_layers: Number of layers of the FFNN. Defaults to 2.
-            sigmoid: Whether to apply sigmoid activation. Defaults to False.
-            softmax: Whether to apply softmax activation. Defaults to False.
             dropout: Dropout rate of the FFNN. Defaults to 0.5.
             backbone_dropout: Dropout rate of the backbone. Defaults to 0.5.
             backbone_cell: Cell type of the backbone in ["LSTM", "GRU"].
@@ -90,8 +86,6 @@ class SeqFFNN(AbstractModel):
         self.backbone_num_layers = backbone_num_layers
         self.hidden_size = hidden_size
         self.num_layers = num_layers
-        self.sigmoid = sigmoid
-        self.softmax = softmax
         self.dropout = dropout
         self.backbone_dropout = backbone_dropout
         self.backbone_cell = backbone_cell
@@ -111,8 +105,6 @@ class SeqFFNN(AbstractModel):
             hidden_size=hidden_size,
             output_dim=output_dim,
             num_layers=num_layers,
-            sigmoid=sigmoid,
-            softmax=softmax,
             dropout=dropout,
         )
 

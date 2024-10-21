@@ -3,8 +3,6 @@ _target_: autrainer.models.WhisperFFNN
 model_name: openai/whisper-tiny
 hidden_size: 512
 num_layers: 2
-sigmoid: false
-softmax: false
 dropout: 0.5
 
 transform:

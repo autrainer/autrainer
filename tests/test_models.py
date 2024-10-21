@@ -97,10 +97,6 @@ class TestASTModel:
         )
         TestAllModels._test_model(model, (1024, 128))
 
-    def test_sigmoid(self) -> None:
-        model = ASTModel(output_dim=10, sigmoid=True)
-        TestAllModels._test_model(model, (1024, 128))
-
 
 class TestCnn10Cnn14:
     @pytest.mark.parametrize(
@@ -120,11 +116,6 @@ class TestCnn10Cnn14:
         model = cls(output_dim=10, transfer=link)
         TestAllModels._test_model(model, (1, 128, 64))
 
-    @pytest.mark.parametrize("cls", [Cnn10, Cnn14])
-    def test_sigmoid(self, cls: Type[Union[Cnn10, Cnn14]]) -> None:
-        model = cls(output_dim=10, sigmoid_output=True)
-        TestAllModels._test_model(model, (1, 128, 64))
-
     @pytest.mark.parametrize(
         "cls, expected",
         [(Cnn10, (1, 8, 10)), (Cnn14, (1, 4, 10))],
@@ -136,10 +127,6 @@ class TestCnn10Cnn14:
     ) -> None:
         model = cls(output_dim=10, segmentwise=True)
         TestAllModels._test_model(model, (1, 128, 64), expected=expected)
-
-    def test_sigmoid_predictions(self) -> None:
-        model = Cnn10(output_dim=10, sigmoid_predictions=True)
-        TestAllModels._test_model(model, (1, 128, 64))
 
     def test_invalid_link(self) -> None:
         with pytest.raises(ValueError):
@@ -162,26 +149,6 @@ class TestAudioRNNModel:
     def test_model(self, model_name: str, cell: str) -> None:
         model = AudioRNNModel(output_dim=10, model_name=model_name, cell=cell)
         TestAllModels._test_model(model, (1, 16000))
-
-
-class TestFFNN:
-    def test_sigmoid(self) -> None:
-        model = FFNN(
-            output_dim=10,
-            input_size=64,
-            hidden_size=128,
-            sigmoid=True,
-        )
-        TestAllModels._test_model(model, (64,))
-
-    def test_softmax(self) -> None:
-        model = FFNN(
-            output_dim=10,
-            input_size=64,
-            hidden_size=128,
-            softmax=True,
-        )
-        TestAllModels._test_model(model, (64,))
 
 
 class TestLEAFNet:
