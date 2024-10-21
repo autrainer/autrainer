@@ -97,10 +97,6 @@ class TestASTModel:
         )
         TestAllModels._test_model(model, (1024, 128))
 
-    def test_sigmoid(self) -> None:
-        model = ASTModel(output_dim=10, sigmoid=True)
-        TestAllModels._test_model(model, (1024, 128))
-
 
 class TestCnn10Cnn14:
     @pytest.mark.parametrize(

@@ -14,7 +14,6 @@ class ASTModel(AbstractModel):
         num_hidden_layers: int = 12,
         hidden_size: int = 128,
         dropout: float = 0.5,
-        sigmoid: bool = False,
         transfer: Optional[str] = None,
     ) -> None:
         """Audio Speech Transformer (AST) model. For more information see:
@@ -26,8 +25,6 @@ class ASTModel(AbstractModel):
                 Defaults to 12.
             hidden_size: Hidden size of the linear layer. Defaults to 128.
             dropout: Dropout rate. Defaults to 0.5.
-            sigmoid: If True, a sigmoid activation function is applied to the
-                output. Defaults to False.
             transfer: Name of the pretrained model to load. If None, the default
                 AST fine-tuned on AudioSet is used. Defaults to None.
                 For more information see:
@@ -37,7 +34,6 @@ class ASTModel(AbstractModel):
         self.num_hidden_layers = num_hidden_layers
         self.hidden_size = hidden_size
         self.dropout = dropout
-        self.sigmoid = sigmoid
         self.transfer = transfer
         if self.transfer is not None:
             self.model = ASTBaseModel.from_pretrained(
@@ -55,8 +51,6 @@ class ASTModel(AbstractModel):
             torch.nn.Dropout(dropout),
             torch.nn.Linear(hidden_size, output_dim),
         ]
-        if self.sigmoid:
-            layers.append(torch.nn.Sigmoid())
         self.out = torch.nn.Sequential(*layers)
 
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
