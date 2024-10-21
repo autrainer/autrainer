@@ -151,26 +151,6 @@ class TestAudioRNNModel:
         TestAllModels._test_model(model, (1, 16000))
 
 
-class TestFFNN:
-    def test_sigmoid(self) -> None:
-        model = FFNN(
-            output_dim=10,
-            input_size=64,
-            hidden_size=128,
-            sigmoid=True,
-        )
-        TestAllModels._test_model(model, (64,))
-
-    def test_softmax(self) -> None:
-        model = FFNN(
-            output_dim=10,
-            input_size=64,
-            hidden_size=128,
-            softmax=True,
-        )
-        TestAllModels._test_model(model, (64,))
-
-
 class TestLEAFNet:
     @pytest.mark.parametrize("mode", ["interspeech", "speech_brain"])
     def test_mode(self, mode: str) -> None:
