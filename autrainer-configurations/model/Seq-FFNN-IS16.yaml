@@ -6,8 +6,6 @@ backbone_hidden_size: 32
 backbone_num_layers: 2
 hidden_size: 32
 num_layers: 2
-sigmoid: false
-softmax: false
 dropout: 0.5
 
 transform:
