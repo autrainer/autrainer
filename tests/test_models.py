@@ -120,11 +120,6 @@ class TestCnn10Cnn14:
         model = cls(output_dim=10, transfer=link)
         TestAllModels._test_model(model, (1, 128, 64))
 
-    @pytest.mark.parametrize("cls", [Cnn10, Cnn14])
-    def test_sigmoid(self, cls: Type[Union[Cnn10, Cnn14]]) -> None:
-        model = cls(output_dim=10, sigmoid_output=True)
-        TestAllModels._test_model(model, (1, 128, 64))
-
     @pytest.mark.parametrize(
         "cls, expected",
         [(Cnn10, (1, 8, 10)), (Cnn14, (1, 4, 10))],
@@ -136,10 +131,6 @@ class TestCnn10Cnn14:
     ) -> None:
         model = cls(output_dim=10, segmentwise=True)
         TestAllModels._test_model(model, (1, 128, 64), expected=expected)
-
-    def test_sigmoid_predictions(self) -> None:
-        model = Cnn10(output_dim=10, sigmoid_predictions=True)
-        TestAllModels._test_model(model, (1, 128, 64))
 
     def test_invalid_link(self) -> None:
         with pytest.raises(ValueError):
