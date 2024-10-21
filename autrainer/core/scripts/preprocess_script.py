@@ -261,7 +261,7 @@ def preprocess(
         cmd = "preprocess"
         if cfg_launcher:
             cmd += " -l"
-        cmd += f" -n {num_workers} -f {update_frequency}"
+        cmd += f" -n {num_workers} -u {update_frequency}"
         run_hydra_cmd(cmd, override_kwargs, config_name, config_path)
 
     else:
