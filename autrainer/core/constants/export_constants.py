@@ -51,9 +51,13 @@ class ExportConstants(AbstractConstants):
             logging_depth: Depth of logging for configuration parameters.
 
         Raises:
-            ValueError: If the logging depth is not an integer.
+            ValueError: If the logging depth is not an integer or is negative.
         """
         self._assert_type(logging_depth, int)
+        if logging_depth < 0:
+            raise ValueError(
+                "ExportConstants.LOGGING_DEPTH must be non-negative."
+            )
         self._logging_depth = logging_depth
 
     @property
