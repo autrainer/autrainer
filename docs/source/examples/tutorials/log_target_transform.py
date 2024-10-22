@@ -24,6 +24,9 @@ class LogTargetTransform(AbstractTargetTransform):
     def decode(self, x: float) -> float:
         return math.pow(self.base, x) - self.eps
 
+    def probabilities_batch(self, x: torch.Tensor) -> torch.Tensor:
+        return x
+
     def predict_batch(self, x: torch.Tensor) -> Union[List[float], float]:
         return x.squeeze().tolist()
 
