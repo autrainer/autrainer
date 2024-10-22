@@ -68,6 +68,13 @@ class TestAllFileHandlers(BaseIndividualTempDir):
         assert torch.allclose(data, loaded_data), "Should load the numpy file."
 
 
+def _all_close_dict(a: dict, b: dict) -> bool:
+    for key in a.keys():
+        if not torch.allclose(torch.tensor([a[key]]), torch.tensor([b[key]])):
+            return False
+    return True
+
+
 class TestMinMaxScaler:
     @pytest.mark.parametrize("minimum, maximum", [(1, 0), (0, 0), (1, 1)])
     def test_invalid_min_max(self, minimum: float, maximum: float) -> None:
@@ -92,6 +99,14 @@ class TestMinMaxScaler:
         assert (
             encoder.majority_vote(x) == 0.3
         ), "Should compute the majority vote."
+
+    def test_probabilities_to_dict(self) -> None:
+        scaler = MinMaxScaler("target", 0, 1)
+        x = torch.Tensor([0.5])
+        probs_dict = scaler.probabilities_to_dict(x)
+        assert _all_close_dict(
+            probs_dict, {"target": 0.5}
+        ), "Should convert the probabilities to a dictionary."
 
 
 class TestMultiLabelEncoder:
@@ -136,6 +151,14 @@ class TestMultiLabelEncoder:
             "fizz"
         ], "Should compute the majority vote."
 
+    def test_probabilities_to_dict(self) -> None:
+        encoder = MultiLabelEncoder(0.5, self.labels)
+        x = torch.Tensor([0.5, 0.6, 0.7])
+        probs = encoder.probabilities_to_dict(x)
+        assert _all_close_dict(
+            probs, {"fizz": 0.5, "buzz": 0.6, "jazz": 0.7}
+        ), "Should convert the probabilities to a dictionary."
+
 
 class TestLabelEncoder:
     labels = ["fizz", "buzz", "jazz"]
@@ -160,3 +183,16 @@ class TestLabelEncoder:
         assert (
             encoder.majority_vote(x) == "fizz"
         ), "Should compute the majority vote."
+
+    def test_probabilities_to_dict(self) -> None:
+        encoder = LabelEncoder(self.labels)
+        x = torch.Tensor([0.5, 0.6, 0.7])
+        probs = encoder.probabilities_to_dict(x)
+        assert _all_close_dict(
+            probs,
+            {
+                "buzz": 0.5,
+                "fizz": 0.6,
+                "jazz": 0.7,
+            },  # alphabetical order is important
+        ), "Should convert the probabilities to a dictionary."
