@@ -403,7 +403,7 @@ class Inference:
         return results
 
     def _pad_audio(self, x: torch.Tensor) -> torch.Tensor:
-        if not self._min_length:
+        if self._min_length is None or self._sample_rate is None:
             return x
         min_length = int(self._min_length * self._sample_rate)
         if x.shape[1] >= min_length:
