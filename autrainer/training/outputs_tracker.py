@@ -61,8 +61,12 @@ class OutputsTracker:
             "losses": self._losses.numpy(),
         }
 
-        self._predictions = self._data.target_transform.predict_batch(
+        # TODO: Add probabilities column(s) to dataframe
+        _probabilities = self._data.target_transform.probabilities_batch(
             self._outputs
+        )
+        self._predictions = self._data.target_transform.predict_batch(
+            _probabilities
         )
         self._results_df = pd.DataFrame(index=results["indices"])
         self._results_df["predictions"] = self._predictions

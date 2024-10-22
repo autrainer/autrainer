@@ -46,13 +46,24 @@ class MinMaxScaler(AbstractTargetTransform):
         """
         return x * (self.maximum - self.minimum) + self.minimum
 
-    def predict_batch(self, x: torch.Tensor) -> Union[List[float], float]:
-        """Get encoded predictions from a batch of model outputs by
-        squeezing the tensor and converting it to a list.
-
+    def probabilities_batch(self, x: torch.Tensor) -> torch.Tensor:
+        """Get the encoded probabilities from a batch of model outputs by
+        returning the raw values.
 
         Args:
             x: Batch of model outputs.
+
+        Returns:
+            Encoded probabilities.
+        """
+        return x
+
+    def predict_batch(self, x: torch.Tensor) -> Union[List[float], float]:
+        """Get the encoded predictions from a batch of model output
+        probabilities by returning the raw values.
+
+        Args:
+            x: Batch of model output probabilities.
 
         Returns:
             Encoded predictions.

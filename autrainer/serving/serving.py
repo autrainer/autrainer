@@ -342,9 +342,11 @@ class Inference:
         x = self._preprocess_file(x)
         with torch.inference_mode():
             output = self.model(x).cpu()
-        prediction = self.target_transform.predict_batch(output)
-        prediction = self.target_transform.decode(prediction)
-        return prediction, output
+        # TODO: Add probabilities column(s) to dataframe
+        probabilities = self.target_transform.probabilities_batch(output)
+        prediction = self.target_transform.predict_batch(probabilities)
+        decoded_prediction = self.target_transform.decode(prediction)
+        return decoded_prediction, output
 
     def _embed(self, x: torch.Tensor) -> torch.Tensor:
         x = self._preprocess_file(x)

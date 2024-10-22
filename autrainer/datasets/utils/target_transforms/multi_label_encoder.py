@@ -57,19 +57,31 @@ class MultiLabelEncoder(AbstractTargetTransform):
         """
         return [label for i, label in enumerate(self.labels) if x[i]]
 
-    def predict_batch(
-        self, x: torch.Tensor
-    ) -> Union[List[List[int]], List[int]]:
-        """Predict the binary tensor of encoded predictions by thresholding the
-        model outputs.
+    def probabilities_batch(self, x: torch.Tensor) -> torch.Tensor:
+        """Get the encoded probabilities from a batch of model outputs by
+        applying the sigmoid function.
 
         Args:
             x: Batch of model outputs.
 
         Returns:
+            Encoded probabilities.
+        """
+        return torch.sigmoid(x)
+
+    def predict_batch(
+        self, x: torch.Tensor
+    ) -> Union[List[List[int]], List[int]]:
+        """Get the encoded predictions from a batch of model output
+        probabilities by thresholding the probabilities.
+
+        Args:
+            x: Batch of model output probabilities.
+
+        Returns:
             Binary tensor of encoded predictions.
         """
-        return (torch.sigmoid(x) > self.threshold).int().squeeze().tolist()
+        return (x > self.threshold).int().squeeze().tolist()
 
     def majority_vote(self, x: List[List[str]]) -> List[str]:
         """Get the majority vote from a list of lists of decoded target labels

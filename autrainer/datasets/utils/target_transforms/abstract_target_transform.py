@@ -42,11 +42,23 @@ class AbstractTargetTransform(ABC, audobject.Object):
         """
 
     @abstractmethod
-    def predict_batch(self, x: torch.Tensor) -> Union[List[Any], Any]:
-        """Get encoded predictions from a batch of model outputs.
+    def probabilities_batch(self, x: torch.Tensor) -> torch.Tensor:
+        """Get the encoded probabilities from a batch of model outputs.
 
         Args:
             x: Batch of model outputs.
+
+        Returns:
+            Encoded probabilities.
+        """
+
+    @abstractmethod
+    def predict_batch(self, x: torch.Tensor) -> Union[List[Any], Any]:
+        """Get the encoded predictions from a batch of model output
+        probabilities.
+
+        Args:
+            x: Batch of model output probabilities.
 
         Returns:
             Encoded predictions.
