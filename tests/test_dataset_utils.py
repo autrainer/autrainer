@@ -72,22 +72,22 @@ class TestMinMaxScaler:
     @pytest.mark.parametrize("minimum, maximum", [(1, 0), (0, 0), (1, 1)])
     def test_invalid_min_max(self, minimum: float, maximum: float) -> None:
         with pytest.raises(ValueError):
-            MinMaxScaler(minimum, maximum)
+            MinMaxScaler("target", minimum, maximum)
 
     @pytest.mark.parametrize("x", [0, 1, 0.5, 10, -1, -0.5, -10])
     def test_encode_decode(self, x: float) -> None:
-        scaler = MinMaxScaler(0, 1)
+        scaler = MinMaxScaler("target", 0, 1)
         assert scaler.decode(scaler(x)) == x, "Should encode and decode."
 
     def test_probabilities_predict(self) -> None:
-        scaler = MinMaxScaler(0, 1)
+        scaler = MinMaxScaler("target", 0, 1)
         x = torch.rand(1, 10)
         probs = scaler.probabilities_batch(x)
         preds = scaler.predict_batch(probs)
         assert preds == x.squeeze().tolist(), "Should predict the batch."
 
     def test_majority_vote(self) -> None:
-        encoder = MinMaxScaler(0, 1)
+        encoder = MinMaxScaler("target", 0, 1)
         x = [0.1, 0.2, 0.3, 0.4, 0.5]
         assert (
             encoder.majority_vote(x) == 0.3

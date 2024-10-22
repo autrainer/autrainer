@@ -6,10 +6,11 @@ from .abstract_target_transform import AbstractTargetTransform
 
 
 class MinMaxScaler(AbstractTargetTransform):
-    def __init__(self, minimum: float, maximum: float) -> None:
+    def __init__(self, target: str, minimum: float, maximum: float) -> None:
         """Minimum-Maximum Scaler for regression targets.
 
         Args:
+            target: Name of the target.
             minimum: Minimum value of all target values.
             maximum: Maximum value of all target values.
 
@@ -20,6 +21,7 @@ class MinMaxScaler(AbstractTargetTransform):
             raise ValueError(
                 f"Minimum '{minimum}' must be less than maximum '{maximum}'."
             )
+        self.target = target
         self.minimum = float(minimum)
         self.maximum = float(maximum)
 

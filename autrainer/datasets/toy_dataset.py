@@ -236,6 +236,7 @@ class ToyDataset(AbstractDataset):
                 self.df_train[self.target_column].unique().tolist()
             )
         return MinMaxScaler(
+            target=self.target_column,
             minimum=self.df_train[self.target_column].min(),
             maximum=self.df_train[self.target_column].max(),
         )
