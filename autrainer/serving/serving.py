@@ -140,7 +140,7 @@ class Inference:
             miniters=update_frequency,
             desc="Inference prediction",
         ):
-            prediction, output = self.predict_file(file)
+            prediction, output, probs = self.predict_file(file)
             if isinstance(prediction, dict):
                 for (offset, pred), out in zip(
                     prediction.items(), output.values()
@@ -151,6 +151,7 @@ class Inference:
                             "offset": offset,
                             "prediction": pred,
                             "output": out.squeeze().tolist(),
+                            **probs[offset],
                         }
                     )
             else:
@@ -159,6 +160,7 @@ class Inference:
                         "filename": os.path.relpath(file, directory),
                         "prediction": prediction,
                         "output": output.squeeze().tolist(),
+                        **probs,
                     }
                 )
         return pd.DataFrame(records)
@@ -216,8 +218,8 @@ class Inference:
         self,
         file: str,
     ) -> Union[
-        Tuple[Any, torch.Tensor],
-        Tuple[Dict[str, Any], Dict[str, torch.Tensor]],
+        Tuple[Any, torch.Tensor, Dict[str, float]],
+        Tuple[Dict[str, Any], Dict[str, torch.Tensor], Dict[str, dict]],
     ]:
         """Obtain the model prediction for a single file.
 
@@ -225,9 +227,9 @@ class Inference:
             file: Path to the audio file.
 
         Returns:
-            Model prediction and output for the file. If sliding window
-            inference is used, the prediction is a dictionary with the
-            offset as the key.
+            Model prediction, output, and probabilties for the file.
+            If sliding window inference is used, the prediction is a dictionary
+            with the offset as the key.
         """
         return self._delegate_file(file, self._predict, self._predict_windowed)
 
@@ -338,15 +340,20 @@ class Inference:
         x = x.unsqueeze(0).to(self._device)
         return x
 
-    def _predict(self, x: torch.Tensor) -> Tuple[Any, torch.Tensor]:
+    def _predict(
+        self,
+        x: torch.Tensor,
+    ) -> Tuple[Any, torch.Tensor, Dict[str, float]]:
         x = self._preprocess_file(x)
         with torch.inference_mode():
             output = self.model(x).cpu()
-        # TODO: Add probabilities column(s) to dataframe
         probabilities = self.target_transform.probabilities_batch(output)
         prediction = self.target_transform.predict_batch(probabilities)
         decoded_prediction = self.target_transform.decode(prediction)
-        return decoded_prediction, output
+        probs_dict = self.target_transform.probabilities_to_dict(
+            probabilities.squeeze()
+        )
+        return decoded_prediction, output, probs_dict
 
     def _embed(self, x: torch.Tensor) -> torch.Tensor:
         x = self._preprocess_file(x)
@@ -363,22 +370,25 @@ class Inference:
     def _predict_windowed(
         self,
         x: torch.Tensor,
-    ) -> Tuple[Dict[str, Any], Dict[str, torch.Tensor]]:
+    ) -> Tuple[Dict[str, Any], Dict[str, torch.Tensor], Dict[str, dict]]:
         results = {}
         outputs = {}
+        probs = {}
         w_len, s_len, num_windows = self._create_windows(x)
         for i in range(num_windows):
             start_idx = i * s_len
             end_idx = min(start_idx + w_len, x.shape[1])
-            prediction, output = self._predict(x[:, start_idx:end_idx])
+            prediction, output, prob = self._predict(x[:, start_idx:end_idx])
             start_time = start_idx / self._sample_rate
             end_time = end_idx / self._sample_rate
             results[f"{start_time:.2f}-{end_time:.2f}"] = prediction
             outputs[f"{start_time:.2f}-{end_time:.2f}"] = output
+            probs[f"{start_time:.2f}-{end_time:.2f}"] = prob
         majority = self.target_transform.majority_vote(list(results.values()))
         results["majority"] = majority
         outputs["majority"] = torch.empty(0)
-        return results, outputs
+        probs["majority"] = {k: None for k in prob.keys()}
+        return results, outputs, probs
 
     def _embed_windowed(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
         results = {}

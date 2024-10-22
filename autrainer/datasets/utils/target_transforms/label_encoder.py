@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 import torch
 
@@ -76,3 +76,15 @@ class LabelEncoder(AbstractTargetTransform):
             Decoded majority vote.
         """
         return max(set(x), key=x.count)
+
+    def probabilities_to_dict(self, x: torch.Tensor) -> Dict[str, float]:
+        """Convert a tensor of probabilities to a dictionary of labels and
+        their probabilities.
+
+        Args:
+            x: Tensor of probabilities.
+
+        Returns:
+            Dictionary of labels and their probabilities.
+        """
+        return {self.decode(i): prob.item() for i, prob in enumerate(x)}

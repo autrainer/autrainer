@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Union
+from typing import Any, Dict, List, Union
 
 import audobject
 import torch
@@ -77,4 +77,16 @@ class AbstractTargetTransform(ABC, audobject.Object):
 
         Returns:
             Decoded majority vote.
+        """
+
+    @abstractmethod
+    def probabilities_to_dict(self, x: torch.Tensor) -> Dict[str, float]:
+        """Convert a tensor of probabilities to a dictionary of targets or
+        labels and their probabilities.
+
+        Args:
+            x: Tensor of probabilities.
+
+        Returns:
+            Dictionary of targets or labels and their probabilities.
         """

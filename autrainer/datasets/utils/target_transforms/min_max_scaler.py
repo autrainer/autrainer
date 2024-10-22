@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 import torch
 
@@ -83,3 +83,15 @@ class MinMaxScaler(AbstractTargetTransform):
             Average target value.
         """
         return sum(x) / len(x)
+
+    def probabilities_to_dict(self, x: torch.Tensor) -> Dict[str, float]:
+        """Convert a tensor of probabilities to a dictionary of targets and
+        their probabilities.
+
+        Args:
+            x: Tensor of probabilities.
+
+        Returns:
+            Dictionary of targets and their probabilities.
+        """
+        return {self.target: x.item()}

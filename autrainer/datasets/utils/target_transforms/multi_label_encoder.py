@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 import numpy as np
 import torch
@@ -97,3 +97,15 @@ class MultiLabelEncoder(AbstractTargetTransform):
         x = np.array([self.encode(i).tolist() for i in x])
         x = np.mean(x, axis=0).round().astype(int).tolist()
         return self.decode(x)
+
+    def probabilities_to_dict(self, x: torch.Tensor) -> Dict[str, float]:
+        """Convert a tensor of probabilities to a dictionary of labels and
+        their probabilities.
+
+        Args:
+            x: Tensor of probabilities.
+
+        Returns:
+            Dictionary of labels and their probabilities.
+        """
+        return {label: prob.item() for label, prob in zip(self.labels, x)}
