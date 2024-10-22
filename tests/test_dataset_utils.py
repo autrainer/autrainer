@@ -79,12 +79,12 @@ class TestMinMaxScaler:
         scaler = MinMaxScaler(0, 1)
         assert scaler.decode(scaler(x)) == x, "Should encode and decode."
 
-    def test_predict_batch(self) -> None:
+    def test_probabilities_predict(self) -> None:
         scaler = MinMaxScaler(0, 1)
         x = torch.rand(1, 10)
-        assert (
-            scaler.predict_batch(x) == x.squeeze().tolist()
-        ), "Should predict the batch."
+        probs = scaler.probabilities_batch(x)
+        preds = scaler.predict_batch(probs)
+        assert preds == x.squeeze().tolist(), "Should predict the batch."
 
     def test_majority_vote(self) -> None:
         encoder = MinMaxScaler(0, 1)
@@ -122,14 +122,12 @@ class TestMultiLabelEncoder:
             encoder.decode(encoder([]).tolist()) == []
         ), "Should decode an empty list."
 
-    def test_predict_batch(self) -> None:
+    def test_probabilities_predict(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
         x = torch.Tensor([-0.1, 0.9, 0.6])
-        assert encoder.predict_batch(x) == [
-            0,
-            1,
-            1,
-        ], "Should predict the batch."
+        probs = encoder.probabilities_batch(x)
+        preds = encoder.predict_batch(probs)
+        assert preds == [0, 1, 1], "Should predict the batch."
 
     def test_majority_vote(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
@@ -149,10 +147,12 @@ class TestLabelEncoder:
             encoder.decode(encoder(label)) == label
         ), "Should encode and decode."
 
-    def test_predict_batch(self) -> None:
+    def test_probabilities_predict(self) -> None:
         encoder = LabelEncoder(self.labels)
         x = torch.Tensor([[0, 1, 0], [0, 0, 1]])
-        assert encoder.predict_batch(x) == [1, 2], "Should predict the batch."
+        probs = encoder.probabilities_batch(x)
+        preds = encoder.predict_batch(probs)
+        assert preds == [1, 2], "Should predict the batch."
 
     def test_majority_vote(self) -> None:
         encoder = LabelEncoder(self.labels)
