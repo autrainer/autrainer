@@ -73,8 +73,11 @@ class OutputsTracker:
             "predictions"
         ].apply(self._data.target_transform.decode)
         _probs_df = pd.DataFrame(
-            self._data.target_transform.probabilities_to_dict(p)
-            for p in _probabilities
+            index=results["indices"],
+            data=(
+                self._data.target_transform.probabilities_to_dict(p)
+                for p in _probabilities
+            ),
         )
         self._results_df = pd.concat([self._results_df, _probs_df], axis=1)
 
