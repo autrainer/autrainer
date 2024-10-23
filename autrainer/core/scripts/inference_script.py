@@ -188,6 +188,7 @@ class InferenceScript(AbstractScript):
             help=(
                 "Minimum length of audio file to process in seconds. "
                 "Files shorter than the minimum length are padded with zeros. "
+                "Sample rate has to be specified for padding. "
                 "If None, no minimum length is enforced. Defaults to None."
             ),
         )
@@ -414,7 +415,8 @@ def inference(
             Defaults to None.
         min_length: Minimum length of audio file to process in seconds.
             Files shorter than the minimum length are padded with zeros.
-            If None, no minimum length is enforced. Defaults to None.
+            Sample rate has to be specified for padding. If None, no minimum
+            length is enforced. Defaults to None.
         sample_rate: Sample rate of audio files in Hz. Has to be specified for
             sliding window inference. Defaults to None.
 

@@ -67,22 +67,23 @@ class TestInference(BaseIndividualTempDir):
         self._mock_data_setup()
         inference = Inference("TestModel")
         df = inference.predict_directory("input", "npy")
-        assert len(df) == 10, "Should predict 10 samples"
+        assert len(df) == 10, "Should predict 10 samples."
         assert all(
             c in df.columns for c in ["filename", "prediction", "output"]
-        ), "Should have columns: audio, target, prediction"
+        ), "Should have columns: audio, target, prediction."
         inference.save_prediction_results(df, "output")
         inference.save_prediction_yaml(df, "output")
         assert os.path.exists(
             "output/results.csv"
-        ), "Should save prediction results"
+        ), "Should save prediction results."
         assert os.path.exists(
             "output/results.yaml"
-        ), "Should save prediction YAML"
+        ), "Should save prediction YAML."
 
-        pred, out = inference.predict_file("input/audio_0.npy")
-        assert isinstance(pred, str), "Should return a prediction string"
-        assert isinstance(out, torch.Tensor), "Should return an output tensor"
+        pred, out, probs = inference.predict_file("input/audio_0.npy")
+        assert isinstance(pred, str), "Should return a prediction string."
+        assert isinstance(out, torch.Tensor), "Should return an output tensor."
+        assert isinstance(probs, dict), "Should return a probabilities dict."
 
     def test_predict_sliding_window(self) -> None:
         self._mock_model_setup()
@@ -97,41 +98,42 @@ class TestInference(BaseIndividualTempDir):
         df = inference.predict_directory("input", "npy")
         assert (
             len(df) == 40
-        ), "Should predict 10 samples with 3 windows each and majority voting"
+        ), "Should predict 10 samples with 3 windows each and majority voting."
         assert all(
             c in df.columns
             for c in ["filename", "offset", "prediction", "output"]
-        ), "Should have columns: audio, target, prediction"
+        ), "Should have columns: audio, target, prediction."
         inference.save_prediction_results(df, "output")
         inference.save_prediction_yaml(df, "output")
         assert os.path.exists(
             "output/results.csv"
-        ), "Should save prediction results"
+        ), "Should save prediction results."
         assert os.path.exists(
             "output/results.yaml"
-        ), "Should save prediction YAML"
+        ), "Should save prediction YAML."
 
-        pred, out = inference.predict_file("input/audio_0.npy")
+        pred, out, probs = inference.predict_file("input/audio_0.npy")
         assert isinstance(pred, dict), "Should return a prediction dictionary"
         assert isinstance(out, dict), "Should return an output dictionary"
+        assert isinstance(probs, dict), "Should return a probabilities dict."
 
     def test_embed(self) -> None:
         self._mock_model_setup()
         self._mock_data_setup()
         inference = Inference("TestModel")
         df = inference.embed_directory("input", "npy")
-        assert len(df) == 10, "Should embed 10 samples"
+        assert len(df) == 10, "Should embed 10 samples."
         assert all(
             c in df.columns for c in ["filename", "embedding"]
-        ), "Should have columns: audio, embedding"
+        ), "Should have columns: audio, embedding."
         inference.save_embeddings(df, "output", "npy")
         assert all(
             os.path.isfile(f"output/audio_{i}.pt") for i in range(10)
-        ), "Should save embeddings"
+        ), "Should save embeddings."
         emb = inference.embed_file("input/audio_0.npy")
         assert isinstance(
             emb, torch.Tensor
-        ), "Should return an embedding tensor"
+        ), "Should return an embedding tensor."
 
     def test_embed_sliding_window(self) -> None:
         self._mock_model_setup()
@@ -144,19 +146,19 @@ class TestInference(BaseIndividualTempDir):
             sample_rate=16,
         )
         df = inference.embed_directory("input", "npy")
-        assert len(df) == 30, "Should embed 10 samples with 3 windows each"
+        assert len(df) == 30, "Should embed 10 samples with 3 windows each."
         assert all(
             c in df.columns for c in ["filename", "offset", "embedding"]
-        ), "Should have columns: audio, embedding"
+        ), "Should have columns: audio, embedding."
         inference.save_embeddings(df, "output", "npy")
         audio_embeddings = [
             f for f in os.listdir("output") if f.endswith(".pt")
         ]
-        assert len(audio_embeddings) == 30, "Should save embeddings"
+        assert len(audio_embeddings) == 30, "Should save embeddings."
         emb = inference.embed_file("input/audio_0.npy")
         assert isinstance(
             emb, dict
-        ), "Should return a dictionary of embeddings"
+        ), "Should return a dictionary of embeddings."
 
     def test_preprocessing(self) -> None:
         self._mock_model_setup()
@@ -170,19 +172,20 @@ class TestInference(BaseIndividualTempDir):
         OmegaConf.save(cfg, "preprocessing.yaml")
         inference = Inference("TestModel", preprocess_cfg="preprocessing.yaml")
         df = inference.predict_directory("input", "npy")
-        assert len(df) == 10, "Should predict 10 samples"
+        assert len(df) == 10, "Should predict 10 samples."
         assert all(
             c in df.columns for c in ["filename", "prediction", "output"]
-        ), "Should have columns: audio, target, prediction"
+        ), "Should have columns: audio, target, prediction."
         inference.save_prediction_results(df, "output")
         inference.save_prediction_yaml(df, "output")
         assert os.path.exists(
             "output/results.csv"
-        ), "Should save prediction results"
+        ), "Should save prediction results."
         assert os.path.exists(
             "output/results.yaml"
-        ), "Should save prediction YAML"
+        ), "Should save prediction YAML."
 
-        pred, out = inference.predict_file("input/audio_0.npy")
-        assert isinstance(pred, str), "Should return a prediction string"
-        assert isinstance(out, torch.Tensor), "Should return an output tensor"
+        pred, out, probs = inference.predict_file("input/audio_0.npy")
+        assert isinstance(pred, str), "Should return a prediction string."
+        assert isinstance(out, torch.Tensor), "Should return an output tensor."
+        assert isinstance(probs, dict), "Should return a probabilities dict."
