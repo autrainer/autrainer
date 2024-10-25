@@ -26,7 +26,7 @@ Alternatively, use the following :ref:`configuration management <cli_wrapper_con
 
 .. code-block:: python
 
-    autrainer.cli.create(empty=True)
+   autrainer.cli.create(empty=True)
 
 This will create an empty project structure only including the :file:`conf/config.yaml` configuration file with default values.
 

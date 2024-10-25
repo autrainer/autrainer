@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1928,7 +1928,7 @@ To discover the available timm models to create a custom configuration, refer to
 <p><cite>autrainer</cite> provides a number of different audio-specific models.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.ASTModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">ASTModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_hidden_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/ast_model.html#ASTModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.ASTModel" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">ASTModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_hidden_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/ast_model.html#ASTModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.ASTModel" title="Link to this definition">#</a></dt>
 <dd><p>Audio Speech Transformer (AST) model. For more information see:
 <a class="reference external" href="https://huggingface.co/docs/transformers/v4.31.0/en/model_doc/audio-spectrogram-transformer">https://huggingface.co/docs/transformers/v4.31.0/en/model_doc/audio-spectrogram-transformer</a></p>
 <dl class="field-list simple">
@@ -1939,8 +1939,6 @@ To discover the available timm models to create a custom configuration, refer to
 Defaults to 12.</p></li>
 <li><p><strong>hidden_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Hidden size of the linear layer. Defaults to 128.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate. Defaults to 0.5.</p></li>
-<li><p><strong>sigmoid</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True, a sigmoid activation function is applied to the
-output. Defaults to False.</p></li>
 <li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Name of the pretrained model to load. If None, the default
 AST fine-tuned on AudioSet is used. Defaults to None.
 For more information see:
@@ -2011,17 +2009,13 @@ Defaults to False.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.Cnn10">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">Cnn10</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid_predictions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentwise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/cnn_10.html#Cnn10"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.Cnn10" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">Cnn10</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentwise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/cnn_10.html#Cnn10"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.Cnn10" title="Link to this definition">#</a></dt>
 <dd><p>CNN10 PANN model. For more information see:
 <a class="reference external" href="https://doi.org/10.48550/arXiv.1912.10211">https://doi.org/10.48550/arXiv.1912.10211</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output_dim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Output dimension of the model.</p></li>
-<li><p><strong>sigmoid_output</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to apply sigmoid activation to the output.
-Defaults to False.</p></li>
-<li><p><strong>sigmoid_predictions</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to apply sigmoid activation during
-inference. Defaults to False.</p></li>
 <li><p><strong>segmentwise</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to use segmentwise path or clipwise path.
 Defaults to False.</p></li>
 <li><p><strong>in_channels</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of input channels. Defaults to 1.</p></li>
@@ -2082,15 +2076,13 @@ weights will be randomly initialized. Defaults to None.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.Cnn14">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">Cnn14</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentwise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/cnn_14.html#Cnn14"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.Cnn14" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">Cnn14</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentwise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/cnn_14.html#Cnn14"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.Cnn14" title="Link to this definition">#</a></dt>
 <dd><p>CNN14 PANN model. For more information see:
 <a class="reference external" href="https://doi.org/10.48550/arXiv.1912.10211">https://doi.org/10.48550/arXiv.1912.10211</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output_dim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Output dimension of the model.</p></li>
-<li><p><strong>sigmoid_output</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to apply sigmoid activation to the output.
-Defaults to False.</p></li>
 <li><p><strong>segmentwise</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to use segmentwise path or clipwise path.
 Defaults to False.</p></li>
 <li><p><strong>in_channels</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of input channels. Defaults to 1.</p></li>
@@ -2139,7 +2131,7 @@ weights will be randomly initialized. Defaults to None.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.FFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">FFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">softmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/ffnn.html#FFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.FFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">FFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/ffnn.html#FFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.FFNN" title="Link to this definition">#</a></dt>
 <dd><p>Feedforward neural network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2148,8 +2140,6 @@ weights will be randomly initialized. Defaults to None.</p></li>
 <li><p><strong>input_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Input size.</p></li>
 <li><p><strong>hidden_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Hidden size.</p></li>
 <li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers.</p></li>
-<li><p><strong>sigmoid</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to use sigmoid activation.</p></li>
-<li><p><strong>softmax</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to use softmax activation.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate.</p></li>
 </ul>
 </dd>
@@ -2229,7 +2219,7 @@ Defaults to False.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.SeqFFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">SeqFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_num_layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">softmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LSTM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_time_pooling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/sequential.html#SeqFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.SeqFFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">SeqFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_num_layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LSTM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_time_pooling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/sequential.html#SeqFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.SeqFFNN" title="Link to this definition">#</a></dt>
 <dd><p>Sequential model with FFNN frontend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2240,8 +2230,6 @@ Defaults to False.</p></li>
 <li><p><strong>backbone_num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers of the backbone.</p></li>
 <li><p><strong>hidden_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Hidden size of the FFNN.</p></li>
 <li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers of the FFNN. Defaults to 2.</p></li>
-<li><p><strong>sigmoid</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to apply sigmoid activation. Defaults to False.</p></li>
-<li><p><strong>softmax</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to apply softmax activation. Defaults to False.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate of the FFNN. Defaults to 0.5.</p></li>
 <li><p><strong>backbone_dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate of the backbone. Defaults to 0.5.</p></li>
 <li><p><strong>backbone_cell</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Cell type of the backbone in [“LSTM”, “GRU”].
@@ -2265,12 +2253,10 @@ Defaults to False.</p></li>
 <span class="linenos"> 6</span><span class="nt">backbone_num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="linenos"> 7</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
 <span class="linenos"> 8</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 9</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">10</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">11</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-seq-ffnn-is09">
@@ -2282,12 +2268,10 @@ Defaults to False.</p></li>
 <span class="linenos"> 6</span><span class="nt">backbone_num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="linenos"> 7</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
 <span class="linenos"> 8</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 9</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">10</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">11</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-seq-ffnn-is10">
@@ -2299,12 +2283,10 @@ Defaults to False.</p></li>
 <span class="linenos"> 6</span><span class="nt">backbone_num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="linenos"> 7</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
 <span class="linenos"> 8</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 9</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">10</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">11</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-seq-ffnn-is11">
@@ -2316,12 +2298,10 @@ Defaults to False.</p></li>
 <span class="linenos"> 6</span><span class="nt">backbone_num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="linenos"> 7</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
 <span class="linenos"> 8</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 9</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">10</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">11</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-seq-ffnn-is12">
@@ -2333,12 +2313,10 @@ Defaults to False.</p></li>
 <span class="linenos"> 6</span><span class="nt">backbone_num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="linenos"> 7</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
 <span class="linenos"> 8</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 9</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">10</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">11</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-seq-ffnn-is13">
@@ -2350,12 +2328,10 @@ Defaults to False.</p></li>
 <span class="linenos"> 6</span><span class="nt">backbone_num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="linenos"> 7</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
 <span class="linenos"> 8</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 9</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">10</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">11</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-seq-ffnn-is16">
@@ -2367,12 +2343,10 @@ Defaults to False.</p></li>
 <span class="linenos"> 6</span><span class="nt">backbone_num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="linenos"> 7</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
 <span class="linenos"> 8</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 9</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">10</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos">11</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
 </pre></div>
 </div>
 </div></div>
@@ -2380,7 +2354,7 @@ Defaults to False.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.TDNNFFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">TDNNFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">softmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/tdnn.html#TDNNFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.TDNNFFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">TDNNFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/tdnn.html#TDNNFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.TDNNFFNN" title="Link to this definition">#</a></dt>
 <dd><p>Time Delay Neural Network with FFNN frontend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2388,8 +2362,6 @@ Defaults to False.</p></li>
 <li><p><strong>output_dim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Output dimension.</p></li>
 <li><p><strong>hidden_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Hidden size.</p></li>
 <li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers. Defaults to 2.</p></li>
-<li><p><strong>sigmoid</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to use sigmoid activation. Defaults to False.</p></li>
-<li><p><strong>softmax</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to use softmax activation. Defaults to False.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate. Defaults to 0.5.</p></li>
 </ul>
 </dd>
@@ -2411,7 +2383,7 @@ Defaults to False.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.W2V2FFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">W2V2FFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_extractor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">softmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/w2v2.html#W2V2FFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.W2V2FFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">W2V2FFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_extractor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/w2v2.html#W2V2FFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.W2V2FFNN" title="Link to this definition">#</a></dt>
 <dd><p>Wav2Vec2 model with FFNN frontend adapted for audio classification.
 For more information, see:
 <a class="reference external" href="https://huggingface.co/docs/transformers/model_doc/wav2vec2">https://huggingface.co/docs/transformers/model_doc/wav2vec2</a></p>
@@ -2423,8 +2395,6 @@ For more information, see:
 <li><p><strong>freeze_extractor</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to freeze the feature extractor.</p></li>
 <li><p><strong>hidden_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Hidden size of the FFNN.</p></li>
 <li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers of the FFNN. Defaults to 2.</p></li>
-<li><p><strong>sigmoid</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to apply sigmoid activation. Defaults to False.</p></li>
-<li><p><strong>softmax</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to apply softmax activation. Defaults to False.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate. Defaults to 0.5.</p></li>
 </ul>
 </dd>
@@ -2439,16 +2409,14 @@ For more information, see:
 <span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 <span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 7</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 8</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
-<span class="linenos">13</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
-<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
-<span class="linenos">16</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-base</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-base</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-100k">
@@ -2458,16 +2426,14 @@ For more information, see:
 <span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 <span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 7</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 8</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
-<span class="linenos">13</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
-<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
-<span class="linenos">16</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-100k-voxpopuli</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-100k-voxpopuli</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-emo">
@@ -2477,16 +2443,14 @@ For more information, see:
 <span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 <span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 7</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 8</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
-<span class="linenos">13</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
-<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
-<span class="linenos">16</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-rob">
@@ -2496,16 +2460,14 @@ For more information, see:
 <span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 <span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 7</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 8</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
-<span class="linenos">13</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
-<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
-<span class="linenos">16</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-robust</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-robust</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-w2v2-l">
@@ -2515,16 +2477,14 @@ For more information, see:
 <span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 <span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 7</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 8</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 9</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">12</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
-<span class="linenos">13</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
-<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
-<span class="linenos">16</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large</span>
 </pre></div>
 </div>
 </div></div>
@@ -2532,7 +2492,7 @@ For more information, see:
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.WhisperFFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">WhisperFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">softmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/whisper.html#WhisperFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.WhisperFFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">WhisperFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/whisper.html#WhisperFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.WhisperFFNN" title="Link to this definition">#</a></dt>
 <dd><p>Whisper model with FFNN frontend adapted for audio classification.
 For more information, see:
 <a class="reference external" href="https://doi.org/10.48550/arXiv.2212.04356">https://doi.org/10.48550/arXiv.2212.04356</a></p>
@@ -2543,8 +2503,6 @@ For more information, see:
 <li><p><strong>hidden_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Hidden size of the FFNN.</p></li>
 <li><p><strong>output_dim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Output dimension of the FFNN.</p></li>
 <li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers of the FFNN. Defaults to 2.</p></li>
-<li><p><strong>sigmoid</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to apply sigmoid activation. Defaults to False.</p></li>
-<li><p><strong>softmax</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to apply softmax activation. Defaults to False.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate. Defaults to 0.5.</p></li>
 </ul>
 </dd>
@@ -2558,16 +2516,14 @@ For more information, see:
 <span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-base</span>
 <span class="linenos"> 4</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 <span class="linenos"> 5</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 6</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 7</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 8</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos"> 9</span>
-<span class="linenos">10</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">11</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
-<span class="linenos">12</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
-<span class="linenos">13</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper</span>
-<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-base</span>
+<span class="linenos"> 6</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos"> 9</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-base</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-whisper-ffnn-small-t">
@@ -2576,16 +2532,14 @@ For more information, see:
 <span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-small</span>
 <span class="linenos"> 4</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 <span class="linenos"> 5</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 6</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 7</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 8</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos"> 9</span>
-<span class="linenos">10</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">11</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
-<span class="linenos">12</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
-<span class="linenos">13</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper</span>
-<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-small</span>
+<span class="linenos"> 6</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos"> 9</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-small</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-whisper-ffnn-tiny-t">
@@ -2594,16 +2548,14 @@ For more information, see:
 <span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-tiny</span>
 <span class="linenos"> 4</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 <span class="linenos"> 5</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="linenos"> 6</span><span class="nt">sigmoid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 7</span><span class="nt">softmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="linenos"> 8</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="linenos"> 9</span>
-<span class="linenos">10</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">11</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
-<span class="linenos">12</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
-<span class="linenos">13</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
-<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper</span>
-<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-tiny</span>
+<span class="linenos"> 6</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos"> 9</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-tiny</span>
 </pre></div>
 </div>
 </div></div>
@@ -2688,7 +2640,7 @@ For more information, see:
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -479,45 +479,65 @@ The <code class="xref py py-attr docutils literal notranslate"><span class="pre"
 <div class="code-block-caption"><span class="caption-text">esc_50.py</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">os</span>
 <span class="linenos"> 2</span><span class="kn">import</span> <span class="nn">shutil</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">autrainer.datasets</span> <span class="kn">import</span> <span class="n">BaseClassificationDataset</span>
-<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">autrainer.datasets.utils</span> <span class="kn">import</span> <span class="n">ZipDownloadManager</span>
-<span class="linenos"> 8</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">autrainer.datasets</span> <span class="kn">import</span> <span class="n">BaseClassificationDataset</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">autrainer.datasets.utils</span> <span class="kn">import</span> <span class="n">ZipDownloadManager</span>
 <span class="linenos"> 9</span>
-<span class="linenos">10</span><span class="n">FILES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ESC-50.zip&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/karoldvl/ESC-50/archive/master.zip&quot;</span><span class="p">}</span>
-<span class="linenos">11</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="n">FILES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ESC-50.zip&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/karoldvl/ESC-50/archive/master.zip&quot;</span><span class="p">}</span>
 <span class="linenos">12</span>
-<span class="linenos">13</span><span class="k">class</span> <span class="nc">ESC50</span><span class="p">(</span><span class="n">BaseClassificationDataset</span><span class="p">):</span>
-<span class="linenos">14</span>    <span class="nd">@staticmethod</span>
-<span class="linenos">15</span>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">16</span>        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)):</span>
-<span class="linenos">17</span>            <span class="k">return</span>
-<span class="linenos">18</span>
-<span class="linenos">19</span>        <span class="n">dl_manager</span> <span class="o">=</span> <span class="n">ZipDownloadManager</span><span class="p">(</span><span class="n">FILES</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-<span class="linenos">20</span>        <span class="n">dl_manager</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ESC-50.zip&quot;</span><span class="p">])</span>
-<span class="linenos">21</span>        <span class="n">dl_manager</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ESC-50-master&quot;</span><span class="p">])</span>
-<span class="linenos">22</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
-<span class="linenos">23</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">,</span> <span class="s2">&quot;audio&quot;</span><span class="p">),</span>
-<span class="linenos">24</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">),</span>
-<span class="linenos">25</span>        <span class="p">)</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="k">class</span> <span class="nc">ESC50</span><span class="p">(</span><span class="n">BaseClassificationDataset</span><span class="p">):</span>
+<span class="linenos">15</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos">16</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">17</span>        <span class="n">train_folds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="linenos">18</span>        <span class="n">dev_folds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="linenos">19</span>        <span class="n">test_folds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="linenos">20</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>  <span class="c1"># kwargs only for simplicity in the tutorial</span>
+<span class="linenos">21</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">22</span>        <span class="bp">self</span><span class="o">.</span><span class="n">train_folds</span> <span class="o">=</span> <span class="n">train_folds</span>
+<span class="linenos">23</span>        <span class="bp">self</span><span class="o">.</span><span class="n">dev_folds</span> <span class="o">=</span> <span class="n">dev_folds</span>
+<span class="linenos">24</span>        <span class="bp">self</span><span class="o">.</span><span class="n">test_folds</span> <span class="o">=</span> <span class="n">test_folds</span>
+<span class="linenos">25</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 <span class="linenos">26</span>
-<span class="linenos">27</span>        <span class="n">meta_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;esc50.csv&quot;</span><span class="p">)</span>
-<span class="linenos">28</span>        <span class="n">meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">meta_path</span><span class="p">)</span>
-<span class="linenos">29</span>
-<span class="linenos">30</span>        <span class="c1"># Simple split only for demonstration purposes</span>
-<span class="linenos">31</span>        <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;train.csv&quot;</span><span class="p">))</span>
-<span class="linenos">32</span>        <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;dev.csv&quot;</span><span class="p">))</span>
-<span class="linenos">33</span>        <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;test.csv&quot;</span><span class="p">))</span>
-<span class="linenos">34</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">))</span>
+<span class="linenos">27</span>    <span class="k">def</span> <span class="nf">load_dataframes</span><span class="p">(</span>
+<span class="linenos">28</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">29</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="linenos">30</span>        <span class="n">meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;esc50.csv&quot;</span><span class="p">))</span>
+<span class="linenos">31</span>        <span class="k">return</span> <span class="p">(</span>
+<span class="linenos">32</span>            <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_folds</span><span class="p">)],</span>
+<span class="linenos">33</span>            <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_folds</span><span class="p">)],</span>
+<span class="linenos">34</span>            <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_folds</span><span class="p">)],</span>
+<span class="linenos">35</span>        <span class="p">)</span>
+<span class="linenos">36</span>
+<span class="linenos">37</span>    <span class="nd">@staticmethod</span>
+<span class="linenos">38</span>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">39</span>        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)):</span>
+<span class="linenos">40</span>            <span class="k">return</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span>        <span class="n">dl_manager</span> <span class="o">=</span> <span class="n">ZipDownloadManager</span><span class="p">(</span><span class="n">FILES</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+<span class="linenos">43</span>        <span class="n">dl_manager</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ESC-50.zip&quot;</span><span class="p">])</span>
+<span class="linenos">44</span>        <span class="n">dl_manager</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ESC-50-master&quot;</span><span class="p">])</span>
+<span class="linenos">45</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
+<span class="linenos">46</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">,</span> <span class="s2">&quot;audio&quot;</span><span class="p">),</span>
+<span class="linenos">47</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">),</span>
+<span class="linenos">48</span>        <span class="p">)</span>
+<span class="linenos">49</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
+<span class="linenos">50</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;esc50.csv&quot;</span><span class="p">),</span>
+<span class="linenos">51</span>            <span class="n">path</span><span class="p">,</span>
+<span class="linenos">52</span>        <span class="p">)</span>
+<span class="linenos">53</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <p>The dataset provides audio files by default (which are moved to the <code class="file docutils literal notranslate"><span class="pre">default/</span></code> directory in the
-<a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.download" title="autrainer.datasets.AbstractDataset.download"><code class="xref py py-meth docutils literal notranslate"><span class="pre">download()</span></code></a> method).
-As the resulting dataset structure follows the standard format outlined in the <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">dataset documentation</span></a>,
-no further implementation or overrides are necessary.</p>
+<a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.download" title="autrainer.datasets.AbstractDataset.download"><code class="xref py py-meth docutils literal notranslate"><span class="pre">download()</span></code></a> method) and the corresponding metadata of the dataset is stored in the <code class="file docutils literal notranslate"><span class="pre">esc50.csv</span></code> file.</p>
+<p>To allow the the specification of custom folds, the <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.load_dataframes" title="autrainer.datasets.AbstractDataset.load_dataframes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_dataframes()</span></code></a>
+method is overridden to split the <code class="file docutils literal notranslate"><span class="pre">esc50.csv</span></code> file into the respective train, dev, and test dataframes.
+This also allows for cross-validation by creating multiple configurations with different folds.</p>
 <p>To extract log-Mel spectrograms from the audio files, a <a class="reference internal" href="../modules/transforms.html#preprocessing-transforms"><span class="std std-ref">preprocessing transform</span></a>
 can be applied to the data before training.
 The following configuration creates a new <code class="file docutils literal notranslate"><span class="pre">ESC50-32k.yaml</span></code> dataset in the <code class="file docutils literal notranslate"><span class="pre">conf/dataset/</span></code> directory with log-Mel spectrograms
@@ -534,15 +554,19 @@ preprocessed at a sample rate of 32 kHz:</p>
 <span class="linenos"> 8</span><span class="nt">file_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">npy</span>
 <span class="linenos"> 9</span><span class="nt">file_handler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.datasets.utils.NumpyFileHandler</span>
 <span class="linenos">10</span>
-<span class="linenos">11</span><span class="nt">criterion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.criterions.BalancedCrossEntropyLoss</span>
-<span class="linenos">12</span><span class="nt">metrics</span><span class="p">:</span><span class="w"> </span>
-<span class="linenos">13</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
-<span class="linenos">14</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.UAR</span>
-<span class="linenos">15</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.F1</span>
-<span class="linenos">16</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
-<span class="linenos">17</span>
-<span class="linenos">18</span><span class="nt">transform</span><span class="p">:</span>
-<span class="linenos">19</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grayscale</span>
+<span class="linenos">11</span><span class="nt">train_folds</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">3</span><span class="p p-Indicator">]</span>
+<span class="linenos">12</span><span class="nt">dev_folds</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">4</span><span class="p p-Indicator">]</span>
+<span class="linenos">13</span><span class="nt">test_folds</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">5</span><span class="p p-Indicator">]</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="nt">criterion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.criterions.BalancedCrossEntropyLoss</span>
+<span class="linenos">16</span><span class="nt">metrics</span><span class="p">:</span><span class="w"> </span>
+<span class="linenos">17</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
+<span class="linenos">18</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.UAR</span>
+<span class="linenos">19</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.F1</span>
+<span class="linenos">20</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">23</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grayscale</span>
 </pre></div>
 </div>
 </div>
@@ -587,19 +611,6 @@ and stored in the <code class="file docutils literal notranslate"><span class="p
 <li><p><code class="file docutils literal notranslate"><span class="pre">train.csv</span></code>, <code class="file docutils literal notranslate"><span class="pre">dev.csv</span></code>, and <code class="file docutils literal notranslate"><span class="pre">test.csv</span></code> files containing the file paths relative to the <code class="file docutils literal notranslate"><span class="pre">default/</span></code> directory
 in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">index_column</span></code> column and the corresponding labels in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">target_column</span></code> column.</p></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The following attributes are automatically passed to the dataset during initialization and determined at runtime:</p>
-<ul class="simple">
-<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">train_transform</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">dev_transform</span></code>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">test_transform</span></code>: The <a class="reference internal" href="../modules/transforms.html#autrainer.transforms.SmartCompose" title="autrainer.transforms.SmartCompose"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmartCompose</span></code></a>
-transformation pipelines (which may include possible <a class="reference internal" href="../modules/transforms.html#online-transforms"><span class="std std-ref">online transforms</span></a> or <a class="reference internal" href="../modules/augmentations.html#augmentations"><span class="std std-ref">augmentations</span></a>).</p></li>
-<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">seed</span></code>: The random seed for reproducibility during training.</p></li>
-<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_size</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">inference_batch_size</span></code>: The batch sizes for training and inference (dev, test).</p></li>
-</ul>
-<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">transform</span></code> attribute in the configuration is not passed to the dataset during initialization
-and is used to specify the <a class="reference internal" href="../modules/transforms.html#online-transforms"><span class="std std-ref">type of data</span></a> the dataset provides as well as any
-<a class="reference internal" href="../modules/transforms.html#online-transforms"><span class="std std-ref">online transforms</span></a> to be applied to the data at runtime.</p>
-</div>
 <section id="custom-metrics">
 <span id="tut-metrics"></span><h3>Custom Metrics<a class="headerlink" href="#custom-metrics" title="Link to this heading">#</a></h3>
 <p>To create a custom <a class="reference internal" href="../modules/metrics.html#metrics"><span class="std std-ref">metric</span></a>, inherit from <a class="reference internal" href="../modules/metrics.html#autrainer.metrics.AbstractMetric" title="autrainer.metrics.AbstractMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMetric</span></code></a>
@@ -740,13 +751,13 @@ The following configuration utilizes the <code class="xref py py-class docutils 
 <span id="tut-target-transforms"></span><h3>Custom Target Transforms<a class="headerlink" href="#custom-target-transforms" title="Link to this heading">#</a></h3>
 <p>To create a custom <a class="reference internal" href="../modules/dataset_utils.html#dataset-target-transforms"><span class="std std-ref">target transform</span></a>, inherit from <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform" title="autrainer.datasets.utils.AbstractTargetTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTargetTransform</span></code></a>
 and implement the <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.encode" title="autrainer.datasets.utils.AbstractTargetTransform.encode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">encode()</span></code></a>, <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.decode" title="autrainer.datasets.utils.AbstractTargetTransform.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode()</span></code></a>,
-<a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.predict_batch" title="autrainer.datasets.utils.AbstractTargetTransform.predict_batch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict_batch()</span></code></a>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">predict_batch()</span></code>,
 and <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.majority_vote" title="autrainer.datasets.utils.AbstractTargetTransform.majority_vote"><code class="xref py py-meth docutils literal notranslate"><span class="pre">majority_vote()</span></code></a> methods.</p>
 <p>For example, the following target transform logarithmically encodes and decodes the targets for regression tasks:</p>
 <div class="literal-block-wrapper docutils container" id="id14">
 <div class="code-block-caption"><span class="caption-text">log_target_transform.py</span><a class="headerlink" href="#id14" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">math</span>
-<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="linenos"> 5</span>
@@ -754,28 +765,36 @@ and <a class="reference internal" href="../modules/dataset_utils.html#autrainer.
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span><span class="k">class</span> <span class="nc">LogTargetTransform</span><span class="p">(</span><span class="n">AbstractTargetTransform</span><span class="p">):</span>
-<span class="linenos">10</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">10</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">11</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Logarithmic target transform for regression tasks.</span>
 <span class="linenos">12</span>
 <span class="linenos">13</span><span class="sd">        Args:</span>
-<span class="linenos">14</span><span class="sd">            base: Base of the logarithm. Defaults to 10.</span>
-<span class="linenos">15</span><span class="sd">            eps: Small value to avoid taking the logarithm of zero.</span>
-<span class="linenos">16</span><span class="sd">                Defaults to 1e-10.</span>
-<span class="linenos">17</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">18</span>        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
-<span class="linenos">19</span>        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
-<span class="linenos">20</span>
-<span class="linenos">21</span>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="linenos">22</span>        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span>
-<span class="linenos">23</span>
-<span class="linenos">24</span>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="linenos">25</span>        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span>
-<span class="linenos">26</span>
-<span class="linenos">27</span>    <span class="k">def</span> <span class="nf">predict_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="linenos">28</span>        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-<span class="linenos">29</span>
-<span class="linenos">30</span>    <span class="k">def</span> <span class="nf">majority_vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="linenos">31</span>        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos">14</span><span class="sd">            target: Name of the target.</span>
+<span class="linenos">15</span><span class="sd">            base: Base of the logarithm. Defaults to 10.</span>
+<span class="linenos">16</span><span class="sd">            eps: Small value to avoid taking the logarithm of zero.</span>
+<span class="linenos">17</span><span class="sd">                Defaults to 1e-9.</span>
+<span class="linenos">18</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">19</span>        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+<span class="linenos">20</span>        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
+<span class="linenos">21</span>        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="linenos">24</span>        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="linenos">27</span>        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span>    <span class="k">def</span> <span class="nf">probabilities_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">30</span>        <span class="k">return</span> <span class="n">x</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span>    <span class="k">def</span> <span class="nf">predict_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="linenos">33</span>        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span>    <span class="k">def</span> <span class="nf">majority_vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="linenos">36</span>        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos">37</span>
+<span class="linenos">38</span>    <span class="k">def</span> <span class="nf">probabilities_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="linenos">39</span>        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()}</span>
 </pre></div>
 </div>
 </div>
@@ -791,7 +810,7 @@ of a <a class="reference internal" href="../modules/datasets.html#datasets"><spa
 with an additional randomly scaled learning rate using a <a class="reference internal" href="../modules/optimizers.html#optimizer-custom-step"><span class="std std-ref">custom step function</span></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id15">
 <div class="code-block-caption"><span class="caption-text">random_scaled_sgd.py</span><a class="headerlink" href="#id15" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="linenos"> 4</span>
@@ -827,16 +846,17 @@ with an additional randomly scaled learning rate using a <a class="reference int
 <span class="linenos">34</span>        <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>  <span class="c1"># batched input data</span>
 <span class="linenos">35</span>        <span class="n">target</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>  <span class="c1"># batched target data</span>
 <span class="linenos">36</span>        <span class="n">criterion</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>  <span class="c1"># loss function</span>
-<span class="linenos">37</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
-<span class="linenos">38</span>        <span class="bp">self</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-<span class="linenos">39</span>        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="linenos">40</span>        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
-<span class="linenos">41</span>        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-<span class="linenos">42</span>        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
-<span class="linenos">43</span>            <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span>
-<span class="linenos">44</span>        <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-<span class="linenos">45</span>        <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_lr</span>
-<span class="linenos">46</span>        <span class="k">return</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+<span class="linenos">37</span>        <span class="n">probabilities_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>  <span class="c1"># function to get probabilities from model outputs</span>
+<span class="linenos">38</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="linenos">39</span>        <span class="bp">self</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="linenos">40</span>        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="linenos">41</span>        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
+<span class="linenos">42</span>        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="linenos">43</span>        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
+<span class="linenos">44</span>            <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span>
+<span class="linenos">45</span>        <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+<span class="linenos">46</span>        <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_lr</span>
+<span class="linenos">47</span>        <span class="k">return</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1237,8 +1257,8 @@ and <a class="reference internal" href="../modules/loggers.html#autrainer.logger
 <span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span>
 <span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">wandb</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">autrainer.loggers</span> <span class="kn">import</span> <span class="p">(</span>
-<span class="linenos"> 8</span>    <span class="n">EXPORT_ARTIFACTS</span><span class="p">,</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">ExportConstants</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">autrainer.loggers</span> <span class="kn">import</span> <span class="p">(</span>
 <span class="linenos"> 9</span>    <span class="n">AbstractLogger</span><span class="p">,</span>
 <span class="linenos">10</span>    <span class="n">get_params_to_export</span><span class="p">,</span>
 <span class="linenos">11</span><span class="p">)</span>
@@ -1252,42 +1272,44 @@ and <a class="reference internal" href="../modules/loggers.html#autrainer.logger
 <span class="linenos">19</span>        <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="linenos">20</span>        <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractMetric</span><span class="p">],</span>
 <span class="linenos">21</span>        <span class="n">tracking_metric</span><span class="p">:</span> <span class="n">AbstractMetric</span><span class="p">,</span>
-<span class="linenos">22</span>        <span class="n">artifacts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">EXPORT_ARTIFACTS</span><span class="p">,</span>
-<span class="linenos">23</span>        <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wandb&quot;</span><span class="p">,</span>
-<span class="linenos">24</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">25</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-<span class="linenos">26</span>            <span class="n">exp_name</span><span class="p">,</span> <span class="n">run_name</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">tracking_metric</span><span class="p">,</span> <span class="n">artifacts</span>
-<span class="linenos">27</span>        <span class="p">)</span>
-<span class="linenos">28</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
-<span class="linenos">29</span>            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">output_dir</span><span class="p">)</span>
-<span class="linenos">30</span>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">31</span>        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
-<span class="linenos">32</span>
-<span class="linenos">33</span>    <span class="k">def</span> <span class="nf">log_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">34</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
-<span class="linenos">35</span>            <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span><span class="p">,</span>
-<span class="linenos">36</span>            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_name</span><span class="p">,</span>
-<span class="linenos">37</span>            <span class="n">config</span><span class="o">=</span><span class="n">get_params_to_export</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
-<span class="linenos">38</span>            <span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
-<span class="linenos">39</span>        <span class="p">)</span>
-<span class="linenos">40</span>
-<span class="linenos">41</span>    <span class="k">def</span> <span class="nf">log_metrics</span><span class="p">(</span>
-<span class="linenos">42</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">43</span>        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-<span class="linenos">44</span>        <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="linenos">45</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">46</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">iteration</span><span class="p">)</span>
-<span class="linenos">47</span>
-<span class="linenos">48</span>    <span class="k">def</span> <span class="nf">log_timers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">49</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">timers</span><span class="p">)</span>
-<span class="linenos">50</span>
-<span class="linenos">51</span>    <span class="k">def</span> <span class="nf">log_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">52</span>        <span class="n">artifact</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">Artifact</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>
-<span class="linenos">53</span>        <span class="n">artifact</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-<span class="linenos">54</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
-<span class="linenos">55</span>
-<span class="linenos">56</span>    <span class="k">def</span> <span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">57</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+<span class="linenos">22</span>        <span class="n">artifacts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
+<span class="linenos">23</span>            <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+<span class="linenos">24</span>        <span class="p">]</span> <span class="o">=</span> <span class="n">ExportConstants</span><span class="p">()</span><span class="o">.</span><span class="n">ARTIFACTS</span><span class="p">,</span>
+<span class="linenos">25</span>        <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wandb&quot;</span><span class="p">,</span>
+<span class="linenos">26</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">27</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos">28</span>            <span class="n">exp_name</span><span class="p">,</span> <span class="n">run_name</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">tracking_metric</span><span class="p">,</span> <span class="n">artifacts</span>
+<span class="linenos">29</span>        <span class="p">)</span>
+<span class="linenos">30</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+<span class="linenos">31</span>            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">output_dir</span><span class="p">)</span>
+<span class="linenos">32</span>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">33</span>        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span>    <span class="k">def</span> <span class="nf">log_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">36</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+<span class="linenos">37</span>            <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span><span class="p">,</span>
+<span class="linenos">38</span>            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_name</span><span class="p">,</span>
+<span class="linenos">39</span>            <span class="n">config</span><span class="o">=</span><span class="n">get_params_to_export</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
+<span class="linenos">40</span>            <span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+<span class="linenos">41</span>        <span class="p">)</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span>    <span class="k">def</span> <span class="nf">log_metrics</span><span class="p">(</span>
+<span class="linenos">44</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">45</span>        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+<span class="linenos">46</span>        <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="linenos">47</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">48</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">iteration</span><span class="p">)</span>
+<span class="linenos">49</span>
+<span class="linenos">50</span>    <span class="k">def</span> <span class="nf">log_timers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">51</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">timers</span><span class="p">)</span>
+<span class="linenos">52</span>
+<span class="linenos">53</span>    <span class="k">def</span> <span class="nf">log_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">54</span>        <span class="n">artifact</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">Artifact</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>
+<span class="linenos">55</span>        <span class="n">artifact</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+<span class="linenos">56</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+<span class="linenos">57</span>
+<span class="linenos">58</span>    <span class="k">def</span> <span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">59</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1462,7 +1484,7 @@ by overriding the <code class="xref py py-attr docutils literal notranslate"><sp
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

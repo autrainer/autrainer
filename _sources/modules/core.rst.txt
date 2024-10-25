@@ -1,7 +1,12 @@
+.. _core:
+
 Core
 ====
 
 Core provides various utilities and entry points for the `autrainer` framework.
+
+
+.. _core_entry_point:
 
 Entry Point
 -----------
@@ -10,6 +15,8 @@ The main training entry point for `autrainer`.
 
 .. autofunction:: autrainer.main
 
+
+.. _core_instantiation:
 
 Instantiation
 -------------
@@ -21,6 +28,8 @@ providing additional type safety and :ref:`shorthand_syntax` support.
 
 .. autofunction:: autrainer.instantiate_shorthand
 
+
+.. _core_utils:
 
 Utils
 -----
@@ -74,15 +83,22 @@ This can optionally be extended to any format supported by `Matplotlib <https://
           :configs: Default Thesis
           :headline:
 
+
+.. _core_constants:
+
 Constants
 ---------
 
-Constants provide various predefined values.
+`autrainer` provides a set of constants singletons to control naming, training, and exporting configurations at runtime.
 
-.. autodata:: autrainer.core.constants.NAMING_CONVENTION
+.. autoclass:: autrainer.core.constants.AbstractConstants
+    :members:
 
-.. autodata:: autrainer.core.constants.INVALID_AGGREGATIONS
+.. autoclass:: autrainer.core.constants.NamingConstants
+    :members:
 
-.. autodata:: autrainer.core.constants.VALID_AGGREGATIONS
+.. autoclass:: autrainer.core.constants.TrainingConstants
+    :members:
 
-.. autodata:: autrainer.core.constants.CONFIG_FOLDERS
+.. autoclass:: autrainer.core.constants.ExportConstants
+    :members:

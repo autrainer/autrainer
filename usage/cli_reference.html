@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -424,7 +424,6 @@ the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span clas
 <li><p>plotting</p></li>
 <li><p>preprocessing</p></li>
 <li><p>scheduler</p></li>
-<li><p>sharpness</p></li>
 </ul>
 </dd>
 </dl>
@@ -469,7 +468,6 @@ the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span clas
 <li><p>plotting</p></li>
 <li><p>preprocessing</p></li>
 <li><p>scheduler</p></li>
-<li><p>sharpness</p></li>
 </ul>
 </dd>
 </dl>
@@ -514,7 +512,6 @@ the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span clas
 <li><p>plotting</p></li>
 <li><p>preprocessing</p></li>
 <li><p>scheduler</p></li>
-<li><p>sharpness</p></li>
 </ul>
 </dd>
 </dl>
@@ -540,7 +537,7 @@ the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span clas
 <section id="preprocessing">
 <span id="cli-preprocessing"></span><h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h2>
 <p>To avoid race conditions when using <a class="reference internal" href="hydra_configurations.html#hydra-launcher-plugins"><span class="std std-ref">Launcher Plugins</span></a> that may run multiple training jobs in parallel,
-<a class="reference internal" href="#cli-autrainer-fetch"><span class="std std-ref">autrainer fetch</span></a> and <a class="reference internal" href="#cli-autrainer-preprocess"><span class="std std-ref">autrainer preprocess</span></a> are allow for the
+<a class="reference internal" href="#cli-autrainer-fetch"><span class="std std-ref">autrainer fetch</span></a> and <a class="reference internal" href="#cli-autrainer-preprocess"><span class="std std-ref">autrainer preprocess</span></a> allow for
 downloading and <a class="reference internal" href="../modules/transforms.html#preprocessing-transforms"><span class="std std-ref">preprocessing</span></a> of <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">Datasets</span></a> (and pretrained model states) before training.</p>
 <p>Both commands are based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>),
 such that the specified models and datasets are fetched and preprocessed accordingly.
@@ -575,7 +572,7 @@ For more information on Hydra’s command line line flags, see:
 For more information on Hydra’s command line line flags, see:
 <a class="reference external" href="https://hydra.cc/docs/advanced/hydra-command-line-flags/">https://hydra.cc/docs/advanced/hydra-command-line-flags/</a>.</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">preprocess</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">preprocess</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">u</span> <span class="n">F</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="named-arguments">
@@ -585,13 +582,10 @@ For more information on Hydra’s command line line flags, see:
 <dd><p>Use the launcher specified in the configuration instead of the Hydra basic launcher. Defaults to False.</p>
 </dd>
 <dt><kbd>-n, --num-workers</kbd></dt>
-<dd><p>Number of workers to use for preprocessing. Defaults to -1.</p>
+<dd><p>Number of workers (threads) to use for preprocessing. Defaults to 1.</p>
 </dd>
-<dt><kbd>-p, --pbar-frequency</kbd></dt>
-<dd><p>Frequency of progress bar updates. Defaults to 100.</p>
-</dd>
-<dt><kbd>-s, --silent</kbd></dt>
-<dd><p>Disable progress bar output.</p>
+<dt><kbd>-u, --update-frequency</kbd></dt>
+<dd><p>Frequency of progress bar updates for each worker (thread). If 0, the progress bar will be disabled. Defaults to 1.</p>
 </dd>
 </dl>
 </section>
@@ -659,8 +653,8 @@ the environment variable <code class="code docutils literal notranslate"><span c
 </div>
 <p><p>Perform inference on a trained model.</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">inference</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">emb</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">w</span> <span class="n">W</span><span class="p">]</span>
-                           <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">M</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">sr</span> <span class="n">SR</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">inference</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">emb</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">u</span> <span class="n">F</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span>
+                           <span class="p">[</span><span class="o">-</span><span class="n">w</span> <span class="n">W</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">M</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">sr</span> <span class="n">SR</span><span class="p">]</span>
                            <span class="n">model</span> <span class="nb">input</span> <span class="n">output</span>
 </pre></div>
 </div>
@@ -696,6 +690,9 @@ the environment variable <code class="code docutils literal notranslate"><span c
 <dt><kbd>-emb, --embeddings</kbd></dt>
 <dd><p>Extract embeddings from the model in addition to predictions.For each file, a .pt file with embeddings will be saved.Defaults to False.</p>
 </dd>
+<dt><kbd>-u, --update-frequency</kbd></dt>
+<dd><p>Frequency of progress bar updates. If 0, the progress bar will be disabled. Defaults to 1.</p>
+</dd>
 <dt><kbd>-p, --preprocess-cfg</kbd></dt>
 <dd><p>Preprocessing configuration to apply to input. Can be a path to a YAML file or the name of the preprocessing configuration in the local or autrainer ‘conf/preprocessing’ directory. If ‘default’, the default preprocessing configuration used during training will be applied. If ‘None’, no preprocessing will be applied. Defaults to ‘default’.</p>
 </dd>
@@ -706,7 +703,7 @@ the environment variable <code class="code docutils literal notranslate"><span c
 <dd><p>Stride length for sliding window inference in seconds. If None, the entire input will be processed at once. Defaults to None.</p>
 </dd>
 <dt><kbd>-m, --min-length</kbd></dt>
-<dd><p>Minimum length of audio file to process in seconds. Files shorter than the minimum length are padded with zeros. If None, no minimum length is enforced. Defaults to None.</p>
+<dd><p>Minimum length of audio file to process in seconds. Files shorter than the minimum length are padded with zeros. Sample rate has to be specified for padding. If None, no minimum length is enforced. Defaults to None.</p>
 </dd>
 <dt><kbd>-sr, --sample-rate</kbd></dt>
 <dd><p>Sample rate of audio files in Hz. Has to be specified for sliding window inference. Defaults to None.</p>
@@ -751,15 +748,15 @@ Manual grouping of the training results can be done using <a class="reference in
 <dt><kbd>-a, --aggregate</kbd></dt>
 <dd><dl class="simple">
 <dt>Configurations to aggregate. One or more of:</dt><dd><ul class="simple">
-<li><p>scheduler</p></li>
-<li><p>dataset</p></li>
 <li><p>augmentation</p></li>
-<li><p>seed</p></li>
+<li><p>batch_size</p></li>
+<li><p>dataset</p></li>
+<li><p>iterations</p></li>
+<li><p>learning_rate</p></li>
 <li><p>model</p></li>
 <li><p>optimizer</p></li>
-<li><p>learning_rate</p></li>
-<li><p>batch_size</p></li>
-<li><p>iterations</p></li>
+<li><p>scheduler</p></li>
+<li><p>seed</p></li>
 </ul>
 </dd>
 </dl>
@@ -965,7 +962,7 @@ For more information on Hydra’s command line line flags, see:
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

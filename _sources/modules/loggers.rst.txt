@@ -60,15 +60,3 @@ the :class:`FallbackLogger` will be used instead.
 This logger will log a warning message and will not log any data.
 
 .. autoclass:: autrainer.loggers.FallbackLogger
-
-
-Constants
----------
-
-The following constants are used to specify the logging depth as well as the parameters and artifacts exported by the loggers.
-
-.. autodata:: autrainer.loggers.abstract_logger.EXPORT_ARTIFACTS
-
-.. autodata:: autrainer.loggers.abstract_logger.EXPORT_IGNORE_PARAMS
-
-.. autodata:: autrainer.loggers.abstract_logger.EXPORT_LOGGING_DEPTH

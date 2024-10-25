@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -376,8 +376,7 @@ document.write(`
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PreprocessArgs</span><span class="p">(</span><span class="n">PreprocessArgs</span><span class="p">):</span>
     <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="n">pbar_frequency</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">update_frequency</span><span class="p">:</span> <span class="nb">int</span>
 
 
 <span class="k">class</span> <span class="nc">PreprocessScript</span><span class="p">(</span><span class="n">AbstractPreprocessScript</span><span class="p">):</span>
@@ -400,35 +399,34 @@ document.write(`
             <span class="s2">&quot;-n&quot;</span><span class="p">,</span>
             <span class="s2">&quot;--num-workers&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of workers to use for preprocessing. Defaults to -1.&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">&quot;Number of workers (threads) to use for preprocessing. &quot;</span>
+                <span class="s2">&quot;Defaults to 1.&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;--pbar-frequency&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-u&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--update-frequency&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-            <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Frequency of progress bar updates. Defaults to 100.&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;--silent&quot;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Disable progress bar output.&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">&quot;Frequency of progress bar updates for each worker (thread). &quot;</span>
+                <span class="s2">&quot;If 0, the progress bar will be disabled. Defaults to 1.&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">PreprocessArgs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_num_workers</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
+
         <span class="kn">import</span> <span class="nn">hydra</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">num_workers</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pbar_frequency</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar_frequency</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">silent</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">silent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_frequency</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">update_frequency</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_override_launcher</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span> <span class="o">=</span> <span class="p">{}</span>
@@ -456,6 +454,12 @@ document.write(`
         <span class="n">main</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_datasets</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clean_up</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_assert_num_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">num_workers</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of workers &#39;</span><span class="si">{</span><span class="n">num_workers</span><span class="si">}</span><span class="s2">&#39; must be &gt;= 1.&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_preprocess_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
@@ -485,18 +489,14 @@ document.write(`
             <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">_create_subdirs</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">)),</span>
-                    <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
+            <span class="n">dirs</span> <span class="o">=</span> <span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">}</span>
 
-        <span class="k">def</span> <span class="nf">_get_num_chunks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="ow">or</span> <span class="mi">1</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_split_chunks</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">chunks</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+            <span class="k">if</span> <span class="n">chunks</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">files</span><span class="p">]</span>
             <span class="n">avg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">/</span> <span class="n">chunks</span>
             <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">last</span> <span class="o">=</span> <span class="mi">0</span>
@@ -538,12 +538,13 @@ document.write(`
                 <span class="n">data</span> <span class="o">=</span> <span class="n">file_handler</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">in_path</span><span class="p">)</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
                 <span class="n">output_file_handler</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">data</span>
                 <span class="n">file_count</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">file_count</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">file_count</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
-                        <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbar_frequency</span><span class="p">)</span>
+                        <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_frequency</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
-                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">file_count</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar_frequency</span><span class="p">)</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">file_count</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_frequency</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Preprocessing datasets...&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dataset</span><span class="p">),</span> <span class="n">preprocess</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -562,13 +563,14 @@ document.write(`
                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;features_subdir&quot;</span><span class="p">]),</span>
                 <span class="n">unique_files</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">num_chunks</span> <span class="o">=</span> <span class="n">_get_num_chunks</span><span class="p">()</span>
-            <span class="n">chunks</span> <span class="o">=</span> <span class="n">_split_chunks</span><span class="p">(</span><span class="n">unique_files</span><span class="p">,</span> <span class="n">num_chunks</span><span class="p">)</span>
+            <span class="n">chunks</span> <span class="o">=</span> <span class="n">_split_chunks</span><span class="p">(</span><span class="n">unique_files</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
             <span class="n">lock</span> <span class="o">=</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">get_lock</span><span class="p">()</span>
             <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
-                <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_files</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">silent</span>
+                <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_files</span><span class="p">),</span>
+                <span class="n">desc</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">disable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">update_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">num_chunks</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
                     <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
                             <span class="n">_process_chunk</span><span class="p">,</span>
@@ -589,9 +591,8 @@ document.write(`
 <span class="nd">@catch_cli_errors</span>
 <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span>
     <span class="n">override_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">pbar_frequency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-    <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">update_frequency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">cfg_launcher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span>
     <span class="n">config_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -601,10 +602,10 @@ document.write(`
 <span class="sd">    Args:</span>
 <span class="sd">        override_kwargs: Additional Hydra override arguments to pass to the</span>
 <span class="sd">            train script.</span>
-<span class="sd">        num_workers: Number of workers to use for preprocessing.</span>
-<span class="sd">            Defaults to -1.</span>
-<span class="sd">        pbar_frequency: Frequency of progress bar updates. Defaults to 100.</span>
-<span class="sd">        silent: Disable progress bar output. Defaults to False.</span>
+<span class="sd">        num_workers: Number of workers (threads) to use for preprocessing.</span>
+<span class="sd">            Defaults to 1.</span>
+<span class="sd">        update_frequency: Frequency of progress bar updates for each worker</span>
+<span class="sd">            (thread). If 0, the progress bar will be disabled. Defaults to 1.</span>
 <span class="sd">        cfg_launcher: Use the launcher specified in the configuration instead</span>
 <span class="sd">            of the Hydra basic launcher. Defaults to False.</span>
 <span class="sd">        config_name: The name of the config (usually the file name without the</span>
@@ -617,9 +618,7 @@ document.write(`
         <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;preprocess&quot;</span>
         <span class="k">if</span> <span class="n">cfg_launcher</span><span class="p">:</span>
             <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; -l&quot;</span>
-        <span class="k">if</span> <span class="n">silent</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; -s&quot;</span>
-        <span class="n">cmd</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; -n </span><span class="si">{</span><span class="n">num_workers</span><span class="si">}</span><span class="s2"> -p </span><span class="si">{</span><span class="n">pbar_frequency</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">cmd</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; -n </span><span class="si">{</span><span class="n">num_workers</span><span class="si">}</span><span class="s2"> -u </span><span class="si">{</span><span class="n">update_frequency</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">run_hydra_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">override_kwargs</span><span class="p">,</span> <span class="n">config_name</span><span class="p">,</span> <span class="n">config_path</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
@@ -627,7 +626,7 @@ document.write(`
         <span class="n">script</span> <span class="o">=</span> <span class="n">PreprocessScript</span><span class="p">()</span>
         <span class="n">script</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">MockParser</span><span class="p">()</span>
         <span class="n">script</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
-            <span class="n">PreprocessArgs</span><span class="p">(</span><span class="n">cfg_launcher</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">,</span> <span class="n">pbar_frequency</span><span class="p">,</span> <span class="n">silent</span><span class="p">)</span>
+            <span class="n">PreprocessArgs</span><span class="p">(</span><span class="n">cfg_launcher</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">,</span> <span class="n">update_frequency</span><span class="p">)</span>
         <span class="p">)</span></div>
 
 </pre></div>
@@ -665,7 +664,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

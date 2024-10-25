@@ -39,7 +39,7 @@
 
     <script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="_static/documentation_options.js?v=e259d695"></script>
+    <script src="_static/documentation_options.js?v=6c02275b"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -377,6 +377,8 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/augmentations.html#autrainer.augmentations.AbstractAugmentation">AbstractAugmentation (class in autrainer.augmentations)</a>
 </li>
+      <li><a href="modules/core.html#autrainer.core.constants.AbstractConstants">AbstractConstants (class in autrainer.core.constants)</a>
+</li>
       <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset">AbstractDataset (class in autrainer.datasets)</a>
 </li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractFileHandler">AbstractFileHandler (class in autrainer.datasets.utils)</a>
@@ -413,6 +415,8 @@ document.write(`
         <li><a href="modules/augmentations.html#autrainer.augmentations.Sequential.apply">(autrainer.augmentations.Sequential method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/core.html#autrainer.core.constants.ExportConstants.ARTIFACTS">ARTIFACTS (autrainer.core.constants.ExportConstants property)</a>
+</li>
       <li><a href="modules/models.html#autrainer.models.ASTModel">ASTModel (class in autrainer.models)</a>
 </li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AudioFileHandler">AudioFileHandler (class in autrainer.datasets.utils)</a>
@@ -513,7 +517,7 @@ document.write(`
 </li>
       <li><a href="modules/metrics.html#autrainer.metrics.AbstractMetric.compare">compare() (autrainer.metrics.AbstractMetric static method)</a>
 </li>
-      <li><a href="modules/core.html#autrainer.core.constants.CONFIG_FOLDERS">CONFIG_FOLDERS (in module autrainer.core.constants)</a>
+      <li><a href="modules/core.html#autrainer.core.constants.NamingConstants.CONFIG_DIRS">CONFIG_DIRS (autrainer.core.constants.NamingConstants property)</a>
 </li>
       <li><a href="usage/cli_wrapper.html#autrainer.cli.create">create() (in module autrainer.cli)</a>
 </li>
@@ -609,11 +613,7 @@ document.write(`
 </li>
       <li><a href="modules/transforms.html#autrainer.transforms.Expand">Expand (class in autrainer.transforms)</a>
 </li>
-      <li><a href="modules/loggers.html#autrainer.loggers.abstract_logger.EXPORT_ARTIFACTS">EXPORT_ARTIFACTS (in module autrainer.loggers.abstract_logger)</a>
-</li>
-      <li><a href="modules/loggers.html#autrainer.loggers.abstract_logger.EXPORT_IGNORE_PARAMS">EXPORT_IGNORE_PARAMS (in module autrainer.loggers.abstract_logger)</a>
-</li>
-      <li><a href="modules/loggers.html#autrainer.loggers.abstract_logger.EXPORT_LOGGING_DEPTH">EXPORT_LOGGING_DEPTH (in module autrainer.loggers.abstract_logger)</a>
+      <li><a href="modules/core.html#autrainer.core.constants.ExportConstants">ExportConstants (class in autrainer.core.constants)</a>
 </li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ZipDownloadManager.extract">extract() (autrainer.datasets.utils.ZipDownloadManager method)</a>
 </li>
@@ -691,6 +691,8 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.IdentityFileHandler">IdentityFileHandler (class in autrainer.datasets.utils)</a>
 </li>
+      <li><a href="modules/core.html#autrainer.core.constants.ExportConstants.IGNORE_PARAMS">IGNORE_PARAMS (autrainer.core.constants.ExportConstants property)</a>
+</li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ImageFileHandler">ImageFileHandler (class in autrainer.datasets.utils)</a>
 </li>
       <li><a href="modules/serving.html#autrainer.serving.Inference">Inference (class in autrainer.serving)</a>
@@ -703,7 +705,7 @@ document.write(`
 </li>
       <li><a href="modules/core.html#autrainer.instantiate_shorthand">instantiate_shorthand() (in module autrainer)</a>
 </li>
-      <li><a href="modules/core.html#autrainer.core.constants.INVALID_AGGREGATIONS">INVALID_AGGREGATIONS (in module autrainer.core.constants)</a>
+      <li><a href="modules/core.html#autrainer.core.constants.NamingConstants.INVALID_AGGREGATIONS">INVALID_AGGREGATIONS (autrainer.core.constants.NamingConstants property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -760,6 +762,8 @@ document.write(`
       <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.log_timers">log_timers() (autrainer.loggers.AbstractLogger method)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping.log_to_file">log_to_file() (autrainer.core.utils.Bookkeeping method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.constants.ExportConstants.LOGGING_DEPTH">LOGGING_DEPTH (autrainer.core.constants.ExportConstants property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -820,12 +824,14 @@ document.write(`
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/core.html#autrainer.core.constants.NAMING_CONVENTION">NAMING_CONVENTION (in module autrainer.core.constants)</a>
+      <li><a href="modules/core.html#autrainer.core.constants.NamingConstants.NAMING_CONVENTION">NAMING_CONVENTION (autrainer.core.constants.NamingConstants property)</a>
 </li>
-      <li><a href="modules/transforms.html#autrainer.transforms.Normalize">Normalize (class in autrainer.transforms)</a>
+      <li><a href="modules/core.html#autrainer.core.constants.NamingConstants">NamingConstants (class in autrainer.core.constants)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/transforms.html#autrainer.transforms.Normalize">Normalize (class in autrainer.transforms)</a>
+</li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.NumpyFileHandler">NumpyFileHandler (class in autrainer.datasets.utils)</a>
 </li>
       <li><a href="modules/transforms.html#autrainer.transforms.NumpyToTensor">NumpyToTensor (class in autrainer.transforms)</a>
@@ -874,28 +880,58 @@ document.write(`
 </li>
       <li><a href="modules/core.html#autrainer.core.plotting.PlotMetrics">PlotMetrics (class in autrainer.core.plotting)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="usage/cli_wrapper.html#autrainer.cli.postprocess">postprocess() (in module autrainer.cli)</a>
 </li>
-      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.predict_batch">predict_batch() (autrainer.datasets.utils.AbstractTargetTransform method)</a>
-
-      <ul>
-        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder.predict_batch">(autrainer.datasets.utils.LabelEncoder method)</a>
-</li>
-        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler.predict_batch">(autrainer.datasets.utils.MinMaxScaler method)</a>
-</li>
-        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.predict_batch">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
-</li>
-      </ul></li>
       <li><a href="modules/serving.html#autrainer.serving.Inference.predict_directory">predict_directory() (autrainer.serving.Inference method)</a>
 </li>
       <li><a href="modules/serving.html#autrainer.serving.Inference.predict_file">predict_file() (autrainer.serving.Inference method)</a>
 </li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.predict_inference">predict_inference() (autrainer.datasets.utils.AbstractTargetTransform method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder.predict_inference">(autrainer.datasets.utils.LabelEncoder method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler.predict_inference">(autrainer.datasets.utils.MinMaxScaler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.predict_inference">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="usage/cli_wrapper.html#autrainer.cli.preprocess">preprocess() (in module autrainer.cli)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.utils.Timer.pretty_time">pretty_time() (autrainer.core.utils.Timer class method)</a>
 </li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.probabilities_inference">probabilities_inference() (autrainer.datasets.utils.AbstractTargetTransform method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder.probabilities_inference">(autrainer.datasets.utils.LabelEncoder method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler.probabilities_inference">(autrainer.datasets.utils.MinMaxScaler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.probabilities_inference">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.probabilities_to_dict">probabilities_to_dict() (autrainer.datasets.utils.AbstractTargetTransform method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder.probabilities_to_dict">(autrainer.datasets.utils.LabelEncoder method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler.probabilities_to_dict">(autrainer.datasets.utils.MinMaxScaler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.probabilities_to_dict">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractTargetTransform.probabilities_training">probabilities_training() (autrainer.datasets.utils.AbstractTargetTransform method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.LabelEncoder.probabilities_training">(autrainer.datasets.utils.LabelEncoder method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler.probabilities_training">(autrainer.datasets.utils.MinMaxScaler method)</a>
+</li>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.probabilities_training">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1044,6 +1080,8 @@ document.write(`
         <li><a href="modules/datasets.html#autrainer.datasets.BaseRegressionDataset.target_transform">(autrainer.datasets.BaseRegressionDataset property)</a>
 </li>
       </ul></li>
+      <li><a href="modules/core.html#autrainer.core.constants.TrainingConstants.TASKS">TASKS (autrainer.core.constants.TrainingConstants property)</a>
+</li>
       <li><a href="modules/models.html#autrainer.models.TDNNFFNN">TDNNFFNN (class in autrainer.models)</a>
 </li>
       <li><a href="modules/loggers.html#autrainer.loggers.TensorBoardLogger">TensorBoardLogger (in module autrainer.loggers)</a>
@@ -1084,6 +1122,8 @@ document.write(`
 </li>
       <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.train_loader">train_loader (autrainer.datasets.AbstractDataset property)</a>
 </li>
+      <li><a href="modules/core.html#autrainer.core.constants.TrainingConstants">TrainingConstants (class in autrainer.core.constants)</a>
+</li>
       <li><a href="modules/transforms.html#autrainer.transforms.TransformManager">TransformManager (class in autrainer.transforms)</a>
 </li>
   </ul></td>
@@ -1100,7 +1140,7 @@ document.write(`
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/core.html#autrainer.core.constants.VALID_AGGREGATIONS">VALID_AGGREGATIONS (in module autrainer.core.constants)</a>
+      <li><a href="modules/core.html#autrainer.core.constants.NamingConstants.VALID_AGGREGATIONS">VALID_AGGREGATIONS (autrainer.core.constants.NamingConstants property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1160,7 +1200,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

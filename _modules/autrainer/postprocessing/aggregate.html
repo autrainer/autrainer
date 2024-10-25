@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -362,7 +362,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">import</span> <span class="nn">autrainer</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">NAMING_CONVENTION</span><span class="p">,</span> <span class="n">VALID_AGGREGATIONS</span>
+<span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">NamingConstants</span>
 <span class="kn">from</span> <span class="nn">autrainer.core.plotting</span> <span class="kn">import</span> <span class="n">PlotMetrics</span>
 <span class="kn">from</span> <span class="nn">autrainer.core.utils</span> <span class="kn">import</span> <span class="n">Timer</span>
 <span class="kn">from</span> <span class="nn">autrainer.loggers</span> <span class="kn">import</span> <span class="n">AbstractLogger</span>
@@ -483,12 +483,14 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">_check_if_valid_aggregation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">over</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">over</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">o</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VALID_AGGREGATIONS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">o</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NamingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">VALID_AGGREGATIONS</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid aggregation: </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_aggregate_run_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">over</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_valid_aggregation</span><span class="p">(</span><span class="n">over</span><span class="p">)</span>
-        <span class="n">param_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">NAMING_CONVENTION</span><span class="p">)}</span>
+        <span class="n">param_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">p</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">NamingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">NAMING_CONVENTION</span><span class="p">)</span>
+        <span class="p">}</span>
         <span class="n">over_idxs</span> <span class="o">=</span> <span class="p">[</span><span class="n">param_dict</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">over</span><span class="p">]</span>
         <span class="n">aggregated</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">run_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_names</span><span class="p">:</span>
@@ -736,7 +738,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

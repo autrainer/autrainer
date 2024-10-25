@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -445,14 +445,24 @@ of the standard training step and should be defined as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">class</span> <span class="nc">SomeOptimizer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
 <span class="linenos"> 2</span>    <span class="k">def</span> <span class="nf">custom_step</span><span class="p">(</span>
 <span class="linenos"> 3</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos"> 4</span>        <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>  <span class="c1"># model</span>
-<span class="linenos"> 5</span>        <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>  <span class="c1"># batched input data</span>
-<span class="linenos"> 6</span>        <span class="n">target</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>  <span class="c1"># batched target data</span>
-<span class="linenos"> 7</span>        <span class="n">criterion</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>  <span class="c1"># loss function</span>
-<span class="linenos"> 8</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
-<span class="linenos"> 9</span>        <span class="n">loss</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># reduced loss over the batch</span>
-<span class="linenos">10</span>        <span class="n">outputs</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># detached model outputs</span>
-<span class="linenos">11</span>        <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">outputs</span>
+<span class="linenos"> 4</span>        <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+<span class="linenos"> 5</span>        <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="linenos"> 6</span>        <span class="n">target</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="linenos"> 7</span>        <span class="n">criterion</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+<span class="linenos"> 8</span>        <span class="n">probabilities_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+<span class="linenos"> 9</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="linenos">10</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom step function for the optimizer.</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="sd">        Args:</span>
+<span class="linenos">13</span><span class="sd">            model: Model to be optimized.</span>
+<span class="linenos">14</span><span class="sd">            data: Batched input data.</span>
+<span class="linenos">15</span><span class="sd">            target: Batched target data.</span>
+<span class="linenos">16</span><span class="sd">            criterion: Loss function.</span>
+<span class="linenos">17</span><span class="sd">            probabilities_fn: Function to get probabilities from model outputs.</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="sd">        Returns:</span>
+<span class="linenos">20</span><span class="sd">            Reduced loss over the batch and detached model outputs.</span>
+<span class="linenos">21</span><span class="sd">        &quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -519,7 +529,7 @@ of the standard training step and should be defined as follows:</p>
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

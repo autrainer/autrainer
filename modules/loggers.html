@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -386,7 +386,8 @@ document.write(`
 <li><p><strong>run_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The name of the run.</p></li>
 <li><p><strong>metrics</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="metrics.html#autrainer.metrics.AbstractMetric" title="autrainer.metrics.abstract_metric.AbstractMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMetric</span></code></a>]</span>) – The metrics to log.</p></li>
 <li><p><strong>tracking_metric</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="metrics.html#autrainer.metrics.AbstractMetric" title="autrainer.metrics.abstract_metric.AbstractMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMetric</span></code></a></span>) – The metric to determine the best results.</p></li>
-<li><p><strong>artifacts</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]]</span>) – The artifacts to log. Defaults to EXPORT_ARTIFACTS.</p></li>
+<li><p><strong>artifacts</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]]</span>) – The artifacts to log. Defaults to
+<a class="reference internal" href="core.html#autrainer.core.constants.ExportConstants.ARTIFACTS" title="autrainer.core.constants.ExportConstants.ARTIFACTS"><code class="xref py py-const docutils literal notranslate"><span class="pre">ARTIFACTS</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -553,28 +554,6 @@ The logger serves as a no-op.</p>
 </dd></dl>
 
 </section>
-<section id="constants">
-<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading">#</a></h2>
-<p>The following constants are used to specify the logging depth as well as the parameters and artifacts exported by the loggers.</p>
-<dl class="py data">
-<dt class="sig sig-object py" id="autrainer.loggers.abstract_logger.EXPORT_ARTIFACTS">
-<span class="sig-prename descclassname"><span class="pre">autrainer.loggers.abstract_logger.</span></span><span class="sig-name descname"><span class="pre">EXPORT_ARTIFACTS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['model_summary.txt',</span> <span class="pre">'metrics.csv',</span> <span class="pre">{'config.yaml':</span> <span class="pre">'.hydra'}]</span></em><a class="headerlink" href="#autrainer.loggers.abstract_logger.EXPORT_ARTIFACTS" title="Link to this definition">#</a></dt>
-<dd><p>Artifacts to log for runs.</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="autrainer.loggers.abstract_logger.EXPORT_IGNORE_PARAMS">
-<span class="sig-prename descclassname"><span class="pre">autrainer.loggers.abstract_logger.</span></span><span class="sig-name descname"><span class="pre">EXPORT_IGNORE_PARAMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['results_dir',</span> <span class="pre">'experiment_id',</span> <span class="pre">'model.dataset',</span> <span class="pre">'training_type',</span> <span class="pre">'save_frequency',</span> <span class="pre">'dataset.metrics',</span> <span class="pre">'plotting',</span> <span class="pre">'model.transform',</span> <span class="pre">'dataset.transform',</span> <span class="pre">'augmentation.steps',</span> <span class="pre">'loggers',</span> <span class="pre">'progress_bar',</span> <span class="pre">'continue_training',</span> <span class="pre">'remove_continued_runs',</span> <span class="pre">'save_train_outputs',</span> <span class="pre">'save_dev_outputs',</span> <span class="pre">'save_test_outputs']</span></em><a class="headerlink" href="#autrainer.loggers.abstract_logger.EXPORT_IGNORE_PARAMS" title="Link to this definition">#</a></dt>
-<dd><p>Ignored configuration parameters for logging.</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="autrainer.loggers.abstract_logger.EXPORT_LOGGING_DEPTH">
-<span class="sig-prename descclassname"><span class="pre">autrainer.loggers.abstract_logger.</span></span><span class="sig-name descname"><span class="pre">EXPORT_LOGGING_DEPTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#autrainer.loggers.abstract_logger.EXPORT_LOGGING_DEPTH" title="Link to this definition">#</a></dt>
-<dd><p>Depth of logging for configuration parameters.</p>
-</dd></dl>
-
-</section>
 </section>
 
 
@@ -621,12 +600,6 @@ The logger serves as a no-op.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.FallbackLogger"><code class="docutils literal notranslate"><span class="pre">FallbackLogger</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constants">Constants</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.abstract_logger.EXPORT_ARTIFACTS"><code class="docutils literal notranslate"><span class="pre">EXPORT_ARTIFACTS</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.abstract_logger.EXPORT_IGNORE_PARAMS"><code class="docutils literal notranslate"><span class="pre">EXPORT_IGNORE_PARAMS</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.abstract_logger.EXPORT_LOGGING_DEPTH"><code class="docutils literal notranslate"><span class="pre">EXPORT_LOGGING_DEPTH</span></code></a></li>
-</ul>
-</li>
 </ul>
   </nav></div>
 
@@ -655,7 +628,7 @@ The logger serves as a no-op.</p>
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

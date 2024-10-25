@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -599,7 +599,7 @@ Additionally, target transforms provide functiuons for batch prediction and majo
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.AbstractTargetTransform">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">AbstractTargetTransform</span></span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#AbstractTargetTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">AbstractTargetTransform</span></span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/abstract_target_transform.html#AbstractTargetTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform" title="Link to this definition">#</a></dt>
 <dd><p>Abstract target transform for handling target or label
 transformations in a dataset.</p>
 <p>Serves as the base for creating custom target transforms that handle
@@ -608,7 +608,7 @@ predictions from a batch of model outputs, and determining the majority
 vote from a list of targets.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.AbstractTargetTransform.encode">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#AbstractTargetTransform.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.encode" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/abstract_target_transform.html#AbstractTargetTransform.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.encode" title="Link to this definition">#</a></dt>
 <dd><p>Encode a target or label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -625,7 +625,7 @@ vote from a list of targets.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.AbstractTargetTransform.decode">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#AbstractTargetTransform.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.decode" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/abstract_target_transform.html#AbstractTargetTransform.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.decode" title="Link to this definition">#</a></dt>
 <dd><p>Decode a target or label. Serve as the inverse operation of encode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -641,12 +641,48 @@ vote from a list of targets.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="autrainer.datasets.utils.AbstractTargetTransform.predict_batch">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predict_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#AbstractTargetTransform.predict_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.predict_batch" title="Link to this definition">#</a></dt>
-<dd><p>Get encoded predictions from a batch of model outputs.</p>
+<dt class="sig sig-object py" id="autrainer.datasets.utils.AbstractTargetTransform.probabilities_training">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">probabilities_training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/abstract_target_transform.html#AbstractTargetTransform.probabilities_training"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.probabilities_training" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded probabilities from a batch of model outputs
+during training.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model outputs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Encoded probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.AbstractTargetTransform.probabilities_inference">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">probabilities_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/abstract_target_transform.html#AbstractTargetTransform.probabilities_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.probabilities_inference" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded probabilities from a batch of model outputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model outputs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Encoded probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.AbstractTargetTransform.predict_inference">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predict_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/abstract_target_transform.html#AbstractTargetTransform.predict_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.predict_inference" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded predictions from a batch of model output
+probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model output probabilities.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
@@ -659,7 +695,7 @@ vote from a list of targets.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.AbstractTargetTransform.majority_vote">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">majority_vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#AbstractTargetTransform.majority_vote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.majority_vote" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">majority_vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/abstract_target_transform.html#AbstractTargetTransform.majority_vote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.majority_vote" title="Link to this definition">#</a></dt>
 <dd><p>Get the majority vote from a list of decoded targets or labels.</p>
 <p>The majority vote is defined by the subclasses and may be the most
 frequent target, the average of all targets, or any other operation
@@ -677,11 +713,29 @@ that determines a majority vote based on the list of targets or labels.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.AbstractTargetTransform.probabilities_to_dict">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">probabilities_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/abstract_target_transform.html#AbstractTargetTransform.probabilities_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.AbstractTargetTransform.probabilities_to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert a tensor of probabilities to a dictionary of targets or
+labels and their probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Tensor of probabilities.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of targets or labels and their probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.LabelEncoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">LabelEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#LabelEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">LabelEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/label_encoder.html#LabelEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder" title="Link to this definition">#</a></dt>
 <dd><p>Label encoder for single-label classification targets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -690,7 +744,7 @@ that determines a majority vote based on the list of targets or labels.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.LabelEncoder.encode">
-<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#LabelEncoder.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.encode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/label_encoder.html#LabelEncoder.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.encode" title="Link to this definition">#</a></dt>
 <dd><p>Encode a target label by mapping it to an integer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -707,7 +761,7 @@ that determines a majority vote based on the list of targets or labels.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.LabelEncoder.decode">
-<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#LabelEncoder.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.decode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/label_encoder.html#LabelEncoder.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.decode" title="Link to this definition">#</a></dt>
 <dd><p>Decode an encoded target label integer by mapping it to a label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -723,13 +777,49 @@ that determines a majority vote based on the list of targets or labels.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="autrainer.datasets.utils.LabelEncoder.predict_batch">
-<span class="sig-name descname"><span class="pre">predict_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#LabelEncoder.predict_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.predict_batch" title="Link to this definition">#</a></dt>
-<dd><p>Get the encoded predictions from a batch of model outputs by
-obtaining the index of the maximum value.</p>
+<dt class="sig sig-object py" id="autrainer.datasets.utils.LabelEncoder.probabilities_training">
+<span class="sig-name descname"><span class="pre">probabilities_training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/label_encoder.html#LabelEncoder.probabilities_training"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.probabilities_training" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded probabilities from a batch of model outputs
+during training by returning the raw model outputs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model outputs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Encoded probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.LabelEncoder.probabilities_inference">
+<span class="sig-name descname"><span class="pre">probabilities_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/label_encoder.html#LabelEncoder.probabilities_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.probabilities_inference" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded probabilities from a batch of model outputs by
+applying the softmax function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model outputs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Encoded probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.LabelEncoder.predict_inference">
+<span class="sig-name descname"><span class="pre">predict_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/label_encoder.html#LabelEncoder.predict_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.predict_inference" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded predictions from a batch of model output
+probabilities by obtaining the index of the maximum value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model output probabilities.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
@@ -742,7 +832,7 @@ obtaining the index of the maximum value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.LabelEncoder.majority_vote">
-<span class="sig-name descname"><span class="pre">majority_vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#LabelEncoder.majority_vote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.majority_vote" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">majority_vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/label_encoder.html#LabelEncoder.majority_vote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.majority_vote" title="Link to this definition">#</a></dt>
 <dd><p>Get the majority vote from a list of decoded labels by
 determining the most frequently predicted label.</p>
 <dl class="field-list simple">
@@ -758,15 +848,34 @@ determining the most frequently predicted label.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.LabelEncoder.probabilities_to_dict">
+<span class="sig-name descname"><span class="pre">probabilities_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/label_encoder.html#LabelEncoder.probabilities_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.LabelEncoder.probabilities_to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert a tensor of probabilities to a dictionary of labels and
+their probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Tensor of probabilities.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of labels and their probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.MinMaxScaler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">MinMaxScaler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MinMaxScaler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">MinMaxScaler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/min_max_scaler.html#MinMaxScaler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler" title="Link to this definition">#</a></dt>
 <dd><p>Minimum-Maximum Scaler for regression targets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the target.</p></li>
 <li><p><strong>minimum</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Minimum value of all target values.</p></li>
 <li><p><strong>maximum</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Maximum value of all target values.</p></li>
 </ul>
@@ -777,7 +886,7 @@ determining the most frequently predicted label.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.MinMaxScaler.encode">
-<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MinMaxScaler.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.encode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/min_max_scaler.html#MinMaxScaler.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.encode" title="Link to this definition">#</a></dt>
 <dd><p>Encode a target value by scaling it between the minimum and maximum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -794,7 +903,7 @@ determining the most frequently predicted label.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.MinMaxScaler.decode">
-<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MinMaxScaler.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.decode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/min_max_scaler.html#MinMaxScaler.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.decode" title="Link to this definition">#</a></dt>
 <dd><p>Decode a target value by reversing the scaling between the minimum
 and maximum. Inverse operation of encode.</p>
 <dl class="field-list simple">
@@ -811,13 +920,49 @@ and maximum. Inverse operation of encode.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="autrainer.datasets.utils.MinMaxScaler.predict_batch">
-<span class="sig-name descname"><span class="pre">predict_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MinMaxScaler.predict_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.predict_batch" title="Link to this definition">#</a></dt>
-<dd><p>Get encoded predictions from a batch of model outputs by
-squeezing the tensor and converting it to a list.</p>
+<dt class="sig sig-object py" id="autrainer.datasets.utils.MinMaxScaler.probabilities_training">
+<span class="sig-name descname"><span class="pre">probabilities_training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/min_max_scaler.html#MinMaxScaler.probabilities_training"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.probabilities_training" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded probabilities from a batch of model outputs
+during training by applying the sigmoid function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model outputs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Encoded probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.MinMaxScaler.probabilities_inference">
+<span class="sig-name descname"><span class="pre">probabilities_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/min_max_scaler.html#MinMaxScaler.probabilities_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.probabilities_inference" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded probabilities from a batch of model outputs by
+applying the sigmoid function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model outputs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Encoded probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.MinMaxScaler.predict_inference">
+<span class="sig-name descname"><span class="pre">predict_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/min_max_scaler.html#MinMaxScaler.predict_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.predict_inference" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded predictions from a batch of model output
+probabilities by returning the raw values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model output probabilities.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span></p>
@@ -830,7 +975,7 @@ squeezing the tensor and converting it to a list.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.MinMaxScaler.majority_vote">
-<span class="sig-name descname"><span class="pre">majority_vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MinMaxScaler.majority_vote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.majority_vote" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">majority_vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/min_max_scaler.html#MinMaxScaler.majority_vote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.majority_vote" title="Link to this definition">#</a></dt>
 <dd><p>Get the majority vote from a list of target values by averaging
 the predictions.</p>
 <dl class="field-list simple">
@@ -846,11 +991,29 @@ the predictions.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.MinMaxScaler.probabilities_to_dict">
+<span class="sig-name descname"><span class="pre">probabilities_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/min_max_scaler.html#MinMaxScaler.probabilities_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MinMaxScaler.probabilities_to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert a tensor of probabilities to a dictionary of targets and
+their probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Tensor of probabilities.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of targets and their probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.MultiLabelEncoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">MultiLabelEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MultiLabelEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">MultiLabelEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/multi_label_encoder.html#MultiLabelEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder" title="Link to this definition">#</a></dt>
 <dd><p>Multi-label encoder for multi-label classification targets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -865,7 +1028,7 @@ the predictions.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.MultiLabelEncoder.encode">
-<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MultiLabelEncoder.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.encode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/multi_label_encoder.html#MultiLabelEncoder.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.encode" title="Link to this definition">#</a></dt>
 <dd><p>Encode a list of target labels by creating a binary tensor where
 each element is 1 if the label is in the list of target labels and 0
 otherwise.</p>
@@ -885,7 +1048,7 @@ otherwise.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.MultiLabelEncoder.decode">
-<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MultiLabelEncoder.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.decode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/multi_label_encoder.html#MultiLabelEncoder.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.decode" title="Link to this definition">#</a></dt>
 <dd><p>Decode a binary tensor of encoded target labels to a list of target
 labels.</p>
 <dl class="field-list simple">
@@ -902,13 +1065,49 @@ labels.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="autrainer.datasets.utils.MultiLabelEncoder.predict_batch">
-<span class="sig-name descname"><span class="pre">predict_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MultiLabelEncoder.predict_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.predict_batch" title="Link to this definition">#</a></dt>
-<dd><p>Predict the binary tensor of encoded predictions by thresholding the
-model outputs.</p>
+<dt class="sig sig-object py" id="autrainer.datasets.utils.MultiLabelEncoder.probabilities_training">
+<span class="sig-name descname"><span class="pre">probabilities_training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/multi_label_encoder.html#MultiLabelEncoder.probabilities_training"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.probabilities_training" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded probabilities from a batch of model outputs
+during training by returning the raw model outputs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model outputs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Encoded probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.MultiLabelEncoder.probabilities_inference">
+<span class="sig-name descname"><span class="pre">probabilities_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/multi_label_encoder.html#MultiLabelEncoder.probabilities_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.probabilities_inference" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded probabilities from a batch of model outputs by
+applying the sigmoid function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model outputs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Encoded probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.MultiLabelEncoder.predict_inference">
+<span class="sig-name descname"><span class="pre">predict_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/multi_label_encoder.html#MultiLabelEncoder.predict_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.predict_inference" title="Link to this definition">#</a></dt>
+<dd><p>Get the encoded predictions from a batch of model output
+probabilities by thresholding the probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batch of model output probabilities.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]</span></p>
@@ -921,7 +1120,7 @@ model outputs.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.datasets.utils.MultiLabelEncoder.majority_vote">
-<span class="sig-name descname"><span class="pre">majority_vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms.html#MultiLabelEncoder.majority_vote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.majority_vote" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">majority_vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/multi_label_encoder.html#MultiLabelEncoder.majority_vote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.majority_vote" title="Link to this definition">#</a></dt>
 <dd><p>Get the majority vote from a list of lists of decoded target labels
 for each label. If a label is predicted by at least half of the
 predictions, it is included in the majority vote.</p>
@@ -934,6 +1133,24 @@ predictions, it is included in the majority vote.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List of target labels in the majority vote.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.datasets.utils.MultiLabelEncoder.probabilities_to_dict">
+<span class="sig-name descname"><span class="pre">probabilities_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/utils/target_transforms/multi_label_encoder.html#MultiLabelEncoder.probabilities_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.utils.MultiLabelEncoder.probabilities_to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert a tensor of probabilities to a dictionary of labels and
+their probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Tensor of probabilities.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of labels and their probabilities.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -960,7 +1177,7 @@ and <a class="reference internal" href="#dataset-target-transforms"><span class=
 <li><p><strong>file_handler</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#autrainer.datasets.utils.AbstractFileHandler" title="autrainer.datasets.utils.file_handlers.AbstractFileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractFileHandler</span></code></a></span>) – File handler to load the data.</p></li>
 <li><p><strong>df</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></span>) – Dataframe containing the index and target column(s).</p></li>
 <li><p><strong>transform</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="transforms.html#autrainer.transforms.SmartCompose" title="autrainer.transforms.smart_compose.SmartCompose"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmartCompose</span></code></a>]</span>) – Transform to apply to the features. Defaults to None.</p></li>
-<li><p><strong>target_transform</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#autrainer.datasets.utils.AbstractTargetTransform" title="autrainer.datasets.utils.target_transforms.AbstractTargetTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTargetTransform</span></code></a>]</span>) – Target transform to apply to the target.
+<li><p><strong>target_transform</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#autrainer.datasets.utils.AbstractTargetTransform" title="autrainer.datasets.utils.target_transforms.abstract_target_transform.AbstractTargetTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTargetTransform</span></code></a>]</span>) – Target transform to apply to the target.
 Defaults to None.</p></li>
 </ul>
 </dd>
@@ -1093,29 +1310,41 @@ Defaults to None.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.AbstractTargetTransform"><code class="docutils literal notranslate"><span class="pre">AbstractTargetTransform</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.AbstractTargetTransform.encode"><code class="docutils literal notranslate"><span class="pre">AbstractTargetTransform.encode()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.AbstractTargetTransform.decode"><code class="docutils literal notranslate"><span class="pre">AbstractTargetTransform.decode()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.AbstractTargetTransform.predict_batch"><code class="docutils literal notranslate"><span class="pre">AbstractTargetTransform.predict_batch()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.AbstractTargetTransform.probabilities_training"><code class="docutils literal notranslate"><span class="pre">AbstractTargetTransform.probabilities_training()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.AbstractTargetTransform.probabilities_inference"><code class="docutils literal notranslate"><span class="pre">AbstractTargetTransform.probabilities_inference()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.AbstractTargetTransform.predict_inference"><code class="docutils literal notranslate"><span class="pre">AbstractTargetTransform.predict_inference()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.AbstractTargetTransform.majority_vote"><code class="docutils literal notranslate"><span class="pre">AbstractTargetTransform.majority_vote()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.AbstractTargetTransform.probabilities_to_dict"><code class="docutils literal notranslate"><span class="pre">AbstractTargetTransform.probabilities_to_dict()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.LabelEncoder"><code class="docutils literal notranslate"><span class="pre">LabelEncoder</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.LabelEncoder.encode"><code class="docutils literal notranslate"><span class="pre">LabelEncoder.encode()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.LabelEncoder.decode"><code class="docutils literal notranslate"><span class="pre">LabelEncoder.decode()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.LabelEncoder.predict_batch"><code class="docutils literal notranslate"><span class="pre">LabelEncoder.predict_batch()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.LabelEncoder.probabilities_training"><code class="docutils literal notranslate"><span class="pre">LabelEncoder.probabilities_training()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.LabelEncoder.probabilities_inference"><code class="docutils literal notranslate"><span class="pre">LabelEncoder.probabilities_inference()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.LabelEncoder.predict_inference"><code class="docutils literal notranslate"><span class="pre">LabelEncoder.predict_inference()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.LabelEncoder.majority_vote"><code class="docutils literal notranslate"><span class="pre">LabelEncoder.majority_vote()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.LabelEncoder.probabilities_to_dict"><code class="docutils literal notranslate"><span class="pre">LabelEncoder.probabilities_to_dict()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MinMaxScaler"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MinMaxScaler.encode"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.encode()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MinMaxScaler.decode"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.decode()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MinMaxScaler.predict_batch"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.predict_batch()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MinMaxScaler.probabilities_training"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.probabilities_training()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MinMaxScaler.probabilities_inference"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.probabilities_inference()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MinMaxScaler.predict_inference"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.predict_inference()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MinMaxScaler.majority_vote"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.majority_vote()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MinMaxScaler.probabilities_to_dict"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.probabilities_to_dict()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MultiLabelEncoder"><code class="docutils literal notranslate"><span class="pre">MultiLabelEncoder</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MultiLabelEncoder.encode"><code class="docutils literal notranslate"><span class="pre">MultiLabelEncoder.encode()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MultiLabelEncoder.decode"><code class="docutils literal notranslate"><span class="pre">MultiLabelEncoder.decode()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MultiLabelEncoder.predict_batch"><code class="docutils literal notranslate"><span class="pre">MultiLabelEncoder.predict_batch()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MultiLabelEncoder.probabilities_training"><code class="docutils literal notranslate"><span class="pre">MultiLabelEncoder.probabilities_training()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MultiLabelEncoder.probabilities_inference"><code class="docutils literal notranslate"><span class="pre">MultiLabelEncoder.probabilities_inference()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MultiLabelEncoder.predict_inference"><code class="docutils literal notranslate"><span class="pre">MultiLabelEncoder.predict_inference()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MultiLabelEncoder.majority_vote"><code class="docutils literal notranslate"><span class="pre">MultiLabelEncoder.majority_vote()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.utils.MultiLabelEncoder.probabilities_to_dict"><code class="docutils literal notranslate"><span class="pre">MultiLabelEncoder.probabilities_to_dict()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1163,7 +1392,7 @@ Defaults to None.</p>
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

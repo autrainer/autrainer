@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -355,10 +355,10 @@ document.write(`
                 <article class="bd-article">
                   
   <section id="core">
-<h1>Core<a class="headerlink" href="#core" title="Link to this heading">#</a></h1>
+<span id="id1"></span><h1>Core<a class="headerlink" href="#core" title="Link to this heading">#</a></h1>
 <p>Core provides various utilities and entry points for the <cite>autrainer</cite> framework.</p>
 <section id="entry-point">
-<h2>Entry Point<a class="headerlink" href="#entry-point" title="Link to this heading">#</a></h2>
+<span id="core-entry-point"></span><h2>Entry Point<a class="headerlink" href="#entry-point" title="Link to this heading">#</a></h2>
 <p>The main training entry point for <cite>autrainer</cite>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="autrainer.main">
@@ -383,7 +383,7 @@ search path. Defaults to None.</p></li>
 
 </section>
 <section id="instantiation">
-<h2>Instantiation<a class="headerlink" href="#instantiation" title="Link to this heading">#</a></h2>
+<span id="core-instantiation"></span><h2>Instantiation<a class="headerlink" href="#instantiation" title="Link to this heading">#</a></h2>
 <p>Instantiation functions provide wrappers around <a class="reference external" href="https://hydra.cc/docs/advanced/instantiate_objects/overview/">Hydra object instantiation</a>,
 providing additional type safety and <a class="reference internal" href="../usage/hydra_configurations.html#shorthand-syntax"><span class="std std-ref">Shorthand Syntax</span></a> support.</p>
 <dl class="py function">
@@ -461,7 +461,7 @@ Defaults to False.</p></li>
 
 </section>
 <section id="utils">
-<h2>Utils<a class="headerlink" href="#utils" title="Link to this heading">#</a></h2>
+<span id="core-utils"></span><h2>Utils<a class="headerlink" href="#utils" title="Link to this heading">#</a></h2>
 <p>Utils provide various helpers for I/O, logging, timing, and hardware information.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.core.utils.Bookkeeping">
@@ -1045,38 +1045,140 @@ standard deviation is shown as error bars.</p>
 
 </section>
 <section id="constants">
-<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading">#</a></h2>
-<p>Constants provide various predefined values.</p>
-<dl class="py data">
-<dt class="sig sig-object py" id="autrainer.core.constants.NAMING_CONVENTION">
-<span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">NAMING_CONVENTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['dataset',</span> <span class="pre">'model',</span> <span class="pre">'optimizer',</span> <span class="pre">'learning_rate',</span> <span class="pre">'batch_size',</span> <span class="pre">'training_type',</span> <span class="pre">'iterations',</span> <span class="pre">'scheduler',</span> <span class="pre">'augmentation',</span> <span class="pre">'seed']</span></em><a class="headerlink" href="#autrainer.core.constants.NAMING_CONVENTION" title="Link to this definition">#</a></dt>
-<dd><p>Built-in mutable sequence.</p>
-<p>If no argument is given, the constructor creates a new empty list.
-The argument must be an iterable if specified.</p>
+<span id="core-constants"></span><h2>Constants<a class="headerlink" href="#constants" title="Link to this heading">#</a></h2>
+<p><cite>autrainer</cite> provides a set of constants singletons to control naming, training, and exporting configurations at runtime.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.core.constants.AbstractConstants">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">AbstractConstants</span></span><a class="reference internal" href="../_modules/autrainer/core/constants/abstract_constants.html#AbstractConstants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.constants.AbstractConstants" title="Link to this definition">#</a></dt>
+<dd><p>Abstract constants singleton class for managing the configurations of
+<cite>autrainer</cite>.</p>
 </dd></dl>
 
-<dl class="py data">
-<dt class="sig sig-object py" id="autrainer.core.constants.INVALID_AGGREGATIONS">
-<span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">INVALID_AGGREGATIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['training_type']</span></em><a class="headerlink" href="#autrainer.core.constants.INVALID_AGGREGATIONS" title="Link to this definition">#</a></dt>
-<dd><p>Built-in mutable sequence.</p>
-<p>If no argument is given, the constructor creates a new empty list.
-The argument must be an iterable if specified.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.core.constants.NamingConstants">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">NamingConstants</span></span><a class="reference internal" href="../_modules/autrainer/core/constants/naming_constants.html#NamingConstants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.constants.NamingConstants" title="Link to this definition">#</a></dt>
+<dd><p>Singleton for managing the naming configurations of <cite>autrainer</cite>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.core.constants.NamingConstants.NAMING_CONVENTION">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NAMING_CONVENTION</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.core.constants.NamingConstants.NAMING_CONVENTION" title="Link to this definition">#</a></dt>
+<dd><p>Get the naming convention of runs.
+Defaults to <code class="xref py py-attr docutils literal notranslate"><span class="pre">[&quot;dataset&quot;,</span> <span class="pre">&quot;model&quot;,</span> <span class="pre">&quot;optimizer&quot;,</span> <span class="pre">&quot;learning_rate&quot;,</span>
+<span class="pre">&quot;batch_size&quot;,</span> <span class="pre">&quot;training_type&quot;,</span> <span class="pre">&quot;iterations&quot;,</span> <span class="pre">&quot;scheduler&quot;,</span>
+<span class="pre">&quot;augmentation&quot;,</span> <span class="pre">&quot;seed&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Naming convention of runs.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py data">
-<dt class="sig sig-object py" id="autrainer.core.constants.VALID_AGGREGATIONS">
-<span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">VALID_AGGREGATIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['scheduler',</span> <span class="pre">'dataset',</span> <span class="pre">'augmentation',</span> <span class="pre">'seed',</span> <span class="pre">'model',</span> <span class="pre">'optimizer',</span> <span class="pre">'learning_rate',</span> <span class="pre">'batch_size',</span> <span class="pre">'iterations']</span></em><a class="headerlink" href="#autrainer.core.constants.VALID_AGGREGATIONS" title="Link to this definition">#</a></dt>
-<dd><p>Built-in mutable sequence.</p>
-<p>If no argument is given, the constructor creates a new empty list.
-The argument must be an iterable if specified.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.core.constants.NamingConstants.INVALID_AGGREGATIONS">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">INVALID_AGGREGATIONS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.core.constants.NamingConstants.INVALID_AGGREGATIONS" title="Link to this definition">#</a></dt>
+<dd><p>Get the invalid aggregations for postprocessing.
+Defaults to <code class="xref py py-attr docutils literal notranslate"><span class="pre">[&quot;training_type&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Invalid aggregations for postprocessing.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py data">
-<dt class="sig sig-object py" id="autrainer.core.constants.CONFIG_FOLDERS">
-<span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">CONFIG_FOLDERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['augmentation',</span> <span class="pre">'dataset',</span> <span class="pre">'model',</span> <span class="pre">'optimizer',</span> <span class="pre">'plotting',</span> <span class="pre">'preprocessing',</span> <span class="pre">'scheduler',</span> <span class="pre">'sharpness']</span></em><a class="headerlink" href="#autrainer.core.constants.CONFIG_FOLDERS" title="Link to this definition">#</a></dt>
-<dd><p>Built-in mutable sequence.</p>
-<p>If no argument is given, the constructor creates a new empty list.
-The argument must be an iterable if specified.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.core.constants.NamingConstants.VALID_AGGREGATIONS">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VALID_AGGREGATIONS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.core.constants.NamingConstants.VALID_AGGREGATIONS" title="Link to this definition">#</a></dt>
+<dd><p>Get the valid aggregations for postprocessing.
+Defaults to <code class="xref py py-attr docutils literal notranslate"><span class="pre">[&quot;dataset&quot;,</span> <span class="pre">&quot;model&quot;,</span> <span class="pre">&quot;optimizer&quot;,</span> <span class="pre">&quot;learning_rate&quot;,</span>
+<span class="pre">&quot;batch_size&quot;,</span> <span class="pre">&quot;iterations&quot;,</span> <span class="pre">&quot;scheduler&quot;,</span> <span class="pre">&quot;augmentation&quot;,</span> <span class="pre">&quot;seed&quot;]</span></code>
+(the naming convention without the invalid aggregations).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Valid aggregations for postprocessing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.core.constants.NamingConstants.CONFIG_DIRS">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CONFIG_DIRS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.core.constants.NamingConstants.CONFIG_DIRS" title="Link to this definition">#</a></dt>
+<dd><p>Get the configuration directories for Hydra configurations.
+Defaults to <code class="xref py py-attr docutils literal notranslate"><span class="pre">[&quot;augmentation&quot;,</span> <span class="pre">&quot;dataset&quot;,</span> <span class="pre">&quot;model&quot;,</span> <span class="pre">&quot;optimizer&quot;,</span>
+<span class="pre">&quot;plotting&quot;,</span> <span class="pre">&quot;preprocessing&quot;,</span> <span class="pre">&quot;scheduler&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Configuration directories for Hydra configurations.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.core.constants.TrainingConstants">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">TrainingConstants</span></span><a class="reference internal" href="../_modules/autrainer/core/constants/training_constants.html#TrainingConstants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.constants.TrainingConstants" title="Link to this definition">#</a></dt>
+<dd><p>Singleton for managing the training configurations of <cite>autrainer</cite>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.core.constants.TrainingConstants.TASKS">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TASKS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.core.constants.TrainingConstants.TASKS" title="Link to this definition">#</a></dt>
+<dd><p>Get the supported training tasks.
+Defaults to <code class="xref py py-attr docutils literal notranslate"><span class="pre">[&quot;classification&quot;,</span> <span class="pre">&quot;regression&quot;,</span>
+<span class="pre">&quot;ml-classification&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Supported training tasks.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.core.constants.ExportConstants">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.core.constants.</span></span><span class="sig-name descname"><span class="pre">ExportConstants</span></span><a class="reference internal" href="../_modules/autrainer/core/constants/export_constants.html#ExportConstants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.constants.ExportConstants" title="Link to this definition">#</a></dt>
+<dd><p>Singleton for managing the export and logging configurations of
+<cite>autrainer</cite>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.core.constants.ExportConstants.LOGGING_DEPTH">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LOGGING_DEPTH</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#autrainer.core.constants.ExportConstants.LOGGING_DEPTH" title="Link to this definition">#</a></dt>
+<dd><p>Get the depth of logging for configuration parameters.
+Defaults to <code class="xref py py-attr docutils literal notranslate"><span class="pre">2</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Depth of logging for configuration parameters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.core.constants.ExportConstants.IGNORE_PARAMS">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">IGNORE_PARAMS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.core.constants.ExportConstants.IGNORE_PARAMS" title="Link to this definition">#</a></dt>
+<dd><p>Get the ignored configuration parameters for logging.
+Defaults to <code class="xref py py-attr docutils literal notranslate"><span class="pre">[&quot;results_dir&quot;,</span> <span class="pre">&quot;experiment_id&quot;,</span> <span class="pre">&quot;model.dataset&quot;,</span>
+<span class="pre">&quot;training_type&quot;,</span> <span class="pre">&quot;save_frequency&quot;,</span> <span class="pre">&quot;dataset.metrics&quot;,</span> <span class="pre">&quot;plotting&quot;,</span>
+<span class="pre">&quot;model.transform&quot;,</span> <span class="pre">&quot;dataset.transform&quot;,</span> <span class="pre">&quot;augmentation.steps&quot;,</span>
+<span class="pre">&quot;loggers&quot;,</span> <span class="pre">&quot;progress_bar&quot;,</span> <span class="pre">&quot;continue_training&quot;,</span>
+<span class="pre">&quot;remove_continued_runs&quot;,</span> <span class="pre">&quot;save_train_outputs&quot;,</span> <span class="pre">&quot;save_dev_outputs&quot;,</span>
+<span class="pre">&quot;save_test_outputs&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Ignored configuration parameters for logging.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.core.constants.ExportConstants.ARTIFACTS">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ARTIFACTS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.core.constants.ExportConstants.ARTIFACTS" title="Link to this definition">#</a></dt>
+<dd><p>Get the artifacts to log for runs.
+Defaults to <code class="xref py py-attr docutils literal notranslate"><span class="pre">[&quot;model_summary.txt&quot;,</span> <span class="pre">&quot;metrics.csv&quot;,</span>
+<span class="pre">{&quot;config.yaml&quot;:</span> <span class="pre">&quot;.hydra&quot;}]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Artifacts to log for runs.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -1158,10 +1260,24 @@ The argument must be an iterable if specified.</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constants">Constants</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.NAMING_CONVENTION"><code class="docutils literal notranslate"><span class="pre">NAMING_CONVENTION</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.INVALID_AGGREGATIONS"><code class="docutils literal notranslate"><span class="pre">INVALID_AGGREGATIONS</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.VALID_AGGREGATIONS"><code class="docutils literal notranslate"><span class="pre">VALID_AGGREGATIONS</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.CONFIG_FOLDERS"><code class="docutils literal notranslate"><span class="pre">CONFIG_FOLDERS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.AbstractConstants"><code class="docutils literal notranslate"><span class="pre">AbstractConstants</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.NamingConstants"><code class="docutils literal notranslate"><span class="pre">NamingConstants</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.NamingConstants.NAMING_CONVENTION"><code class="docutils literal notranslate"><span class="pre">NamingConstants.NAMING_CONVENTION</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.NamingConstants.INVALID_AGGREGATIONS"><code class="docutils literal notranslate"><span class="pre">NamingConstants.INVALID_AGGREGATIONS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.NamingConstants.VALID_AGGREGATIONS"><code class="docutils literal notranslate"><span class="pre">NamingConstants.VALID_AGGREGATIONS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.NamingConstants.CONFIG_DIRS"><code class="docutils literal notranslate"><span class="pre">NamingConstants.CONFIG_DIRS</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.TrainingConstants"><code class="docutils literal notranslate"><span class="pre">TrainingConstants</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.TrainingConstants.TASKS"><code class="docutils literal notranslate"><span class="pre">TrainingConstants.TASKS</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.ExportConstants"><code class="docutils literal notranslate"><span class="pre">ExportConstants</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.ExportConstants.LOGGING_DEPTH"><code class="docutils literal notranslate"><span class="pre">ExportConstants.LOGGING_DEPTH</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.ExportConstants.IGNORE_PARAMS"><code class="docutils literal notranslate"><span class="pre">ExportConstants.IGNORE_PARAMS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.constants.ExportConstants.ARTIFACTS"><code class="docutils literal notranslate"><span class="pre">ExportConstants.ARTIFACTS</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1192,7 +1308,7 @@ The argument must be an iterable if specified.</p>
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

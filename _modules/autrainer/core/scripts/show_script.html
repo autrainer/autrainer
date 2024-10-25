@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -360,7 +360,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">OmegaConf</span>
 
 <span class="kn">import</span> <span class="nn">autrainer</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">CONFIG_FOLDERS</span>
+<span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">NamingConstants</span>
 
 <span class="kn">from</span> <span class="nn">.abstract_script</span> <span class="kn">import</span> <span class="n">AbstractScript</span><span class="p">,</span> <span class="n">MockParser</span>
 <span class="kn">from</span> <span class="nn">.command_line_error</span> <span class="kn">import</span> <span class="n">CommandLineError</span>
@@ -389,7 +389,7 @@ document.write(`
             <span class="s2">&quot;directory&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The directory to list configurations from. Choose from:&quot;</span>
-            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">CONFIG_FOLDERS</span><span class="p">),</span>
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">NamingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">CONFIG_DIRS</span><span class="p">)),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
             <span class="s2">&quot;config&quot;</span><span class="p">,</span>
@@ -483,7 +483,7 @@ document.write(`
 
 <span class="sd">    Args:</span>
 <span class="sd">        directory: The directory to list configurations from. Choose from:</span>
-<span class="sd">            :const:`~autrainer.core.constants.CONFIG_FOLDERS`.</span>
+<span class="sd">            :const:`~autrainer.core.constants.NamingConstants.CONFIG_DIRS`.</span>
 <span class="sd">        config: The global configuration to show. Configurations can be</span>
 <span class="sd">            discovered using the &#39;autrainer list&#39; command.</span>
 <span class="sd">        save: Save the global configuration to the local conf directory.</span>
@@ -535,7 +535,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

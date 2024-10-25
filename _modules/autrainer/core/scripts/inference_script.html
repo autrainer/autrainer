@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=e259d695"></script>
+    <script src="../../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -375,6 +375,7 @@ document.write(`
     <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">embeddings</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">update_frequency</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">preprocess_cfg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">window_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="n">stride_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
@@ -478,7 +479,18 @@ document.write(`
                 <span class="s2">&quot;Defaults to False.&quot;</span>
             <span class="p">),</span>
         <span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;-u&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--update-frequency&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">&quot;Frequency of progress bar updates. &quot;</span>
+                <span class="s2">&quot;If 0, the progress bar will be disabled. Defaults to 1.&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
             <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
             <span class="s2">&quot;--preprocess-cfg&quot;</span><span class="p">,</span>
@@ -531,6 +543,7 @@ document.write(`
             <span class="n">help</span><span class="o">=</span><span class="p">(</span>
                 <span class="s2">&quot;Minimum length of audio file to process in seconds. &quot;</span>
                 <span class="s2">&quot;Files shorter than the minimum length are padded with zeros. &quot;</span>
+                <span class="s2">&quot;Sample rate has to be specified for padding. &quot;</span>
                 <span class="s2">&quot;If None, no minimum length is enforced. Defaults to None.&quot;</span>
             <span class="p">),</span>
         <span class="p">)</span>
@@ -679,6 +692,7 @@ document.write(`
             <span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span>
             <span class="n">extension</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">extension</span><span class="p">,</span>
             <span class="n">recursive</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">recursive</span><span class="p">,</span>
+            <span class="n">update_frequency</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">update_frequency</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">inference</span><span class="o">.</span><span class="n">save_prediction_yaml</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
         <span class="n">inference</span><span class="o">.</span><span class="n">save_prediction_results</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
@@ -690,6 +704,7 @@ document.write(`
             <span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span>
             <span class="n">extension</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">extension</span><span class="p">,</span>
             <span class="n">recursive</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">recursive</span><span class="p">,</span>
+            <span class="n">update_frequency</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">update_frequency</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">inference</span><span class="o">.</span><span class="n">save_embeddings</span><span class="p">(</span>
             <span class="n">results</span><span class="p">,</span>
@@ -710,6 +725,7 @@ document.write(`
     <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wav&quot;</span><span class="p">,</span>
     <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">embeddings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">update_frequency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">preprocess_cfg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
     <span class="n">window_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">stride_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -740,6 +756,8 @@ document.write(`
 <span class="sd">        embeddings: Extract embeddings from the model in addition to</span>
 <span class="sd">            predictions. For each file, a .pt file with embeddings will be</span>
 <span class="sd">            saved. Defaults to False.</span>
+<span class="sd">        update_frequency: Frequency of progress bar updates. If 0, the progress</span>
+<span class="sd">            bar will be disabled. Defaults to 1.</span>
 <span class="sd">        preprocess_cfg: Preprocessing configuration to apply to input. Can be</span>
 <span class="sd">            a path to a YAML file or the name of the preprocessing</span>
 <span class="sd">            configuration in the local or autrainer &#39;conf/preprocessing&#39;</span>
@@ -754,7 +772,8 @@ document.write(`
 <span class="sd">            Defaults to None.</span>
 <span class="sd">        min_length: Minimum length of audio file to process in seconds.</span>
 <span class="sd">            Files shorter than the minimum length are padded with zeros.</span>
-<span class="sd">            If None, no minimum length is enforced. Defaults to None.</span>
+<span class="sd">            Sample rate has to be specified for padding. If None, no minimum</span>
+<span class="sd">            length is enforced. Defaults to None.</span>
 <span class="sd">        sample_rate: Sample rate of audio files in Hz. Has to be specified for</span>
 <span class="sd">            sliding window inference. Defaults to None.</span>
 
@@ -774,6 +793,7 @@ document.write(`
             <span class="n">extension</span><span class="p">,</span>
             <span class="n">recursive</span><span class="p">,</span>
             <span class="n">embeddings</span><span class="p">,</span>
+            <span class="n">update_frequency</span><span class="p">,</span>
             <span class="n">preprocess_cfg</span><span class="p">,</span>
             <span class="n">window_length</span><span class="p">,</span>
             <span class="n">stride_length</span><span class="p">,</span>
@@ -817,7 +837,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024, Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>
