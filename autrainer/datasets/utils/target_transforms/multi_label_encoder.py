@@ -57,7 +57,7 @@ class MultiLabelEncoder(AbstractTargetTransform):
         """
         return [label for i, label in enumerate(self.labels) if x[i]]
 
-    def probabilities_batch(self, x: torch.Tensor) -> torch.Tensor:
+    def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
         """Get the encoded probabilities from a batch of model outputs by
         applying the sigmoid function.
 
@@ -69,7 +69,7 @@ class MultiLabelEncoder(AbstractTargetTransform):
         """
         return torch.sigmoid(x)
 
-    def predict_batch(
+    def predict_inference(
         self, x: torch.Tensor
     ) -> Union[List[List[int]], List[int]]:
         """Get the encoded predictions from a batch of model output

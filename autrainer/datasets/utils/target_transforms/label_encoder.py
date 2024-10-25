@@ -41,7 +41,7 @@ class LabelEncoder(AbstractTargetTransform):
         """
         return self.inverse_map[x]
 
-    def probabilities_batch(self, x: torch.Tensor) -> torch.Tensor:
+    def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
         """Get the encoded probabilities from a batch of model outputs by
         applying the softmax function.
 
@@ -53,7 +53,7 @@ class LabelEncoder(AbstractTargetTransform):
         """
         return torch.softmax(x, dim=-1)
 
-    def predict_batch(self, x: torch.Tensor) -> Union[List[int], int]:
+    def predict_inference(self, x: torch.Tensor) -> Union[List[int], int]:
         """Get the encoded predictions from a batch of model output
         probabilities by obtaining the index of the maximum value.
 

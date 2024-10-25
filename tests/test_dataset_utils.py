@@ -89,8 +89,8 @@ class TestMinMaxScaler:
     def test_probabilities_predict(self) -> None:
         scaler = MinMaxScaler("target", 0, 1)
         x = torch.rand(1, 10)
-        probs = scaler.probabilities_batch(x)
-        preds = scaler.predict_batch(probs)
+        probs = scaler.probabilities_inference(x)
+        preds = scaler.predict_inference(probs)
         assert preds == x.squeeze().tolist(), "Should predict the batch."
 
     def test_majority_vote(self) -> None:
@@ -140,8 +140,8 @@ class TestMultiLabelEncoder:
     def test_probabilities_predict(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
         x = torch.Tensor([-0.1, 0.9, 0.6])
-        probs = encoder.probabilities_batch(x)
-        preds = encoder.predict_batch(probs)
+        probs = encoder.probabilities_inference(x)
+        preds = encoder.predict_inference(probs)
         assert preds == [0, 1, 1], "Should predict the batch."
 
     def test_majority_vote(self) -> None:
@@ -173,8 +173,8 @@ class TestLabelEncoder:
     def test_probabilities_predict(self) -> None:
         encoder = LabelEncoder(self.labels)
         x = torch.Tensor([[0, 1, 0], [0, 0, 1]])
-        probs = encoder.probabilities_batch(x)
-        preds = encoder.predict_batch(probs)
+        probs = encoder.probabilities_inference(x)
+        preds = encoder.predict_inference(probs)
         assert preds == [1, 2], "Should predict the batch."
 
     def test_majority_vote(self) -> None:

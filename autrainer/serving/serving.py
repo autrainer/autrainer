@@ -347,8 +347,8 @@ class Inference:
         x = self._preprocess_file(x)
         with torch.inference_mode():
             output = self.model(x).cpu()
-        probabilities = self.target_transform.probabilities_batch(output)
-        prediction = self.target_transform.predict_batch(probabilities)
+        probabilities = self.target_transform.probabilities_inference(output)
+        prediction = self.target_transform.predict_inference(probabilities)
         decoded_prediction = self.target_transform.decode(prediction)
         probs_dict = self.target_transform.probabilities_to_dict(
             probabilities.squeeze()

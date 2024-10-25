@@ -61,10 +61,10 @@ class OutputsTracker:
             "losses": self._losses.numpy(),
         }
 
-        _probabilities = self._data.target_transform.probabilities_batch(
+        _probabilities = self._data.target_transform.probabilities_inference(
             self._outputs
         )
-        self._predictions = self._data.target_transform.predict_batch(
+        self._predictions = self._data.target_transform.predict_inference(
             _probabilities
         )
         self._results_df = pd.DataFrame(index=results["indices"])
