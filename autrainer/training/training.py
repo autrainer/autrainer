@@ -1,7 +1,7 @@
 from copy import deepcopy
 import os
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -470,6 +470,7 @@ class ModularTaskTrainer:
                     data,
                     target,
                     self.criterion,
+                    self.data.target_transform.probabilities_training,
                 )
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
@@ -559,6 +560,7 @@ class ModularTaskTrainer:
                 data,
                 target,
                 self.criterion,
+                self.data.target_transform.probabilities_training,
             )
             if self.scheduler and self.scheduler_frequency == "batch":
                 self.scheduler.step()
@@ -617,10 +619,11 @@ class ModularTaskTrainer:
         data: torch.Tensor,
         target: torch.Tensor,
         criterion: torch.nn.Module,
+        probabilities_fn: Callable,
     ) -> Tuple[float, torch.Tensor]:
         self.optimizer.zero_grad()
         output = model(data)
-        loss = criterion(output, target)
+        loss = criterion(probabilities_fn(output), target)
         loss.backward()
         self.optimizer.step()
         return loss.item(), output.detach()
@@ -658,6 +661,7 @@ class ModularTaskTrainer:
             **kwargs,
         )
         self.model.eval()
+        self.model = self.model.to(self.DEVICE)
         results = self._evaluate(
             loader=loader,
             tracker=tracker,
@@ -758,11 +762,14 @@ class ModularTaskTrainer:
                     trainer=self,
                     batch_idx=batch_idx,
                 )
-                features = features.to(self.DEVICE)
-                output = self.model(features)
+                output = self.model(features.to(self.DEVICE))
+                probabilities_fn = (
+                    self.data.target_transform.probabilities_training
+                )
                 loss += (
                     self.criterion(
-                        output.to(self.DEVICE), target.to(self.DEVICE)
+                        probabilities_fn(output),
+                        target.to(self.DEVICE),
                     )
                     .cpu()
                     .item()

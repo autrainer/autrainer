@@ -61,14 +61,25 @@ class OutputsTracker:
             "losses": self._losses.numpy(),
         }
 
-        self._predictions = self._data.target_transform.predict_batch(
+        _probabilities = self._data.target_transform.probabilities_inference(
             self._outputs
+        )
+        self._predictions = self._data.target_transform.predict_inference(
+            _probabilities
         )
         self._results_df = pd.DataFrame(index=results["indices"])
         self._results_df["predictions"] = self._predictions
         self._results_df["predictions"] = self._results_df[
             "predictions"
         ].apply(self._data.target_transform.decode)
+        _probs_df = pd.DataFrame(
+            index=results["indices"],
+            data=(
+                self._data.target_transform.probabilities_to_dict(p)
+                for p in _probabilities
+            ),
+        )
+        self._results_df = pd.concat([self._results_df, _probs_df], axis=1)
 
         if self._export:
             for key, value in results.items():

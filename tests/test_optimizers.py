@@ -39,6 +39,7 @@ class TestSAM:
             data=data,
             target=target,
             criterion=criterion,
+            probabilities_fn=lambda x: x,
         )
 
         assert str(original_state_dict) != str(

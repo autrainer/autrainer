@@ -545,6 +545,7 @@ class BaseRegressionDataset(AbstractDataset):
     @cached_property
     def target_transform(self) -> MinMaxScaler:
         return MinMaxScaler(
+            target=self.target_column,
             minimum=self.df_train[self.target_column].min(),
             maximum=self.df_train[self.target_column].max(),
         )
