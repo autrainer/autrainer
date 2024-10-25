@@ -42,6 +42,18 @@ class AbstractTargetTransform(ABC, audobject.Object):
         """
 
     @abstractmethod
+    def probabilities_training(self, x: torch.Tensor) -> torch.Tensor:
+        """Get the encoded probabilities from a batch of model outputs
+        during training.
+
+        Args:
+            x: Batch of model outputs.
+
+        Returns:
+            Encoded probabilities.
+        """
+
+    @abstractmethod
     def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
         """Get the encoded probabilities from a batch of model outputs.
 

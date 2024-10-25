@@ -86,12 +86,22 @@ class TestMinMaxScaler:
         scaler = MinMaxScaler("target", 0, 1)
         assert scaler.decode(scaler(x)) == x, "Should encode and decode."
 
+    def test_probabilities_training(self) -> None:
+        scaler = MinMaxScaler("target", 0, 1)
+        x = torch.Tensor([[0.1], [0.9], [0.6], [0.4], [0.5]])
+        probs = scaler.probabilities_training(x)
+        assert torch.all(probs >= 0) and torch.all(
+            probs <= 1
+        ), "Should be in [0, 1]."
+
     def test_probabilities_predict(self) -> None:
         scaler = MinMaxScaler("target", 0, 1)
-        x = torch.rand(1, 10)
+        x = torch.Tensor([[0.1], [0.9], [0.6], [0.4], [0.5]])
         probs = scaler.probabilities_inference(x)
         preds = scaler.predict_inference(probs)
-        assert preds == x.squeeze().tolist(), "Should predict the batch."
+        assert (
+            preds == torch.sigmoid(x).squeeze().tolist()
+        ), "Should predict the batch."
 
     def test_majority_vote(self) -> None:
         encoder = MinMaxScaler("target", 0, 1)
@@ -137,6 +147,12 @@ class TestMultiLabelEncoder:
             encoder.decode(encoder([]).tolist()) == []
         ), "Should decode an empty list."
 
+    def test_probabilities_training(self) -> None:
+        encoder = MultiLabelEncoder(0.5, self.labels)
+        x = torch.Tensor([[0.1, 0.9, 0.6], [0.9, 0.1, 0.6]])
+        probs = encoder.probabilities_training(x)
+        assert torch.allclose(probs, x), "Should be a no-op."
+
     def test_probabilities_predict(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
         x = torch.Tensor([-0.1, 0.9, 0.6])
@@ -169,6 +185,12 @@ class TestLabelEncoder:
         assert (
             encoder.decode(encoder(label)) == label
         ), "Should encode and decode."
+
+    def test_probabilities_training(self) -> None:
+        encoder = LabelEncoder(self.labels)
+        x = torch.Tensor([0.5, 0.6, 0.7])
+        probs = encoder.probabilities_training(x)
+        assert torch.allclose(probs, x), "Should be a no-op."
 
     def test_probabilities_predict(self) -> None:
         encoder = LabelEncoder(self.labels)

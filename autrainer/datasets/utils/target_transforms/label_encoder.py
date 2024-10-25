@@ -41,6 +41,18 @@ class LabelEncoder(AbstractTargetTransform):
         """
         return self.inverse_map[x]
 
+    def probabilities_training(self, x: torch.Tensor) -> torch.Tensor:
+        """Get the encoded probabilities from a batch of model outputs
+        during training by returning the raw model outputs.
+
+        Args:
+            x: Batch of model outputs.
+
+        Returns:
+            Encoded probabilities.
+        """
+        return x
+
     def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
         """Get the encoded probabilities from a batch of model outputs by
         applying the softmax function.

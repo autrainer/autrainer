@@ -57,6 +57,18 @@ class MultiLabelEncoder(AbstractTargetTransform):
         """
         return [label for i, label in enumerate(self.labels) if x[i]]
 
+    def probabilities_training(self, x: torch.Tensor) -> torch.Tensor:
+        """Get the encoded probabilities from a batch of model outputs
+        during training by returning the raw model outputs.
+
+        Args:
+            x: Batch of model outputs.
+
+        Returns:
+            Encoded probabilities.
+        """
+        return x
+
     def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
         """Get the encoded probabilities from a batch of model outputs by
         applying the sigmoid function.

@@ -48,6 +48,18 @@ class MinMaxScaler(AbstractTargetTransform):
         """
         return x * (self.maximum - self.minimum) + self.minimum
 
+    def probabilities_training(self, x: torch.Tensor) -> torch.Tensor:
+        """Get the encoded probabilities from a batch of model outputs
+        during training by applying the sigmoid function.
+
+        Args:
+            x: Batch of model outputs.
+
+        Returns:
+            Encoded probabilities.
+        """
+        return torch.sigmoid(x)
+
     def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
         """Get the encoded probabilities from a batch of model outputs by
         applying the sigmoid function.
