@@ -50,7 +50,7 @@ class MinMaxScaler(AbstractTargetTransform):
 
     def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
         """Get the encoded probabilities from a batch of model outputs by
-        returning the raw values.
+        applying the sigmoid function.
 
         Args:
             x: Batch of model outputs.
@@ -58,7 +58,7 @@ class MinMaxScaler(AbstractTargetTransform):
         Returns:
             Encoded probabilities.
         """
-        return x
+        return torch.sigmoid(x)
 
     def predict_inference(self, x: torch.Tensor) -> Union[List[float], float]:
         """Get the encoded predictions from a batch of model output
