@@ -661,6 +661,7 @@ class ModularTaskTrainer:
             **kwargs,
         )
         self.model.eval()
+        self.model = self.model.to(self.DEVICE)
         results = self._evaluate(
             loader=loader,
             tracker=tracker,
@@ -761,11 +762,14 @@ class ModularTaskTrainer:
                     trainer=self,
                     batch_idx=batch_idx,
                 )
-                features = features.to(self.DEVICE)
-                output = self.model(features)
+                output = self.model(features.to(self.DEVICE))
+                probabilities_fn = (
+                    self.data.target_transform.probabilities_training
+                )
                 loss += (
                     self.criterion(
-                        output.to(self.DEVICE), target.to(self.DEVICE)
+                        probabilities_fn(output),
+                        target.to(self.DEVICE),
                     )
                     .cpu()
                     .item()
