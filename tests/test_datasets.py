@@ -450,7 +450,7 @@ class TestToyDataset(BaseIndividualTempDir):
     def _mock_toy_dataset_kwargs(self) -> dict:
         return {
             "task": "classification",
-            "size": 10,
+            "size": 100,
             "num_targets": 10,
             "feature_shape": (101, 64),
             "dev_split": 0.2,
@@ -497,9 +497,9 @@ class TestToyDataset(BaseIndividualTempDir):
         data: AbstractDataset,
         y_shape: Tuple[int, ...],
     ) -> None:
-        assert len(data.train_dataset) == 6, "Should be 6."
-        assert len(data.dev_dataset) == 2, "Should be 2."
-        assert len(data.test_dataset) == 2, "Should be 2."
+        assert len(data.train_dataset) == 60, "Should be 60."
+        assert len(data.dev_dataset) == 20, "Should be 20."
+        assert len(data.test_dataset) == 20, "Should be 20."
 
         x, y, _ = next(iter(data.train_loader))
         assert x.shape == (4, 101, 64), "Should be (4, 101, 64)."
