@@ -19,6 +19,14 @@ class LabelEncoder(AbstractTargetTransform):
         }
         self.map = {label: code for code, label in zip(codes, self.labels)}
 
+    def __len__(self) -> int:
+        """Get the number of unique target labels.
+
+        Returns:
+            Number of unique target labels.
+        """
+        return len(self.labels)
+
     def encode(self, x: str) -> int:
         """Encode a target label by mapping it to an integer.
 
