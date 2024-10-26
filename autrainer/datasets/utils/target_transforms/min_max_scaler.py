@@ -25,6 +25,14 @@ class MinMaxScaler(AbstractTargetTransform):
         self.minimum = float(minimum)
         self.maximum = float(maximum)
 
+    def __len__(self) -> int:
+        """Get the number of unique targets.
+
+        Returns:
+            Number of unique targets.
+        """
+        return 1
+
     def encode(self, x: float) -> float:
         """Encode a target value by scaling it between the minimum and maximum.
 

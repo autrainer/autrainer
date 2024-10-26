@@ -134,14 +134,14 @@ class AbstractDataset(ABC):
             Target transform.
         """
 
-    @property
-    @abstractmethod
+    @cached_property
     def output_dim(self) -> int:
         """Get the output dimension of the dataset.
 
         Returns:
             Output dimension.
         """
+        return len(self.target_transform)
 
     @staticmethod
     def _init_metric(metric: Union[str, DictConfig, Dict]) -> AbstractMetric:
@@ -359,15 +359,6 @@ class BaseClassificationDataset(AbstractDataset):
             self.df_train[self.target_column].unique().tolist()
         )
 
-    @cached_property
-    def output_dim(self) -> int:
-        """Get the output dimension of the dataset.
-
-        Returns:
-            Number of classes.
-        """
-        return len(self.df_train[self.target_column].unique())
-
     @staticmethod
     def _assert_dev_split(dev_split: float) -> None:
         if not 0 <= dev_split < 1:
@@ -471,15 +462,6 @@ class BaseMLClassificationDataset(AbstractDataset):
     def target_transform(self) -> MultiLabelEncoder:
         return MultiLabelEncoder(self.threshold, self.target_column)
 
-    @cached_property
-    def output_dim(self) -> int:
-        """Get the output dimension of the dataset.
-
-        Returns:
-            Number of classes.
-        """
-        return len(self.target_column)
-
 
 class BaseRegressionDataset(AbstractDataset):
     def __init__(
@@ -549,12 +531,3 @@ class BaseRegressionDataset(AbstractDataset):
             minimum=self.df_train[self.target_column].min(),
             maximum=self.df_train[self.target_column].max(),
         )
-
-    @cached_property
-    def output_dim(self) -> int:
-        """Get the output dimension of the dataset.
-
-        Returns:
-            Always 1 for regression tasks.
-        """
-        return 1

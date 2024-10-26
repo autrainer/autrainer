@@ -24,6 +24,14 @@ class MultiLabelEncoder(AbstractTargetTransform):
         self.threshold = threshold
         self.labels = labels
 
+    def __len__(self) -> int:
+        """Get the number of unique target labels.
+
+        Returns:
+            Number of unique target labels.
+        """
+        return len(self.labels)
+
     def encode(self, x: Union[List[int], List[str]]) -> torch.Tensor:
         """Encode a list of target labels by creating a binary tensor where
         each element is 1 if the label is in the list of target labels and 0

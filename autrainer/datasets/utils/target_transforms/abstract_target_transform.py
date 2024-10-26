@@ -20,6 +20,14 @@ class AbstractTargetTransform(ABC, audobject.Object):
         return self.encode(x)
 
     @abstractmethod
+    def __len__(self) -> int:
+        """Get the number of unique targets or labels.
+
+        Returns:
+            Number of unique targets or labels.
+        """
+
+    @abstractmethod
     def encode(self, x: Any) -> Any:
         """Encode a target or label.
 

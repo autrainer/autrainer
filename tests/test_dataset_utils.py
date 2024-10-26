@@ -76,6 +76,10 @@ def _all_close_dict(a: dict, b: dict) -> bool:
 
 
 class TestMinMaxScaler:
+    def test_len(self) -> None:
+        scaler = MinMaxScaler("target", 0, 1)
+        assert len(scaler) == 1, "Should have a single target."
+
     @pytest.mark.parametrize("minimum, maximum", [(1, 0), (0, 0), (1, 1)])
     def test_invalid_min_max(self, minimum: float, maximum: float) -> None:
         with pytest.raises(ValueError):
@@ -121,6 +125,10 @@ class TestMinMaxScaler:
 
 class TestMultiLabelEncoder:
     labels = ["fizz", "buzz", "jazz"]
+
+    def test_len(self) -> None:
+        encoder = MultiLabelEncoder(0.5, self.labels)
+        assert len(encoder) == 3, "Should have three labels."
 
     @pytest.mark.parametrize("threshold", [-1, -0.01, 1.1, 2])
     def test_invalid_threshold(self, threshold: float) -> None:
@@ -178,6 +186,10 @@ class TestMultiLabelEncoder:
 
 class TestLabelEncoder:
     labels = ["fizz", "buzz", "jazz"]
+
+    def test_len(self) -> None:
+        encoder = LabelEncoder(self.labels)
+        assert len(encoder) == 3, "Should have three labels."
 
     @pytest.mark.parametrize("label", ["jazz", "buzz", "fizz"])
     def test_encode_decode(self, label: str) -> None:

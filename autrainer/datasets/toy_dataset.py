@@ -240,9 +240,3 @@ class ToyDataset(AbstractDataset):
             minimum=self.df_train[self.target_column].min(),
             maximum=self.df_train[self.target_column].max(),
         )
-
-    @cached_property
-    def output_dim(self) -> int:
-        if self.task in ["ml-classification", "classification"]:
-            return self.num_targets
-        return 1
