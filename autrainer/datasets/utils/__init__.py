@@ -11,20 +11,22 @@ from .target_transforms import (
     LabelEncoder,
     MinMaxScaler,
     MultiLabelEncoder,
+    MultiTargetMinMaxScaler,
 )
 from .zip_download_manager import ZipDownloadManager
 
 
 __all__ = [
     "AbstractFileHandler",
+    "AbstractTargetTransform",
     "AudioFileHandler",
+    "DatasetWrapper",
     "IdentityFileHandler",
     "ImageFileHandler",
-    "NumpyFileHandler",
-    "AbstractTargetTransform",
     "LabelEncoder",
     "MinMaxScaler",
     "MultiLabelEncoder",
-    "DatasetWrapper",
+    "MultiTargetMinMaxScaler",
+    "NumpyFileHandler",
     "ZipDownloadManager",
 ]

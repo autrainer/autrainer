@@ -11,6 +11,7 @@ from autrainer.datasets.utils import (
     LabelEncoder,
     MinMaxScaler,
     MultiLabelEncoder,
+    MultiTargetMinMaxScaler,
     NumpyFileHandler,
 )
 
@@ -120,6 +121,69 @@ class TestMinMaxScaler:
         probs_dict = scaler.probabilities_to_dict(x)
         assert _all_close_dict(
             probs_dict, {"target": 0.5}
+        ), "Should convert the probabilities to a dictionary."
+
+
+class TestMultiTargetMinMaxScaler:
+    targets = ["target1", "target2", "target3"]
+
+    def test_len(self) -> None:
+        scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
+        assert len(scaler) == 3, "Should have three targets."
+
+    @pytest.mark.parametrize(
+        "minimum, maximum",
+        [
+            ([1, 0, 0], [0, 0, 0]),
+            ([0, 1, 0], [0, 0, 0]),
+            ([0, 0, 0], [1, 1, 0]),
+            ([0, 1, 0], [1, 1, 1]),
+        ],
+    )
+    def test_invalid_min_max(
+        self,
+        minimum: List[float],
+        maximum: List[float],
+    ) -> None:
+        with pytest.raises(ValueError):
+            MultiTargetMinMaxScaler(self.targets, minimum, maximum)
+
+    @pytest.mark.parametrize("x", [[0, 1, 0.5], [10, -1, -0.5], [-10, 0, 0.5]])
+    def test_encode_decode(self, x: List[float]) -> None:
+        scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
+        assert (
+            scaler.decode(scaler(x).tolist()) == x
+        ), "Should encode and decode."
+
+    def test_probabilities_training(self) -> None:
+        scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
+        x = torch.Tensor([[0.1, 0.9, 0.6], [0.9, 0.1, 0.6]])
+        probs = scaler.probabilities_training(x)
+        assert torch.all(probs >= 0) and torch.all(
+            probs <= 1
+        ), "Should be in [0, 1]."
+
+    def test_probabilities_predict(self) -> None:
+        scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
+        x = torch.Tensor([[0.1, 0.9, 0.6], [0.9, 0.1, 0.6]])
+        probs = scaler.probabilities_inference(x)
+        preds = scaler.predict_inference(probs)
+        assert preds == torch.sigmoid(x).tolist(), "Should predict the batch."
+
+    def test_majority_vote(self) -> None:
+        scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
+        x = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9]]
+        assert torch.allclose(
+            torch.Tensor(scaler.majority_vote(x)),
+            torch.Tensor([0.4, 0.5, 0.6]),
+        ), "Should compute the majority vote."
+
+    def test_probabilities_to_dict(self) -> None:
+        scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
+        x = torch.Tensor([0.5, 0.6, 0.7])
+        probs_dict = scaler.probabilities_to_dict(x)
+        assert _all_close_dict(
+            probs_dict, {"target1": 0.5, "target2": 0.6, "target3": 0.7}
         ), "Should convert the probabilities to a dictionary."
 
 
