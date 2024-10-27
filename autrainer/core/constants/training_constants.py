@@ -7,13 +7,18 @@ class TrainingConstants(AbstractConstants):
     """Singleton for managing the training configurations of `autrainer`."""
 
     _name = "TrainingConstants"
-    _tasks = ["classification", "regression", "ml-classification"]
+    _tasks = [
+        "classification",
+        "ml-classification",
+        "regression",
+        "mt-regression",
+    ]
 
     @property
     def TASKS(self) -> List[str]:
         """Get the supported training tasks.
-        Defaults to :attr:`["classification", "regression",
-        "ml-classification"]`.
+        Defaults to :attr:`["classification", "ml-classification",
+        "regression", "mt-regression"]`.
 
         Returns:
             Supported training tasks.
