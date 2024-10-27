@@ -20,10 +20,12 @@ class TestCLIIntegration(BaseIndividualTempDir):
             ("ToyTabular-C", "ToyFFNN", "epoch", 2, True),
             ("ToyTabular-R", "ToyFFNN", "epoch", 1, False),
             ("ToyTabular-MLC", "ToyFFNN", "epoch", 1, False),
+            ("ToyTabular-MTR", "ToyFFNN", "epoch", 1, False),
             ("ToyTabular-C", "ToyFFNN", "step", 100, False),
             ("ToyTabular-C", "ToyFFNN", "step", 200, True),
             ("ToyTabular-R", "ToyFFNN", "step", 100, False),
             ("ToyTabular-MLC", "ToyFFNN", "step", 100, False),
+            ("ToyTabular-MTR", "ToyFFNN", "step", 100, False),
         ],
     )
     def test_train_postprocess(

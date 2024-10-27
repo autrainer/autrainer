@@ -6,6 +6,7 @@ from omegaconf import DictConfig
 import pandas as pd
 import torch
 
+from autrainer.core.constants import TrainingConstants
 from autrainer.transforms import SmartCompose
 
 from .abstract_dataset import AbstractDataset
@@ -14,6 +15,7 @@ from .utils import (
     LabelEncoder,
     MinMaxScaler,
     MultiLabelEncoder,
+    MultiTargetMinMaxScaler,
 )
 
 
@@ -86,8 +88,8 @@ class ToyDataset(AbstractDataset):
         """Toy dataset for testing purposes.
 
         Args:
-            task: Task of the dataset in ['classification', 'regression',
-                'ml-classification'].
+            task: Task of the dataset in ["classification", "regression",
+                "ml-classification", "mt-regression"].
             size: Size of the dataset.
             num_targets: Number of targets.
             feature_shape: Shape of the features.
@@ -106,10 +108,10 @@ class ToyDataset(AbstractDataset):
             test_transform: Transform to apply to the test set.
                 Defaults to None.
         """
-        if task not in ["classification", "regression", "ml-classification"]:
+        if task not in TrainingConstants().TASKS:
             raise ValueError(
-                f"Invalid task '{task}', must be in ['classification', "
-                f"'regression', 'ml-classification']."
+                f"Invalid task '{task}', "
+                f"must be in {TrainingConstants().TASKS}."
             )
         self.size = size
         self.num_targets = num_targets
@@ -200,10 +202,26 @@ class ToyDataset(AbstractDataset):
             df[self.target_column] = df[self.target_column].apply(
                 lambda x: f"class_{x+1}"
             )
-        else:
-            # self.task == "regression"
+        elif self.task == "mt-regression":
+            self.target_column = [
+                f"target_{i+1}" for i in range(self.num_targets)
+            ]
+            df = pd.DataFrame(
+                {
+                    **{
+                        col: rng.random((self.size,)).astype(np.float32)
+                        for col in self.target_column
+                    }
+                }
+            )
+        elif self.task == "regression":
             self.target_column = "target"
             df = pd.DataFrame({self.target_column: rng.random((self.size,))})
+        else:
+            raise ValueError(
+                f"Invalid task '{self.task}', "
+                f"must be in {TrainingConstants().TASKS}."
+            )
 
         train_size, dev_size, _ = self._get_dataset_sizes()
         return (
@@ -235,8 +253,20 @@ class ToyDataset(AbstractDataset):
             return LabelEncoder(
                 self.df_train[self.target_column].unique().tolist()
             )
-        return MinMaxScaler(
-            target=self.target_column,
-            minimum=self.df_train[self.target_column].min(),
-            maximum=self.df_train[self.target_column].max(),
-        )
+        elif self.task == "mt-regression":
+            return MultiTargetMinMaxScaler(
+                target=self.target_column,
+                minimum=self.df_train[self.target_column].min().to_list(),
+                maximum=self.df_train[self.target_column].max().to_list(),
+            )
+        elif self.task == "regression":
+            return MinMaxScaler(
+                target=self.target_column,
+                minimum=self.df_train[self.target_column].min(),
+                maximum=self.df_train[self.target_column].max(),
+            )
+        else:
+            raise ValueError(
+                f"Invalid task '{self.task}', "
+                f"must be in {TrainingConstants().TASKS}."
+            )
