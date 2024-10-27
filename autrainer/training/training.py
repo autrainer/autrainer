@@ -804,15 +804,22 @@ class ModularTaskTrainer:
         results = {m.name: {} for m in self.data.metrics}
         for metric in self.data.metrics:
             if isinstance(self.data.target_column, list):
-                # this handles the case of multilabel classification
+                # this handles the case of multi-label classification and
+                # multi-target regression
                 # loops over all targets and computes the metric for them
                 # additionally stores avg. over all labels under "all"
                 total = 0
-                for col in self.data.target_column:
-                    res = metric(
-                        groundtruth[col],
-                        df["predictions"].apply(lambda x: int(col in x)),
-                    )
+                for idx, col in enumerate(self.data.target_column):
+                    if self.data.task == "ml-classification":
+                        res = metric(
+                            groundtruth[col],
+                            df["predictions"].apply(lambda x: int(col in x)),
+                        )
+                    else:
+                        res = metric(
+                            groundtruth[col],
+                            df["predictions"].apply(lambda x: x[idx]),
+                        )
                     results[metric.name][col] = res
                     total += res
                 total /= len(self.data.target_column)
@@ -822,9 +829,11 @@ class ModularTaskTrainer:
                     groundtruth[self.data.target_column], df["predictions"]
                 )
             for s in stratify:
-                assert not isinstance(
-                    self.data.target_column, list
-                ), "Multilabel classification and stratified evaluation not supported."
+                if not isinstance(self.data.target_column, list):
+                    raise ValueError(
+                        "Stratified evaluation not supported for multi-label "
+                        "classification and multi-target regression."
+                    )
                 for v in groundtruth[s].unique():
                     idx = groundtruth.loc[groundtruth[s] == v].index
                     results[metric.name][v] = metric(
