@@ -533,3 +533,12 @@ class TestToyDataset(BaseIndividualTempDir):
         data = ToyDataset(**kwargs)
         self._test_data_shapes(data, (4,))
         assert data.output_dim == 1, "Should be 1."
+
+    def test_mtr(self) -> None:
+        kwargs = self._mock_toy_dataset_kwargs()
+        kwargs["task"] = "mt-regression"
+        kwargs["metrics"] = ["autrainer.metrics.MSE"]
+        kwargs["tracking_metric"] = "autrainer.metrics.MSE"
+        data = ToyDataset(**kwargs)
+        self._test_data_shapes(data, (4, 10))
+        assert data.output_dim == 10, "Should be 10."

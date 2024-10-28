@@ -96,6 +96,9 @@ Base datasets that can be used for training without the need for creating custom
 .. autoclass:: autrainer.datasets.BaseRegressionDataset
    :members:
 
+.. autoclass:: autrainer.datasets.BaseMTRegressionDataset
+   :members:
+
 
 Toy Datasets
 ------------------
@@ -106,7 +109,8 @@ A toy dataset for testing purposes.
 
    To easily test implementations, multiple toy dataset configurations across modalities and tasks are provided.
    We offer :attr:`ToyAudio-...` for audio, :attr:`ToyImage-...` for image, and :attr:`ToyTabular-...` for tabular data, respectively.
-   For each dataset, we provide a task :attr:`...-R` for regression, :attr:`...-C` for classification and :attr:`...-MLC` for multi-label classification.
+   For each dataset, we provide a task :attr:`...-R` for regression, :attr:`...-C` for classification, :attr:`...-MLC` for multi-label classification,
+   and :attr:`...-MTR` for multi-target regression.
 
 .. autoclass:: autrainer.datasets.ToyDataset
 

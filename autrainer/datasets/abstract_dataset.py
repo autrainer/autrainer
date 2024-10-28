@@ -20,6 +20,7 @@ from .utils import (
     LabelEncoder,
     MinMaxScaler,
     MultiLabelEncoder,
+    MultiTargetMinMaxScaler,
 )
 
 
@@ -530,4 +531,74 @@ class BaseRegressionDataset(AbstractDataset):
             target=self.target_column,
             minimum=self.df_train[self.target_column].min(),
             maximum=self.df_train[self.target_column].max(),
+        )
+
+
+class BaseMTRegressionDataset(AbstractDataset):
+    def __init__(
+        self,
+        path: str,
+        features_subdir: str,
+        seed: int,
+        metrics: List[Union[str, DictConfig, Dict]],
+        tracking_metric: Union[str, DictConfig, Dict],
+        index_column: str,
+        target_column: List[str],
+        file_type: str,
+        file_handler: Union[str, DictConfig, Dict],
+        batch_size: int,
+        inference_batch_size: Optional[int] = None,
+        train_transform: Optional[SmartCompose] = None,
+        dev_transform: Optional[SmartCompose] = None,
+        test_transform: Optional[SmartCompose] = None,
+        stratify: Optional[List[str]] = None,
+    ) -> None:
+        """Base multi-target regression dataset.
+
+        Args:
+            path: Root path to the dataset.
+            features_subdir: Subdirectory containing the features.
+            seed: Seed for reproducibility.
+            metrics: List of metrics to calculate.
+            tracking_metric: Metric to track.
+            index_column: Index column of the dataframe.
+            target_column: Target column of the dataframe.
+            file_type: File type of the features.
+            file_handler: File handler to load the data.
+            batch_size: Batch size.
+            inference_batch_size: Inference batch size. If None, defaults to
+                batch_size. Defaults to None.
+            train_transform: Transform to apply to the training set.
+                Defaults to None.
+            dev_transform: Transform to apply to the development set.
+                Defaults to None.
+            test_transform: Transform to apply to the test set.
+                Defaults to None.
+            stratify: Columns to stratify the dataset on. Defaults to None.
+        """
+        super().__init__(
+            path=path,
+            features_subdir=features_subdir,
+            seed=seed,
+            task="regression",
+            metrics=metrics,
+            tracking_metric=tracking_metric,
+            index_column=index_column,
+            target_column=target_column,
+            file_type=file_type,
+            file_handler=file_handler,
+            batch_size=batch_size,
+            inference_batch_size=inference_batch_size,
+            train_transform=train_transform,
+            dev_transform=dev_transform,
+            test_transform=test_transform,
+            stratify=stratify,
+        )
+
+    @cached_property
+    def target_transform(self) -> MultiTargetMinMaxScaler:
+        return MultiTargetMinMaxScaler(
+            targets=self.target_column,
+            minimum=self.df_train[self.target_column].min().to_list(),
+            maximum=self.df_train[self.target_column].max().to_list(),
         )

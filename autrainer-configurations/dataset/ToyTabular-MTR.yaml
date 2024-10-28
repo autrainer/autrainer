@@ -1,0 +1,20 @@
+id: ToyTabular-MTR
+_target_: autrainer.datasets.ToyDataset
+
+task: mt-regression
+size: 1000
+num_targets: 10
+feature_shape: 64
+dev_split: 0.2
+test_split: 0.2
+
+criterion: autrainer.criterions.MSELoss
+metrics:
+  - autrainer.metrics.PCC
+  - autrainer.metrics.CCC
+  - autrainer.metrics.MSE
+  - autrainer.metrics.MAE
+tracking_metric: autrainer.metrics.PCC
+
+transform:
+  type: tabular

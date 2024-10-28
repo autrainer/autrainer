@@ -2,6 +2,7 @@ from .abstract_dataset import (
     AbstractDataset,
     BaseClassificationDataset,
     BaseMLClassificationDataset,
+    BaseMTRegressionDataset,
     BaseRegressionDataset,
 )
 from .aibo import AIBO
@@ -18,6 +19,7 @@ __all__ = [
     "AbstractDataset",
     "BaseClassificationDataset",
     "BaseMLClassificationDataset",
+    "BaseMTRegressionDataset",
     "BaseRegressionDataset",
     "AIBO",
     "DCASE2016Task1",

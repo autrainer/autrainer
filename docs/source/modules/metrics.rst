@@ -43,16 +43,6 @@ Classification Metrics
 
 .. autoclass:: autrainer.metrics.F1
 
-Regression Metrics
--------------------
-
-.. autoclass:: autrainer.metrics.CCC
-
-.. autoclass:: autrainer.metrics.MAE
-
-.. autoclass:: autrainer.metrics.MSE
-
-.. autoclass:: autrainer.metrics.PCC
 
 Multi-label Classification Metrics
 ----------------------------------
@@ -64,3 +54,15 @@ Multi-label Classification Metrics
 .. autoclass:: autrainer.metrics.MLF1Micro
 
 .. autoclass:: autrainer.metrics.MLF1Weighted
+
+
+(Multi-target) Regression Metrics
+---------------------------------
+
+.. autoclass:: autrainer.metrics.CCC
+
+.. autoclass:: autrainer.metrics.MAE
+
+.. autoclass:: autrainer.metrics.MSE
+
+.. autoclass:: autrainer.metrics.PCC
