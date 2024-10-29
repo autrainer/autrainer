@@ -1,3 +1,4 @@
+from functools import cached_property
 import os
 import shutil
 from typing import Dict, List, Optional, Tuple, Union
@@ -96,15 +97,21 @@ class EmoDB(BaseClassificationDataset):
             stratify=stratify,
         )
 
-    def load_dataframes(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        meta = pd.read_csv(os.path.join(self.path, "metadata.csv"))
-        return (
-            meta[meta["speaker"].isin(self.train_speakers)],
-            meta[meta["speaker"].isin(self.dev_speakers)],
-            meta[meta["speaker"].isin(self.test_speakers)],
-        )
+    @cached_property
+    def meta(self):
+        return pd.read_csv(os.path.join(self.path, "metadata.csv"))
+    
+    @cached_property
+    def train_df(self):
+        return self.meta[self.meta["speaker"].isin(self.train_speakers)]
+
+    @cached_property
+    def dev_df(self):
+        return self.meta[self.meta["speaker"].isin(self.dev_speakers)]
+
+    @cached_property
+    def test_df(self):
+        return self.meta[self.meta["speaker"].isin(self.test_speakers)]
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover
