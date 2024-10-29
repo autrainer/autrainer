@@ -1,3 +1,4 @@
+from functools import cached_property
 import os
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -110,16 +111,45 @@ class AIBO(BaseClassificationDataset):
                 self.df_train, self.train_transform
             )
 
-    def load_dataframes(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        return (
-            pd.read_csv(
-                os.path.join(self.path, f"train_{self.aibo_task}.csv")
-            ),
-            pd.read_csv(os.path.join(self.path, f"dev_{self.aibo_task}.csv")),
-            pd.read_csv(os.path.join(self.path, f"test_{self.aibo_task}.csv")),
+    @cached_property
+    def _load_df(self, path):
+        df = pd.read_csv(
+            os.path.join(path, f"chunk_labels_{self.aibo_task}_corpus.txt"),
+            header=None,
+            sep=" ",
         )
+        df = df.rename(columns={0: "id", 1: "class", 2: "conf"})
+        df["file"] = df["id"].apply(lambda x: x + ".wav")
+        df["school"] = df["id"].apply(lambda x: x.split("_")[0])
+        df["speaker"] = df["id"].apply(lambda x: x.split("_")[1])
+        df = df.set_index("file")
+        return df
+
+    @cached_property
+    def train_df(self):
+        df = self._load_df()
+        df_train_dev = df.loc[df["school"] == "Ohm"]
+        speakers = sorted(df_train_dev["speaker"].unique())
+        df_train = df_train_dev.loc[
+            df_train_dev["speaker"].isin(speakers[:-2])
+        ]
+        return df_train
+    
+    @cached_property
+    def dev_df(self):
+        df = self._load_df()
+        df_train_dev = df.loc[df["school"] == "Ohm"]
+        speakers = sorted(df_train_dev["speaker"].unique())
+        df_dev = df_train_dev.loc[
+            df_train_dev["speaker"].isin(speakers[-2:])
+        ]
+        return df_dev
+
+    @cached_property
+    def test_df(self):
+        df = self._load_df()
+        df_test = df.loc[df["school"] == "Mont"]
+        return df_test
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover
@@ -138,27 +168,12 @@ class AIBO(BaseClassificationDataset):
         - `chunk_labels_5cl_corpus.txt`: File containing the file names and
           corresponding labels for the 5-class classification task.
 
-        Produces the following splits for both tasks (2cl and 5cl):
-
-        - `train_{task}.csv`: Training split of all speakers of the
-          Ohm-Gymnasium with the exception of the last two speakers.
-        - `dev_{task}.csv`: Development split of the last two speakers of the
-          Ohm-Gymnasium.
-        - `test_{task}.csv`: Test split of all speakers of the
-          Montessori-Schule.
-
         For more information on the dataset and dataset split, see:
         https://doi.org/10.1109/ICME51207.2021.9428217
 
         Args:
             path: Path to the directory to download the dataset to.
         """
-        if os.path.isfile(os.path.join(path, "train_2cl.csv")):
-            return
-        if not os.path.isdir(os.path.join(path, "default")):
-            raise ValueError(
-                f"Directory 'default' does not exist in '{path}'."
-            )
         if not os.path.isfile(
             os.path.join(path, "chunk_labels_2cl_corpus.txt")
             or os.path.isfile(
@@ -169,28 +184,3 @@ class AIBO(BaseClassificationDataset):
                 f"File 'chunk_labels_2cl_corpus.txt' or "
                 f"'chunk_labels_5cl_corpus.txt' does not exist in '{path}'."
             )
-
-        for task in ["2cl", "5cl"]:
-            df = pd.read_csv(
-                os.path.join(path, f"chunk_labels_{task}_corpus.txt"),
-                header=None,
-                sep=" ",
-            )
-            df = df.rename(columns={0: "id", 1: "class", 2: "conf"})
-            df["file"] = df["id"].apply(lambda x: x + ".wav")
-            df["school"] = df["id"].apply(lambda x: x.split("_")[0])
-            df["speaker"] = df["id"].apply(lambda x: x.split("_")[1])
-            df = df.set_index("file")
-            df_test = df.loc[df["school"] == "Mont"]
-            df_train_dev = df.loc[df["school"] == "Ohm"]
-            speakers = sorted(df_train_dev["speaker"].unique())
-            df_train = df_train_dev.loc[
-                df_train_dev["speaker"].isin(speakers[:-2])
-            ]
-            df_dev = df_train_dev.loc[
-                df_train_dev["speaker"].isin(speakers[-2:])
-            ]
-
-            df_train.to_csv(os.path.join(path, f"train_{task}.csv"))
-            df_dev.to_csv(os.path.join(path, f"dev_{task}.csv"))
-            df_test.to_csv(os.path.join(path, f"test_{task}.csv"))
