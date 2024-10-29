@@ -169,10 +169,22 @@ class AbstractDataset(ABC):
             Dataframes for training, development, and testing.
         """
         return (
-            pd.read_csv(os.path.join(self.path, "train.csv")),
-            pd.read_csv(os.path.join(self.path, "dev.csv")),
-            pd.read_csv(os.path.join(self.path, "test.csv")),
+            self.train_df,
+            self.dev_df,
+            self.test_df,
         )
+
+    @cached_property
+    def train_df(self):
+        return pd.read_csv(os.path.join(self.path, "train.csv"))
+
+    @cached_property
+    def dev_df(self):
+        return pd.read_csv(os.path.join(self.path, "dev.csv"))
+
+    @cached_property
+    def test_df(self):
+        return pd.read_csv(os.path.join(self.path, "test.csv"))
 
     def _init_dataset(
         self,
