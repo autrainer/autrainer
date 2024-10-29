@@ -1,7 +1,8 @@
+from functools import cached_property
 import os
 from pathlib import Path
 import shutil
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -96,16 +97,17 @@ class DCASE2016Task1(BaseClassificationDataset):
             stratify=stratify,
         )
 
-    def load_dataframes(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        return (
-            pd.read_csv(os.path.join(self.path, f"fold{self.fold}_train.csv")),
-            pd.read_csv(
-                os.path.join(self.path, f"fold{self.fold}_evaluate.csv")
-            ),
-            pd.read_csv(os.path.join(self.path, "test.csv")),
-        )
+    @cached_property
+    def train_df(self):
+        return pd.read_csv(os.path.join(self.path, f"fold{self.fold}_train.csv"))
+
+    @cached_property
+    def dev_df(self):
+        return pd.read_csv(os.path.join(self.path, f"fold{self.fold}_evaluate.csv"))
+
+    @cached_property
+    def test_df(self):
+        return pd.read_csv(os.path.join(self.path, f"test.csv"))
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover
