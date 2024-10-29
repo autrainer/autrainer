@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import torch
 from typing import Any, List, Optional
 
 from omegaconf import DictConfig, OmegaConf
@@ -196,39 +197,96 @@ class PreprocessScript(AbstractPreprocessScript):
             self.datasets.items(), self.preprocessing.values()
         ):
             print(f" - {name}")
-            if preprocess is None or os.path.isdir(
-                os.path.join(dataset["path"], dataset["features_subdir"])
-            ):
-                continue
-
-            csvs = _get_csvs(dataset["path"])
-            dfs = _read_csvs(dataset["path"], csvs)
-            unique_files = _get_unique_files(dfs, dataset["index_column"])
-            _create_subdirs(
-                os.path.join(dataset["path"], dataset["features_subdir"]),
-                unique_files,
+            # swap dataset handler with preprocessing handler
+            features_subdir = dataset["features_subdir"]
+            output_file_handler = autrainer.instantiate_shorthand(
+                config=dataset["file_handler"],
+                instance_of=AbstractFileHandler,
             )
-            chunks = _split_chunks(unique_files, self.num_workers)
-            lock = tqdm.get_lock()
-            with tqdm(
-                total=len(unique_files),
-                desc=name,
-                disable=self.update_frequency == 0,
-            ) as pbar:
-                with ThreadPoolExecutor(self.num_workers) as executor:
-                    futures = [
-                        executor.submit(
-                            _process_chunk,
-                            chunk,
-                            dataset,
-                            preprocess,
-                            pbar,
-                            lock,
-                        )
-                        for chunk in chunks
-                    ]
-                    for future in futures:
-                        future.result()
+            output_file_type = dataset["file_type"]
+            # set features_subdir to None (defaults to audio)
+            # so that iteration takes place over raw data
+            dataset["features_subdir"] = None
+            dataset["file_handler"] = preprocess["file_handler"]
+            dataset["file_type"] = preprocess["file_type"]
+            if preprocess is None:
+                continue
+            data = autrainer.instantiate_shorthand(dataset)
+            loader = torch.utils.data.DataLoader(
+                torch.utils.data.ConcatDataset(
+                    data.train_dataset,
+                    data.dev_dataset,
+                    data.test_dataset
+                ),
+                shuffle=False,
+                num_workers=self.num_workers,
+                batch_size=1  #TODO: can we do it batched?
+            )
+            pipeline = SmartCompose(
+                [
+                    autrainer.instantiate_shorthand(t)
+                    for t in preprocess["pipeline"]
+                ]
+            )
+            for d, n in (
+                (data.train_dataset, "train"),
+                (data.dev_dataset, "dev"),
+                (data.test_dataset, "test"),
+            ):
+                loader = torch.utils.data.DataLoader(
+                    dataset=d,
+                    shuffle=False,
+                    num_workers=self.num_workers,
+                    batch_size=1  #TODO: can we do it batched?
+                )
+                for data in tqdm.tqdm(
+                    loader,
+                    total=len(loader),
+                    desc=f"{name}-{n}",
+                    disable=self.update_frequency == 0
+                ):
+                    #TODO: will be streamlined once we switch to dataclass
+                    index = d.df.index[data[2]]
+                    item_path = d.df.loc[index, d.index_column]
+                    out_path = Path(
+                        dataset["path"],
+                        features_subdir,
+                        os.path.basename(item_path),
+                    ).with_suffix("." + output_file_type)
+                    if os.path.exists(out_path):
+                        continue
+                    output_file_handler.save(
+                        out_path,
+                        pipeline(data[0], 0)  #TODO: why 0?
+                    )
+            # csvs = _get_csvs(dataset["path"])
+            # dfs = _read_csvs(dataset["path"], csvs)
+            # unique_files = _get_unique_files(dfs, dataset["index_column"])
+            # _create_subdirs(
+            #     os.path.join(dataset["path"], dataset["features_subdir"]),
+            #     unique_files,
+            # )
+            # chunks = _split_chunks(unique_files, self.num_workers)
+            # lock = tqdm.get_lock()
+            # with tqdm(
+            #     total=len(unique_files),
+            #     desc=name,
+            #     disable=self.update_frequency == 0,
+            # ) as pbar:
+            #     with ThreadPoolExecutor(self.num_workers) as executor:
+            #         futures = [
+            #             executor.submit(
+            #                 _process_chunk,
+            #                 chunk,
+            #                 dataset,
+            #                 preprocess,
+            #                 pbar,
+            #                 lock,
+            #             )
+            #             for chunk in chunks
+            #         ]
+            #         for future in futures:
+            #             future.result()
 
 
 @catch_cli_errors
