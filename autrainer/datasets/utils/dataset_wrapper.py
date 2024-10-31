@@ -17,9 +17,9 @@ class DatasetWrapper(torch.utils.data.Dataset):
         features_subdir: str,
         index_column: str,
         target_column: Union[str, List[str]],
-        file_type: str,
         file_handler: AbstractFileHandler,
         df: pd.DataFrame,
+        file_type: str = None,
         transform: Optional[SmartCompose] = None,
         target_transform: Optional[AbstractTargetTransform] = None,
     ):
@@ -30,9 +30,12 @@ class DatasetWrapper(torch.utils.data.Dataset):
             features_subdir: Subdirectory containing the features.
             index_column: Index column of the dataframe.
             target_column: Target column of the dataframe.
-            file_type: File type of the features.
             file_handler: File handler to load the data.
             df: Dataframe containing the index and target column(s).
+            file_type: File type of the features. If `None`,
+                will not enforce a file_type. This can be useful
+                in case the dataset contains audio files
+                with different formats. Defualts to `None`.
             transform: Transform to apply to the features. Defaults to None.
             target_transform: Target transform to apply to the target.
                 Defaults to None.
@@ -54,7 +57,8 @@ class DatasetWrapper(torch.utils.data.Dataset):
 
     def _create_file_path(self, file: str) -> str:
         path = Path(self.path, self.features_subdir, file)
-        path = path.with_suffix(f".{self.file_type}")
+        if self.file_type is not None:
+            path = path.with_suffix(f".{self.file_type}")
         return str(path)
 
     def __len__(self) -> int:

@@ -52,6 +52,9 @@ class AbstractDataset(ABC):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
+                If `None`, defaults to audio subdirectory,
+                which is `default` for the standard format,
+                but can be overriden in the dataset specification.
             seed: Seed for reproducibility.
             task: Task of the dataset in
                 :const:`~autrainer.core.constants.TrainingConstants.TASKS`.
@@ -73,9 +76,11 @@ class AbstractDataset(ABC):
             stratify: Columns to stratify the dataset on. Defaults to None.
         """
         self._assert_task(task)
-        self._assert_directory(path, features_subdir)
-        self.path = path
         self.features_subdir = features_subdir
+        if self.features_subdir is None:
+            self.features_subdir = self.audio_subdir
+        self.path = path
+        self._assert_directory(self.path, self.features_subdir)
         self.seed = seed
         self.task = task
         self.metrics = [self._init_metric(m) for m in metrics]
@@ -94,6 +99,16 @@ class AbstractDataset(ABC):
         self._generator = torch.Generator().manual_seed(self.seed)
         self.df_train, self.df_dev, self.df_test = self.load_dataframes()
         self._assert_stratify()
+
+    @property
+    def audio_subdir(self):
+        """Subfolder containing audio data.
+
+        Defaults to `default` for our standard format.
+        Should be overriden for datasets
+        that do not conform to it.
+        """
+        return "default"
 
     @staticmethod
     def _assert_task(task: str) -> None:

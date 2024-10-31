@@ -111,6 +111,11 @@ class AIBO(BaseClassificationDataset):
                 self.df_train, self.train_transform
             )
 
+    @property
+    def audio_subdir(self):
+        """Subfolder containing audio data."""
+        return "wav"
+
     @cached_property
     def _load_df(self, path):
         df = pd.read_csv(

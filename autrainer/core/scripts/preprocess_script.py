@@ -125,29 +125,28 @@ class PreprocessScript(AbstractPreprocessScript):
             if preprocess is None:
                 print("No preprocessing specified. Skipping...")
                 continue
-            # swap dataset handler with preprocessing handler
-            features_subdir = dataset["features_subdir"]
+            # set dataset file handler as output handler
+            # as dataset is already configured
+            # to work with the output of the preprocessing script
             output_file_handler = autrainer.instantiate_shorthand(
                 config=dataset["file_handler"],
                 instance_of=AbstractFileHandler,
             )
             output_file_type = dataset["file_type"]
-            # set features_subdir to None (defaults to audio)
-            # so that iteration takes place over raw data
-            dataset["features_subdir"] = None
+            
+            # override dataset file handling to work with raw audio
             dataset["file_handler"] = preprocess["file_handler"]
-            dataset["file_type"] = preprocess["file_type"]
+            # None allows dataset to work with all audio files
+            dataset["file_type"] = None
+            dataset["seed"] = 0  # ignored
+            dataset["batch_size"] = 8  # ignored
             data = autrainer.instantiate_shorthand(dataset)
-            loader = torch.utils.data.DataLoader(
-                torch.utils.data.ConcatDataset(
-                    data.train_dataset,
-                    data.dev_dataset,
-                    data.test_dataset
-                ),
-                shuffle=False,
-                num_workers=self.num_workers,
-                batch_size=1  #TODO: can we do it batched?
-            )
+            # manually disable dataset transforms
+            data.train_transform = None
+            data.dev_transform = None
+            data.test_transform = None
+            os.makedirs(data.features_subdir, exist_ok=True)
+
             pipeline = SmartCompose(
                 [
                     autrainer.instantiate_shorthand(t)
@@ -175,10 +174,11 @@ class PreprocessScript(AbstractPreprocessScript):
                     index = d.df.index[data[2]]
                     item_path = d.df.loc[index, d.index_column]
                     out_path = Path(
-                        dataset["path"],
-                        features_subdir,
+                        data.path,
+                        data.features_subdir,
                         os.path.basename(item_path),
                     ).with_suffix("." + output_file_type)
+                    os.makedirs(os.path.dirname(out_path), exist_ok=True)
                     if os.path.exists(out_path):
                         continue
                     output_file_handler.save(
