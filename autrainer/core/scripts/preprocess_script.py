@@ -108,7 +108,6 @@ class PreprocessScript(AbstractPreprocessScript):
             )
 
     def _preprocess_datasets(self) -> None:
-        from concurrent.futures import ThreadPoolExecutor
         import os
         from pathlib import Path
 
@@ -117,80 +116,6 @@ class PreprocessScript(AbstractPreprocessScript):
 
         from autrainer.datasets.utils import AbstractFileHandler
         from autrainer.transforms import SmartCompose
-
-        def _get_csvs(path: str) -> List[str]:
-            return [
-                f
-                for f in os.listdir(path)
-                if os.path.isfile(os.path.join(path, f)) and f.endswith(".csv")
-            ]
-
-        def _read_csvs(path: str, files: List[str]) -> List[pd.DataFrame]:
-            return [pd.read_csv(os.path.join(path, f)) for f in files]
-
-        def _get_unique_files(
-            dfs: List[pd.DataFrame],
-            column: str,
-        ) -> List[str]:
-            return pd.concat(dfs, ignore_index=True)[column].unique().tolist()
-
-        def _create_subdirs(path: str, files: List[str]) -> None:
-            dirs = {os.path.dirname(os.path.join(path, f)) for f in files}
-
-            for d in dirs:
-                os.makedirs(d, exist_ok=True)
-
-        def _split_chunks(files: List[str], chunks: int) -> List[List[str]]:
-            if chunks == 1:
-                return [files]
-            avg = len(files) / chunks
-            out = []
-            last = 0
-            while last < len(files):
-                out.append(files[int(last) : int(last + avg)])
-                last += avg
-            return out
-
-        def _process_chunk(
-            chunk: List[str],
-            dataset: dict,
-            preprocess: dict,
-            pbar: tqdm,
-            lock: Any,
-        ) -> None:
-            file_handler = autrainer.instantiate_shorthand(
-                config=preprocess["file_handler"],
-                instance_of=AbstractFileHandler,
-            )
-            output_file_handler = autrainer.instantiate_shorthand(
-                config=dataset["file_handler"],
-                instance_of=AbstractFileHandler,
-            )
-            pipeline = SmartCompose(
-                [
-                    autrainer.instantiate_shorthand(t)
-                    for t in preprocess["pipeline"]
-                ]
-            )
-
-            file_count = 0
-            for file_path in chunk:
-                in_path = Path(dataset["path"], "default", file_path)
-                out_path = Path(
-                    dataset["path"],
-                    dataset["features_subdir"],
-                    file_path,
-                ).with_suffix("." + dataset["file_type"])
-                data = file_handler.load(in_path)
-                data = pipeline(data, 0)
-                output_file_handler.save(out_path, data)
-                del data
-                file_count += 1
-                if file_count % self.update_frequency == 0:
-                    with lock:
-                        pbar.update(self.update_frequency)
-            with lock:
-                pbar.update(file_count % self.update_frequency)
 
         print("Preprocessing datasets...")
         for (name, dataset), preprocess in zip(
@@ -257,36 +182,8 @@ class PreprocessScript(AbstractPreprocessScript):
                         continue
                     output_file_handler.save(
                         out_path,
-                        pipeline(data[0], 0)  #TODO: why 0?
+                        pipeline(data[0], 0)
                     )
-            # csvs = _get_csvs(dataset["path"])
-            # dfs = _read_csvs(dataset["path"], csvs)
-            # unique_files = _get_unique_files(dfs, dataset["index_column"])
-            # _create_subdirs(
-            #     os.path.join(dataset["path"], dataset["features_subdir"]),
-            #     unique_files,
-            # )
-            # chunks = _split_chunks(unique_files, self.num_workers)
-            # lock = tqdm.get_lock()
-            # with tqdm(
-            #     total=len(unique_files),
-            #     desc=name,
-            #     disable=self.update_frequency == 0,
-            # ) as pbar:
-            #     with ThreadPoolExecutor(self.num_workers) as executor:
-            #         futures = [
-            #             executor.submit(
-            #                 _process_chunk,
-            #                 chunk,
-            #                 dataset,
-            #                 preprocess,
-            #                 pbar,
-            #                 lock,
-            #             )
-            #             for chunk in chunks
-            #         ]
-            #         for future in futures:
-            #             future.result()
 
 
 @catch_cli_errors
