@@ -122,6 +122,9 @@ class PreprocessScript(AbstractPreprocessScript):
             self.datasets.items(), self.preprocessing.values()
         ):
             print(f" - {name}")
+            if preprocess is None:
+                print("No preprocessing specified. Skipping...")
+                continue
             # swap dataset handler with preprocessing handler
             features_subdir = dataset["features_subdir"]
             output_file_handler = autrainer.instantiate_shorthand(
@@ -134,8 +137,6 @@ class PreprocessScript(AbstractPreprocessScript):
             dataset["features_subdir"] = None
             dataset["file_handler"] = preprocess["file_handler"]
             dataset["file_type"] = preprocess["file_type"]
-            if preprocess is None:
-                continue
             data = autrainer.instantiate_shorthand(dataset)
             loader = torch.utils.data.DataLoader(
                 torch.utils.data.ConcatDataset(
