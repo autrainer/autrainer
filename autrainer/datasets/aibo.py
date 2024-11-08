@@ -123,9 +123,11 @@ class AIBO(BaseClassificationDataset):
         return "wav"
 
     @cached_property
-    def _load_df(self, path):
+    def _load_df(self) -> pd.DataFrame:
         df = pd.read_csv(
-            os.path.join(path, f"chunk_labels_{self.aibo_task}_corpus.txt"),
+            os.path.join(
+                self.path, f"chunk_labels_{self.aibo_task}_corpus.txt"
+            ),
             header=None,
             sep=" ",
         )
@@ -137,7 +139,7 @@ class AIBO(BaseClassificationDataset):
         return df
 
     @cached_property
-    def train_df(self):
+    def train_df(self) -> pd.DataFrame:
         df = self._load_df()
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
@@ -147,7 +149,7 @@ class AIBO(BaseClassificationDataset):
         return df_train
 
     @cached_property
-    def dev_df(self):
+    def dev_df(self) -> pd.DataFrame:
         df = self._load_df()
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
@@ -155,7 +157,7 @@ class AIBO(BaseClassificationDataset):
         return df_dev
 
     @cached_property
-    def test_df(self):
+    def test_df(self) -> pd.DataFrame:
         df = self._load_df()
         df_test = df.loc[df["school"] == "Mont"]
         return df_test
