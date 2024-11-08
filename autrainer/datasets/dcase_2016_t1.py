@@ -99,15 +99,19 @@ class DCASE2016Task1(BaseClassificationDataset):
 
     @cached_property
     def train_df(self):
-        return pd.read_csv(os.path.join(self.path, f"fold{self.fold}_train.csv"))
+        return pd.read_csv(
+            os.path.join(self.path, f"fold{self.fold}_train.csv")
+        )
 
     @cached_property
     def dev_df(self):
-        return pd.read_csv(os.path.join(self.path, f"fold{self.fold}_evaluate.csv"))
+        return pd.read_csv(
+            os.path.join(self.path, f"fold{self.fold}_evaluate.csv")
+        )
 
     @cached_property
     def test_df(self):
-        return pd.read_csv(os.path.join(self.path, f"test.csv"))
+        return pd.read_csv(os.path.join(self.path, "test.csv"))
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover

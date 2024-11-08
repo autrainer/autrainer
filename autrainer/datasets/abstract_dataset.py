@@ -54,7 +54,7 @@ class AbstractDataset(ABC):
             features_subdir: Subdirectory containing the features.
                 If `None`, defaults to audio subdirectory,
                 which is `default` for the standard format,
-                but can be overriden in the dataset specification.
+                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             task: Task of the dataset in
                 :const:`~autrainer.core.constants.TrainingConstants.TASKS`.
@@ -105,7 +105,7 @@ class AbstractDataset(ABC):
         """Subfolder containing audio data.
 
         Defaults to `default` for our standard format.
-        Should be overriden for datasets
+        Should be overridden for datasets
         that do not conform to it.
         """
         return "default"

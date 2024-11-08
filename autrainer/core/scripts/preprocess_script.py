@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-import torch
-from typing import Any, List, Optional
+from typing import Optional
 
 from omegaconf import DictConfig, OmegaConf
+import torch
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
@@ -111,7 +111,6 @@ class PreprocessScript(AbstractPreprocessScript):
         import os
         from pathlib import Path
 
-        import pandas as pd
         from tqdm import tqdm
 
         from autrainer.datasets.utils import AbstractFileHandler
@@ -133,7 +132,7 @@ class PreprocessScript(AbstractPreprocessScript):
                 instance_of=AbstractFileHandler,
             )
             output_file_type = dataset["file_type"]
-            
+
             # override dataset file handling to work with raw audio
             dataset["file_handler"] = preprocess["file_handler"]
             # None allows dataset to work with all audio files
@@ -162,15 +161,15 @@ class PreprocessScript(AbstractPreprocessScript):
                     dataset=d,
                     shuffle=False,
                     num_workers=self.num_workers,
-                    batch_size=1  #TODO: can we do it batched?
+                    batch_size=1,  # TODO: can we do it batched?
                 )
                 for data in tqdm.tqdm(
                     loader,
                     total=len(loader),
                     desc=f"{name}-{n}",
-                    disable=self.update_frequency == 0
+                    disable=self.update_frequency == 0,
                 ):
-                    #TODO: will be streamlined once we switch to dataclass
+                    # TODO: will be streamlined once we switch to dataclass
                     index = d.df.index[data[2]]
                     item_path = d.df.loc[index, d.index_column]
                     out_path = Path(
@@ -181,10 +180,7 @@ class PreprocessScript(AbstractPreprocessScript):
                     os.makedirs(os.path.dirname(out_path), exist_ok=True)
                     if os.path.exists(out_path):
                         continue
-                    output_file_handler.save(
-                        out_path,
-                        pipeline(data[0], 0)
-                    )
+                    output_file_handler.save(out_path, pipeline(data[0], 0))
 
 
 @catch_cli_errors

@@ -1,6 +1,6 @@
 from functools import cached_property
 import os
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -139,15 +139,13 @@ class AIBO(BaseClassificationDataset):
             df_train_dev["speaker"].isin(speakers[:-2])
         ]
         return df_train
-    
+
     @cached_property
     def dev_df(self):
         df = self._load_df()
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
-        df_dev = df_train_dev.loc[
-            df_train_dev["speaker"].isin(speakers[-2:])
-        ]
+        df_dev = df_train_dev.loc[df_train_dev["speaker"].isin(speakers[-2:])]
         return df_dev
 
     @cached_property

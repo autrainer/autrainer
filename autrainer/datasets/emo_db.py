@@ -1,7 +1,7 @@
 from functools import cached_property
 import os
 import shutil
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -100,7 +100,7 @@ class EmoDB(BaseClassificationDataset):
     @cached_property
     def meta(self):
         return pd.read_csv(os.path.join(self.path, "metadata.csv"))
-    
+
     @cached_property
     def train_df(self):
         return self.meta[self.meta["speaker"].isin(self.train_speakers)]

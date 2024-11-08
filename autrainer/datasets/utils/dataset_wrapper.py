@@ -35,7 +35,7 @@ class DatasetWrapper(torch.utils.data.Dataset):
             file_type: File type of the features. If `None`,
                 will not enforce a file_type. This can be useful
                 in case the dataset contains audio files
-                with different formats. Defualts to `None`.
+                with different formats. Defaults to `None`.
             transform: Transform to apply to the features. Defaults to None.
             target_transform: Target transform to apply to the target.
                 Defaults to None.
