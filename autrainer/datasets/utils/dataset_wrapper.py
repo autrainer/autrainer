@@ -19,7 +19,7 @@ class DatasetWrapper(torch.utils.data.Dataset):
         target_column: Union[str, List[str]],
         file_handler: AbstractFileHandler,
         df: pd.DataFrame,
-        file_type: str = None,
+        file_type: Optional[str] = None,
         transform: Optional[SmartCompose] = None,
         target_transform: Optional[AbstractTargetTransform] = None,
     ):
