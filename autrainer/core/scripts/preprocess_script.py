@@ -139,7 +139,14 @@ class PreprocessScript(AbstractPreprocessScript):
             dataset["file_type"] = None
             dataset["seed"] = 0  # ignored
             dataset["batch_size"] = 8  # ignored
-            data = autrainer.instantiate_shorthand(dataset)
+            _ = dataset.pop("criterion")
+            _ = dataset.pop("transform")
+            features_path = dataset.pop("features_path")
+            features_subdir = dataset["features_subdir"]
+            dataset["features_subdir"] = None
+            data = autrainer.instantiate(dataset)
+            if features_path is None:
+                features_path = data.path
             # manually disable dataset transforms
             data.train_transform = None
             data.dev_transform = None
@@ -162,24 +169,26 @@ class PreprocessScript(AbstractPreprocessScript):
                     num_workers=self.num_workers,
                     batch_size=1,
                 )
-                for data in tqdm.tqdm(
+                for instance in tqdm(
                     loader,
                     total=len(loader),
                     desc=f"{name}-{n}",
                     disable=self.update_frequency == 0,
                 ):
                     # TODO: will be streamlined once we switch to dataclass
-                    index = d.df.index[data[2]]
+                    index = d.df.index[int(instance[2])]
                     item_path = d.df.loc[index, d.index_column]
                     out_path = Path(
-                        data.path,
-                        data.features_subdir,
+                        features_path,
+                        features_subdir,
                         os.path.basename(item_path),
                     ).with_suffix("." + output_file_type)
                     os.makedirs(os.path.dirname(out_path), exist_ok=True)
                     if os.path.exists(out_path):
                         continue
-                    output_file_handler.save(out_path, pipeline(data[0], 0))
+                    output_file_handler.save(
+                        out_path, pipeline(instance[0].squeeze(dim=0), 0)
+                    )
 
 
 @catch_cli_errors
