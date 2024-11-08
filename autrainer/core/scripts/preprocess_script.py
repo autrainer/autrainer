@@ -160,7 +160,7 @@ class PreprocessScript(AbstractPreprocessScript):
                     dataset=d,
                     shuffle=False,
                     num_workers=self.num_workers,
-                    batch_size=1,  # TODO: can we do it batched?
+                    batch_size=1,
                 )
                 for data in tqdm.tqdm(
                     loader,
