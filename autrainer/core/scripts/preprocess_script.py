@@ -144,7 +144,6 @@ class PreprocessScript(AbstractPreprocessScript):
             data.train_transform = None
             data.dev_transform = None
             data.test_transform = None
-            os.makedirs(data.features_subdir, exist_ok=True)
 
             pipeline = SmartCompose(
                 [
