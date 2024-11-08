@@ -808,10 +808,12 @@ class ModularTaskTrainer:
                 # loops over all targets and computes the metric for them
                 for idx, col in enumerate(self.data.target_column):
                     results[metric.name][col] = metric(
-                            tracker.targets[:, idx],
-                            tracker.predictions[:, idx],
-                        )
-            results[metric.name]["all"] = metric(tracker.targets, tracker.predictions)
+                        tracker.targets[:, idx],
+                        tracker.predictions[:, idx],
+                    )
+            results[metric.name]["all"] = metric(
+                tracker.targets, tracker.predictions
+            )
             for s in stratify:
                 if not isinstance(self.data.target_column, list):
                     raise ValueError(
@@ -821,9 +823,9 @@ class ModularTaskTrainer:
                 for v in groundtruth[s].unique():
                     idx = groundtruth.loc[groundtruth[s] == v].index
                     results[metric.name][v] = metric(
-                            tracker.targets[idx],
-                            tracker.predictions[idx],
-                        )
+                        tracker.targets[idx],
+                        tracker.predictions[idx],
+                    )
         return results
 
     @property

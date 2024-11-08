@@ -11,7 +11,7 @@ def _safe_f1_score(
     pos_label=1,
     average="binary",
     sample_weight=None,
-    zero_division="warn"
+    zero_division="warn",
 ):
     multilabel = True
     if (
@@ -29,7 +29,7 @@ def _safe_f1_score(
         pos_label=pos_label,
         average=average,
         sample_weight=sample_weight,
-        zero_division=zero_division
+        zero_division=zero_division,
     )
 
 
