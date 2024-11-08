@@ -126,7 +126,7 @@ class OutputsTracker:
     @property
     @check_saved
     def predictions(self) -> np.ndarray:
-        return self._predictions
+        return np.array(self._predictions)
 
     @property
     @check_saved

@@ -1,5 +1,4 @@
 from copy import deepcopy
-import numpy as np
 import os
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple
@@ -801,8 +800,6 @@ class ModularTaskTrainer:
         TODO: Need to define schema in the docs.
 
         """
-        targets = tracker.targets
-        predictions = np.array(tracker.predictions)
         results = {m.name: {} for m in self.data.metrics}
         for metric in self.data.metrics:
             if isinstance(self.data.target_column, list):
@@ -811,10 +808,10 @@ class ModularTaskTrainer:
                 # loops over all targets and computes the metric for them
                 for idx, col in enumerate(self.data.target_column):
                     results[metric.name][col] = metric(
-                            targets[:, idx],
-                            predictions[:, idx],
+                            tracker.targets[:, idx],
+                            tracker.predictions[:, idx],
                         )
-            results[metric.name]["all"] = metric(targets, predictions)
+            results[metric.name]["all"] = metric(tracker.targets, tracker.predictions)
             for s in stratify:
                 if not isinstance(self.data.target_column, list):
                     raise ValueError(
@@ -824,8 +821,8 @@ class ModularTaskTrainer:
                 for v in groundtruth[s].unique():
                     idx = groundtruth.loc[groundtruth[s] == v].index
                     results[metric.name][v] = metric(
-                            targets[idx],
-                            predictions[idx],
+                            tracker.targets[idx],
+                            tracker.predictions[idx],
                         )
         return results
 
