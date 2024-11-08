@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 import os
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple
@@ -692,7 +693,7 @@ class ModularTaskTrainer:
             )
 
         logging_results = self._disaggregated_evaluation(
-            df=tracker.results_df,
+            tracker=tracker,
             groundtruth=df,
             stratify=self.stratify,
         )
@@ -790,7 +791,7 @@ class ModularTaskTrainer:
             results[metric.name] = metric(tracker.targets, tracker.predictions)
         return results
 
-    def _disaggregated_evaluation(self, df, groundtruth, stratify):
+    def _disaggregated_evaluation(self, tracker, groundtruth, stratify):
         r"""Runs evaluation, optionally disaggregated.
 
         Loops over all metrics, and computes them for dataframe.
@@ -800,34 +801,20 @@ class ModularTaskTrainer:
         TODO: Need to define schema in the docs.
 
         """
-        df = df.set_index(groundtruth.index)
+        targets = tracker.targets
+        predictions = np.array(tracker.predictions)
         results = {m.name: {} for m in self.data.metrics}
         for metric in self.data.metrics:
             if isinstance(self.data.target_column, list):
                 # this handles the case of multi-label classification and
                 # multi-target regression
                 # loops over all targets and computes the metric for them
-                # additionally stores avg. over all labels under "all"
-                total = 0
                 for idx, col in enumerate(self.data.target_column):
-                    if self.data.task == "ml-classification":
-                        res = metric(
-                            groundtruth[col],
-                            df["predictions"].apply(lambda x: int(col in x)),
+                    results[metric.name][col] = metric(
+                            targets[:, idx],
+                            predictions[:, idx],
                         )
-                    else:
-                        res = metric(
-                            groundtruth[col],
-                            df["predictions"].apply(lambda x: x[idx]),
-                        )
-                    results[metric.name][col] = res
-                    total += res
-                total /= len(self.data.target_column)
-                results[metric.name]["all"] = total
-            else:
-                results[metric.name]["all"] = metric(
-                    groundtruth[self.data.target_column], df["predictions"]
-                )
+            results[metric.name]["all"] = metric(targets, predictions)
             for s in stratify:
                 if not isinstance(self.data.target_column, list):
                     raise ValueError(
@@ -837,9 +824,9 @@ class ModularTaskTrainer:
                 for v in groundtruth[s].unique():
                     idx = groundtruth.loc[groundtruth[s] == v].index
                     results[metric.name][v] = metric(
-                        groundtruth.reindex(idx)[self.data.target_column],
-                        df.reindex(idx)["predictions"],
-                    )
+                            targets[idx],
+                            predictions[idx],
+                        )
         return results
 
     @property
