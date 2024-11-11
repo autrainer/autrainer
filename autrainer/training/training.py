@@ -822,9 +822,14 @@ class ModularTaskTrainer:
                     )
                 for v in groundtruth[s].unique():
                     idx = groundtruth.loc[groundtruth[s] == v].index
+                    # Map groundtruth indices to tracker indices
+                    # This accounts for random shuffling
+                    indices = [
+                        i for i, x in enumerate(tracker.indices) if x in idx
+                    ]
                     results[metric.name][v] = metric(
-                        tracker.targets[idx],
-                        tracker.predictions[idx],
+                        tracker.targets[indices],
+                        tracker.predictions[indices],
                     )
         return results
 
