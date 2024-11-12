@@ -122,7 +122,23 @@ class AbstractMetric(ABC):
             True if the first score is better.
         """
 
-    def unitary(self, y_true, y_pred):
+    def unitary(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
+        """Unitary evaluation of metric.
+
+        Metric computed for each individual label
+        in the case of multilabel classification
+        or regression.
+
+        In the default case, computes the metric
+        in the same way as globally.
+
+        Args:
+            y_true: ground truth values.
+            y_pred: prediction values.
+
+        Returns:
+            The unitary score.
+        """
         return self.__call__(y_true, y_pred)
 
 

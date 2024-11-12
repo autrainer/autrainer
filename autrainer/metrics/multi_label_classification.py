@@ -1,3 +1,4 @@
+import numpy as np
 import sklearn.metrics
 
 from .abstract_metric import BaseAscendingMetric
@@ -18,7 +19,19 @@ class MLF1Macro(BaseAscendingMetric):
             average="macro",
         )
 
-    def unitary(self, y_true, y_pred):
+    def unitary(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
+        """Unitary evaluation of metric.
+
+        Metric computed with `average='binary'`
+        i.e. only accounting for positive label.
+
+        Args:
+            y_true: ground truth values.
+            y_pred: prediction values.
+
+        Returns:
+            The unitary score.
+        """
         return float(
             sklearn.metrics.f1_score(
                 y_true=y_true, y_pred=y_pred, average="binary"
@@ -35,7 +48,19 @@ class MLF1Micro(BaseAscendingMetric):
             average="micro",
         )
 
-    def unitary(self, y_true, y_pred):
+    def unitary(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
+        """Unitary evaluation of metric.
+
+        Metric computed with `average='binary'`
+        i.e. only accounting for positive label.
+
+        Args:
+            y_true: ground truth values.
+            y_pred: prediction values.
+
+        Returns:
+            The unitary score.
+        """
         return float(
             sklearn.metrics.f1_score(
                 y_true=y_true, y_pred=y_pred, average="binary"
@@ -52,7 +77,19 @@ class MLF1Weighted(BaseAscendingMetric):
             average="weighted",
         )
 
-    def unitary(self, y_true, y_pred):
+    def unitary(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
+        """Unitary evaluation of metric.
+
+        Metric computed with `average='binary'`
+        i.e. only accounting for positive label.
+
+        Args:
+            y_true: ground truth values.
+            y_pred: prediction values.
+
+        Returns:
+            The unitary score.
+        """
         return float(
             sklearn.metrics.f1_score(
                 y_true=y_true, y_pred=y_pred, average="binary"

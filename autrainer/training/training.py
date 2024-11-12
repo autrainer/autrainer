@@ -27,7 +27,7 @@ from autrainer.transforms import SmartCompose, TransformManager
 
 from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
-from .outputs_tracker import init_trackers
+from .outputs_tracker import OutputsTracker, init_trackers
 from .utils import (
     format_results,
     load_pretrained_model_state,
@@ -790,14 +790,28 @@ class ModularTaskTrainer:
             results[metric.name] = metric(tracker.targets, tracker.predictions)
         return results
 
-    def _disaggregated_evaluation(self, tracker, groundtruth, stratify):
+    def _disaggregated_evaluation(
+        self,
+        tracker: OutputsTracker,
+        groundtruth: pd.DataFrame,
+        stratify: List[str] = None,
+    ) -> Dict:
         r"""Runs evaluation, optionally disaggregated.
 
-        Loops over all metrics, and computes them for dataframe.
-        Allows stratification over a specific variable.
-        Also handles multi-label processing.
-        Returns a dictionary containing all metrics.
-        TODO: Need to define schema in the docs.
+        Computes each metric globally (over all targets)
+        and unitary (over each target).
+        Additionally supports disaggregated evaluations
+        for different values
+        of columns present in the data dataframe.
+
+        Args:
+            tracker: outputs tracker over which to compute metric.
+            groundruth: dataframe with groundtruth data and metadata.
+            stratify: optional list of metadata to run evaluation
+                in stratified manner.
+
+        Returns:
+            Dictionary containing results
 
         """
         results = {m.name: {} for m in self.data.metrics}
