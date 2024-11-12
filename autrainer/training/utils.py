@@ -58,10 +58,10 @@ def disaggregated_evaluation(
                 idx = groundtruth.loc[groundtruth[s] == v].index
                 # Map groundtruth indices to tracker indices
                 # This accounts for random shuffling
-                indices = [i for i, x in enumerate(indices) if x in idx]
+                mapped_indices = [i for i, x in enumerate(indices) if x in idx]
                 results[metric.name][v] = metric(
-                    targets[indices],
-                    predictions[indices],
+                    targets[mapped_indices],
+                    predictions[mapped_indices],
                 )
     return results
 
