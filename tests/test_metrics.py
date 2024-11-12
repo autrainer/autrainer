@@ -158,6 +158,6 @@ class TestAllMetrics:
         self._test_result(m, truth, pred, res)
         for idx in range(truth.shape[1]):
             np.testing.assert_almost_equal(
-                m(truth[:, idx], pred[:, idx]),
+                m.unitary(truth[:, idx], pred[:, idx]),
                 f1_score(truth[:, idx], pred[:, idx]),
             )
