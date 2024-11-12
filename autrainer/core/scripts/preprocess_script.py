@@ -25,6 +25,90 @@ class PreprocessArgs(PreprocessArgs):
     update_frequency: int
 
 
+def preprocess_main(
+    name: str,
+    dataset: DictConfig,
+    preprocess: DictConfig,
+    num_workers: int,
+    update_frequency: int,
+):
+    import os
+    from pathlib import Path
+
+    from tqdm import tqdm
+
+    from autrainer.datasets.utils import AbstractFileHandler
+    from autrainer.transforms import SmartCompose
+
+    print(f" - {name}")
+    if preprocess is None:
+        print("No preprocessing specified. Skipping...")
+        return
+    # set dataset file handler as output handler
+    # as dataset is already configured
+    # to work with the output of the preprocessing script
+    output_file_handler = autrainer.instantiate_shorthand(
+        config=dataset["file_handler"],
+        instance_of=AbstractFileHandler,
+    )
+    output_file_type = dataset["file_type"]
+
+    # override dataset file handling to work with raw audio
+    dataset["file_handler"] = preprocess["file_handler"]
+    # None allows dataset to work with all audio files
+    dataset["file_type"] = None
+    dataset["seed"] = 0  # ignored
+    dataset["batch_size"] = 8  # ignored
+    dataset.pop("criterion")
+    dataset.pop("transform")
+    features_path = dataset.pop("features_path")
+    if features_path is None:
+        features_path = dataset["path"]
+    features_subdir = dataset["features_subdir"]
+
+    dataset["features_subdir"] = None
+    data = autrainer.instantiate(dataset)
+    # manually disable dataset transforms
+    data.train_transform = None
+    data.dev_transform = None
+    data.test_transform = None
+
+    pipeline = SmartCompose(
+        [autrainer.instantiate_shorthand(t) for t in preprocess["pipeline"]]
+    )
+    for d, n in (
+        (data.train_dataset, "train"),
+        (data.dev_dataset, "dev"),
+        (data.test_dataset, "test"),
+    ):
+        loader = torch.utils.data.DataLoader(
+            dataset=d,
+            shuffle=False,
+            num_workers=num_workers,
+            batch_size=1,
+        )
+        for instance in tqdm(
+            loader,
+            total=len(loader),
+            desc=f"{name}-{n}",
+            disable=update_frequency == 0,
+        ):
+            # TODO: will be streamlined once we switch to dataclass
+            index = d.df.index[int(instance[2])]
+            item_path = d.df.loc[index, d.index_column]
+            out_path = Path(
+                features_path,
+                features_subdir,
+                os.path.basename(item_path),
+            ).with_suffix("." + output_file_type)
+            os.makedirs(os.path.dirname(out_path), exist_ok=True)
+            if os.path.exists(out_path):
+                continue
+            output_file_handler.save(
+                out_path, pipeline(instance[0].squeeze(dim=0), 0)
+            )
+
+
 class PreprocessScript(AbstractPreprocessScript):
     def __init__(self) -> None:
         super().__init__(
@@ -108,85 +192,17 @@ class PreprocessScript(AbstractPreprocessScript):
             )
 
     def _preprocess_datasets(self) -> None:
-        import os
-        from pathlib import Path
-
-        from tqdm import tqdm
-
-        from autrainer.datasets.utils import AbstractFileHandler
-        from autrainer.transforms import SmartCompose
-
         print("Preprocessing datasets...")
         for (name, dataset), preprocess in zip(
             self.datasets.items(), self.preprocessing.values()
         ):
-            print(f" - {name}")
-            if preprocess is None:
-                print("No preprocessing specified. Skipping...")
-                continue
-            # set dataset file handler as output handler
-            # as dataset is already configured
-            # to work with the output of the preprocessing script
-            output_file_handler = autrainer.instantiate_shorthand(
-                config=dataset["file_handler"],
-                instance_of=AbstractFileHandler,
+            preprocess_main(
+                name=name,
+                dataset=dataset,
+                preprocess=preprocess,
+                num_workers=self.num_workers,
+                update_frequency=self.update_frequency,
             )
-            output_file_type = dataset["file_type"]
-
-            # override dataset file handling to work with raw audio
-            dataset["file_handler"] = preprocess["file_handler"]
-            # None allows dataset to work with all audio files
-            dataset["file_type"] = None
-            dataset["seed"] = 0  # ignored
-            dataset["batch_size"] = 8  # ignored
-            dataset.pop("criterion")
-            dataset.pop("transform")
-            features_path = dataset.pop("features_path", dataset["path"])
-            features_subdir = dataset["features_subdir"]
-            dataset["features_subdir"] = None
-            data = autrainer.instantiate(dataset)
-            # manually disable dataset transforms
-            data.train_transform = None
-            data.dev_transform = None
-            data.test_transform = None
-
-            pipeline = SmartCompose(
-                [
-                    autrainer.instantiate_shorthand(t)
-                    for t in preprocess["pipeline"]
-                ]
-            )
-            for d, n in (
-                (data.train_dataset, "train"),
-                (data.dev_dataset, "dev"),
-                (data.test_dataset, "test"),
-            ):
-                loader = torch.utils.data.DataLoader(
-                    dataset=d,
-                    shuffle=False,
-                    num_workers=self.num_workers,
-                    batch_size=1,
-                )
-                for instance in tqdm(
-                    loader,
-                    total=len(loader),
-                    desc=f"{name}-{n}",
-                    disable=self.update_frequency == 0,
-                ):
-                    # TODO: will be streamlined once we switch to dataclass
-                    index = d.df.index[int(instance[2])]
-                    item_path = d.df.loc[index, d.index_column]
-                    out_path = Path(
-                        features_path,
-                        features_subdir,
-                        os.path.basename(item_path),
-                    ).with_suffix("." + output_file_type)
-                    os.makedirs(os.path.dirname(out_path), exist_ok=True)
-                    if os.path.exists(out_path):
-                        continue
-                    output_file_handler.save(
-                        out_path, pipeline(instance[0].squeeze(dim=0), 0)
-                    )
 
 
 @catch_cli_errors
