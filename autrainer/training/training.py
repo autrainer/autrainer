@@ -27,8 +27,9 @@ from autrainer.transforms import SmartCompose, TransformManager
 
 from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
-from .outputs_tracker import OutputsTracker, init_trackers
+from .outputs_tracker import init_trackers
 from .utils import (
+    disaggregated_evaluation,
     format_results,
     load_pretrained_model_state,
     load_pretrained_optim_state,
@@ -691,9 +692,13 @@ class ModularTaskTrainer:
                 )
             )
 
-        logging_results = self._disaggregated_evaluation(
-            tracker=tracker,
+        logging_results = disaggregated_evaluation(
+            targets=tracker.targets,
+            predictions=tracker.predictions,
+            indices=tracker.indices,
             groundtruth=df,
+            metrics=self.data.metrics,
+            target_column=self.data.target_column,
             stratify=self.stratify,
         )
         if dev_evaluation:
@@ -788,63 +793,6 @@ class ModularTaskTrainer:
         }
         for metric in self.data.metrics:
             results[metric.name] = metric(tracker.targets, tracker.predictions)
-        return results
-
-    def _disaggregated_evaluation(
-        self,
-        tracker: OutputsTracker,
-        groundtruth: pd.DataFrame,
-        stratify: List[str] = None,
-    ) -> Dict:
-        r"""Runs evaluation, optionally disaggregated.
-
-        Computes each metric globally (over all targets)
-        and unitary (over each target).
-        Additionally supports disaggregated evaluations
-        for different values
-        of columns present in the data dataframe.
-
-        Args:
-            tracker: outputs tracker over which to compute metric.
-            groundruth: dataframe with groundtruth data and metadata.
-            stratify: optional list of metadata to run evaluation
-                in stratified manner.
-
-        Returns:
-            Dictionary containing results
-
-        """
-        results = {m.name: {} for m in self.data.metrics}
-        for metric in self.data.metrics:
-            if isinstance(self.data.target_column, list):
-                # this handles the case of multi-label classification and
-                # multi-target regression
-                # loops over all targets and computes the metric for them
-                for idx, col in enumerate(self.data.target_column):
-                    results[metric.name][col] = metric.unitary(
-                        tracker.targets[:, idx],
-                        tracker.predictions[:, idx],
-                    )
-            results[metric.name]["all"] = metric(
-                tracker.targets, tracker.predictions
-            )
-            for s in stratify:
-                if not isinstance(self.data.target_column, list):
-                    raise ValueError(
-                        "Stratified evaluation not supported for multi-label "
-                        "classification and multi-target regression."
-                    )
-                for v in groundtruth[s].unique():
-                    idx = groundtruth.loc[groundtruth[s] == v].index
-                    # Map groundtruth indices to tracker indices
-                    # This accounts for random shuffling
-                    indices = [
-                        i for i, x in enumerate(tracker.indices) if x in idx
-                    ]
-                    results[metric.name][v] = metric(
-                        tracker.targets[indices],
-                        tracker.predictions[indices],
-                    )
         return results
 
     @property
