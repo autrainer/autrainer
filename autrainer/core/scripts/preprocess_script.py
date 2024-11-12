@@ -139,8 +139,8 @@ class PreprocessScript(AbstractPreprocessScript):
             dataset["file_type"] = None
             dataset["seed"] = 0  # ignored
             dataset["batch_size"] = 8  # ignored
-            _ = dataset.pop("criterion")
-            _ = dataset.pop("transform")
+            dataset.pop("criterion")
+            dataset.pop("transform")
             features_path = dataset.pop("features_path")
             features_subdir = dataset["features_subdir"]
             dataset["features_subdir"] = None
