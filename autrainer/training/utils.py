@@ -27,8 +27,12 @@ def disaggregated_evaluation(
     of columns present in the data dataframe.
 
     Args:
-        tracker: outputs tracker over which to compute metric.
+        targets: array with groundtruth values.
+        predictions: array with model predictions.
+        indices: array tracking initial dataset indices.
         groundruth: dataframe with groundtruth data and metadata.
+        metrics: list of metrics to use for evaluation.
+        target_column: columns to evaluate on.
         stratify: optional list of metadata to run evaluation
             in stratified manner.
 
