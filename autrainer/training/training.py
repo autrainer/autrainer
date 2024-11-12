@@ -807,7 +807,7 @@ class ModularTaskTrainer:
                 # multi-target regression
                 # loops over all targets and computes the metric for them
                 for idx, col in enumerate(self.data.target_column):
-                    results[metric.name][col] = metric(
+                    results[metric.name][col] = metric.unitary(
                         tracker.targets[:, idx],
                         tracker.predictions[:, idx],
                     )

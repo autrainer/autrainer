@@ -122,6 +122,9 @@ class AbstractMetric(ABC):
             True if the first score is better.
         """
 
+    def unitary(self, y_true, y_pred):
+        return self.__call__(y_true, y_pred)
+
 
 class BaseAscendingMetric(AbstractMetric):
     def __init__(
