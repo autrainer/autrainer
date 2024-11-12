@@ -145,8 +145,6 @@ class PreprocessScript(AbstractPreprocessScript):
             features_subdir = dataset["features_subdir"]
             dataset["features_subdir"] = None
             data = autrainer.instantiate(dataset)
-            if features_path is None:
-                features_path = data.path
             # manually disable dataset transforms
             data.train_transform = None
             data.dev_transform = None
