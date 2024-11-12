@@ -141,7 +141,7 @@ class PreprocessScript(AbstractPreprocessScript):
             dataset["batch_size"] = 8  # ignored
             dataset.pop("criterion")
             dataset.pop("transform")
-            features_path = dataset.pop("features_path")
+            features_path = dataset.pop("features_path", dataset["path"])
             features_subdir = dataset["features_subdir"]
             dataset["features_subdir"] = None
             data = autrainer.instantiate(dataset)
