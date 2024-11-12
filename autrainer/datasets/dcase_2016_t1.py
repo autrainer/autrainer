@@ -68,7 +68,7 @@ class DCASE2016Task1(BaseClassificationDataset):
             file_handler: File handler to load the data.
             batch_size: Batch size.
             features_path: Root path to features. Useful
-                when features need to be extracted and store
+                when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to

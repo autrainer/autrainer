@@ -67,7 +67,7 @@ class AbstractDataset(ABC):
             file_handler: File handler to load the data.
             batch_size: Batch size.
             features_path: Root path to features. Useful
-                when features need to be extracted and store
+                when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
@@ -362,7 +362,7 @@ class BaseClassificationDataset(AbstractDataset):
             file_handler: File handler to load the data.
             batch_size: Batch size.
             features_path: Root path to features. Useful
-                when features need to be extracted and store
+                when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
@@ -447,7 +447,7 @@ class BaseMLClassificationDataset(AbstractDataset):
             file_handler: File handler to load the data.
             batch_size: Batch size.
             features_path: Root path to features. Useful
-                when features need to be extracted and store
+                when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
@@ -545,7 +545,7 @@ class BaseRegressionDataset(AbstractDataset):
             file_handler: File handler to load the data.
             batch_size: Batch size.
             features_path: Root path to features. Useful
-                when features need to be extracted and store
+                when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
@@ -621,7 +621,7 @@ class BaseMTRegressionDataset(AbstractDataset):
             file_handler: File handler to load the data.
             batch_size: Batch size.
             features_path: Root path to features. Useful
-                when features need to be extracted and store
+                when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
