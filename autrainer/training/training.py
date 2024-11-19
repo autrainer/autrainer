@@ -29,6 +29,7 @@ from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
 from .outputs_tracker import init_trackers
 from .utils import (
+    disaggregated_evaluation,
     format_results,
     load_pretrained_model_state,
     load_pretrained_optim_state,
@@ -691,9 +692,13 @@ class ModularTaskTrainer:
                 )
             )
 
-        logging_results = self._disaggregated_evaluation(
-            df=tracker.results_df,
+        logging_results = disaggregated_evaluation(
+            targets=tracker.targets,
+            predictions=tracker.predictions,
+            indices=tracker.indices,
             groundtruth=df,
+            metrics=self.data.metrics,
+            target_column=self.data.target_column,
             stratify=self.stratify,
         )
         if dev_evaluation:
@@ -788,58 +793,6 @@ class ModularTaskTrainer:
         }
         for metric in self.data.metrics:
             results[metric.name] = metric(tracker.targets, tracker.predictions)
-        return results
-
-    def _disaggregated_evaluation(self, df, groundtruth, stratify):
-        r"""Runs evaluation, optionally disaggregated.
-
-        Loops over all metrics, and computes them for dataframe.
-        Allows stratification over a specific variable.
-        Also handles multi-label processing.
-        Returns a dictionary containing all metrics.
-        TODO: Need to define schema in the docs.
-
-        """
-        df = df.set_index(groundtruth.index)
-        results = {m.name: {} for m in self.data.metrics}
-        for metric in self.data.metrics:
-            if isinstance(self.data.target_column, list):
-                # this handles the case of multi-label classification and
-                # multi-target regression
-                # loops over all targets and computes the metric for them
-                # additionally stores avg. over all labels under "all"
-                total = 0
-                for idx, col in enumerate(self.data.target_column):
-                    if self.data.task == "ml-classification":
-                        res = metric(
-                            groundtruth[col],
-                            df["predictions"].apply(lambda x: int(col in x)),
-                        )
-                    else:
-                        res = metric(
-                            groundtruth[col],
-                            df["predictions"].apply(lambda x: x[idx]),
-                        )
-                    results[metric.name][col] = res
-                    total += res
-                total /= len(self.data.target_column)
-                results[metric.name]["all"] = total
-            else:
-                results[metric.name]["all"] = metric(
-                    groundtruth[self.data.target_column], df["predictions"]
-                )
-            for s in stratify:
-                if not isinstance(self.data.target_column, list):
-                    raise ValueError(
-                        "Stratified evaluation not supported for multi-label "
-                        "classification and multi-target regression."
-                    )
-                for v in groundtruth[s].unique():
-                    idx = groundtruth.loc[groundtruth[s] == v].index
-                    results[metric.name][v] = metric(
-                        groundtruth.reindex(idx)[self.data.target_column],
-                        df.reindex(idx)["predictions"],
-                    )
         return results
 
     @property

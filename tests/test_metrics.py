@@ -1,9 +1,11 @@
 import logging
-from typing import Type
+from typing import List, Type
 
 import numpy as np
+import numpy.testing
 import pandas as pd
 import pytest
+from sklearn.metrics import f1_score
 
 from autrainer.metrics import (
     CCC,
@@ -19,6 +21,7 @@ from autrainer.metrics import (
     MLF1Micro,
     MLF1Weighted,
 )
+from autrainer.training.utils import disaggregated_evaluation
 
 
 class TestAllMetrics:
@@ -53,6 +56,11 @@ class TestAllMetrics:
                 assert m.get_best(x) == 1, "1 should be the best."
                 assert m.get_best_pos(x) == 0, "1 should be at position 0."
 
+    def _test_result(
+        self, m: AbstractMetric, truth: List, pred: List, res: float
+    ) -> None:
+        np.testing.assert_almost_equal(m(truth, pred), res, 2)
+
     @pytest.mark.parametrize("cls", [Accuracy, F1, UAR, CCC, MAE, MSE, PCC])
     def test_classification_regression_metrics(
         self, cls: Type[AbstractMetric]
@@ -63,12 +71,82 @@ class TestAllMetrics:
         self._test_comparisons(cls())
 
     @pytest.mark.parametrize(
-        "cls",
-        [MLAccuracy, MLF1Macro, MLF1Micro, MLF1Weighted],
+        "cls,truth,pred,res",
+        [
+            (
+                MLAccuracy,
+                np.array([[0, 1], [1, 1]]),
+                np.array([[0, 1], [1, 1]]),
+                1,
+            ),
+            (
+                MLAccuracy,
+                np.array([[0, 1], [1, 1]]),
+                np.array([[1, 0], [0, 0]]),
+                0,
+            ),
+            (
+                MLF1Macro,
+                np.array([[0, 1], [1, 1]]),
+                np.array([[0, 1], [1, 1]]),
+                1,
+            ),
+            (
+                MLF1Macro,
+                np.array([[0, 1], [1, 1]]),
+                np.array([[1, 0], [0, 0]]),
+                0,
+            ),
+            (
+                MLF1Macro,
+                np.array([[0, 1, 1], [1, 1, 1], [0, 0, 1]]),
+                np.array([[1, 0, 1], [0, 1, 1], [0, 0, 1]]),
+                0.55,
+            ),
+            (
+                MLF1Micro,
+                np.array([[0, 1], [1, 1]]),
+                np.array([[0, 1], [1, 1]]),
+                1,
+            ),
+            (
+                MLF1Micro,
+                np.array([[0, 1], [1, 1]]),
+                np.array([[1, 0], [0, 0]]),
+                0,
+            ),
+            (
+                MLF1Micro,
+                np.array([[0, 1, 1], [1, 1, 1], [0, 0, 1]]),
+                np.array([[1, 0, 1], [0, 1, 1], [0, 0, 1]]),
+                0.73,
+            ),
+            (
+                MLF1Weighted,
+                np.array([[0, 1], [1, 1]]),
+                np.array([[0, 1], [1, 1]]),
+                1,
+            ),
+            (
+                MLF1Weighted,
+                np.array([[0, 1], [1, 1]]),
+                np.array([[1, 0], [0, 0]]),
+                0,
+            ),
+            (
+                MLF1Micro,
+                np.array([[0, 1, 1], [1, 1, 1], [0, 0, 1]]),
+                np.array([[1, 0, 1], [0, 1, 1], [0, 0, 1]]),
+                0.72,
+            ),
+        ],
     )
     def test_mlc_metrics(
         self,
         cls: Type[AbstractMetric],
+        truth: np.ndarray,
+        pred: np.ndarray,
+        res: float,
         caplog: pytest.LogCaptureFixture,
     ) -> None:
         self._test_metric(cls())
@@ -77,3 +155,77 @@ class TestAllMetrics:
         assert "Error computing" in caplog.text, "Warning should be logged."
         self._test_starting_metric(cls())
         self._test_comparisons(cls())
+        m = cls()
+        self._test_result(m, truth, pred, res)
+        for idx in range(truth.shape[1]):
+            np.testing.assert_almost_equal(
+                m.unitary(truth[:, idx], pred[:, idx]),
+                f1_score(truth[:, idx], pred[:, idx]),
+            )
+
+    @pytest.mark.parametrize(
+        "targets,predictions,indices,metrics,groundtruth,target_column,stratify,results",
+        [
+            (
+                np.array([0, 1, 2, 3, 4]),
+                np.array([2, 3, 4, 5, 6]),
+                np.array([0, 1, 2, 3, 4]),
+                [MAE()],
+                pd.DataFrame([0, 1, 2, 3, 4], columns=["truth"]),
+                "truth",
+                [],
+                {
+                    "mae": {
+                        "all": 2.0,
+                    }
+                },
+            ),
+            (
+                np.array([0, 1, 2, 3, 4]),
+                np.array([2, 3, 4, 6, 7]),
+                np.array([0, 1, 2, 3, 4]),
+                [MAE()],
+                pd.DataFrame(
+                    [[0, 0], [1, 0], [2, 0], [3, 1], [4, 1]],
+                    columns=["truth", "foo"],
+                ),
+                "truth",
+                ["foo"],
+                {"mae": {"all": 2.4, 0: 2, 1: 3}},
+            ),
+            (
+                np.array([0, 1, 2, 3, 4]),
+                np.array([2, 3, 4, 7, 7]),
+                np.array([0, 3, 4, 1, 2]),
+                [MAE()],
+                pd.DataFrame(
+                    [[0, 0], [1, 0], [2, 0], [3, 1], [4, 1]],
+                    columns=["truth", "foo"],
+                ),
+                "truth",
+                ["foo"],
+                {"mae": {"all": 2.6, 0: 3, 1: 2}},
+            ),
+        ],
+    )
+    def test_disaggregated_evaluation(
+        self,
+        targets,
+        predictions,
+        indices,
+        metrics,
+        groundtruth,
+        target_column,
+        stratify,
+        results,
+    ):
+        res = disaggregated_evaluation(
+            targets=targets,
+            predictions=predictions,
+            indices=indices,
+            metrics=metrics,
+            groundtruth=groundtruth,
+            target_column=target_column,
+            stratify=stratify,
+        )
+        assert res == results

@@ -1,8 +1,73 @@
 import os
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn.common_types
+
+from autrainer.metrics import AbstractMetric
+
+
+def disaggregated_evaluation(
+    targets: np.ndarray,
+    predictions: np.ndarray,
+    indices: np.ndarray,
+    groundtruth: pd.DataFrame,
+    metrics: List[AbstractMetric],
+    target_column: List[str],
+    stratify: List[str] = None,
+) -> Dict:
+    r"""Runs evaluation, optionally disaggregated.
+
+    Computes each metric globally (over all targets)
+    and unitary (over each target).
+    Additionally supports disaggregated evaluations
+    for different values
+    of columns present in the data dataframe.
+
+    Args:
+        targets: array with groundtruth values.
+        predictions: array with model predictions.
+        indices: array tracking initial dataset indices.
+        groundruth: dataframe with groundtruth data and metadata.
+        metrics: list of metrics to use for evaluation.
+        target_column: columns to evaluate on.
+        stratify: optional list of metadata to run evaluation
+            in stratified manner.
+
+    Returns:
+        Dictionary containing results
+
+    """
+    results = {m.name: {} for m in metrics}
+    for metric in metrics:
+        if isinstance(target_column, list):
+            # this handles the case of multi-label classification and
+            # multi-target regression
+            # loops over all targets and computes the metric for them
+            for idx, col in enumerate(target_column):
+                results[metric.name][col] = metric.unitary(
+                    targets[:, idx],
+                    predictions[:, idx],
+                )
+        results[metric.name]["all"] = metric(targets, predictions)
+        for s in stratify:
+            if isinstance(target_column, list):
+                raise ValueError(
+                    "Stratified evaluation not supported for multi-label "
+                    "classification and multi-target regression."
+                )
+            for v in groundtruth[s].unique():
+                idx = groundtruth.loc[groundtruth[s] == v].index
+                # Map groundtruth indices to tracker indices
+                # This accounts for random shuffling
+                mapped_indices = [i for i, x in enumerate(indices) if x in idx]
+                results[metric.name][v] = metric(
+                    targets[mapped_indices],
+                    predictions[mapped_indices],
+                )
+    return results
 
 
 def format_results(
