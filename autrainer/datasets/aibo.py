@@ -134,7 +134,6 @@ class AIBO(BaseClassificationDataset):
         df["file"] = df["id"].apply(lambda x: x + ".wav")
         df["school"] = df["id"].apply(lambda x: x.split("_")[0])
         df["speaker"] = df["id"].apply(lambda x: x.split("_")[1])
-        df = df.set_index("file")
         return df
 
     @cached_property
