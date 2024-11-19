@@ -103,7 +103,6 @@ class AIBO(BaseClassificationDataset):
         self.standardize = standardize
         if self.standardize:
             train_data = torch.cat([x for x, *_ in self.train_dataset])
-            print(train_data.mean(0).shape, train_data.std(0).shape)
             standardizer = Standardizer(
                 mean=train_data.mean(0).tolist(),
                 std=train_data.std(0).tolist(),
