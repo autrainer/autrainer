@@ -139,7 +139,7 @@ class AIBO(BaseClassificationDataset):
 
     @cached_property
     def train_df(self) -> pd.DataFrame:
-        df = self._load_df()
+        df = self._load_df
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
         df_train = df_train_dev.loc[
@@ -149,7 +149,7 @@ class AIBO(BaseClassificationDataset):
 
     @cached_property
     def dev_df(self) -> pd.DataFrame:
-        df = self._load_df()
+        df = self._load_df
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
         df_dev = df_train_dev.loc[df_train_dev["speaker"].isin(speakers[-2:])]
@@ -157,7 +157,7 @@ class AIBO(BaseClassificationDataset):
 
     @cached_property
     def test_df(self) -> pd.DataFrame:
-        df = self._load_df()
+        df = self._load_df
         df_test = df.loc[df["school"] == "Mont"]
         return df_test
 
