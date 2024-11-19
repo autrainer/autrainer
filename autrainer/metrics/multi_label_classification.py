@@ -23,7 +23,7 @@ class MLF1Macro(BaseAscendingMetric):
         """Unitary evaluation of metric.
 
         Metric computed with `average='binary'`
-        i.e. only accounting for positive label.
+        i.e. only accounting for the positive label.
 
         Args:
             y_true: ground truth values.
@@ -52,7 +52,7 @@ class MLF1Micro(BaseAscendingMetric):
         """Unitary evaluation of metric.
 
         Metric computed with `average='binary'`
-        i.e. only accounting for positive label.
+        i.e. only accounting for the positive label.
 
         Args:
             y_true: ground truth values.
@@ -81,7 +81,7 @@ class MLF1Weighted(BaseAscendingMetric):
         """Unitary evaluation of metric.
 
         Metric computed with `average='binary'`
-        i.e. only accounting for positive label.
+        i.e. only accounting for the positive label.
 
         Args:
             y_true: ground truth values.
