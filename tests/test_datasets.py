@@ -1,4 +1,5 @@
 import os
+import random
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
@@ -248,35 +249,84 @@ class TestBaseDatasets(BaseIndividualTempDir):
 
 
 class TestAIBO(BaseIndividualTempDir):
+    @staticmethod
+    def _mock_dataframes(
+        path: str,
+        index_column: str = "file",
+        target_column: str = "target",
+        file_type: str = "npy",
+        num_files: int = 10,
+        task: str = "2cl",
+    ) -> None:
+        os.makedirs(os.path.join(path, "default"), exist_ok=True)
+        df = pd.DataFrame()
+        random.seed(42)
+
+        def school():
+            if random.random() < 0.5:
+                return "Ohm"
+            else:
+                return "Mont"
+
+        df["id"] = [f"{school()}_file{i}" for i in range(num_files)]
+        df[index_column] = df["id"].apply(lambda x: f"{x}.{file_type}")
+        df[target_column] = [i % 10 for i in range(num_files)]
+
+        name = f"chunk_labels_{task}_corpus.txt"
+        df.to_csv(os.path.join(path, name), index=False, header=None, sep=" ")
+
+    @staticmethod
+    def _mock_data(
+        path: str,
+        shape: Tuple[int, ...],
+        features_subdir: str = "default",
+        task: str = "2cl",
+    ) -> None:
+        name = f"chunk_labels_{task}_corpus.txt"
+        df = pd.read_csv(os.path.join(path, name), header=None, sep=" ")
+        for filename in df[0]:
+            np.save(
+                os.path.join(path, features_subdir, filename),
+                np.random.rand(*shape),
+            )
+
+    @staticmethod
+    def _mock_dataset_kwargs() -> dict:
+        return {
+            "path": "data/TestDataset",
+            "features_subdir": "default",
+            "seed": 42,
+            "metrics": ["autrainer.metrics.Accuracy"],
+            "tracking_metric": "autrainer.metrics.Accuracy",
+            "index_column": "file",
+            "target_column": "class",
+            "file_type": "npy",
+            "file_handler": "autrainer.datasets.utils.NumpyFileHandler",
+            "batch_size": 4,
+        }
+
     def test_invalid_aibo_task(self) -> None:
         with pytest.raises(ValueError):
-            AIBO(
-                aibo_task="invalid", **TestBaseDatasets._mock_dataset_kwargs()
-            )
+            AIBO(aibo_task="invalid", **self._mock_dataset_kwargs())
 
     @pytest.mark.parametrize("aibo_task", ["2cl", "5cl"])
     def test_load_dataframes(self, aibo_task: str) -> None:
-        TestBaseDatasets._mock_dataframes(
+        self._mock_dataframes(
             "data/TestDataset",
-            output_files=[
-                f"{s}_{aibo_task}" for s in ["train", "dev", "test"]
-            ],
+            task=aibo_task,
         )
-        AIBO(**TestBaseDatasets._mock_dataset_kwargs(), aibo_task=aibo_task)
+        AIBO(**self._mock_dataset_kwargs(), aibo_task=aibo_task)
 
     def test_standardizer(self) -> None:
-        files = [f"{s}_2cl" for s in ["train", "dev", "test"]]
-        TestBaseDatasets._mock_dataframes(
+        self._mock_dataframes(
             "data/TestDataset",
-            output_files=files,
         )
-        TestBaseDatasets._mock_data(
+        self._mock_data(
             "data/TestDataset",
             (101, 64),
-            output_files=files,
         )
         data = AIBO(
-            **TestBaseDatasets._mock_dataset_kwargs(),
+            **self._mock_dataset_kwargs(),
             standardize=True,
             aibo_task="2cl",
         )
