@@ -114,7 +114,7 @@ class Bookkeeping:
             dataset: Dataset to get the input size from.
             filename: Name of the file to save the summary to.
         """
-        x = np.expand_dims(dataset[0][0], axis=0).shape
+        x = np.expand_dims(dataset[0].features, axis=0).shape
         with open(
             os.path.join(self.output_directory, filename),
             "w",

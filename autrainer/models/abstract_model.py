@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 import audobject
 import torch
 
+from autrainer.datasets.utils.data_struct import Data
+
 
 class AbstractModel(torch.nn.Module, audobject.Object, ABC):
     def __init__(self, output_dim: int) -> None:
@@ -35,3 +37,15 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         Returns:
             Embeddings.
         """
+
+
+class BaseModelWrapper:
+    def __init__(self, model: AbstractModel):
+        self.model = model
+
+    @staticmethod
+    def unwrap_data(data: Data):
+        return data.features
+
+    def __call__(self, data: Data):
+        return self.model(self.unwrap_data(data))

@@ -1,11 +1,12 @@
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
 
 import pandas as pd
 import torch
 
 from autrainer.transforms import SmartCompose
 
+from .data_struct import Data
 from .file_handlers import AbstractFileHandler
 from .target_transforms import AbstractTargetTransform
 
@@ -67,7 +68,7 @@ class DatasetWrapper(torch.utils.data.Dataset):
     def __getitem__(
         self,
         item: int,
-    ) -> Tuple[torch.Tensor, Union[int, torch.Tensor], int]:
+    ) -> Data:
         """Get item from the dataset.
 
         Args:
@@ -89,4 +90,4 @@ class DatasetWrapper(torch.utils.data.Dataset):
         if self.target_transform is not None:
             target = self.target_transform(target)
 
-        return data, target, item
+        return Data(features=data, label=target, index=item)
