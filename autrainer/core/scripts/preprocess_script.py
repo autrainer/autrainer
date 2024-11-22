@@ -186,9 +186,9 @@ class PreprocessScript(AbstractPreprocessScript):
         self._clean_up()
 
     def _assert_num_workers(self, num_workers: int) -> None:
-        if num_workers < 1:
+        if num_workers < 0:
             raise ValueError(
-                f"Number of workers '{num_workers}' must be >= 1."
+                f"Number of workers '{num_workers}' must be >= 0."
             )
 
     def _preprocess_datasets(self) -> None:
