@@ -20,7 +20,7 @@ from autrainer.core.utils import (
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
-from autrainer.datasets.utils import AbstractFileHandler
+from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
 from autrainer.transforms import SmartCompose, TransformManager
@@ -246,7 +246,7 @@ class ModularTaskTrainer:
         _preprocess_pipe = SmartCompose([])
         _file_handler = self.data.file_handler
         _features_subdir = cfg.dataset.get("features_subdir", "default")
-        if _features_subdir != "default":
+        if not isinstance(self.data.file_handler, AudioFileHandler):
             _preprocess = OmegaConf.to_container(
                 hydra.compose(f"preprocessing/{_features_subdir}")
             )["preprocessing"]
