@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Type
 
 import pandas as pd
 import torch
-from torch.utils.data import default_collate
 from torchvision.transforms import v2
 
 from .abstract_augmentation import AbstractAugmentation
@@ -38,7 +37,9 @@ class BaseMixUpCutMix(AbstractAugmentation):
         self.augmentation_class = augmentation_class
         self.alpha = alpha
 
-    def get_collate_fn(self, data: "AbstractDataset") -> Callable:
+    def get_collate_fn(
+        self, data: "AbstractDataset", default: Callable
+    ) -> Callable:
         if data.output_dim <= 1:
             raise ValueError(
                 f"{self.augmentation_class.__name__} "
@@ -52,12 +53,12 @@ class BaseMixUpCutMix(AbstractAugmentation):
             batch: List[Tuple[torch.Tensor, int, int]],
         ) -> List[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
             probability = torch.rand(1, generator=self.g).item()
+            batched = default(batch)
             if probability < self.p:
-                return self.augmentation(*default_collate(batch))
-
-            batched = default_collate(batch)
-            batched[1] = torch.nn.functional.one_hot(
-                batched[1], data.output_dim
+                augmented = type(batched)(**self.augmentation(vars(batched)))
+                return augmented
+            batched.labels = torch.nn.functional.one_hot(
+                batched.labels, data.output_dim
             ).float()
             return batched
 
