@@ -130,7 +130,7 @@ class LEAFNet(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.leaf(x)
 
-    def forward(self, x: torch.Tensor):
+    def _forward(self, x: torch.Tensor):
         x = self.leaf(x)
         x = x.unsqueeze(1)
         x = self.classifier(x)
@@ -388,7 +388,7 @@ class GaborFilterbank(nn.Module):
             torch.full((n_filters,), float(pool_init))
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         # compute filters
         center_freqs = self.center_freqs.clamp(min=0.0, max=np.pi)
         z = np.sqrt(2 * np.log(2)) / np.pi
@@ -465,7 +465,7 @@ class PCEN(nn.Module):
         self.eps = torch.as_tensor(eps)
         self.clamp = clamp
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         # clamp if needed
         if self.clamp is not None:
             x = x.clamp(min=self.clamp)
@@ -562,7 +562,7 @@ class LeafIs(nn.Module):
             )
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         while x.ndim < 3:
             x = x[:, np.newaxis]
         x = self.filterbank(x)
