@@ -23,7 +23,7 @@ from autrainer.datasets import AbstractDataset
 from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
 from autrainer.datasets.utils.data_struct import Data
 from autrainer.loggers import AbstractLogger
-from autrainer.models import AbstractModel, BaseModelWrapper
+from autrainer.models import AbstractModel
 from autrainer.transforms import SmartCompose, TransformManager
 
 from .callback_manager import CallbackManager
@@ -139,13 +139,12 @@ class ModularTaskTrainer:
 
         # ? Load Model
         self.output_dim = self.data.output_dim
-        self.model = BaseModelWrapper(
-            autrainer.instantiate(
-                config=model_config,
-                instance_of=AbstractModel,
-                output_dim=self.output_dim,
-            )
+        self.model = autrainer.instantiate(
+            config=model_config,
+            instance_of=AbstractModel,
+            output_dim=self.output_dim,
         )
+
         if model_checkpoint:
             state_dict = torch.load(
                 model_checkpoint,
@@ -153,20 +152,20 @@ class ModularTaskTrainer:
                 weights_only=True,
             )
             load_pretrained_model_state(
-                self.model.model,
+                self.model,
                 state_dict,
                 skip_last_layer,
             )
 
         self.bookkeeping.save_model_summary(
-            self.model.model, self.data.train_dataset, "model_summary.txt"
+            self.model, self.data.train_dataset, "model_summary.txt"
         )
 
         # ? Load Optimizer
         self.optimizer = autrainer.instantiate(
             config=self.cfg.optimizer,
             instance_of=torch.optim.Optimizer,
-            params=self.model.model.parameters(),
+            params=self.model.parameters(),
             lr=self.cfg.learning_rate,
         )
         if optimizer_checkpoint:
@@ -220,7 +219,7 @@ class ModularTaskTrainer:
 
         # ? Save initial (and best) Model, Optimizer and Encoder State
         self.bookkeeping.create_folder("_initial")
-        self.bookkeeping.save_state(self.model.model, "model.pt", "_initial")
+        self.bookkeeping.save_state(self.model, "model.pt", "_initial")
         self.bookkeeping.save_state(self.optimizer, "optimizer.pt", "_initial")
         if self.scheduler:
             self.bookkeeping.save_state(
@@ -228,7 +227,7 @@ class ModularTaskTrainer:
             )
 
         self.bookkeeping.create_folder("_best")
-        self.bookkeeping.save_state(self.model.model, "model.pt", "_best")
+        self.bookkeeping.save_state(self.model, "model.pt", "_best")
         self.bookkeeping.save_state(self.optimizer, "optimizer.pt", "_best")
         if self.scheduler:
             self.bookkeeping.save_state(
@@ -238,7 +237,7 @@ class ModularTaskTrainer:
         self.bookkeeping.save_audobject(
             self.target_transform, "target_transform.yaml"
         )
-        self.bookkeeping.save_audobject(self.model.model, "model.yaml")
+        self.bookkeeping.save_audobject(self.model, "model.yaml")
         self.bookkeeping.save_audobject(
             self.data.test_transform, "inference_transform.yaml"
         )
@@ -389,10 +388,10 @@ class ModularTaskTrainer:
             )
 
         # ? Score best model on test set
-        self.bookkeeping.load_state(self.model.model, "model.pt", "_best")
+        self.bookkeeping.load_state(self.model, "model.pt", "_best")
         self.bookkeeping.load_state(self.optimizer, "optimizer.pt", "_best")
-        self.model.model.to(self.DEVICE)
-        self.model.model.eval()
+        self.model.to(self.DEVICE)
+        self.model.eval()
         self.bookkeeping.create_folder("_test")
         self.test_timer.start()
         test_results = self.evaluate(
@@ -461,8 +460,8 @@ class ModularTaskTrainer:
             )
             epoch_folder = f"epoch_{epoch}"
             self.bookkeeping.create_folder(epoch_folder)
-            self.model.model.train()
-            self.model.model.to(self.DEVICE)
+            self.model.train()
+            self.model.to(self.DEVICE)
             for batch_idx, (data) in enumerate(
                 tqdm(
                     self.train_loader,
@@ -551,8 +550,8 @@ class ModularTaskTrainer:
         while step < self.cfg.iterations:
             step += 1
             pbar.update(1)
-            self.model.model.train()
-            self.model.model.to(self.DEVICE)
+            self.model.train()
+            self.model.to(self.DEVICE)
             try:
                 data, target, sample_idx = next(self.train_loader_iter)
             except StopIteration:
@@ -675,8 +674,8 @@ class ModularTaskTrainer:
             trainer=self,
             **kwargs,
         )
-        self.model.model.eval()
-        self.model.model.to(self.DEVICE)
+        self.model.eval()
+        self.model.to(self.DEVICE)
         results = self._evaluate(
             loader=loader,
             tracker=tracker,
@@ -733,7 +732,7 @@ class ModularTaskTrainer:
         ):
             self.max_dev_metric = results[self.data.tracking_metric.name]
             self.best_iteration = iteration
-            self.bookkeeping.save_state(self.model.model, "model.pt", "_best")
+            self.bookkeeping.save_state(self.model, "model.pt", "_best")
             self.bookkeeping.save_state(
                 self.optimizer, "optimizer.pt", "_best"
             )
@@ -753,7 +752,7 @@ class ModularTaskTrainer:
             or iteration == self.cfg.iterations
         ):
             self.bookkeeping.save_state(
-                self.model.model, "model.pt", iteration_folder
+                self.model, "model.pt", iteration_folder
             )
             self.bookkeeping.save_state(
                 self.optimizer, "optimizer.pt", iteration_folder

@@ -31,7 +31,7 @@ class W2V2Backbone(AbstractModel):
             x = x.mean(1)
         return x
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.embeddings(x)
 
 
@@ -79,5 +79,5 @@ class W2V2FFNN(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.backbone(x.squeeze(1))
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.frontend(self.embeddings(x))

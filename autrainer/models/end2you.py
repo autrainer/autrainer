@@ -157,7 +157,7 @@ class Base(nn.Module):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.network(x)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.embeddings(x)
 
 
@@ -210,7 +210,7 @@ class Emo18(nn.Module):
 
         return audio_model, num_out_features
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.model(x)
 
 
@@ -258,7 +258,7 @@ class Zhao19(nn.Module):
 
         return audio_model, out_channels[-1]
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.model(x)
 
 
@@ -288,7 +288,7 @@ class AudioModel(nn.Module):
 
         return {"emo18": Emo18, "zhao19": Zhao19}[model_name]
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.model(x)
 
 
@@ -345,7 +345,7 @@ class AudioRNNModel(AbstractModel):
 
         return rnn_out
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
             x ((torch.Tensor) - BS x S x 1 x T)

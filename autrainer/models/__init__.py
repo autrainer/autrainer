@@ -1,4 +1,4 @@
-from .abstract_model import AbstractModel, BaseModelWrapper
+from .abstract_model import AbstractModel
 from .ast_model import ASTModel
 from .cnn_10 import Cnn10
 from .cnn_14 import Cnn14
@@ -17,7 +17,6 @@ __all__ = [
     "AbstractModel",
     "ASTModel",
     "AudioRNNModel",
-    "BaseModelWrapper",
     "Cnn10",
     "Cnn14",
     "FFNN",

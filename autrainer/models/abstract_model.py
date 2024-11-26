@@ -16,8 +16,7 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         super().__init__()
         self.output_dim = output_dim
 
-    @abstractmethod
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Data) -> torch.Tensor:
         """Forward pass of the model.
 
         Args:
@@ -26,6 +25,7 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         Returns:
             Output tensor.
         """
+        return self._forward(x.features)
 
     @abstractmethod
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
@@ -37,15 +37,3 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         Returns:
             Embeddings.
         """
-
-
-class BaseModelWrapper:
-    def __init__(self, model: AbstractModel):
-        self.model = model
-
-    @staticmethod
-    def unwrap_data(data: Data):
-        return data.features
-
-    def __call__(self, data: Data):
-        return self.model(self.unwrap_data(data))
