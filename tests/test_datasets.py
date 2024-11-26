@@ -258,9 +258,9 @@ class TestBaseDatasets(BaseIndividualTempDir):
         ), "Should be an instance of DataLoader."
 
         for loader in [data.train_loader, data.dev_loader, data.test_loader]:
-            x, y, _ = next(iter(loader))
-            assert x.shape == (4, 101, 64), "Should be (4, 101, 64)."
-            assert y.shape == y_shape, f"Should be {y_shape}."
+            x = next(iter(loader))
+            assert x.features.shape == (4, 101, 64), "Should be (4, 101, 64)."
+            assert x.target.shape == y_shape, f"Should be {y_shape}."
 
 
 class TestAIBO(BaseIndividualTempDir):
@@ -548,9 +548,9 @@ class TestToyDataset(BaseIndividualTempDir):
         assert len(data.dev_dataset) == 20, "Should be 20."
         assert len(data.test_dataset) == 20, "Should be 20."
 
-        x, y, _ = next(iter(data.train_loader))
-        assert x.shape == (4, 101, 64), "Should be (4, 101, 64)."
-        assert y.shape == y_shape, f"Should be {y_shape}."
+        x = next(iter(data.train_loader))
+        assert x.features.shape == (4, 101, 64), "Should be (4, 101, 64)."
+        assert x.target.shape == y_shape, f"Should be {y_shape}."
 
     @pytest.mark.parametrize("dtype", ["float32", "uint8"])
     def test_dtype(self, dtype: str) -> None:
