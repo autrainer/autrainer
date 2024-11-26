@@ -486,7 +486,7 @@ class ModularTaskTrainer:
                     self.scheduler.step()
                 if self.train_tracker:
                     self.train_tracker.update(
-                        o, data.label.cpu(), data.index.cpu()
+                        o, data.target.cpu(), data.index.cpu()
                     )
                 self.callback_manager.callback(
                     position="cb_on_step_end",
@@ -578,7 +578,7 @@ class ModularTaskTrainer:
             if self.scheduler and self.scheduler_frequency == "batch":
                 self.scheduler.step()
             if self.train_tracker:
-                self.train_tracker.update(o, data.label, data.index)
+                self.train_tracker.update(o, data.target, data.index)
             self.callback_manager.callback(
                 position="cb_on_step_end",
                 trainer=self,
@@ -637,7 +637,7 @@ class ModularTaskTrainer:
     ) -> Tuple[float, torch.Tensor]:
         self.optimizer.zero_grad()
         output = model(data)
-        loss = criterion(probabilities_fn(output), data.label)
+        loss = criterion(probabilities_fn(output), data.target)
         loss.backward()
         self.optimizer.step()
         return loss.item(), output.detach()
@@ -788,12 +788,12 @@ class ModularTaskTrainer:
                 loss += (
                     self.criterion(
                         probabilities_fn(output),
-                        data.label,
+                        data.target,
                     )
                     .cpu()
                     .item()
                 )
-                tracker.update(output, data.label.cpu(), data.index.cpu())
+                tracker.update(output, data.target.cpu(), data.index.cpu())
                 self.callback_manager.callback(
                     position=f"cb_on_{cb_type}_step_end",
                     trainer=self,

@@ -123,7 +123,7 @@ class Bookkeeping:
                 self.model = model
 
             def forward(self, x: torch.Tensor):
-                return self.model(Data(features=x, label=None, index=None))
+                return self.model(Data(features=x, target=None, index=None))
 
         with open(
             os.path.join(self.output_directory, filename),

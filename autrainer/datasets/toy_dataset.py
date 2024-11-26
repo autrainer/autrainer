@@ -64,7 +64,7 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
             img = self.transform(data, index=index)
         if self.target_transform:
             target = self.target_transform(target)
-        return Data(features=img, label=target, index=index)
+        return Data(features=img, target=target, index=index)
 
 
 class ToyDataset(AbstractDataset):
