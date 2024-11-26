@@ -105,7 +105,7 @@ class AIBO(BaseClassificationDataset):
         )
         self.standardize = standardize
         if self.standardize:
-            train_data = torch.cat([x for x, *_ in self.train_dataset])
+            train_data = torch.cat([x.features for x in self.train_dataset])
             standardizer = Standardizer(
                 mean=train_data.mean(0).tolist(),
                 std=train_data.std(0).tolist(),
