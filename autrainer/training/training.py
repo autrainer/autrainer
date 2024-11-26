@@ -246,7 +246,10 @@ class ModularTaskTrainer:
         _preprocess_pipe = SmartCompose([])
         _file_handler = self.data.file_handler
         _features_subdir = cfg.dataset.get("features_subdir", "default")
-        if not isinstance(self.data.file_handler, AudioFileHandler):
+        if (
+            not isinstance(self.data.file_handler, AudioFileHandler)
+            and _features_subdir != "default"
+        ):
             _preprocess = OmegaConf.to_container(
                 hydra.compose(f"preprocessing/{_features_subdir}")
             )["preprocessing"]
