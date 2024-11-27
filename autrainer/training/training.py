@@ -154,6 +154,9 @@ class ModularTaskTrainer:
                 state_dict,
                 skip_last_layer,
             )
+        self.bookkeeping.save_dataset_summary(
+            self.data, "dataset_summary.csv"
+        )
         self.bookkeeping.save_model_summary(
             self.model, self.train_dataset, "model_summary.txt"
         )
