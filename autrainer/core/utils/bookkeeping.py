@@ -114,13 +114,19 @@ class Bookkeeping:
             filename: Name of the file to save the overview to.
         """
         if val_exists:
-            split_datasets = [data.train_dataset, data.val_dataset, data.test_dataset]
+            split_datasets = [
+                data.train_dataset,
+                data.val_dataset,
+                data.test_dataset,
+            ]
             index = ["Train", "Development", "Test", "Total"]
         else:
             split_datasets = [data.train_dataset, data.test_dataset]
             index = ["Train", "Test", "Total"]
         n_samples = []
-        if isinstance(data, BaseClassificationDataset) or isinstance(data, BaseMLClassificationDataset):
+        if isinstance(data, BaseClassificationDataset) or isinstance(
+            data, BaseMLClassificationDataset
+        ):
             n_classes = []
             n_majority_class = []
             n_minority_class = []
@@ -130,7 +136,7 @@ class Bookkeeping:
             std_label = []
             max_value = []
             min_value = []
-        
+
         data_dfs = [dataset.df for dataset in split_datasets]
         aggregated_data_df = pd.concat(data_dfs, axis=0, ignore_index=True)
         data_dfs.append(aggregated_data_df)
@@ -155,20 +161,34 @@ class Bookkeeping:
                 std_label.append(label_values.std())
                 max_value.append(label_values.max())
                 min_value.append(label_values.min())
-        if isinstance(data, BaseClassificationDataset) or isinstance(data, BaseMLClassificationDataset):
+        if isinstance(data, BaseClassificationDataset) or isinstance(
+            data, BaseMLClassificationDataset
+        ):
             data_overview_df = pd.DataFrame(
-                {"n_samples": n_samples, "n_classes": n_classes, "n_majority_class": n_majority_class, 
-                "n_minority_class": n_minority_class, "imbalance_ratio": class_imbalance},
-                index=index) 
+                {
+                    "n_samples": n_samples,
+                    "n_classes": n_classes,
+                    "n_majority_class": n_majority_class,
+                    "n_minority_class": n_minority_class,
+                    "imbalance_ratio": class_imbalance,
+                },
+                index=index,
+            )
         elif isinstance(data, BaseRegressionDataset):
             data_overview_df = pd.DataFrame(
-                {"n_samples": n_samples, "mean_label": mean_label, "std_label": std_label, 
-                "max_value": max_value, "min_value": min_value},
-                index=index)
+                {
+                    "n_samples": n_samples,
+                    "mean_label": mean_label,
+                    "std_label": std_label,
+                    "max_value": max_value,
+                    "min_value": min_value,
+                },
+                index=index,
+            )
         else:
             data_overview_df = pd.DataFrame(
-                {"n_samples": n_samples},
-                index=index)
+                {"n_samples": n_samples}, index=index
+            )
         data_overview_df.to_csv(os.path.join(self.output_directory, filename))
 
     def save_model_summary(
