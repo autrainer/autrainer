@@ -28,6 +28,7 @@ from autrainer.augmentations import (
     TorchvisionAugmentation,
 )
 from autrainer.augmentations.image_augmentations import BaseMixUpCutMix
+from autrainer.datasets.utils.dataloader import default_data_collator
 from autrainer.transforms import SmartCompose
 
 
@@ -233,16 +234,24 @@ class TestBaseMixUpCutMix:
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_invalid_dataset(self, aug: Type[BaseMixUpCutMix]) -> None:
         with pytest.raises(ValueError):
-            aug().get_collate_fn(self.regression_dataset)
+            aug().get_collate_fn(
+                self.regression_dataset, default=default_data_collator
+            )
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_collate_fn(self, aug: Type[BaseMixUpCutMix]) -> None:
-        self._test_collate(aug().get_collate_fn(self.classification_dataset))
+        self._test_collate(
+            aug().get_collate_fn(
+                self.classification_dataset, default=default_data_collator
+            )
+        )
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_collate_identity(self, aug: Type[BaseMixUpCutMix]) -> None:
         (x_in, y_in, idx_in), (x_out, y_out, idx_out) = self._test_collate(
-            aug(p=0).get_collate_fn(self.classification_dataset)
+            aug(p=0).get_collate_fn(
+                self.classification_dataset, default=default_data_collator
+            )
         )
         assert torch.allclose(x_in, x_out), "Should be the same"
         assert torch.allclose(y_in, y_out), "Should be the same"
