@@ -46,6 +46,7 @@ class Cnn14(AbstractModel):
         if self.transfer is not None:
             import numpy as np
             from numpy.core.multiarray import _reconstruct
+
             # add globals temporarily
             torch.serialization.add_safe_globals(
                 [_reconstruct, np.ndarray, np.dtype, np.dtypes.Int64DType]
