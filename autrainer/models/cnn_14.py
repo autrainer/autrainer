@@ -44,7 +44,14 @@ class Cnn14(AbstractModel):
 
         self.init_weight()
         if self.transfer is not None:
+            import numpy as np
+            from numpy.core.multiarray import _reconstruct
+            # add globals temporarily
+            torch.serialization.add_safe_globals(
+                [_reconstruct, np.ndarray, np.dtype, np.dtypes.Int64DType]
+            )
             load_transfer_weights(self, self.transfer)
+            torch.serialization.clear_safe_globals()
 
     def init_weight(self) -> None:
         init_bn(self.bn0)
