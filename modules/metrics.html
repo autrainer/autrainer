@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=6c02275b"></script>
+    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -490,6 +490,31 @@ The <code class="xref py py-attr docutils literal notranslate"><span class="pre"
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.metrics.AbstractMetric.unitary">
+<span class="sig-name descname"><span class="pre">unitary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/metrics/abstract_metric.html#AbstractMetric.unitary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.AbstractMetric.unitary" title="Link to this definition">#</a></dt>
+<dd><p>Unitary evaluation of metric.</p>
+<p>Metric computed for each individual label
+in the case of multilabel classification
+or regression.</p>
+<p>In the default case, computes the metric
+in the same way as globally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – ground truth values.</p></li>
+<li><p><strong>y_pred</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – prediction values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The unitary score.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -593,35 +618,6 @@ the fallback value is set to 1e32. Defaults to None.</p></li>
 </dd></dl>
 
 </section>
-<section id="regression-metrics">
-<h2>Regression Metrics<a class="headerlink" href="#regression-metrics" title="Link to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="autrainer.metrics.CCC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.metrics.</span></span><span class="sig-name descname"><span class="pre">CCC</span></span><a class="reference internal" href="../_modules/autrainer/metrics/regression.html#CCC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.CCC" title="Link to this definition">#</a></dt>
-<dd><p>Concordance correlation coefficient metric using
-<cite>audmetric.concordance_cc</cite>.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="autrainer.metrics.MAE">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.metrics.</span></span><span class="sig-name descname"><span class="pre">MAE</span></span><a class="reference internal" href="../_modules/autrainer/metrics/regression.html#MAE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.MAE" title="Link to this definition">#</a></dt>
-<dd><p>Mean absolute error metric using <cite>audmetric.mean_absolute_error</cite>.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="autrainer.metrics.MSE">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.metrics.</span></span><span class="sig-name descname"><span class="pre">MSE</span></span><a class="reference internal" href="../_modules/autrainer/metrics/regression.html#MSE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.MSE" title="Link to this definition">#</a></dt>
-<dd><p>Mean squared error metric using <cite>audmetric.mean_squared_error</cite>.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="autrainer.metrics.PCC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.metrics.</span></span><span class="sig-name descname"><span class="pre">PCC</span></span><a class="reference internal" href="../_modules/autrainer/metrics/regression.html#PCC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.PCC" title="Link to this definition">#</a></dt>
-<dd><p>Pearson correlation coefficient metric using
-<cite>audmetric.pearson_cc</cite>.</p>
-</dd></dl>
-
-</section>
 <section id="multi-label-classification-metrics">
 <h2>Multi-label Classification Metrics<a class="headerlink" href="#multi-label-classification-metrics" title="Link to this heading">#</a></h2>
 <dl class="py class">
@@ -646,6 +642,41 @@ the fallback value is set to 1e32. Defaults to None.</p></li>
 <dt class="sig sig-object py" id="autrainer.metrics.MLF1Weighted">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.metrics.</span></span><span class="sig-name descname"><span class="pre">MLF1Weighted</span></span><a class="reference internal" href="../_modules/autrainer/metrics/multi_label_classification.html#MLF1Weighted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.MLF1Weighted" title="Link to this definition">#</a></dt>
 <dd><p>F1 weighted metric using <cite>sklearn.metrics.f1_score</cite>.</p>
+</dd></dl>
+
+</section>
+<section id="multi-target-regression-metrics">
+<h2>(Multi-target) Regression Metrics<a class="headerlink" href="#multi-target-regression-metrics" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.metrics.CCC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.metrics.</span></span><span class="sig-name descname"><span class="pre">CCC</span></span><a class="reference internal" href="../_modules/autrainer/metrics/regression.html#CCC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.CCC" title="Link to this definition">#</a></dt>
+<dd><p>Concordance correlation coefficient metric using
+<cite>audmetric.concordance_cc</cite> for (multi-target) regression. The metric is
+calculated for each target separately and the mean is returned.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.metrics.MAE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.metrics.</span></span><span class="sig-name descname"><span class="pre">MAE</span></span><a class="reference internal" href="../_modules/autrainer/metrics/regression.html#MAE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.MAE" title="Link to this definition">#</a></dt>
+<dd><p>Mean absolute error metric using <cite>audmetric.mean_absolute_error</cite>
+for (multi-target) regression. The metric is calculated for each
+target separately and the mean is returned.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.metrics.MSE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.metrics.</span></span><span class="sig-name descname"><span class="pre">MSE</span></span><a class="reference internal" href="../_modules/autrainer/metrics/regression.html#MSE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.MSE" title="Link to this definition">#</a></dt>
+<dd><p>Mean squared error metric using <cite>audmetric.mean_squared_error</cite>
+for (multi-target) regression. The metric is calculated for each
+target separately and the mean is returned.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.metrics.PCC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.metrics.</span></span><span class="sig-name descname"><span class="pre">PCC</span></span><a class="reference internal" href="../_modules/autrainer/metrics/regression.html#PCC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.metrics.PCC" title="Link to this definition">#</a></dt>
+<dd><p>Pearson correlation coefficient metric using
+<cite>audmetric.pearson_cc</cite> for (multi-target) regression. The metric is
+calculated for each target separately and the mean is returned.</p>
 </dd></dl>
 
 </section>
@@ -681,6 +712,7 @@ the fallback value is set to 1e32. Defaults to None.</p></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.AbstractMetric.get_best"><code class="docutils literal notranslate"><span class="pre">AbstractMetric.get_best()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.AbstractMetric.get_best_pos"><code class="docutils literal notranslate"><span class="pre">AbstractMetric.get_best_pos()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.AbstractMetric.compare"><code class="docutils literal notranslate"><span class="pre">AbstractMetric.compare()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.AbstractMetric.unitary"><code class="docutils literal notranslate"><span class="pre">AbstractMetric.unitary()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.BaseAscendingMetric"><code class="docutils literal notranslate"><span class="pre">BaseAscendingMetric</span></code></a><ul class="nav section-nav flex-column">
@@ -701,18 +733,18 @@ the fallback value is set to 1e32. Defaults to None.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.F1"><code class="docutils literal notranslate"><span class="pre">F1</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regression-metrics">Regression Metrics</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.CCC"><code class="docutils literal notranslate"><span class="pre">CCC</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.MAE"><code class="docutils literal notranslate"><span class="pre">MAE</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.MSE"><code class="docutils literal notranslate"><span class="pre">MSE</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.PCC"><code class="docutils literal notranslate"><span class="pre">PCC</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-label-classification-metrics">Multi-label Classification Metrics</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.MLAccuracy"><code class="docutils literal notranslate"><span class="pre">MLAccuracy</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.MLF1Macro"><code class="docutils literal notranslate"><span class="pre">MLF1Macro</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.MLF1Micro"><code class="docutils literal notranslate"><span class="pre">MLF1Micro</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.MLF1Weighted"><code class="docutils literal notranslate"><span class="pre">MLF1Weighted</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-target-regression-metrics">(Multi-target) Regression Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.CCC"><code class="docutils literal notranslate"><span class="pre">CCC</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.MAE"><code class="docutils literal notranslate"><span class="pre">MAE</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.MSE"><code class="docutils literal notranslate"><span class="pre">MSE</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.metrics.PCC"><code class="docutils literal notranslate"><span class="pre">PCC</span></code></a></li>
 </ul>
 </li>
 </ul>

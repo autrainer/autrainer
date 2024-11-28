@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=6c02275b"></script>
+    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -384,6 +384,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">.continue_training</span> <span class="kn">import</span> <span class="n">ContinueTraining</span>
 <span class="kn">from</span> <span class="nn">.outputs_tracker</span> <span class="kn">import</span> <span class="n">init_trackers</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">disaggregated_evaluation</span><span class="p">,</span>
     <span class="n">format_results</span><span class="p">,</span>
     <span class="n">load_pretrained_model_state</span><span class="p">,</span>
     <span class="n">load_pretrained_optim_state</span><span class="p">,</span>
@@ -1053,9 +1054,13 @@ document.write(`
                 <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="n">logging_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disaggregated_evaluation</span><span class="p">(</span>
-            <span class="n">df</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">results_df</span><span class="p">,</span>
+        <span class="n">logging_results</span> <span class="o">=</span> <span class="n">disaggregated_evaluation</span><span class="p">(</span>
+            <span class="n">targets</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">targets</span><span class="p">,</span>
+            <span class="n">predictions</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span>
             <span class="n">groundtruth</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
+            <span class="n">target_column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
             <span class="n">stratify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stratify</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
@@ -1151,49 +1156,6 @@ document.write(`
         <span class="p">}</span>
         <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
             <span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric</span><span class="p">(</span><span class="n">tracker</span><span class="o">.</span><span class="n">targets</span><span class="p">,</span> <span class="n">tracker</span><span class="o">.</span><span class="n">predictions</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">results</span>
-
-    <span class="k">def</span> <span class="nf">_disaggregated_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">groundtruth</span><span class="p">,</span> <span class="n">stratify</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Runs evaluation, optionally disaggregated.</span>
-
-<span class="sd">        Loops over all metrics, and computes them for dataframe.</span>
-<span class="sd">        Allows stratification over a specific variable.</span>
-<span class="sd">        Also handles multi-label processing.</span>
-<span class="sd">        Returns a dictionary containing all metrics.</span>
-<span class="sd">        TODO: Need to define schema in the docs.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">groundtruth</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="c1"># this handles the case of multilabel classification</span>
-                <span class="c1"># loops over all targets and computes the metric for them</span>
-                <span class="c1"># additionally stores avg. over all labels under &quot;all&quot;</span>
-                <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">:</span>
-                    <span class="n">res</span> <span class="o">=</span> <span class="n">metric</span><span class="p">(</span>
-                        <span class="n">groundtruth</span><span class="p">[</span><span class="n">col</span><span class="p">],</span>
-                        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;predictions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">col</span> <span class="ow">in</span> <span class="n">x</span><span class="p">)),</span>
-                    <span class="p">)</span>
-                    <span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
-                    <span class="n">total</span> <span class="o">+=</span> <span class="n">res</span>
-                <span class="n">total</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">)</span>
-                <span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric</span><span class="p">(</span>
-                    <span class="n">groundtruth</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;predictions&quot;</span><span class="p">]</span>
-                <span class="p">)</span>
-            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stratify</span><span class="p">:</span>
-                <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span> <span class="nb">list</span>
-                <span class="p">),</span> <span class="s2">&quot;Multilabel classification and stratified evaluation not supported.&quot;</span>
-                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">groundtruth</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
-                    <span class="n">idx</span> <span class="o">=</span> <span class="n">groundtruth</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">groundtruth</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
-                    <span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric</span><span class="p">(</span>
-                        <span class="n">groundtruth</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">idx</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">],</span>
-                        <span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">idx</span><span class="p">)[</span><span class="s2">&quot;predictions&quot;</span><span class="p">],</span>
-                    <span class="p">)</span>
         <span class="k">return</span> <span class="n">results</span>
 
     <span class="nd">@property</span>

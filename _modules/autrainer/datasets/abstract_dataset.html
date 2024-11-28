@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=6c02275b"></script>
+    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -375,6 +375,7 @@ document.write(`
     <span class="n">LabelEncoder</span><span class="p">,</span>
     <span class="n">MinMaxScaler</span><span class="p">,</span>
     <span class="n">MultiLabelEncoder</span><span class="p">,</span>
+    <span class="n">MultiTargetMinMaxScaler</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -491,14 +492,14 @@ document.write(`
 <span class="sd">            Target transform.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="nd">@property</span>
-    <span class="nd">@abstractmethod</span>
+    <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">output_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the output dimension of the dataset.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Output dimension.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_init_metric</span><span class="p">(</span><span class="n">metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AbstractMetric</span><span class="p">:</span>
@@ -728,15 +729,6 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="p">)</span>
 
-    <span class="nd">@cached_property</span>
-    <span class="k">def</span> <span class="nf">output_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the output dimension of the dataset.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Number of classes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_assert_dev_split</span><span class="p">(</span><span class="n">dev_split</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">dev_split</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -841,16 +833,7 @@ document.write(`
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">target_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiLabelEncoder</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">MultiLabelEncoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">)</span>
-
-    <span class="nd">@cached_property</span>
-    <span class="k">def</span> <span class="nf">output_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the output dimension of the dataset.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Number of classes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">MultiLabelEncoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">)</span></div>
 
 
 
@@ -923,16 +906,80 @@ document.write(`
             <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
             <span class="n">minimum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
             <span class="n">maximum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="BaseMTRegressionDataset">
+<a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.BaseMTRegressionDataset">[docs]</a>
+<span class="k">class</span> <span class="nc">BaseMTRegressionDataset</span><span class="p">(</span><span class="n">AbstractDataset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">features_subdir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
+        <span class="n">tracking_metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+        <span class="n">index_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">target_column</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">file_handler</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">inference_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">train_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dev_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">test_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">stratify</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Base multi-target regression dataset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path: Root path to the dataset.</span>
+<span class="sd">            features_subdir: Subdirectory containing the features.</span>
+<span class="sd">            seed: Seed for reproducibility.</span>
+<span class="sd">            metrics: List of metrics to calculate.</span>
+<span class="sd">            tracking_metric: Metric to track.</span>
+<span class="sd">            index_column: Index column of the dataframe.</span>
+<span class="sd">            target_column: Target column of the dataframe.</span>
+<span class="sd">            file_type: File type of the features.</span>
+<span class="sd">            file_handler: File handler to load the data.</span>
+<span class="sd">            batch_size: Batch size.</span>
+<span class="sd">            inference_batch_size: Inference batch size. If None, defaults to</span>
+<span class="sd">                batch_size. Defaults to None.</span>
+<span class="sd">            train_transform: Transform to apply to the training set.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">            dev_transform: Transform to apply to the development set.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">            test_transform: Transform to apply to the test set.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">            stratify: Columns to stratify the dataset on. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+            <span class="n">features_subdir</span><span class="o">=</span><span class="n">features_subdir</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+            <span class="n">tracking_metric</span><span class="o">=</span><span class="n">tracking_metric</span><span class="p">,</span>
+            <span class="n">index_column</span><span class="o">=</span><span class="n">index_column</span><span class="p">,</span>
+            <span class="n">target_column</span><span class="o">=</span><span class="n">target_column</span><span class="p">,</span>
+            <span class="n">file_type</span><span class="o">=</span><span class="n">file_type</span><span class="p">,</span>
+            <span class="n">file_handler</span><span class="o">=</span><span class="n">file_handler</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">inference_batch_size</span><span class="o">=</span><span class="n">inference_batch_size</span><span class="p">,</span>
+            <span class="n">train_transform</span><span class="o">=</span><span class="n">train_transform</span><span class="p">,</span>
+            <span class="n">dev_transform</span><span class="o">=</span><span class="n">dev_transform</span><span class="p">,</span>
+            <span class="n">test_transform</span><span class="o">=</span><span class="n">test_transform</span><span class="p">,</span>
+            <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@cached_property</span>
-    <span class="k">def</span> <span class="nf">output_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the output dimension of the dataset.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Always 1 for regression tasks.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="mi">1</span></div>
+    <span class="k">def</span> <span class="nf">target_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiTargetMinMaxScaler</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">MultiTargetMinMaxScaler</span><span class="p">(</span>
+            <span class="n">targets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
+            <span class="n">minimum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+            <span class="n">maximum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+        <span class="p">)</span></div>
 
 </pre></div>
 

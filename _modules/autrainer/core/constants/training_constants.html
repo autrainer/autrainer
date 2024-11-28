@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=6c02275b"></script>
+    <script src="../../../../_static/documentation_options.js?v=1dd76d02"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -364,13 +364,18 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Singleton for managing the training configurations of `autrainer`.&quot;&quot;&quot;</span>
 
     <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;TrainingConstants&quot;</span>
-    <span class="n">_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span> <span class="s2">&quot;regression&quot;</span><span class="p">,</span> <span class="s2">&quot;ml-classification&quot;</span><span class="p">]</span>
+    <span class="n">_tasks</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ml-classification&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mt-regression&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">TASKS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the supported training tasks.</span>
-<span class="sd">        Defaults to :attr:`[&quot;classification&quot;, &quot;regression&quot;,</span>
-<span class="sd">        &quot;ml-classification&quot;]`.</span>
+<span class="sd">        Defaults to :attr:`[&quot;classification&quot;, &quot;ml-classification&quot;,</span>
+<span class="sd">        &quot;regression&quot;, &quot;mt-regression&quot;]`.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Supported training tasks.</span>

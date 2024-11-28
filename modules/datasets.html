@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=6c02275b"></script>
+    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -464,7 +464,7 @@ Defaults to None.</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="autrainer.datasets.AbstractDataset.output_dim">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_dim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#autrainer.datasets.AbstractDataset.output_dim" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_dim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#autrainer.datasets.AbstractDataset.output_dim" title="Link to this definition">#</a></dt>
 <dd><p>Get the output dimension of the dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -632,17 +632,6 @@ Defaults to None.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="autrainer.datasets.BaseClassificationDataset.output_dim">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_dim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#autrainer.datasets.BaseClassificationDataset.output_dim" title="Link to this definition">#</a></dt>
-<dd><p>Get the output dimension of the dataset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Number of classes.</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -682,17 +671,6 @@ Defaults to None.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Target transform.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="autrainer.datasets.BaseMLClassificationDataset.output_dim">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_dim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#autrainer.datasets.BaseMLClassificationDataset.output_dim" title="Link to this definition">#</a></dt>
-<dd><p>Get the output dimension of the dataset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Number of classes.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -739,13 +717,44 @@ Defaults to None.</p></li>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.datasets.BaseMTRegressionDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.datasets.</span></span><span class="sig-name descname"><span class="pre">BaseMTRegressionDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features_subdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dev_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/datasets/abstract_dataset.html#BaseMTRegressionDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.datasets.BaseMTRegressionDataset" title="Link to this definition">#</a></dt>
+<dd><p>Base multi-target regression dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Root path to the dataset.</p></li>
+<li><p><strong>features_subdir</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Subdirectory containing the features.</p></li>
+<li><p><strong>seed</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Seed for reproducibility.</p></li>
+<li><p><strong>metrics</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DictConfig</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]]</span>) – List of metrics to calculate.</p></li>
+<li><p><strong>tracking_metric</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DictConfig</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]</span>) – Metric to track.</p></li>
+<li><p><strong>index_column</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Index column of the dataframe.</p></li>
+<li><p><strong>target_column</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Target column of the dataframe.</p></li>
+<li><p><strong>file_type</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – File type of the features.</p></li>
+<li><p><strong>file_handler</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DictConfig</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]</span>) – File handler to load the data.</p></li>
+<li><p><strong>batch_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Batch size.</p></li>
+<li><p><strong>inference_batch_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – Inference batch size. If None, defaults to
+batch_size. Defaults to None.</p></li>
+<li><p><strong>train_transform</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="transforms.html#autrainer.transforms.SmartCompose" title="autrainer.transforms.smart_compose.SmartCompose"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmartCompose</span></code></a>]</span>) – Transform to apply to the training set.
+Defaults to None.</p></li>
+<li><p><strong>dev_transform</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="transforms.html#autrainer.transforms.SmartCompose" title="autrainer.transforms.smart_compose.SmartCompose"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmartCompose</span></code></a>]</span>) – Transform to apply to the development set.
+Defaults to None.</p></li>
+<li><p><strong>test_transform</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="transforms.html#autrainer.transforms.SmartCompose" title="autrainer.transforms.smart_compose.SmartCompose"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmartCompose</span></code></a>]</span>) – Transform to apply to the test set.
+Defaults to None.</p></li>
+<li><p><strong>stratify</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Columns to stratify the dataset on. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py property">
-<dt class="sig sig-object py" id="autrainer.datasets.BaseRegressionDataset.output_dim">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_dim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#autrainer.datasets.BaseRegressionDataset.output_dim" title="Link to this definition">#</a></dt>
-<dd><p>Get the output dimension of the dataset.</p>
+<dt class="sig sig-object py" id="autrainer.datasets.BaseMTRegressionDataset.target_transform">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_transform</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MultiTargetMinMaxScaler</span></em><a class="headerlink" href="#autrainer.datasets.BaseMTRegressionDataset.target_transform" title="Link to this definition">#</a></dt>
+<dd><p>Get the transform to apply to the target.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Always 1 for regression tasks.</p>
+<dd class="field-odd"><p>Target transform.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -760,7 +769,8 @@ Defaults to None.</p></li>
 <p class="admonition-title">Note</p>
 <p>To easily test implementations, multiple toy dataset configurations across modalities and tasks are provided.
 We offer <code class="xref py py-attr docutils literal notranslate"><span class="pre">ToyAudio-...</span></code> for audio, <code class="xref py py-attr docutils literal notranslate"><span class="pre">ToyImage-...</span></code> for image, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">ToyTabular-...</span></code> for tabular data, respectively.
-For each dataset, we provide a task <code class="xref py py-attr docutils literal notranslate"><span class="pre">-R</span></code> for regression, <code class="xref py py-attr docutils literal notranslate"><span class="pre">-C</span></code> for classification and <code class="xref py py-attr docutils literal notranslate"><span class="pre">-MLC</span></code> for multi-label classification.</p>
+For each dataset, we provide a task <code class="xref py py-attr docutils literal notranslate"><span class="pre">-R</span></code> for regression, <code class="xref py py-attr docutils literal notranslate"><span class="pre">-C</span></code> for classification, <code class="xref py py-attr docutils literal notranslate"><span class="pre">-MLC</span></code> for multi-label classification,
+and <code class="xref py py-attr docutils literal notranslate"><span class="pre">-MTR</span></code> for multi-target regression.</p>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.datasets.ToyDataset">
@@ -769,8 +779,8 @@ For each dataset, we provide a task <code class="xref py py-attr docutils litera
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>task</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Task of the dataset in [‘classification’, ‘regression’,
-‘ml-classification’].</p></li>
+<li><p><strong>task</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Task of the dataset in [“classification”, “regression”,
+“ml-classification”, “mt-regression”].</p></li>
 <li><p><strong>size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Size of the dataset.</p></li>
 <li><p><strong>num_targets</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of targets.</p></li>
 <li><p><strong>feature_shape</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]</span>) – Shape of the features.</p></li>
@@ -835,6 +845,29 @@ Defaults to None.</p></li>
 <span class="linenos">15</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MLF1Macro</span>
 <span class="linenos">16</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MLF1Weighted</span>
 <span class="linenos">17</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MLF1Weighted</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">20</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-toyaudio-mtr">
+<div class='code-block-caption'><span class='caption-text'>conf/dataset/ToyAudio-MTR.yaml</span><a class='headerlink' href='#default-toyaudio-mtr' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyAudio-MTR</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.datasets.ToyDataset</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="nt">task</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mt-regression</span>
+<span class="linenos"> 5</span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="linenos"> 6</span><span class="nt">num_targets</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="linenos"> 7</span><span class="nt">feature_shape</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">48000</span><span class="p p-Indicator">]</span>
+<span class="linenos"> 8</span><span class="nt">dev_split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="linenos"> 9</span><span class="nt">test_split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">criterion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.criterions.MSELoss</span>
+<span class="linenos">12</span><span class="nt">metrics</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.PCC</span>
+<span class="linenos">14</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.CCC</span>
+<span class="linenos">15</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MSE</span>
+<span class="linenos">16</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MAE</span>
+<span class="linenos">17</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.PCC</span>
 <span class="linenos">18</span>
 <span class="linenos">19</span><span class="nt">transform</span><span class="p">:</span>
 <span class="linenos">20</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
@@ -921,6 +954,35 @@ Defaults to None.</p></li>
 <span class="linenos">26</span><span class="w">        </span><span class="nt">std</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.229</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.224</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.225</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
+</div><div class="literal-block-wrapper docutils container" id="default-toyimage-mtr">
+<div class='code-block-caption'><span class='caption-text'>conf/dataset/ToyImage-MTR.yaml</span><a class='headerlink' href='#default-toyimage-mtr' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyImage-MTR</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.datasets.ToyDataset</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="nt">task</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mt-regression</span>
+<span class="linenos"> 5</span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="linenos"> 6</span><span class="nt">num_targets</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="linenos"> 7</span><span class="nt">feature_shape</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">3</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">64</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">64</span><span class="p p-Indicator">]</span>
+<span class="linenos"> 8</span><span class="nt">dev_split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="linenos"> 9</span><span class="nt">test_split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="linenos">10</span><span class="nt">dtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uint8</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="nt">criterion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.criterions.MSELoss</span>
+<span class="linenos">13</span><span class="nt">metrics</span><span class="p">:</span>
+<span class="linenos">14</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.PCC</span>
+<span class="linenos">15</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.CCC</span>
+<span class="linenos">16</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MSE</span>
+<span class="linenos">17</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MAE</span>
+<span class="linenos">18</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.PCC</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">21</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image</span>
+<span class="linenos">22</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">23</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.transforms.ScaleRange</span>
+<span class="linenos">24</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.Normalize</span><span class="p">:</span>
+<span class="linenos">25</span><span class="w">        </span><span class="nt">mean</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.485</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.456</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.406</span><span class="p p-Indicator">]</span>
+<span class="linenos">26</span><span class="w">        </span><span class="nt">std</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.229</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.224</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.225</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
 </div><div class="literal-block-wrapper docutils container" id="default-toyimage-r">
 <div class='code-block-caption'><span class='caption-text'>conf/dataset/ToyImage-R.yaml</span><a class='headerlink' href='#default-toyimage-r' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyImage-R</span>
 <span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.datasets.ToyDataset</span>
@@ -991,6 +1053,29 @@ Defaults to None.</p></li>
 <span class="linenos">15</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MLF1Macro</span>
 <span class="linenos">16</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MLF1Weighted</span>
 <span class="linenos">17</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MLF1Weighted</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">20</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-toytabular-mtr">
+<div class='code-block-caption'><span class='caption-text'>conf/dataset/ToyTabular-MTR.yaml</span><a class='headerlink' href='#default-toytabular-mtr' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyTabular-MTR</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.datasets.ToyDataset</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="nt">task</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mt-regression</span>
+<span class="linenos"> 5</span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="linenos"> 6</span><span class="nt">num_targets</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="linenos"> 7</span><span class="nt">feature_shape</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
+<span class="linenos"> 8</span><span class="nt">dev_split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="linenos"> 9</span><span class="nt">test_split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">criterion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.criterions.MSELoss</span>
+<span class="linenos">12</span><span class="nt">metrics</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.PCC</span>
+<span class="linenos">14</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.CCC</span>
+<span class="linenos">15</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MSE</span>
+<span class="linenos">16</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.MAE</span>
+<span class="linenos">17</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.PCC</span>
 <span class="linenos">18</span>
 <span class="linenos">19</span><span class="nt">transform</span><span class="p">:</span>
 <span class="linenos">20</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
@@ -2179,17 +2264,18 @@ Defaults to None.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#base-datasets">Base Datasets</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseClassificationDataset"><code class="docutils literal notranslate"><span class="pre">BaseClassificationDataset</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseClassificationDataset.target_transform"><code class="docutils literal notranslate"><span class="pre">BaseClassificationDataset.target_transform</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseClassificationDataset.output_dim"><code class="docutils literal notranslate"><span class="pre">BaseClassificationDataset.output_dim</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseMLClassificationDataset"><code class="docutils literal notranslate"><span class="pre">BaseMLClassificationDataset</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseMLClassificationDataset.target_transform"><code class="docutils literal notranslate"><span class="pre">BaseMLClassificationDataset.target_transform</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseMLClassificationDataset.output_dim"><code class="docutils literal notranslate"><span class="pre">BaseMLClassificationDataset.output_dim</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseRegressionDataset"><code class="docutils literal notranslate"><span class="pre">BaseRegressionDataset</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseRegressionDataset.target_transform"><code class="docutils literal notranslate"><span class="pre">BaseRegressionDataset.target_transform</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseRegressionDataset.output_dim"><code class="docutils literal notranslate"><span class="pre">BaseRegressionDataset.output_dim</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseMTRegressionDataset"><code class="docutils literal notranslate"><span class="pre">BaseMTRegressionDataset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.datasets.BaseMTRegressionDataset.target_transform"><code class="docutils literal notranslate"><span class="pre">BaseMTRegressionDataset.target_transform</span></code></a></li>
 </ul>
 </li>
 </ul>
