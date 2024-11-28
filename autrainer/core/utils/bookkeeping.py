@@ -11,13 +11,14 @@ import torch
 from torchinfo import summary
 import yaml
 
-from autrainer.metrics import AbstractMetric
-
 from autrainer.datasets import (
     BaseClassificationDataset,
     BaseMLClassificationDataset,
     BaseRegressionDataset,
 )
+from autrainer.metrics import AbstractMetric
+
+
 if TYPE_CHECKING:
     from autrainer.datasets import AbstractDataset  # pragma: no cover
 
