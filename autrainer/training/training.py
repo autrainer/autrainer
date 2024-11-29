@@ -333,19 +333,23 @@ class ModularTaskTrainer:
         )
 
         # ? Create Outputs Tracker
-        self.train_tracker, self.dev_tracker, self.test_tracker = (
-            init_trackers(
-                exports=[
-                    self.cfg.save_train_outputs,
-                    self.cfg.save_dev_outputs,
-                    self.cfg.save_test_outputs,
-                ],
-                prefixes=["train", "dev", "test"],
+        self.dev_tracker, self.test_tracker = init_trackers(
+            exports=[self.cfg.save_dev_outputs, self.cfg.save_test_outputs],
+            prefixes=["dev", "test"],
+            data=self.data,
+            criterion=self.criterion,
+            bookkeeping=self.bookkeeping,
+        )
+        if self.cfg.save_train_outputs:
+            self.train_tracker = init_trackers(
+                exports=[True],
+                prefixes=["train"],
                 data=self.data,
                 criterion=self.criterion,
                 bookkeeping=self.bookkeeping,
             )
-        )
+        else:
+            self.train_tracker = None
 
     def train(self) -> float:
         """Train the model.
@@ -475,7 +479,8 @@ class ModularTaskTrainer:
                 )
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
-                self.train_tracker.update(o, target, sample_idx)
+                if self.train_tracker:
+                    self.train_tracker.update(o, target, sample_idx)
                 self.callback_manager.callback(
                     position="cb_on_step_end",
                     trainer=self,
@@ -488,7 +493,8 @@ class ModularTaskTrainer:
                 if self.scheduler and self.scheduler_frequency == "evaluation":
                     self.scheduler.step()
                 self.train_timer.stop()
-                self.train_tracker.save(epoch_folder)
+                if self.train_tracker:
+                    self.train_tracker.save(epoch_folder)
                 train_loss = sum(train_loss) / len(train_loss)
                 self.metrics.loc[epoch, "train_loss"] = train_loss
                 self.dev_timer.start()
@@ -565,7 +571,8 @@ class ModularTaskTrainer:
             )
             if self.scheduler and self.scheduler_frequency == "batch":
                 self.scheduler.step()
-            self.train_tracker.update(o, target, sample_idx)
+            if self.train_tracker:
+                self.train_tracker.update(o, target, sample_idx)
             self.callback_manager.callback(
                 position="cb_on_step_end",
                 trainer=self,
@@ -580,7 +587,8 @@ class ModularTaskTrainer:
                 self.train_timer.stop()
                 step_folder = f"step_{step}"
                 self.bookkeeping.create_folder(step_folder)
-                self.train_tracker.save(step_folder)
+                if self.train_tracker:
+                    self.train_tracker.save(step_folder)
                 train_loss = sum(train_loss) / len(train_loss)
                 self.metrics.loc[step, "train_loss"] = train_loss
                 self.dev_timer.start()
