@@ -347,7 +347,7 @@ class ModularTaskTrainer:
                 data=self.data,
                 criterion=self.criterion,
                 bookkeeping=self.bookkeeping,
-            )
+            )[0]
         else:
             self.train_tracker = None
 
