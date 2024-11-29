@@ -140,7 +140,7 @@ def init_trackers(
     data: AbstractDataset,
     criterion: DictConfig,
     bookkeeping: Bookkeeping = None,
-) -> OutputsTracker:
+) -> List[OutputsTracker]:
     trackers = []
     for export, prefix in zip(exports, prefixes):
         trackers.append(
