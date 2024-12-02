@@ -55,10 +55,14 @@ class BaseMixUpCutMix(AbstractAugmentation):
             probability = torch.rand(1, generator=self.g).item()
             batched = default(batch)
             if probability < self.p:
-                augmented = type(batched)(**self.augmentation(vars(batched)))
-                return augmented
-            batched.labels = torch.nn.functional.one_hot(
-                batched.labels, data.output_dim
+                features = batched.features
+                target = batched.target
+                results = self.augmentation(features, target)
+                batched.features = results[0]
+                batched.target = results[1]
+                return batched
+            batched.target = torch.nn.functional.one_hot(
+                batched.target, data.output_dim
             ).float()
             return batched
 
