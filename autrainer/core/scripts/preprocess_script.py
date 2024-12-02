@@ -81,6 +81,8 @@ def preprocess_main(
         (data.dev_dataset, "dev"),
         (data.test_dataset, "test"),
     ):
+        # TODO: dataloader underutilized
+        # workers only parallelize loading
         loader = torch.utils.data.DataLoader(
             dataset=d,
             shuffle=False,
@@ -129,12 +131,12 @@ class PreprocessScript(AbstractPreprocessScript):
             "-n",
             "--num-workers",
             type=int,
-            default=1,
+            default=0,
             metavar="N",
             required=False,
             help=(
-                "Number of workers (threads) to use for preprocessing. "
-                "Defaults to 1."
+                "Number of workers (subprocesses) to use for preprocessing. "
+                "Defaults to 0."
             ),
         )
         self.parser.add_argument(
@@ -145,7 +147,7 @@ class PreprocessScript(AbstractPreprocessScript):
             metavar="F",
             required=False,
             help=(
-                "Frequency of progress bar updates for each worker (thread). "
+                "Frequency of progress bar updates for each worker (subprocess). "
                 "If 0, the progress bar will be disabled. Defaults to 1."
             ),
         )
@@ -219,10 +221,10 @@ def preprocess(
     Args:
         override_kwargs: Additional Hydra override arguments to pass to the
             train script.
-        num_workers: Number of workers (threads) to use for preprocessing.
+        num_workers: Number of workers (subprocess) to use for preprocessing.
             Defaults to 1.
         update_frequency: Frequency of progress bar updates for each worker
-            (thread). If 0, the progress bar will be disabled. Defaults to 1.
+            (subprocess). If 0, the progress bar will be disabled. Defaults to 0.
         cfg_launcher: Use the launcher specified in the configuration instead
             of the Hydra basic launcher. Defaults to False.
         config_name: The name of the config (usually the file name without the
