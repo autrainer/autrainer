@@ -602,4 +602,4 @@ class OpenSMILE(AbstractTransform):
 
     def __call__(self, data: torch.Tensor) -> torch.Tensor:
         data = self.smile.process_signal(data.numpy(), self.sample_rate)
-        return torch.from_numpy(self.smile.to_numpy(data))
+        return torch.from_numpy(self.smile.to_numpy(data)).squeeze()

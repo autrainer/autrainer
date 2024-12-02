@@ -327,9 +327,9 @@ class TestOpenSMILE:
         "feature_set, functionals, expected",
         [
             ("ComParE_2016", False, (65, 96)),
-            ("ComParE_2016", True, (6373, 1)),
+            ("ComParE_2016", True, (6373,)),
             ("eGeMAPSv02", False, (25, 96)),
-            ("eGeMAPSv02", True, (88, 1)),
+            ("eGeMAPSv02", True, (88,)),
         ],
     )
     def test_opensmile(
@@ -342,7 +342,7 @@ class TestOpenSMILE:
         y = OpenSMILE(feature_set, 16000, functionals=functionals)(x)
         assert torch.is_tensor(y), "Output should be a tensor"
         assert y.shape == torch.Size(
-            (1,) + expected
+            expected
         ), "Output shape should match the expected shape"
         assert y.dtype == torch.float32, "Output should be float32"
 
