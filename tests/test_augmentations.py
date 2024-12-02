@@ -28,6 +28,7 @@ from autrainer.augmentations import (
     TorchvisionAugmentation,
 )
 from autrainer.augmentations.image_augmentations import BaseMixUpCutMix
+from autrainer.datasets.utils.data_struct import Data
 from autrainer.datasets.utils.dataloader import default_data_collator
 from autrainer.transforms import SmartCompose
 
@@ -261,7 +262,10 @@ class TestBaseMixUpCutMix:
         x1, x2 = torch.randn(3, 32, 32), torch.randn(3, 32, 32)
         y1, y2 = 0, 1
         idx1, idx2 = 0, 1
-        x_out, y_out, idx_out = collate_fn([(x1, y1, idx1), (x2, y2, idx2)])
+        out = collate_fn([Data(x1, y1, idx1), Data(x2, y2, idx2)])
+        x_out = out.features
+        y_out = out.target
+        idx_out = out.index
         x_in = torch.cat([x1.unsqueeze(0), x2.unsqueeze(0)], dim=0)
         y_in = torch.nn.functional.one_hot(
             torch.tensor([y1, y2]), self.classification_dataset.output_dim
