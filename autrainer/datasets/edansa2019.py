@@ -42,6 +42,9 @@ class EDANSA2019(BaseMLClassificationDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
+                If `None`, defaults to audio subdirectory,
+                which is `default` for the standard format,
+                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
