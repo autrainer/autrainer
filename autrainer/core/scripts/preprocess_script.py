@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Optional
 
 from omegaconf import DictConfig, OmegaConf
+import torch
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
@@ -24,6 +25,92 @@ class PreprocessArgs(PreprocessArgs):
     update_frequency: int
 
 
+def preprocess_main(
+    name: str,
+    dataset: DictConfig,
+    preprocess: DictConfig,
+    num_workers: int,
+    update_frequency: int,
+):
+    import os
+    from pathlib import Path
+
+    from tqdm import tqdm
+
+    from autrainer.datasets.utils import AbstractFileHandler
+    from autrainer.transforms import SmartCompose
+
+    print(f" - {name}")
+    if preprocess is None:
+        print("No preprocessing specified. Skipping...")
+        return
+    # set dataset file handler as output handler
+    # as dataset is already configured
+    # to work with the output of the preprocessing script
+    output_file_handler = autrainer.instantiate_shorthand(
+        config=dataset["file_handler"],
+        instance_of=AbstractFileHandler,
+    )
+    output_file_type = dataset["file_type"]
+
+    # override dataset file handling to work with raw audio
+    dataset["file_handler"] = preprocess["file_handler"]
+    # None allows dataset to work with all audio files
+    dataset["file_type"] = None
+    dataset["seed"] = 0  # ignored
+    dataset["batch_size"] = 8  # ignored
+    dataset.pop("criterion")
+    dataset.pop("transform")
+    features_path = dataset.pop("features_path")
+    if features_path is None:
+        features_path = dataset["path"]
+    features_subdir = dataset["features_subdir"]
+
+    dataset["features_subdir"] = None
+    data = autrainer.instantiate(dataset)
+    # manually disable dataset transforms
+    data.train_transform = None
+    data.dev_transform = None
+    data.test_transform = None
+
+    pipeline = SmartCompose(
+        [autrainer.instantiate_shorthand(t) for t in preprocess["pipeline"]]
+    )
+    for d, n in (
+        (data.train_dataset, "train"),
+        (data.dev_dataset, "dev"),
+        (data.test_dataset, "test"),
+    ):
+        # TODO: dataloader underutilized
+        # workers only parallelize loading
+        loader = torch.utils.data.DataLoader(
+            dataset=d,
+            shuffle=False,
+            num_workers=num_workers,
+            batch_size=1,
+        )
+        for instance in tqdm(
+            loader,
+            total=len(loader),
+            desc=f"{name}-{n}",
+            disable=update_frequency == 0,
+        ):
+            # TODO: will be streamlined once we switch to dataclass
+            index = d.df.index[int(instance[2])]
+            item_path = d.df.loc[index, d.index_column]
+            out_path = Path(
+                features_path,
+                features_subdir,
+                os.path.basename(item_path),
+            ).with_suffix("." + output_file_type)
+            os.makedirs(os.path.dirname(out_path), exist_ok=True)
+            if os.path.exists(out_path):
+                continue
+            output_file_handler.save(
+                out_path, pipeline(instance[0].squeeze(dim=0), 0)
+            )
+
+
 class PreprocessScript(AbstractPreprocessScript):
     def __init__(self) -> None:
         super().__init__(
@@ -44,12 +131,12 @@ class PreprocessScript(AbstractPreprocessScript):
             "-n",
             "--num-workers",
             type=int,
-            default=1,
+            default=0,
             metavar="N",
             required=False,
             help=(
-                "Number of workers (threads) to use for preprocessing. "
-                "Defaults to 1."
+                "Number of workers (subprocesses) to use for preprocessing. "
+                "Defaults to 0."
             ),
         )
         self.parser.add_argument(
@@ -60,7 +147,7 @@ class PreprocessScript(AbstractPreprocessScript):
             metavar="F",
             required=False,
             help=(
-                "Frequency of progress bar updates for each worker (thread). "
+                "Frequency of progress bar updates for each worker (subprocess). "
                 "If 0, the progress bar will be disabled. Defaults to 1."
             ),
         )
@@ -101,140 +188,29 @@ class PreprocessScript(AbstractPreprocessScript):
         self._clean_up()
 
     def _assert_num_workers(self, num_workers: int) -> None:
-        if num_workers < 1:
+        if num_workers < 0:
             raise ValueError(
-                f"Number of workers '{num_workers}' must be >= 1."
+                f"Number of workers '{num_workers}' must be >= 0."
             )
 
     def _preprocess_datasets(self) -> None:
-        from concurrent.futures import ThreadPoolExecutor
-        import os
-        from pathlib import Path
-
-        import pandas as pd
-        from tqdm import tqdm
-
-        from autrainer.datasets.utils import AbstractFileHandler
-        from autrainer.transforms import SmartCompose
-
-        def _get_csvs(path: str) -> List[str]:
-            return [
-                f
-                for f in os.listdir(path)
-                if os.path.isfile(os.path.join(path, f)) and f.endswith(".csv")
-            ]
-
-        def _read_csvs(path: str, files: List[str]) -> List[pd.DataFrame]:
-            return [pd.read_csv(os.path.join(path, f)) for f in files]
-
-        def _get_unique_files(
-            dfs: List[pd.DataFrame],
-            column: str,
-        ) -> List[str]:
-            return pd.concat(dfs, ignore_index=True)[column].unique().tolist()
-
-        def _create_subdirs(path: str, files: List[str]) -> None:
-            dirs = {os.path.dirname(os.path.join(path, f)) for f in files}
-
-            for d in dirs:
-                os.makedirs(d, exist_ok=True)
-
-        def _split_chunks(files: List[str], chunks: int) -> List[List[str]]:
-            if chunks == 1:
-                return [files]
-            avg = len(files) / chunks
-            out = []
-            last = 0
-            while last < len(files):
-                out.append(files[int(last) : int(last + avg)])
-                last += avg
-            return out
-
-        def _process_chunk(
-            chunk: List[str],
-            dataset: dict,
-            preprocess: dict,
-            pbar: tqdm,
-            lock: Any,
-        ) -> None:
-            file_handler = autrainer.instantiate_shorthand(
-                config=preprocess["file_handler"],
-                instance_of=AbstractFileHandler,
-            )
-            output_file_handler = autrainer.instantiate_shorthand(
-                config=dataset["file_handler"],
-                instance_of=AbstractFileHandler,
-            )
-            pipeline = SmartCompose(
-                [
-                    autrainer.instantiate_shorthand(t)
-                    for t in preprocess["pipeline"]
-                ]
-            )
-
-            file_count = 0
-            for file_path in chunk:
-                in_path = Path(dataset["path"], "default", file_path)
-                out_path = Path(
-                    dataset["path"],
-                    dataset["features_subdir"],
-                    file_path,
-                ).with_suffix("." + dataset["file_type"])
-                data = file_handler.load(in_path)
-                data = pipeline(data, 0)
-                output_file_handler.save(out_path, data)
-                del data
-                file_count += 1
-                if file_count % self.update_frequency == 0:
-                    with lock:
-                        pbar.update(self.update_frequency)
-            with lock:
-                pbar.update(file_count % self.update_frequency)
-
         print("Preprocessing datasets...")
         for (name, dataset), preprocess in zip(
             self.datasets.items(), self.preprocessing.values()
         ):
-            print(f" - {name}")
-            if preprocess is None or os.path.isdir(
-                os.path.join(dataset["path"], dataset["features_subdir"])
-            ):
-                continue
-
-            csvs = _get_csvs(dataset["path"])
-            dfs = _read_csvs(dataset["path"], csvs)
-            unique_files = _get_unique_files(dfs, dataset["index_column"])
-            _create_subdirs(
-                os.path.join(dataset["path"], dataset["features_subdir"]),
-                unique_files,
+            preprocess_main(
+                name=name,
+                dataset=dataset,
+                preprocess=preprocess,
+                num_workers=self.num_workers,
+                update_frequency=self.update_frequency,
             )
-            chunks = _split_chunks(unique_files, self.num_workers)
-            lock = tqdm.get_lock()
-            with tqdm(
-                total=len(unique_files),
-                desc=name,
-                disable=self.update_frequency == 0,
-            ) as pbar:
-                with ThreadPoolExecutor(self.num_workers) as executor:
-                    futures = [
-                        executor.submit(
-                            _process_chunk,
-                            chunk,
-                            dataset,
-                            preprocess,
-                            pbar,
-                            lock,
-                        )
-                        for chunk in chunks
-                    ]
-                    for future in futures:
-                        future.result()
 
 
 @catch_cli_errors
 def preprocess(
     override_kwargs: Optional[dict] = None,
-    num_workers: int = 1,
+    num_workers: int = 0,
     update_frequency: int = 1,
     cfg_launcher: bool = False,
     config_name: str = "config",
@@ -245,10 +221,10 @@ def preprocess(
     Args:
         override_kwargs: Additional Hydra override arguments to pass to the
             train script.
-        num_workers: Number of workers (threads) to use for preprocessing.
-            Defaults to 1.
-        update_frequency: Frequency of progress bar updates for each worker
-            (thread). If 0, the progress bar will be disabled. Defaults to 1.
+        num_workers: Number of workers (subprocess) to use for preprocessing.
+            Defaults to 0.
+        update_frequency: Frequency of progress bar updates.
+            If 0, the progress bar will be disabled. Defaults to 1.
         cfg_launcher: Use the launcher specified in the configuration instead
             of the Hydra basic launcher. Defaults to False.
         config_name: The name of the config (usually the file name without the

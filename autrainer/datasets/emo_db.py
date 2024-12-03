@@ -1,6 +1,7 @@
+from functools import cached_property
 import os
 import shutil
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -37,6 +38,7 @@ class EmoDB(BaseClassificationDataset):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
+        features_path: Optional[str] = None,
         inference_batch_size: Optional[int] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -51,6 +53,9 @@ class EmoDB(BaseClassificationDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
+                If `None`, defaults to audio subdirectory,
+                which is `default` for the standard format,
+                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -59,6 +64,10 @@ class EmoDB(BaseClassificationDataset):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            features_path: Root path to features. Useful
+                when features need to be extracted and stored
+                in a different folder than the root of the dataset.
+                If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
@@ -90,21 +99,28 @@ class EmoDB(BaseClassificationDataset):
             file_handler=file_handler,
             batch_size=batch_size,
             inference_batch_size=inference_batch_size,
+            features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
             stratify=stratify,
         )
 
-    def load_dataframes(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        meta = pd.read_csv(os.path.join(self.path, "metadata.csv"))
-        return (
-            meta[meta["speaker"].isin(self.train_speakers)],
-            meta[meta["speaker"].isin(self.dev_speakers)],
-            meta[meta["speaker"].isin(self.test_speakers)],
-        )
+    @cached_property
+    def meta(self):
+        return pd.read_csv(os.path.join(self.path, "metadata.csv"))
+
+    @cached_property
+    def train_df(self):
+        return self.meta[self.meta["speaker"].isin(self.train_speakers)]
+
+    @cached_property
+    def dev_df(self):
+        return self.meta[self.meta["speaker"].isin(self.dev_speakers)]
+
+    @cached_property
+    def test_df(self):
+        return self.meta[self.meta["speaker"].isin(self.test_speakers)]
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover

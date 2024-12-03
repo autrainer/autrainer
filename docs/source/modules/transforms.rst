@@ -29,7 +29,8 @@ Preprocessing Transforms
 ------------------------
 
 Preprocessing transforms are specified in the dataset configuration aligning the :attr:`features_subdir` with the name of the preprocessing file.
-This way, the processed data is stored in a subdirectory of the dataset directory with the same name as the preprocessing file.
+This way, the processed data is stored in a subdirectory of the dataset directory with the same name as the preprocessing file,
+or in a different path altogether by specifying the :attr:`features_path` attribute in the configuration file.
 To save the processed data, the :attr:`file_handler` specified in the dataset configuration is used.
 
 .. tip::
@@ -58,6 +59,14 @@ Preprocessing transforms consist of the following attributes:
    .. code-block:: python
 
       autrainer.cli.preprocess()
+
+.. warning::
+   Following `v0.6.0`, `autrainer` iterates over all files in all datasets
+   and extracts the respective features without replacement.
+   It is possible that features have been extracted for a subset of the dataset.
+   This may happen when different dataset subsets are supported.
+   Therefore, it is recommended that `autrainer preprocess` is always called before training.
+   Features have to be manually deleted to overwrite.
 
 `autrainer` offers default configurations for log-Mel spectrogram extraction and openSMILE feature extraction.
 

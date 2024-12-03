@@ -41,6 +41,7 @@ class AbstractDataset(ABC):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
+        features_path: Optional[str] = None,
         inference_batch_size: Optional[int] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -52,6 +53,9 @@ class AbstractDataset(ABC):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
+                If `None`, defaults to audio subdirectory,
+                which is `default` for the standard format,
+                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             task: Task of the dataset in
                 :const:`~autrainer.core.constants.TrainingConstants.TASKS`.
@@ -62,6 +66,10 @@ class AbstractDataset(ABC):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            features_path: Root path to features. Useful
+                when features need to be extracted and stored
+                in a different folder than the root of the dataset.
+                If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
@@ -73,9 +81,14 @@ class AbstractDataset(ABC):
             stratify: Columns to stratify the dataset on. Defaults to None.
         """
         self._assert_task(task)
-        self._assert_directory(path, features_subdir)
-        self.path = path
         self.features_subdir = features_subdir
+        if self.features_subdir is None:
+            self.features_subdir = self.audio_subdir
+        self.path = path
+        self.features_path = features_path
+        if self.features_path is None:
+            self.features_path = self.path
+        self._assert_directory(self.features_path, self.features_subdir)
         self.seed = seed
         self.task = task
         self.metrics = [self._init_metric(m) for m in metrics]
@@ -94,6 +107,16 @@ class AbstractDataset(ABC):
         self._generator = torch.Generator().manual_seed(self.seed)
         self.df_train, self.df_dev, self.df_test = self.load_dataframes()
         self._assert_stratify()
+
+    @property
+    def audio_subdir(self):
+        """Subfolder containing audio data.
+
+        Defaults to `default` for our standard format.
+        Should be overridden for datasets
+        that do not conform to it.
+        """
+        return "default"
 
     @staticmethod
     def _assert_task(task: str) -> None:
@@ -169,10 +192,22 @@ class AbstractDataset(ABC):
             Dataframes for training, development, and testing.
         """
         return (
-            pd.read_csv(os.path.join(self.path, "train.csv")),
-            pd.read_csv(os.path.join(self.path, "dev.csv")),
-            pd.read_csv(os.path.join(self.path, "test.csv")),
+            self.train_df,
+            self.dev_df,
+            self.test_df,
         )
+
+    @cached_property
+    def train_df(self):
+        return pd.read_csv(os.path.join(self.path, "train.csv"))
+
+    @cached_property
+    def dev_df(self):
+        return pd.read_csv(os.path.join(self.path, "dev.csv"))
+
+    @cached_property
+    def test_df(self):
+        return pd.read_csv(os.path.join(self.path, "test.csv"))
 
     def _init_dataset(
         self,
@@ -189,7 +224,7 @@ class AbstractDataset(ABC):
             Initialized dataset.
         """
         return DatasetWrapper(
-            path=self.path,
+            path=self.features_path,
             features_subdir=self.features_subdir,
             index_column=self.index_column,
             target_column=self.target_column,
@@ -307,6 +342,7 @@ class BaseClassificationDataset(AbstractDataset):
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
         inference_batch_size: Optional[int] = None,
+        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -317,6 +353,9 @@ class BaseClassificationDataset(AbstractDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
+                If `None`, defaults to audio subdirectory,
+                which is `default` for the standard format,
+                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -325,6 +364,10 @@ class BaseClassificationDataset(AbstractDataset):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            features_path: Root path to features. Useful
+                when features need to be extracted and stored
+                in a different folder than the root of the dataset.
+                If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
@@ -348,6 +391,7 @@ class BaseClassificationDataset(AbstractDataset):
             file_handler=file_handler,
             batch_size=batch_size,
             inference_batch_size=inference_batch_size,
+            features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
@@ -384,6 +428,7 @@ class BaseMLClassificationDataset(AbstractDataset):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
+        features_path: Optional[str] = None,
         inference_batch_size: Optional[int] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -396,6 +441,9 @@ class BaseMLClassificationDataset(AbstractDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
+                If `None`, defaults to audio subdirectory,
+                which is `default` for the standard format,
+                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -404,6 +452,10 @@ class BaseMLClassificationDataset(AbstractDataset):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            features_path: Root path to features. Useful
+                when features need to be extracted and stored
+                in a different folder than the root of the dataset.
+                If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
@@ -429,6 +481,7 @@ class BaseMLClassificationDataset(AbstractDataset):
             file_type=file_type,
             file_handler=file_handler,
             batch_size=batch_size,
+            features_path=features_path,
             inference_batch_size=inference_batch_size,
             train_transform=train_transform,
             dev_transform=dev_transform,
@@ -477,6 +530,7 @@ class BaseRegressionDataset(AbstractDataset):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
+        features_path: Optional[str] = None,
         inference_batch_size: Optional[int] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -488,6 +542,9 @@ class BaseRegressionDataset(AbstractDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
+                If `None`, defaults to audio subdirectory,
+                which is `default` for the standard format,
+                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -496,6 +553,10 @@ class BaseRegressionDataset(AbstractDataset):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            features_path: Root path to features. Useful
+                when features need to be extracted and stored
+                in a different folder than the root of the dataset.
+                If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
@@ -518,6 +579,7 @@ class BaseRegressionDataset(AbstractDataset):
             file_type=file_type,
             file_handler=file_handler,
             batch_size=batch_size,
+            features_path=features_path,
             inference_batch_size=inference_batch_size,
             train_transform=train_transform,
             dev_transform=dev_transform,
@@ -547,6 +609,7 @@ class BaseMTRegressionDataset(AbstractDataset):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
+        features_path: Optional[str] = None,
         inference_batch_size: Optional[int] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -558,6 +621,9 @@ class BaseMTRegressionDataset(AbstractDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
+                If `None`, defaults to audio subdirectory,
+                which is `default` for the standard format,
+                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -566,6 +632,10 @@ class BaseMTRegressionDataset(AbstractDataset):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            features_path: Root path to features. Useful
+                when features need to be extracted and stored
+                in a different folder than the root of the dataset.
+                If `None`, will be set to `path`. Defaults to `None`.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
@@ -588,6 +658,7 @@ class BaseMTRegressionDataset(AbstractDataset):
             file_type=file_type,
             file_handler=file_handler,
             batch_size=batch_size,
+            features_path=features_path,
             inference_batch_size=inference_batch_size,
             train_transform=train_transform,
             dev_transform=dev_transform,
