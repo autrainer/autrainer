@@ -210,7 +210,7 @@ class PreprocessScript(AbstractPreprocessScript):
 @catch_cli_errors
 def preprocess(
     override_kwargs: Optional[dict] = None,
-    num_workers: int = 1,
+    num_workers: int = 0,
     update_frequency: int = 1,
     cfg_launcher: bool = False,
     config_name: str = "config",
@@ -222,9 +222,9 @@ def preprocess(
         override_kwargs: Additional Hydra override arguments to pass to the
             train script.
         num_workers: Number of workers (subprocess) to use for preprocessing.
-            Defaults to 1.
-        update_frequency: Frequency of progress bar updates for each worker
-            (subprocess). If 0, the progress bar will be disabled. Defaults to 0.
+            Defaults to 0.
+        update_frequency: Frequency of progress bar updates.
+            If 0, the progress bar will be disabled. Defaults to 1.
         cfg_launcher: Use the launcher specified in the configuration instead
             of the Hydra basic launcher. Defaults to False.
         config_name: The name of the config (usually the file name without the
