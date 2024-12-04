@@ -548,7 +548,7 @@ class ModularTaskTrainer:
             self.model.train()
             self.model.to(self.DEVICE)
             try:
-                data, target, sample_idx = next(self.train_loader_iter)
+                data = next(self.train_loader_iter)
             except StopIteration:
                 self.callback_manager.callback(
                     position="cb_on_loader_exhausted",
