@@ -10,6 +10,7 @@ from torchvision import transforms as T
 
 from autrainer.augmentations import AbstractAugmentation, CutMix
 from autrainer.datasets import AbstractDataset, ToyDataset
+from autrainer.datasets.utils.dataloader import default_data_collator
 from autrainer.transforms import (
     AbstractTransform,
     AnyToTensor,
@@ -477,7 +478,8 @@ class TestSmartCompose:
             output_dim = 10
 
         assert (
-            sc.get_collate_fn(MockDataset()) is not None
+            sc.get_collate_fn(MockDataset(), default=default_data_collator)
+            is not None
         ) == has_collate_fn, "Collate function should be present"
 
     def test_sorting_order(self) -> None:
