@@ -480,7 +480,14 @@ class TestSmartCompose:
         assert (
             sc.get_collate_fn(MockDataset(), default=default_data_collator)
             is not None
-        ) == has_collate_fn, "Collate function should be present"
+        ), "Collate function should be present"
+        assert (
+            (
+                sc.get_collate_fn(MockDataset(), default=default_data_collator)
+                == default_data_collator
+            )
+            != has_collate_fn
+        ), f"Collate function should be default: {not has_collate_fn}"
 
     def test_sorting_order(self) -> None:
         att1 = AnyToTensor(order=1)
