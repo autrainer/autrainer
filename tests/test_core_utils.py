@@ -23,6 +23,7 @@ from autrainer.core.utils import (
     set_seed,
     silence,
 )
+from autrainer.datasets.utils.data_struct import Data
 from autrainer.metrics import UAR, Accuracy
 from autrainer.models import FFNN
 
@@ -69,7 +70,7 @@ class TestBookkeeping(BaseIndividualTempDir):
     def test_save_model_summary(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
-        dataset = [[torch.randn(64)]]
+        dataset = [Data(features=torch.randn(64), target=None, index=None)]
         bookkeeping.save_model_summary(model, dataset, "summary.txt")
         assert os.path.isfile(
             os.path.join(self.temp_dir, "summary.txt")

@@ -90,7 +90,7 @@ class Cnn10(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.get_embedding(x)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.embeddings(x)
         x = self.out(x)
         return x

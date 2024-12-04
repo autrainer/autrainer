@@ -6,6 +6,7 @@ import torch
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
+from autrainer.datasets.utils.dataloader import default_data_collator
 
 from .abstract_preprocess_script import (
     AbstractPreprocessScript,
@@ -88,6 +89,7 @@ def preprocess_main(
             shuffle=False,
             num_workers=num_workers,
             batch_size=1,
+            collate_fn=default_data_collator,
         )
         for instance in tqdm(
             loader,
@@ -95,8 +97,7 @@ def preprocess_main(
             desc=f"{name}-{n}",
             disable=update_frequency == 0,
         ):
-            # TODO: will be streamlined once we switch to dataclass
-            index = d.df.index[int(instance[2])]
+            index = d.df.index[int(instance.index)]
             item_path = d.df.loc[index, d.index_column]
             out_path = Path(
                 features_path,
@@ -107,7 +108,7 @@ def preprocess_main(
             if os.path.exists(out_path):
                 continue
             output_file_handler.save(
-                out_path, pipeline(instance[0].squeeze(dim=0), 0)
+                out_path, pipeline(instance.features.squeeze(dim=0), 0)
             )
 
 

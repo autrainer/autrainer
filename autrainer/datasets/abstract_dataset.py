@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 
 import autrainer
 from autrainer.core.constants import TrainingConstants
+from autrainer.datasets.utils.dataloader import default_data_collator
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 
@@ -274,7 +275,9 @@ class AbstractDataset(ABC):
             batch_size=self.batch_size,
             shuffle=True,
             generator=self._generator,
-            collate_fn=self.train_transform.get_collate_fn(self),
+            collate_fn=self.train_transform.get_collate_fn(
+                self, default=default_data_collator
+            ),
         )
 
     @cached_property
@@ -289,7 +292,9 @@ class AbstractDataset(ABC):
             batch_size=self.inference_batch_size,
             shuffle=False,
             generator=self._generator,
-            collate_fn=self.dev_transform.get_collate_fn(self),
+            collate_fn=self.dev_transform.get_collate_fn(
+                self, default=default_data_collator
+            ),
         )
 
     @cached_property
@@ -304,7 +309,9 @@ class AbstractDataset(ABC):
             batch_size=self.inference_batch_size,
             shuffle=False,
             generator=self._generator,
-            collate_fn=self.dev_transform.get_collate_fn(self),
+            collate_fn=self.test_transform.get_collate_fn(
+                self, default=default_data_collator
+            ),
         )
 
     def get_evaluation_data(
