@@ -26,6 +26,7 @@ from autrainer.core.utils import (
     set_seed,
     silence,
 )
+from autrainer.datasets.utils.data_struct import Data
 from autrainer.metrics import UAR, Accuracy
 from autrainer.models import FFNN
 
