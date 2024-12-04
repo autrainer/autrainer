@@ -5,6 +5,7 @@ from omegaconf import DictConfig, OmegaConf
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
+from autrainer.datasets.utils.dataloader import default_data_collator
 
 from .abstract_preprocess_script import (
     AbstractPreprocessScript,
@@ -88,6 +89,7 @@ def preprocess_main(
             shuffle=False,
             num_workers=num_workers,
             batch_size=1,
+            collate_fn=default_data_collator,
         )
         for instance in tqdm(
             loader,
@@ -96,7 +98,7 @@ def preprocess_main(
             disable=update_frequency == 0,
         ):
             # TODO: will be streamlined once we switch to dataclass
-            item_path = df.loc[df.index[int(instance[2])], d.index_column]
+            item_path = df.loc[df.index[int(instance.index)], d.index_column]
             out_path = Path(
                 features_path,
                 features_subdir,
@@ -106,7 +108,7 @@ def preprocess_main(
             if out_path.exists():
                 continue
             output_file_handler.save(
-                out_path, pipeline(instance[0].squeeze(dim=0), 0)
+                out_path, pipeline(instance.features.squeeze(dim=0), 0)
             )
 
 
