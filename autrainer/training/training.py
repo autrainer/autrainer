@@ -450,7 +450,7 @@ class ModularTaskTrainer:
             self.bookkeeping.create_folder(epoch_folder)
             self.model.train()
             self.model.to(self.DEVICE)
-            for batch_idx, (data) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     self.train_loader,
                     desc="Train",
@@ -476,12 +476,16 @@ class ModularTaskTrainer:
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
                 if self.train_tracker:
+<<<<<<< HEAD
                     self.train_tracker.update(
                         output,
                         data.label.cpu(),
                         loss,
                         data.index.cpu()
                     )
+=======
+                    self.train_tracker.update(o, data.target.cpu(), data.index)
+>>>>>>> Index stays to CPU, syntax
                 self.callback_manager.callback(
                     position="cb_on_step_end",
                     trainer=self,

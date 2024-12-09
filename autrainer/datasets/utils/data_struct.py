@@ -13,4 +13,3 @@ class Data:
     def to(self, device):
         self.features.to(device)
         self.target.to(device)
-        self.index.to(device)
