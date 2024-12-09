@@ -17,8 +17,8 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         super().__init__()
         self.output_dim = output_dim
 
-    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
-        """Forward pass of the model.
+    def _parse_data(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
+        """Parsing input data.
 
         Args:
             x: Input tensor.
@@ -27,9 +27,9 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
             Output tensor.
         """
         if isinstance(x, Data):
-            return super().forward(x.features)
+            return x.features
         else:
-            return super().forward(x)
+            return x
 
     @abstractmethod
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:

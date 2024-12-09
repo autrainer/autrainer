@@ -1,7 +1,9 @@
-from typing import Optional
+from typing import Optional, Union
 
 import torch
 import torch.nn.functional as F
+
+from autrainer.datasets.utils.data_struct import Data
 
 from .abstract_model import AbstractModel
 from .utils import ConvBlock, init_bn, init_layer, load_transfer_weights
@@ -90,7 +92,8 @@ class Cnn10(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.get_embedding(x)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
+        x = self._parse_data(x)
         x = self.embeddings(x)
         x = self.out(x)
         return x
