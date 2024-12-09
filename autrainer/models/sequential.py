@@ -1,4 +1,8 @@
+from typing import Union
+
 import torch
+
+from autrainer.datasets.utils.data_struct import Data
 
 from .abstract_model import AbstractModel
 from .ffnn import FFNN
@@ -43,7 +47,8 @@ class Sequential(AbstractModel):
             x = x.mean(1)
         return x
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
+        x = self._parse_data(x)
         return self.embeddings(x)
 
 
@@ -111,5 +116,6 @@ class SeqFFNN(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.backbone(x.squeeze(1))
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
+        x = self._parse_data(x)
         return self.frontend(self.embeddings(x))
