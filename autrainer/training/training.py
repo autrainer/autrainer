@@ -21,6 +21,7 @@ from autrainer.core.utils import (
 )
 from autrainer.datasets import AbstractDataset
 from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
+from autrainer.datasets.utils.data_struct import Data
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
 from autrainer.transforms import SmartCompose, TransformManager
@@ -143,6 +144,7 @@ class ModularTaskTrainer:
             instance_of=AbstractModel,
             output_dim=self.output_dim,
         )
+
         if model_checkpoint:
             state_dict = torch.load(
                 model_checkpoint,
@@ -154,8 +156,9 @@ class ModularTaskTrainer:
                 state_dict,
                 skip_last_layer,
             )
+
         self.bookkeeping.save_model_summary(
-            self.model, self.train_dataset, "model_summary.txt"
+            self.model, self.data.train_dataset, "model_summary.txt"
         )
 
         # ? Load Optimizer
@@ -387,7 +390,7 @@ class ModularTaskTrainer:
         # ? Score best model on test set
         self.bookkeeping.load_state(self.model, "model.pt", "_best")
         self.bookkeeping.load_state(self.optimizer, "optimizer.pt", "_best")
-        self.model = self.model.to(self.DEVICE)
+        self.model.to(self.DEVICE)
         self.model.eval()
         self.bookkeeping.create_folder("_test")
         self.test_timer.start()
@@ -459,14 +462,14 @@ class ModularTaskTrainer:
             self.bookkeeping.create_folder(epoch_folder)
             self.model.train()
             self.model.to(self.DEVICE)
-            for batch_idx, (data, target, sample_idx) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     self.train_loader,
                     desc="Train",
                     disable=self.disable_progress_bar,
                 )
             ):
-                data, target = data.to(self.DEVICE), target.to(self.DEVICE)
+                data.to(self.DEVICE)
                 self.callback_manager.callback(
                     position="cb_on_step_begin",
                     trainer=self,
@@ -476,14 +479,13 @@ class ModularTaskTrainer:
                 l, o = self.train_step_fn(
                     self.model,
                     data,
-                    target,
                     self.criterion,
                     self.data.target_transform.probabilities_training,
                 )
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
                 if self.train_tracker:
-                    self.train_tracker.update(o, target, sample_idx)
+                    self.train_tracker.update(o, data.target.cpu(), data.index)
                 self.callback_manager.callback(
                     position="cb_on_step_end",
                     trainer=self,
@@ -549,7 +551,7 @@ class ModularTaskTrainer:
             self.model.train()
             self.model.to(self.DEVICE)
             try:
-                data, target, sample_idx = next(self.train_loader_iter)
+                data = next(self.train_loader_iter)
             except StopIteration:
                 self.callback_manager.callback(
                     position="cb_on_loader_exhausted",
@@ -557,8 +559,8 @@ class ModularTaskTrainer:
                     iteration=step,
                 )
                 self.train_loader_iter = iter(self.train_loader)
-                data, target, sample_idx = next(self.train_loader_iter)
-            data, target = data.to(self.DEVICE), target.to(self.DEVICE)
+                data = next(self.train_loader_iter)
+            data.to(self.DEVICE)
             self.callback_manager.callback(
                 position="cb_on_step_begin",
                 trainer=self,
@@ -568,14 +570,13 @@ class ModularTaskTrainer:
             l, o = self.train_step_fn(
                 self.model,
                 data,
-                target,
                 self.criterion,
                 self.data.target_transform.probabilities_training,
             )
             if self.scheduler and self.scheduler_frequency == "batch":
                 self.scheduler.step()
             if self.train_tracker:
-                self.train_tracker.update(o, target, sample_idx)
+                self.train_tracker.update(o, data.target, data.index)
             self.callback_manager.callback(
                 position="cb_on_step_end",
                 trainer=self,
@@ -628,14 +629,13 @@ class ModularTaskTrainer:
     def _train_step(
         self,
         model: torch.nn.Module,
-        data: torch.Tensor,
-        target: torch.Tensor,
+        data: Data,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
     ) -> Tuple[float, torch.Tensor]:
         self.optimizer.zero_grad()
         output = model(data)
-        loss = criterion(probabilities_fn(output), target)
+        loss = criterion(probabilities_fn(output), data.target)
         loss.backward()
         self.optimizer.step()
         return loss.item(), output.detach()
@@ -673,7 +673,7 @@ class ModularTaskTrainer:
             **kwargs,
         )
         self.model.eval()
-        self.model = self.model.to(self.DEVICE)
+        self.model.to(self.DEVICE)
         results = self._evaluate(
             loader=loader,
             tracker=tracker,
@@ -766,7 +766,7 @@ class ModularTaskTrainer:
     ):
         with torch.no_grad():
             loss = 0
-            for batch_idx, (features, target, sample_idx) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     loader,
                     desc="Evaluate" if cb_type == "val" else "Test",
@@ -778,19 +778,20 @@ class ModularTaskTrainer:
                     trainer=self,
                     batch_idx=batch_idx,
                 )
-                output = self.model(features.to(self.DEVICE))
+                data.to(self.DEVICE)
+                output = self.model(data)
                 probabilities_fn = (
                     self.data.target_transform.probabilities_training
                 )
                 loss += (
                     self.criterion(
                         probabilities_fn(output),
-                        target.to(self.DEVICE),
+                        data.target,
                     )
                     .cpu()
                     .item()
                 )
-                tracker.update(output, target, sample_idx)
+                tracker.update(output, data.target.cpu(), data.index)
                 self.callback_manager.callback(
                     position=f"cb_on_{cb_type}_step_end",
                     trainer=self,

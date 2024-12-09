@@ -28,6 +28,8 @@ from autrainer.augmentations import (
     TorchvisionAugmentation,
 )
 from autrainer.augmentations.image_augmentations import BaseMixUpCutMix
+from autrainer.datasets.utils.data_struct import Data
+from autrainer.datasets.utils.dataloader import default_data_collator
 from autrainer.transforms import SmartCompose
 
 
@@ -233,16 +235,24 @@ class TestBaseMixUpCutMix:
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_invalid_dataset(self, aug: Type[BaseMixUpCutMix]) -> None:
         with pytest.raises(ValueError):
-            aug().get_collate_fn(self.regression_dataset)
+            aug().get_collate_fn(
+                self.regression_dataset, default=default_data_collator
+            )
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_collate_fn(self, aug: Type[BaseMixUpCutMix]) -> None:
-        self._test_collate(aug().get_collate_fn(self.classification_dataset))
+        self._test_collate(
+            aug().get_collate_fn(
+                self.classification_dataset, default=default_data_collator
+            )
+        )
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_collate_identity(self, aug: Type[BaseMixUpCutMix]) -> None:
         (x_in, y_in, idx_in), (x_out, y_out, idx_out) = self._test_collate(
-            aug(p=0).get_collate_fn(self.classification_dataset)
+            aug(p=0).get_collate_fn(
+                self.classification_dataset, default=default_data_collator
+            )
         )
         assert torch.allclose(x_in, x_out), "Should be the same"
         assert torch.allclose(y_in, y_out), "Should be the same"
@@ -252,7 +262,10 @@ class TestBaseMixUpCutMix:
         x1, x2 = torch.randn(3, 32, 32), torch.randn(3, 32, 32)
         y1, y2 = 0, 1
         idx1, idx2 = 0, 1
-        x_out, y_out, idx_out = collate_fn([(x1, y1, idx1), (x2, y2, idx2)])
+        out = collate_fn([Data(x1, y1, idx1), Data(x2, y2, idx2)])
+        x_out = out.features
+        y_out = out.target
+        idx_out = out.index
         x_in = torch.cat([x1.unsqueeze(0), x2.unsqueeze(0)], dim=0)
         y_in = torch.nn.functional.one_hot(
             torch.tensor([y1, y2]), self.classification_dataset.output_dim
