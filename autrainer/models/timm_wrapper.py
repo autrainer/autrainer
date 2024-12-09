@@ -43,5 +43,5 @@ class TimmModel(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self._embedding_extractor(x)
 
-    def _forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.model(x)

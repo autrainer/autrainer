@@ -11,7 +11,6 @@ import torch
 from torchinfo import summary
 import yaml
 
-from autrainer.datasets.utils.data_struct import Data
 from autrainer.metrics import AbstractMetric
 
 
@@ -117,14 +116,6 @@ class Bookkeeping:
         """
         x = np.expand_dims(dataset[0].features, axis=0).shape
 
-        class ModelWrapper(torch.nn.Module):
-            def __init__(self, model):
-                super().__init__()
-                self.model = model
-
-            def forward(self, x: torch.Tensor):
-                return self.model(Data(features=x, target=None, index=None))
-
         with open(
             os.path.join(self.output_directory, filename),
             "w",
@@ -132,7 +123,7 @@ class Bookkeeping:
         ) as f:
             sys.stdout = f
             s = summary(
-                model=ModelWrapper(model),
+                model=model,
                 input_size=(x),
                 col_names=[
                     "input_size",

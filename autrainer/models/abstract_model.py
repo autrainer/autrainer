@@ -27,9 +27,9 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
             Output tensor.
         """
         if isinstance(x, Data):
-            return self._forward(x.features)
+            return super().forward(x.features)
         else:
-            return self._forward(x)
+            return super().forward(x)
 
     @abstractmethod
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
