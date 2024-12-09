@@ -345,7 +345,7 @@ class AudioRNNModel(AbstractModel):
 
         return rnn_out
 
-    def _forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
             x ((torch.Tensor) - BS x S x 1 x T)

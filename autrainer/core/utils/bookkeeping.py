@@ -11,7 +11,6 @@ import torch
 from torchinfo import summary
 import yaml
 
-from autrainer.datasets.utils.data_struct import Data
 from autrainer.metrics import AbstractMetric
 
 
