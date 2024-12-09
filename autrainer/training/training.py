@@ -462,7 +462,7 @@ class ModularTaskTrainer:
             self.bookkeeping.create_folder(epoch_folder)
             self.model.train()
             self.model.to(self.DEVICE)
-            for batch_idx, (data) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     self.train_loader,
                     desc="Train",
@@ -485,9 +485,7 @@ class ModularTaskTrainer:
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
                 if self.train_tracker:
-                    self.train_tracker.update(
-                        o, data.target.cpu(), data.index.cpu()
-                    )
+                    self.train_tracker.update(o, data.target.cpu(), data.index)
                 self.callback_manager.callback(
                     position="cb_on_step_end",
                     trainer=self,
@@ -768,7 +766,7 @@ class ModularTaskTrainer:
     ):
         with torch.no_grad():
             loss = 0
-            for batch_idx, (data) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     loader,
                     desc="Evaluate" if cb_type == "val" else "Test",
@@ -793,7 +791,7 @@ class ModularTaskTrainer:
                     .cpu()
                     .item()
                 )
-                tracker.update(output, data.target.cpu(), data.index.cpu())
+                tracker.update(output, data.target.cpu(), data.index)
                 self.callback_manager.callback(
                     position=f"cb_on_{cb_type}_step_end",
                     trainer=self,
