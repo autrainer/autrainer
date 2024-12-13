@@ -37,7 +37,7 @@ def disaggregated_evaluation(
             in stratified manner.
 
     Returns:
-        Dictionary containing results
+        Dictionary containing the results of the disaggregated evaluation.
 
     """
     results = {m.name: {} for m in metrics}
