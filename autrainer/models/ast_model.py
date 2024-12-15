@@ -1,10 +1,8 @@
-from typing import Optional, Union
+from typing import Optional
 
 import torch
 from transformers import ASTConfig
 from transformers import ASTModel as ASTBaseModel
-
-from autrainer.datasets.utils.data_struct import Data
 
 from .abstract_model import AbstractModel
 
@@ -58,8 +56,7 @@ class ASTModel(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.model(x).last_hidden_state.mean(1)
 
-    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
-        x = self._parse_data(x)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.embeddings(x)
         x = self.out(x)
         return x

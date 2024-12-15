@@ -14,13 +14,11 @@ Adapted to match coding styles of current repo:
 
 """
 
-from typing import Tuple, Union
+from typing import Tuple
 
 import numpy as np
 import torch
 import torch.nn as nn
-
-from autrainer.datasets.utils.data_struct import Data
 
 from .abstract_model import AbstractModel
 from .sequential import Sequential
@@ -347,12 +345,11 @@ class AudioRNNModel(AbstractModel):
 
         return rnn_out
 
-    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
             x ((torch.Tensor) - BS x S x 1 x T)
         """
-        x = self._parse_data(x)
         rnn_out = self.embeddings(x)
         output = self.linear(rnn_out)
         return output

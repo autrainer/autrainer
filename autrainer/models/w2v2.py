@@ -1,10 +1,7 @@
-from typing import Union
 import warnings
 
 import torch
 from transformers import Wav2Vec2Model
-
-from autrainer.datasets.utils.data_struct import Data
 
 from .abstract_model import AbstractModel
 from .ffnn import FFNN
@@ -34,8 +31,7 @@ class W2V2Backbone(AbstractModel):
             x = x.mean(1)
         return x
 
-    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
-        x = self._parse_data(x)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.embeddings(x)
 
 
@@ -83,6 +79,5 @@ class W2V2FFNN(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.backbone(x.squeeze(1))
 
-    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
-        x = self._parse_data(x)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.frontend(self.embeddings(x))

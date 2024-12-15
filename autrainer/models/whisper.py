@@ -1,9 +1,5 @@
-from typing import Union
-
 import torch
 from transformers import WhisperModel
-
-from autrainer.datasets.utils.data_struct import Data
 
 from .abstract_model import AbstractModel
 from .ffnn import FFNN
@@ -27,8 +23,7 @@ class WhisperBackbone(AbstractModel):
         ][:, 0, :]
         return x
 
-    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
-        x = self._parse_data(x)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.embeddings(x)
 
 
@@ -69,6 +64,5 @@ class WhisperFFNN(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.backbone(x)
 
-    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
-        x = self._parse_data(x)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.frontend(self.embeddings(x))

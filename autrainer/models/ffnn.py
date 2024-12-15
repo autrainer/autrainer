@@ -1,8 +1,4 @@
-from typing import Union
-
 import torch
-
-from autrainer.datasets.utils.data_struct import Data
 
 from .abstract_model import AbstractModel
 from .utils import ExtractLayerEmbeddings
@@ -56,8 +52,7 @@ class FFNN(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self._embedding_extractor(x)
 
-    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
-        x = self._parse_data(x)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         for layer in self.children():
             x = layer(x)
         return x
