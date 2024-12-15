@@ -13,6 +13,7 @@ from autrainer.datasets import (
     AbstractDataset,
     BaseClassificationDataset,
     BaseMLClassificationDataset,
+    BaseMTRegressionDataset,
     BaseRegressionDataset,
     DCASE2016Task1,
     DCASE2018Task3,
@@ -62,6 +63,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
             "classification",
             "ml-classification",
             "regression",
+            "mt-regression",
         ]
         os.makedirs(os.path.join(path, "default"), exist_ok=True)
         df = pd.DataFrame()
@@ -70,9 +72,12 @@ class TestBaseDatasets(BaseIndividualTempDir):
             df[target_column] = [i % 10 for i in range(num_files)]
         elif target_type == "regression":
             df[target_column] = [i for i in range(num_files)]
-        else:
+        elif target_type == "ml-classification":
             for i in range(10):
                 df[f"target_{i}"] = torch.randint(0, 2, (num_files,)).tolist()
+        else:
+            for i in range(10):
+                df[f"target_{i}"] = torch.rand(num_files).tolist()
 
         output_files = output_files or ["train", "dev", "test"]
         for output_file in output_files:
@@ -203,6 +208,16 @@ class TestBaseDatasets(BaseIndividualTempDir):
         kwargs["tracking_metric"] = "autrainer.metrics.MSE"
         data = BaseRegressionDataset(**kwargs)
         self._test_data(data, 1, (4,))
+
+    def test_mtr(self) -> None:
+        self._mock_dataframes("data/TestDataset", target_type="mt-regression")
+        self._mock_data("data/TestDataset", (101, 64))
+        kwargs = self._mock_dataset_kwargs()
+        kwargs["metrics"] = ["autrainer.metrics.MSE"]
+        kwargs["tracking_metric"] = "autrainer.metrics.MSE"
+        kwargs["target_column"] = [f"target_{i}" for i in range(10)]
+        data = BaseMTRegressionDataset(**kwargs)
+        self._test_data(data, 10, (4, 10))
 
     def _test_data(
         self,
