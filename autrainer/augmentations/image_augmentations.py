@@ -1,5 +1,5 @@
 import os
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Type
+from typing import TYPE_CHECKING, Callable, List, Optional, Type
 
 import pandas as pd
 import torch
@@ -8,8 +8,9 @@ from torchvision.transforms import v2
 from .abstract_augmentation import AbstractAugmentation
 
 
-if TYPE_CHECKING:
-    from autrainer.datasets import AbstractDataset  # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
+    from autrainer.datasets import AbstractDataset
+    from autrainer.datasets.utils import AbstractDataBatch, AbstractDataItem
 
 
 class BaseMixUpCutMix(AbstractAugmentation):
@@ -49,11 +50,9 @@ class BaseMixUpCutMix(AbstractAugmentation):
             num_classes=data.output_dim, alpha=self.alpha
         )
 
-        def _collate_fn(
-            batch: List[Tuple[torch.Tensor, int, int]],
-        ) -> List[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
+        def _collate_fn(batch: List[AbstractDataItem]) -> AbstractDataBatch:
             probability = torch.rand(1, generator=self.g).item()
-            batched = default(batch)
+            batched: AbstractDataBatch = default(batch)
             if probability < self.p:
                 features = batched.features
                 target = batched.target
