@@ -4,6 +4,12 @@ Dataset Utils
 Dataset utilities provide :ref:`file handlers <dataset_file_handlers>`, :ref:`target (or label) transforms <dataset_target_transforms>`,
 and a :ref:`dataset wrapper <dataset_wrapper>` for :ref:`datasets <datasets>`.
 
+
+Data Items and Batches
+----------------------
+TODO: Add explanation of data items and batches
+
+
 .. _dataset_file_handlers:
 
 File Handlers
