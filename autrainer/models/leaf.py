@@ -6,8 +6,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from autrainer.datasets.utils.data_struct import Data
-
 from .abstract_model import AbstractModel
 from .timm_wrapper import TimmModel
 
@@ -132,8 +130,7 @@ class LEAFNet(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.leaf(x)
 
-    def forward(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
-        x = self._parse_data(x)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.leaf(x)
         x = x.unsqueeze(1)
         x = self.classifier(x)

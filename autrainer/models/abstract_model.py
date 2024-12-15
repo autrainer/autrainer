@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Union
+from functools import cached_property
+from inspect import signature
+from typing import List
 
 import audobject
 import torch
-
-from autrainer.datasets.utils.data_struct import Data
 
 
 class AbstractModel(torch.nn.Module, audobject.Object, ABC):
@@ -17,20 +17,6 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         super().__init__()
         self.output_dim = output_dim
 
-    def _parse_data(self, x: Union[Data, torch.Tensor]) -> torch.Tensor:
-        """Parsing input data.
-
-        Args:
-            x: Input tensor.
-
-        Returns:
-            Output tensor.
-        """
-        if isinstance(x, Data):
-            return x.features
-        else:
-            return x
-
     @abstractmethod
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         """Get embeddings from the model.
@@ -41,3 +27,12 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         Returns:
             Embeddings.
         """
+
+    @cached_property
+    def inputs(self) -> List[str]:
+        """Get the inputs to the model's forward method.
+
+        Returns:
+            Model inputs.
+        """
+        return [v.name for v in signature(self.forward).parameters.values()]
