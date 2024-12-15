@@ -2,6 +2,10 @@ from typing import Callable, Tuple
 
 import torch
 
+from autrainer.datasets.utils import AbstractDataBatch
+from autrainer.models import AbstractModel
+from autrainer.training.utils import create_model_inputs
+
 
 class RandomScaledSGD(torch.optim.Optimizer):
     def __init__(
@@ -30,14 +34,14 @@ class RandomScaledSGD(torch.optim.Optimizer):
 
     def custom_step(
         self,
-        model: torch.nn.Module,  # model
-        data: torch.Tensor,  # batched input data
+        model: AbstractModel,  # model
+        data: AbstractDataBatch,  # batched input data
         target: torch.Tensor,  # batched target data
         criterion: torch.nn.Module,  # loss function
         probabilities_fn: Callable,  # function to get probabilities from model outputs
     ) -> Tuple[float, torch.Tensor]:
         self.zero_grad()
-        output = model(data)
+        output = model(create_model_inputs(model, data))
         loss = criterion(probabilities_fn(output), target)
         loss.backward()
         if torch.rand(1, generator=self.g).item() < self.p:

@@ -20,8 +20,11 @@ from autrainer.core.utils import (
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
-from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
-from autrainer.datasets.utils.data_struct import Data
+from autrainer.datasets.utils import (
+    AbstractDataBatch,
+    AbstractFileHandler,
+    AudioFileHandler,
+)
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
 from autrainer.transforms import SmartCompose, TransformManager
@@ -30,6 +33,7 @@ from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
 from .outputs_tracker import init_trackers
 from .utils import (
+    create_model_inputs,
     disaggregated_evaluation,
     format_results,
     load_pretrained_model_state,
@@ -112,13 +116,9 @@ class ModularTaskTrainer:
         )
 
         # ? Datasets and Evaluation Data
-        self.train_dataset = self.data.train_dataset
-        self.dev_dataset = self.data.dev_dataset
-        self.test_dataset = self.data.test_dataset
         self.df_dev, self.df_test, self.stratify, self.target_transform = (
             self.data.get_evaluation_data()
         )
-        self.task = self.data.task
 
         # ? Misc Training Parameters
         self.disable_progress_bar = not self.cfg.get("progress_bar", False)
@@ -485,7 +485,7 @@ class ModularTaskTrainer:
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
                 if self.train_tracker:
-                    self.train_tracker.update(o, data.target.cpu(), data.index)
+                    self.train_tracker.update(o, data.target, data.index)
                 self.callback_manager.callback(
                     position="cb_on_step_end",
                     trainer=self,
@@ -628,13 +628,30 @@ class ModularTaskTrainer:
 
     def _train_step(
         self,
-        model: torch.nn.Module,
-        data: Data,
+        model: AbstractModel,
+        data: AbstractDataBatch,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
     ) -> Tuple[float, torch.Tensor]:
+        """
+        Perform a single training step on the model and data batch.
+
+        Args:
+            model: The model to train.
+            data: The data batch containing features, target, and potentially
+                additional fields. The data batch is expected to be on the same
+                device as the model. Additional fields are passed to the model
+                as keyword arguments if they are present in the model's forward
+                method.
+            criterion: Loss function.
+            probabilities_fn: Function to convert model outputs to
+                probabilities.
+
+        Returns:
+            Tuple containing the loss and the (detached) model outputs.
+        """
         self.optimizer.zero_grad()
-        output = model(data)
+        output = model(**create_model_inputs(model, data))
         loss = criterion(probabilities_fn(output), data.target)
         loss.backward()
         self.optimizer.step()
@@ -779,7 +796,7 @@ class ModularTaskTrainer:
                     batch_idx=batch_idx,
                 )
                 data.to(self.DEVICE)
-                output = self.model(data)
+                output = self.model(**create_model_inputs(self.model, data))
                 probabilities_fn = (
                     self.data.target_transform.probabilities_training
                 )
@@ -791,7 +808,7 @@ class ModularTaskTrainer:
                     .cpu()
                     .item()
                 )
-                tracker.update(output, data.target.cpu(), data.index)
+                tracker.update(output, data.target, data.index)
                 self.callback_manager.callback(
                     position=f"cb_on_{cb_type}_step_end",
                     trainer=self,
