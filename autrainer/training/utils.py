@@ -156,7 +156,10 @@ def load_checkpoint(checkpoint: str) -> Dict[str, torch.Tensor]:
     return torch.load(checkpoint)
 
 
-def create_model_inputs(model: AbstractModel, data: AbstractDataBatch):
+def create_model_inputs(
+    model: AbstractModel,
+    data: AbstractDataBatch,
+) -> Dict[str, torch.Tensor]:
     _forbidden = ["features", "target", "index"]
     model_inputs = {model.inputs[0]: data.features}
     for key, value in vars(data).items():
