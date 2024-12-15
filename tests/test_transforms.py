@@ -9,7 +9,7 @@ import torch
 from torchvision import transforms as T
 
 from autrainer.augmentations import AbstractAugmentation, CutMix
-from autrainer.datasets.utils.dataloader import default_data_collator
+from autrainer.datasets.utils import DataBatch
 from autrainer.transforms import (
     AbstractTransform,
     AnyToTensor,
@@ -395,13 +395,13 @@ class TestSmartCompose:
             output_dim = 10
 
         assert (
-            sc.get_collate_fn(MockDataset(), default=default_data_collator)
+            sc.get_collate_fn(MockDataset(), default=DataBatch.collate)
             is not None
         ), "Collate function should be present"
         assert (
             (
-                sc.get_collate_fn(MockDataset(), default=default_data_collator)
-                == default_data_collator
+                sc.get_collate_fn(MockDataset(), default=DataBatch.collate)
+                == DataBatch.collate
             )
             != has_collate_fn
         ), f"Collate function should be default: {not has_collate_fn}"
