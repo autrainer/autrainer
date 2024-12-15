@@ -676,7 +676,7 @@ class BaseMTRegressionDataset(AbstractDataset):
     @cached_property
     def target_transform(self) -> MultiTargetMinMaxScaler:
         return MultiTargetMinMaxScaler(
-            targets=self.target_column,
+            target=self.target_column,
             minimum=self.df_train[self.target_column].min().to_list(),
             maximum=self.df_train[self.target_column].max().to_list(),
         )

@@ -1,7 +1,7 @@
 from copy import deepcopy
 import os
 from pathlib import Path
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -31,7 +31,7 @@ from autrainer.transforms import SmartCompose, TransformManager
 
 from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
-from .outputs_tracker import init_trackers
+from .outputs_tracker import OutputsTracker, init_trackers
 from .utils import (
     create_model_inputs,
     disaggregated_evaluation,
@@ -49,7 +49,7 @@ class ModularTaskTrainer:
         experiment_id: str = None,
         run_name: str = None,
     ) -> None:
-        """Modular Task Trainer.
+        """Trainer managing the training of a model given a configuration.
 
         Args:
             cfg: Run configuration.
@@ -452,6 +452,7 @@ class ModularTaskTrainer:
         ]
 
     def train_epochs(self):
+        """Train the model for a fixed number of epochs."""
         train_loss = []
         self.train_timer.start()
         for epoch in range(self.initial_iteration, self.cfg.iterations + 1):
@@ -533,6 +534,7 @@ class ModularTaskTrainer:
             )
 
     def train_steps(self):
+        """Train the model for a fixed number of steps."""
         pbar = tqdm(
             total=self.cfg.eval_frequency,
             desc="Train",
@@ -660,12 +662,12 @@ class ModularTaskTrainer:
     def evaluate(
         self,
         iteration: int,
-        iteration_folder,
-        loader,
-        df,
-        dev_evaluation=True,
-        save_to="dev",
-        tracker=None,
+        iteration_folder: str,
+        loader: torch.utils.data.DataLoader,
+        df: pd.DataFrame,
+        dev_evaluation: bool = True,
+        save_to: str = "dev",
+        tracker: Optional[OutputsTracker] = None,
     ) -> Dict[str, float]:
         """Evaluate the model on the dev or test set.
 
@@ -779,8 +781,23 @@ class ModularTaskTrainer:
         tracker.reset()
 
     def _evaluate(
-        self, loader, tracker, iteration_folder, cb_type: str = "val"
-    ):
+        self,
+        loader: torch.utils.data.DataLoader,
+        tracker: OutputsTracker,
+        iteration_folder: str,
+        cb_type: str = "val",
+    ) -> Dict[str, float]:
+        """Evaluate the model on the dev or test set.
+
+        Args:
+            loader: Dataloader to evaluate on.
+            tracker: Tracker to save the outputs.
+            iteration_folder: Iteration folder to save the results to.
+            cb_type: Callback type. Defaults to "val".
+
+        Returns:
+            Dictionary containing the results on the dev or test set.
+        """
         with torch.no_grad():
             loss = 0
             for batch_idx, data in enumerate(
