@@ -22,8 +22,11 @@ from autrainer.core.utils import (
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
-from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
-from autrainer.datasets.utils.data_struct import Data
+from autrainer.datasets.utils import (
+    AbstractDataBatch,
+    AbstractFileHandler,
+    AudioFileHandler,
+)
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
 from autrainer.transforms import SmartCompose, TransformManager
@@ -32,6 +35,7 @@ from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
 from .outputs_tracker import OutputsTracker, init_trackers
 from .utils import (
+    create_model_inputs,
     disaggregated_evaluation,
     format_results,
     load_pretrained_model_state,
@@ -476,16 +480,12 @@ class ModularTaskTrainer:
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
                 if self.train_tracker:
-<<<<<<< HEAD
                     self.train_tracker.update(
                         output,
                         data.label.cpu(),
                         loss,
                         data.index.cpu()
                     )
-=======
-                    self.train_tracker.update(o, data.target.cpu(), data.index)
->>>>>>> Index stays to CPU, syntax
                 self.callback_manager.callback(
                     position="cb_on_step_end",
                     trainer=self,
@@ -632,8 +632,8 @@ class ModularTaskTrainer:
 
     def _train_step(
         self,
-        model: torch.nn.Module,
-        data: Data,
+        model: AbstractModel,
+        data: AbstractDataBatch,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
     ) -> Tuple[torch.Tensor, torch.Tensor]:

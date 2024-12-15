@@ -3,6 +3,9 @@ from typing import Callable, Tuple
 import torch
 
 import autrainer
+from autrainer.datasets.utils import AbstractDataBatch
+from autrainer.models import AbstractModel
+from autrainer.training.utils import create_model_inputs
 
 
 class SAM(torch.optim.Optimizer):
@@ -134,8 +137,8 @@ class SAM(torch.optim.Optimizer):
     # TODO: Check if Batch Norm Tip needs to be applied
     def custom_step(
         self,
-        model: torch.nn.Module,
-        data: torch.Tensor,
+        model: AbstractModel,
+        data: AbstractDataBatch,
         target: torch.Tensor,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
@@ -154,12 +157,12 @@ class SAM(torch.optim.Optimizer):
         Returns:
             Tuple containing the non-reduced loss and model outputs.
         """
-        output = model(data)
+        output = model(create_model_inputs(model, data))
         loss = criterion(probabilities_fn(output), target)
         loss.mean().backward()
         self.first_step(zero_grad=True)
 
-        output = model(data)
+        output = model(create_model_inputs(model, data))
         loss = criterion(probabilities_fn(output), target)
         loss.mean().backward()
         self.second_step(zero_grad=True)
