@@ -6,7 +6,7 @@ import torch
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
-from autrainer.datasets.utils.dataloader import default_data_collator
+from autrainer.datasets.utils import DataBatch
 
 from .abstract_preprocess_script import (
     AbstractPreprocessScript,
@@ -89,7 +89,7 @@ def preprocess_main(
             shuffle=False,
             num_workers=num_workers,
             batch_size=1,
-            collate_fn=default_data_collator,
+            collate_fn=DataBatch.collate,
         )
         for instance in tqdm(
             loader,
