@@ -7,7 +7,7 @@ import pandas as pd
 import torch
 
 from autrainer.core.constants import TrainingConstants
-from autrainer.datasets.utils.data_struct import Data
+from autrainer.datasets.utils import DataItem
 from autrainer.transforms import SmartCompose
 
 from .abstract_dataset import AbstractDataset
@@ -64,7 +64,7 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
             data = self.transform(data, index=index)
         if self.target_transform:
             target = self.target_transform(target)
-        return Data(features=data, label=target, index=index)
+        return DataItem(features=data, label=target, index=index)
 
 
 class ToyDataset(AbstractDataset):

@@ -6,7 +6,7 @@ import torch
 
 from autrainer.transforms import SmartCompose
 
-from .data_struct import Data
+from .data_struct import DataItem
 from .file_handlers import AbstractFileHandler
 from .target_transforms import AbstractTargetTransform
 
@@ -65,17 +65,14 @@ class DatasetWrapper(torch.utils.data.Dataset):
     def __len__(self) -> int:
         return len(self.df)
 
-    def __getitem__(
-        self,
-        item: int,
-    ) -> Data:
-        """Get item from the dataset.
+    def __getitem__(self, item: int) -> DataItem:
+        """Get the data item at the specified index.
 
         Args:
             item: Index of the item.
 
         Returns:
-            Tuple containing the data, target and item index.
+            Data item at the specified index.
         """
         index = self.df.index[item]
         item_path = self.df.loc[index, self.index_column]
@@ -90,4 +87,4 @@ class DatasetWrapper(torch.utils.data.Dataset):
         if self.target_transform is not None:
             target = self.target_transform(target)
 
-        return Data(features=data, target=target, index=item)
+        return DataItem(features=data, target=target, index=item)
