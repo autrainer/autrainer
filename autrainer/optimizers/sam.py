@@ -139,7 +139,6 @@ class SAM(torch.optim.Optimizer):
         self,
         model: AbstractModel,
         data: AbstractDataBatch,
-        target: torch.Tensor,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
     ) -> Tuple[float, torch.Tensor]:
@@ -148,22 +147,26 @@ class SAM(torch.optim.Optimizer):
         sharpness.
 
         Args:
-            model: Model to be optimized.
-            data: Batched input data.
-            target: Batched target data.
+            model: The model to train.
+            data: The data batch containing features, target, and potentially
+                additional fields. The data batch is expected to be on the same
+                device as the model. Additional fields are passed to the model
+                as keyword arguments if they are present in the model's forward
+                method.
             criterion: Loss function.
-            probabilities_fn: Function to get probabilities from model outputs.
+            probabilities_fn: Function to convert model outputs to
+                probabilities.
 
         Returns:
-            Reduced loss over the batch and detached model outputs.
+            Tuple containing the reduced loss and the (detached) model outputs.
         """
-        output = model(create_model_inputs(model, data))
-        loss = criterion(probabilities_fn(output), target)
+        output = model(**create_model_inputs(model, data))
+        loss = criterion(probabilities_fn(output), data.target)
         loss.backward()
         self.first_step(zero_grad=True)
 
-        output = model(create_model_inputs(model, data))
-        loss = criterion(probabilities_fn(output), target)
+        output = model(**create_model_inputs(model, data))
+        loss = criterion(probabilities_fn(output), data.target)
         loss.backward()
         self.second_step(zero_grad=True)
         _loss = loss.item()

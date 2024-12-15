@@ -36,13 +36,12 @@ class RandomScaledSGD(torch.optim.Optimizer):
         self,
         model: AbstractModel,  # model
         data: AbstractDataBatch,  # batched input data
-        target: torch.Tensor,  # batched target data
         criterion: torch.nn.Module,  # loss function
         probabilities_fn: Callable,  # function to get probabilities from model outputs
     ) -> Tuple[float, torch.Tensor]:
         self.zero_grad()
-        output = model(create_model_inputs(model, data))
-        loss = criterion(probabilities_fn(output), target)
+        output = model(**create_model_inputs(model, data))
+        loss = criterion(probabilities_fn(output), data.target)
         loss.backward()
         if torch.rand(1, generator=self.g).item() < self.p:
             self.param_groups[0]["lr"] *= self.scaling_factor

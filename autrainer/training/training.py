@@ -635,8 +635,7 @@ class ModularTaskTrainer:
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
     ) -> Tuple[float, torch.Tensor]:
-        """
-        Perform a single training step on the model and data batch.
+        """Perform a single training step on the model and data batch.
 
         Args:
             model: The model to train.
@@ -650,7 +649,7 @@ class ModularTaskTrainer:
                 probabilities.
 
         Returns:
-            Tuple containing the loss and the (detached) model outputs.
+            Tuple containing the reduced loss and the (detached) model outputs.
         """
         self.optimizer.zero_grad()
         output = model(**create_model_inputs(model, data))
