@@ -1,3 +1,4 @@
+from functools import cached_property
 import os
 import shutil
 from typing import Dict, List, Optional, Tuple, Union
@@ -142,26 +143,36 @@ class DCASE2020Task1A(BaseClassificationDataset):
                 f"{list(SCENE_CATEGORIES.keys())}."
             )
 
-    def load_dataframes(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    @cached_property
+    def _load_train_dev_df(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         df_train = pd.read_csv(os.path.join(self.path, "train.csv"))
         df_dev = pd.read_csv(os.path.join(self.path, "test.csv"))
-        df_test = pd.read_csv(os.path.join(self.path, "test.csv"))
 
         if self.dev_split > 0:
             df_train, df_dev = self._split_train_dataset(df_train)
 
         df_train = self._filter_df_by_category(df_train, self.scene_category)
         df_dev = self._filter_df_by_category(df_dev, self.scene_category)
-        df_test = self._filter_df_by_category(df_test, self.scene_category)
 
         if self.exclude_cities is not None:
             df_train = df_train.loc[
                 ~df_train["city"].isin(self.exclude_cities)
             ]
 
-        return df_train, df_dev, df_test
+        return df_train, df_dev
+
+    @cached_property
+    def df_train(self) -> pd.DataFrame:
+        return self._load_train_dev_df[0]
+
+    @cached_property
+    def df_dev(self) -> pd.DataFrame:
+        return self._load_train_dev_df[1]
+
+    @cached_property
+    def df_test(self) -> pd.DataFrame:
+        df_test = pd.read_csv(os.path.join(self.path, "test.csv"))
+        return self._filter_df_by_category(df_test, self.scene_category)
 
     def _split_train_dataset(
         self,

@@ -1,3 +1,4 @@
+from functools import cached_property
 import os
 import shutil
 from typing import Dict, List, Optional, Tuple, Union
@@ -100,17 +101,17 @@ class DCASE2018Task3(BaseClassificationDataset):
             stratify=stratify,
         )
 
-    def load_dataframes(
+    @cached_property
+    def _load_train_dev_df(
         self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         df_train = pd.read_csv(os.path.join(self.path, "train.csv"))
         df_dev = pd.read_csv(os.path.join(self.path, "test.csv"))
-        df_test = pd.read_csv(os.path.join(self.path, "test.csv"))
 
         if self.dev_split > 0:
             df_train, df_dev = self._split_train_dataset(df_train)
 
-        return df_train, df_dev, df_test
+        return df_train, df_dev
 
     def _split_train_dataset(
         self,
@@ -123,6 +124,14 @@ class DCASE2018Task3(BaseClassificationDataset):
             df[df.index.isin(train_indices)].copy(),
             df[~df.index.isin(train_indices)].copy(),
         )
+
+    @cached_property
+    def df_train(self) -> pd.DataFrame:
+        return self._load_train_dev_df[0]
+
+    @cached_property
+    def df_dev(self) -> pd.DataFrame:
+        return self._load_train_dev_df[1]
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover

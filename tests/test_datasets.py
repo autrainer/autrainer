@@ -277,7 +277,7 @@ class TestAIBO(BaseIndividualTempDir):
         df = pd.DataFrame()
         random.seed(42)
 
-        def school():
+        def school() -> str:
             if random.random() < 0.5:
                 return "Ohm"
             else:
@@ -555,7 +555,7 @@ class TestToyDataset(BaseIndividualTempDir):
         kwargs = self._mock_toy_dataset_kwargs()
         kwargs["size"] = size
         with pytest.raises(ValueError):
-            ToyDataset(**kwargs)
+            ToyDataset(**kwargs).df_train
 
     @staticmethod
     def _test_data_shapes(
