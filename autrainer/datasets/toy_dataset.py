@@ -152,7 +152,8 @@ class ToyDataset(AbstractDataset):
                 f"'{test_split}' must be less than 1."
             )
 
-    def _get_dataset_sizes(self) -> Tuple[int, int, int]:
+    @cached_property
+    def _dataset_sizes(self) -> Tuple[int, int, int]:
         if self.size <= 0:
             raise ValueError(f"Size must be > 0, got '{self.size}'.")
 
@@ -166,15 +167,9 @@ class ToyDataset(AbstractDataset):
             )
         return train_size, dev_size, test_size
 
-    def load_dataframes(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    @cached_property
+    def _mock_df(self) -> pd.DataFrame:
         rng = np.random.default_rng(self.seed)
-
-        def _reset_index(df: pd.DataFrame) -> pd.DataFrame:
-            return df.reset_index(drop=True).reset_index(
-                names=[self.index_column]
-            )
 
         if self.task == "ml-classification":
             self.target_column = [
@@ -223,11 +218,30 @@ class ToyDataset(AbstractDataset):
                 f"must be in {TrainingConstants().TASKS}."
             )
 
-        train_size, dev_size, _ = self._get_dataset_sizes()
+        return df
+
+    @cached_property
+    def df_train(self) -> pd.DataFrame:
+        train_size, *_ = self._dataset_sizes
+        return self._reset_index(self._mock_df.iloc[:train_size])
+
+    @cached_property
+    def df_dev(self) -> pd.DataFrame:
+        train_size, dev_size, _ = self._dataset_sizes
+        return self._reset_index(
+            self._mock_df.iloc[train_size : train_size + dev_size]
+        )
+
+    @cached_property
+    def df_test(self) -> pd.DataFrame:
+        train_size, dev_size, _ = self._dataset_sizes
+        return self._reset_index(self._mock_df.iloc[train_size + dev_size :])
+
+    def _reset_index(self, df: pd.DataFrame) -> pd.DataFrame:
         return (
-            _reset_index(df.iloc[:train_size]),
-            _reset_index(df.iloc[train_size : train_size + dev_size]),
-            _reset_index(df.iloc[train_size + dev_size :]),
+            df.copy()
+            .reset_index(drop=True)
+            .reset_index(names=[self.index_column])
         )
 
     def _init_dataset(

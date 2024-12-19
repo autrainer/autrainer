@@ -107,19 +107,19 @@ class EmoDB(BaseClassificationDataset):
         )
 
     @cached_property
-    def meta(self):
+    def meta(self) -> pd.DataFrame:
         return pd.read_csv(os.path.join(self.path, "metadata.csv"))
 
     @cached_property
-    def train_df(self):
+    def df_train(self) -> pd.DataFrame:
         return self.meta[self.meta["speaker"].isin(self.train_speakers)]
 
     @cached_property
-    def dev_df(self):
+    def df_dev(self) -> pd.DataFrame:
         return self.meta[self.meta["speaker"].isin(self.dev_speakers)]
 
     @cached_property
-    def test_df(self):
+    def df_test(self) -> pd.DataFrame:
         return self.meta[self.meta["speaker"].isin(self.test_speakers)]
 
     @staticmethod
