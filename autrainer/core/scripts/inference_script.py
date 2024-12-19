@@ -26,6 +26,7 @@ class InferenceArgs:
     stride_length: Optional[float]
     min_length: Optional[float]
     sample_rate: Optional[int]
+    trust_remote: bool = False
 
 
 class InferenceScript(AbstractScript):
@@ -204,6 +205,16 @@ class InferenceScript(AbstractScript):
                 "sliding window inference. Defaults to None."
             ),
         )
+        self.parser.add_argument(
+            "-t",
+            "--trust-remote",
+            action="store_true",
+            help=(
+                "Whether to trust and execute custom Python code from Hugging "
+                "Face models. Warning: This can be dangerous as it may run "
+                "arbitrary code on your machine! Defaults to False."
+            ),
+        )
 
     def main(self, args: InferenceArgs) -> None:
         args.model = self._assert_model_exists(args)
@@ -217,7 +228,7 @@ class InferenceScript(AbstractScript):
         from autrainer.serving import get_model_path
 
         try:
-            return get_model_path(args.model)
+            return get_model_path(args.model, args.trust_remote)
         except ValueError as e:
             raise CommandLineError(self.parser, str(e), code=1)
 
@@ -374,6 +385,7 @@ def inference(
     stride_length: Optional[float] = None,
     min_length: Optional[float] = None,
     sample_rate: Optional[int] = None,
+    trust_remote: bool = False,
 ) -> None:
     """Perform inference on a trained model.
 
@@ -419,6 +431,9 @@ def inference(
             length is enforced. Defaults to None.
         sample_rate: Sample rate of audio files in Hz. Has to be specified for
             sliding window inference. Defaults to None.
+        trust_remote: Whether to trust and execute custom Python code from
+            Hugging Face models. Warning: This can be dangerous as it may run
+            arbitrary code on your machine! Defaults to False.
 
     Raises:
         CommandLineError: If the model, input, or preprocessing configuration
@@ -442,5 +457,6 @@ def inference(
             stride_length,
             min_length,
             sample_rate,
+            trust_remote,
         )
     )
