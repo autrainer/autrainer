@@ -39,7 +39,9 @@ For instance, a file in the :attr:`index_column` might be :file:`optional/subdir
 where :file:`some.file` is an audio or a feature file.
 
 In order to load custom dataset splits that do not follow the standard :file:`train.csv`, :file:`dev.csv`, and :file:`test.csv` convention,
-the :meth:`~autrainer.datasets.AbstractDataset.load_dataframes` method can be overwritten (see :ref:`custom datasets tutorial <tut_datasets>`).
+the :attr:`~autrainer.datasets.AbstractDataset.df_train`, :attr:`~autrainer.datasets.AbstractDataset.df_dev`,
+and :attr:`~autrainer.datasets.AbstractDataset.df_test`, properties of the dataset class can be overwritten
+(see :ref:`custom datasets tutorial <tut_datasets>`).
 
 **Training and Evaluation**
 

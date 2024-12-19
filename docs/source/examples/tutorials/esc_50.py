@@ -1,6 +1,7 @@
+from functools import cached_property
 import os
 import shutil
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 import pandas as pd
 
@@ -24,15 +25,24 @@ class ESC50(BaseClassificationDataset):
         self.test_folds = test_folds
         super().__init__(**kwargs)
 
-    def load_dataframes(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        meta = pd.read_csv(os.path.join(self.path, "esc50.csv"))
-        return (
-            meta[meta["fold"].isin(self.train_folds)],
-            meta[meta["fold"].isin(self.dev_folds)],
-            meta[meta["fold"].isin(self.test_folds)],
-        )
+    @cached_property
+    def _load_metadata(self) -> pd.DataFrame:
+        return pd.read_csv(os.path.join(self.path, "esc50.csv"))
+
+    @cached_property
+    def df_train(self) -> pd.DataFrame:
+        meta = self._load_metadata
+        return meta[meta["fold"].isin(self.train_folds)]
+
+    @cached_property
+    def df_dev(self) -> pd.DataFrame:
+        meta = self._load_metadata
+        return meta[meta["fold"].isin(self.dev_folds)]
+
+    @cached_property
+    def df_test(self) -> pd.DataFrame:
+        meta = self._load_metadata
+        return meta[meta["fold"].isin(self.test_folds)]
 
     @staticmethod
     def download(path: str) -> None:
