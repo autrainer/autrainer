@@ -184,14 +184,29 @@ class AbstractDataset(ABC):
 
     @cached_property
     def df_train(self) -> pd.DataFrame:
+        """Dataframe for the training set, loaded from `train.csv` by default.
+
+        Returns:
+            Training dataframe.
+        """
         return pd.read_csv(os.path.join(self.path, "train.csv"))
 
     @cached_property
     def df_dev(self) -> pd.DataFrame:
+        """Dataframe for the development set, loaded from `dev.csv` by default.
+
+        Returns:
+            Development dataframe.
+        """
         return pd.read_csv(os.path.join(self.path, "dev.csv"))
 
     @cached_property
     def df_test(self) -> pd.DataFrame:
+        """Dataframe for the test set, loaded from `test.csv` by default.
+
+        Returns:
+            Test dataframe.
+        """
         return pd.read_csv(os.path.join(self.path, "test.csv"))
 
     def _init_dataset(
