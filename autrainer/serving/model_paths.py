@@ -231,7 +231,7 @@ class HubModelPath(AbstractModelPath):
         hf_api = HfApi(endpoint=os.environ.get("HF_ENDPOINT"))
         pbar = tqdm(self.files, desc="Downloading:")
         for file in pbar:
-            pbar.set_description(f"Downloading: {file}")
+            pbar.set_description(f"Downloading: {os.path.basename(file)}")
             with silence():
                 hf_api.hf_hub_download(
                     repo_id=self.repo_id,
