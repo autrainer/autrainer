@@ -41,8 +41,8 @@ class AbstractDataset(ABC):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
-        features_path: Optional[str] = None,
         inference_batch_size: Optional[int] = None,
+        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -66,12 +66,12 @@ class AbstractDataset(ABC):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            inference_batch_size: Inference batch size. If None, defaults to
+                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -364,12 +364,12 @@ class BaseClassificationDataset(AbstractDataset):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            inference_batch_size: Inference batch size. If None, defaults to
+                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -428,8 +428,8 @@ class BaseMLClassificationDataset(AbstractDataset):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
-        features_path: Optional[str] = None,
         inference_batch_size: Optional[int] = None,
+        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -452,12 +452,12 @@ class BaseMLClassificationDataset(AbstractDataset):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            inference_batch_size: Inference batch size. If None, defaults to
+                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -481,8 +481,8 @@ class BaseMLClassificationDataset(AbstractDataset):
             file_type=file_type,
             file_handler=file_handler,
             batch_size=batch_size,
-            features_path=features_path,
             inference_batch_size=inference_batch_size,
+            features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
@@ -530,8 +530,8 @@ class BaseRegressionDataset(AbstractDataset):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
-        features_path: Optional[str] = None,
         inference_batch_size: Optional[int] = None,
+        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -553,12 +553,12 @@ class BaseRegressionDataset(AbstractDataset):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            inference_batch_size: Inference batch size. If None, defaults to
+                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -579,8 +579,8 @@ class BaseRegressionDataset(AbstractDataset):
             file_type=file_type,
             file_handler=file_handler,
             batch_size=batch_size,
-            features_path=features_path,
             inference_batch_size=inference_batch_size,
+            features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
@@ -609,8 +609,8 @@ class BaseMTRegressionDataset(AbstractDataset):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
-        features_path: Optional[str] = None,
         inference_batch_size: Optional[int] = None,
+        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -632,12 +632,12 @@ class BaseMTRegressionDataset(AbstractDataset):
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
+            inference_batch_size: Inference batch size. If None, defaults to
+                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -658,8 +658,8 @@ class BaseMTRegressionDataset(AbstractDataset):
             file_type=file_type,
             file_handler=file_handler,
             batch_size=batch_size,
-            features_path=features_path,
             inference_batch_size=inference_batch_size,
+            features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
