@@ -155,7 +155,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
         data = BaseClassificationDataset(**dataset_args)
         for d in (data.train_dataset, data.dev_dataset, data.test_dataset):
             for x in d:
-                assert x[0].shape == (1, sampling_rate)
+                assert x.features.shape == (1, sampling_rate)
 
         dataset_args["criterion"] = criterion
         dataset_args["transform"] = transform
@@ -188,7 +188,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
         data = BaseClassificationDataset(**dataset_args)
         for d in (data.train_dataset, data.dev_dataset, data.test_dataset):
             for x in d:
-                assert x[0].shape == (
+                assert x.features.shape == (
                     1,
                     sampling_rate
                     // preprocess["pipeline"][-1][

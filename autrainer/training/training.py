@@ -20,7 +20,11 @@ from autrainer.core.utils import (
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
-from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
+from autrainer.datasets.utils import (
+    AbstractDataBatch,
+    AbstractFileHandler,
+    AudioFileHandler,
+)
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
 from autrainer.transforms import SmartCompose, TransformManager
@@ -29,6 +33,7 @@ from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
 from .outputs_tracker import OutputsTracker, init_trackers
 from .utils import (
+    create_model_inputs,
     disaggregated_evaluation,
     format_results,
     load_pretrained_model_state,
@@ -111,13 +116,9 @@ class ModularTaskTrainer:
         )
 
         # ? Datasets and Evaluation Data
-        self.train_dataset = self.data.train_dataset
-        self.dev_dataset = self.data.dev_dataset
-        self.test_dataset = self.data.test_dataset
         self.df_dev, self.df_test, self.stratify, self.target_transform = (
             self.data.get_evaluation_data()
         )
-        self.task = self.data.task
 
         # ? Misc Training Parameters
         self.disable_progress_bar = not self.cfg.get("progress_bar", False)
@@ -143,6 +144,7 @@ class ModularTaskTrainer:
             instance_of=AbstractModel,
             output_dim=self.output_dim,
         )
+
         if model_checkpoint:
             state_dict = torch.load(
                 model_checkpoint,
@@ -154,8 +156,9 @@ class ModularTaskTrainer:
                 state_dict,
                 skip_last_layer,
             )
+
         self.bookkeeping.save_model_summary(
-            self.model, self.train_dataset, "model_summary.txt"
+            self.model, self.data.train_dataset, "model_summary.txt"
         )
 
         # ? Load Optimizer
@@ -387,7 +390,7 @@ class ModularTaskTrainer:
         # ? Score best model on test set
         self.bookkeeping.load_state(self.model, "model.pt", "_best")
         self.bookkeeping.load_state(self.optimizer, "optimizer.pt", "_best")
-        self.model = self.model.to(self.DEVICE)
+        self.model.to(self.DEVICE)
         self.model.eval()
         self.bookkeeping.create_folder("_test")
         self.test_timer.start()
@@ -460,14 +463,14 @@ class ModularTaskTrainer:
             self.bookkeeping.create_folder(epoch_folder)
             self.model.train()
             self.model.to(self.DEVICE)
-            for batch_idx, (data, target, sample_idx) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     self.train_loader,
                     desc="Train",
                     disable=self.disable_progress_bar,
                 )
             ):
-                data, target = data.to(self.DEVICE), target.to(self.DEVICE)
+                data.to(self.DEVICE)
                 self.callback_manager.callback(
                     position="cb_on_step_begin",
                     trainer=self,
@@ -477,14 +480,13 @@ class ModularTaskTrainer:
                 l, o = self.train_step_fn(
                     self.model,
                     data,
-                    target,
                     self.criterion,
                     self.data.target_transform.probabilities_training,
                 )
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
                 if self.train_tracker:
-                    self.train_tracker.update(o, target, sample_idx)
+                    self.train_tracker.update(o, data.target, data.index)
                 self.callback_manager.callback(
                     position="cb_on_step_end",
                     trainer=self,
@@ -551,7 +553,7 @@ class ModularTaskTrainer:
             self.model.train()
             self.model.to(self.DEVICE)
             try:
-                data, target, sample_idx = next(self.train_loader_iter)
+                data = next(self.train_loader_iter)
             except StopIteration:
                 self.callback_manager.callback(
                     position="cb_on_loader_exhausted",
@@ -559,8 +561,8 @@ class ModularTaskTrainer:
                     iteration=step,
                 )
                 self.train_loader_iter = iter(self.train_loader)
-                data, target, sample_idx = next(self.train_loader_iter)
-            data, target = data.to(self.DEVICE), target.to(self.DEVICE)
+                data = next(self.train_loader_iter)
+            data.to(self.DEVICE)
             self.callback_manager.callback(
                 position="cb_on_step_begin",
                 trainer=self,
@@ -570,14 +572,13 @@ class ModularTaskTrainer:
             l, o = self.train_step_fn(
                 self.model,
                 data,
-                target,
                 self.criterion,
                 self.data.target_transform.probabilities_training,
             )
             if self.scheduler and self.scheduler_frequency == "batch":
                 self.scheduler.step()
             if self.train_tracker:
-                self.train_tracker.update(o, target, sample_idx)
+                self.train_tracker.update(o, data.target, data.index)
             self.callback_manager.callback(
                 position="cb_on_step_end",
                 trainer=self,
@@ -629,28 +630,30 @@ class ModularTaskTrainer:
 
     def _train_step(
         self,
-        model: torch.nn.Module,
-        data: torch.Tensor,
-        target: torch.Tensor,
+        model: AbstractModel,
+        data: AbstractDataBatch,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
     ) -> Tuple[float, torch.Tensor]:
-        """Train the model for a single step.
+        """Perform a single training step on the model and data batch.
 
         Args:
-            model: Model to train.
-            data: Features to train on.
-            target: Target values.
-            criterion: Criterion to optimize.
-            probabilities_fn: Function to convert model output to
+            model: The model to train.
+            data: The data batch containing features, target, and potentially
+                additional fields. The data batch is expected to be on the same
+                device as the model. Additional fields are passed to the model
+                as keyword arguments if they are present in the model's forward
+                method.
+            criterion: Loss function.
+            probabilities_fn: Function to convert model outputs to
                 probabilities.
 
         Returns:
-            Tuple containing the loss and detached model output.
+            Tuple containing the reduced loss and the (detached) model outputs.
         """
         self.optimizer.zero_grad()
-        output = model(data)
-        loss = criterion(probabilities_fn(output), target)
+        output = model(**create_model_inputs(model, data))
+        loss = criterion(probabilities_fn(output), data.target)
         loss.backward()
         self.optimizer.step()
         return loss.item(), output.detach()
@@ -688,7 +691,7 @@ class ModularTaskTrainer:
             **kwargs,
         )
         self.model.eval()
-        self.model = self.model.to(self.DEVICE)
+        self.model.to(self.DEVICE)
         results = self._evaluate(
             loader=loader,
             tracker=tracker,
@@ -796,7 +799,7 @@ class ModularTaskTrainer:
         """
         with torch.no_grad():
             loss = 0
-            for batch_idx, (features, target, sample_idx) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     loader,
                     desc="Evaluate" if cb_type == "val" else "Test",
@@ -808,19 +811,20 @@ class ModularTaskTrainer:
                     trainer=self,
                     batch_idx=batch_idx,
                 )
-                output = self.model(features.to(self.DEVICE))
+                data.to(self.DEVICE)
+                output = self.model(**create_model_inputs(self.model, data))
                 probabilities_fn = (
                     self.data.target_transform.probabilities_training
                 )
                 loss += (
                     self.criterion(
                         probabilities_fn(output),
-                        target.to(self.DEVICE),
+                        data.target,
                     )
                     .cpu()
                     .item()
                 )
-                tracker.update(output, target, sample_idx)
+                tracker.update(output, data.target, data.index)
                 self.callback_manager.callback(
                     position=f"cb_on_{cb_type}_step_end",
                     trainer=self,

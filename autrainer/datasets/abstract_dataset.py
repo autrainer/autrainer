@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 
 import autrainer
 from autrainer.core.constants import TrainingConstants
+from autrainer.datasets.utils import DataBatch
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 
@@ -198,15 +199,15 @@ class AbstractDataset(ABC):
         )
 
     @cached_property
-    def train_df(self):
+    def train_df(self) -> pd.DataFrame:
         return pd.read_csv(os.path.join(self.path, "train.csv"))
 
     @cached_property
-    def dev_df(self):
+    def dev_df(self) -> pd.DataFrame:
         return pd.read_csv(os.path.join(self.path, "dev.csv"))
 
     @cached_property
-    def test_df(self):
+    def test_df(self) -> pd.DataFrame:
         return pd.read_csv(os.path.join(self.path, "test.csv"))
 
     def _init_dataset(
@@ -274,7 +275,9 @@ class AbstractDataset(ABC):
             batch_size=self.batch_size,
             shuffle=True,
             generator=self._generator,
-            collate_fn=self.train_transform.get_collate_fn(self),
+            collate_fn=self.train_transform.get_collate_fn(
+                self, default=DataBatch.collate
+            ),
         )
 
     @cached_property
@@ -289,7 +292,9 @@ class AbstractDataset(ABC):
             batch_size=self.inference_batch_size,
             shuffle=False,
             generator=self._generator,
-            collate_fn=self.dev_transform.get_collate_fn(self),
+            collate_fn=self.dev_transform.get_collate_fn(
+                self, default=DataBatch.collate
+            ),
         )
 
     @cached_property
@@ -304,7 +309,9 @@ class AbstractDataset(ABC):
             batch_size=self.inference_batch_size,
             shuffle=False,
             generator=self._generator,
-            collate_fn=self.dev_transform.get_collate_fn(self),
+            collate_fn=self.test_transform.get_collate_fn(
+                self, default=DataBatch.collate
+            ),
         )
 
     def get_evaluation_data(

@@ -2,25 +2,31 @@ from typing import Callable, Tuple
 
 import torch
 
+from autrainer.datasets.utils import DataBatch
+from autrainer.models import AbstractModel
+
 
 class SomeOptimizer(torch.optim.Optimizer):
     def custom_step(
         self,
-        model: torch.nn.Module,
-        data: torch.Tensor,
-        target: torch.Tensor,
+        model: AbstractModel,
+        data: DataBatch,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
     ) -> Tuple[float, torch.Tensor]:
-        """Custom step function for the optimizer.
+        """Perform a single training step on the model and data batch.
 
         Args:
-            model: Model to be optimized.
-            data: Batched input data.
-            target: Batched target data.
+            model: The model to train.
+            data: The data batch containing features, target, and potentially
+                additional fields. The data batch is expected to be on the same
+                device as the model. Additional fields are passed to the model
+                as keyword arguments if they are present in the model's forward
+                method.
             criterion: Loss function.
-            probabilities_fn: Function to get probabilities from model outputs.
+            probabilities_fn: Function to convert model outputs to
+                probabilities.
 
         Returns:
-            Reduced loss over the batch and detached model outputs.
+            Tuple containing the reduced loss and the (detached) model outputs.
         """

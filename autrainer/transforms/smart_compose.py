@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable, List, Optional, Union
+from typing import TYPE_CHECKING, Callable, List, Union
 
 import audobject
 import torch
@@ -72,13 +72,18 @@ class SmartCompose(T.Compose, audobject.Object):
         """Sort the transforms by their order attribute if present."""
         self.transforms.sort(key=lambda x: getattr(x, "order", 0))
 
-    def get_collate_fn(self, data: "AbstractDataset") -> Optional[Callable]:
+    def get_collate_fn(
+        self,
+        data: "AbstractDataset",
+        default: Callable,
+    ) -> Callable:
         """Get the collate function. If no collate function is present in
         the transforms, None is returned.
         If multiple collate functions are present, the last one is used.
 
         Args:
             data: Dataset to get the collate function for.
+            default: Default collate_fn.
 
         Returns:
             Collate function.
@@ -88,7 +93,8 @@ class SmartCompose(T.Compose, audobject.Object):
             if fn := getattr(t, "get_collate_fn", None):
                 collate_fn = fn
         if collate_fn is not None:
-            return collate_fn(data)
+            return collate_fn(data, default)
+        return default
 
     def __call__(self, x: torch.Tensor, index: int) -> torch.Tensor:
         """Apply the transforms to the input tensor.

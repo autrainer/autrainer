@@ -4,6 +4,7 @@ import pytest
 import torch
 
 from autrainer.criterions import CrossEntropyLoss
+from autrainer.datasets.utils import DataBatch
 from autrainer.models import FFNN
 from autrainer.optimizers import SAM
 
@@ -26,8 +27,11 @@ class TestSAM:
     def test_custom_step(self) -> None:
         original_state_dict = deepcopy(self.model.state_dict())
         self.model.train()
-        data = torch.randn(10, 64)
-        target = torch.randint(0, 10, (10,))
+        data = DataBatch(
+            torch.randn(10, 64),
+            torch.randint(0, 10, (10,)),
+            torch.tensor(list(range(10))),
+        )
         criterion = CrossEntropyLoss()
         optimizer = SAM(
             params=self.model.parameters(),
@@ -37,7 +41,6 @@ class TestSAM:
         optimizer.custom_step(
             model=self.model,
             data=data,
-            target=target,
             criterion=criterion,
             probabilities_fn=lambda x: x,
         )
