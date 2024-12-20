@@ -226,11 +226,11 @@ class TestBaseDatasets(BaseIndividualTempDir):
         y_shape: Tuple[int, ...],
     ) -> None:
         assert data.output_dim == output_dim, f"Should be {output_dim}."
-        df_dev, df_test, _, target_trans = data.get_evaluation_data()
-        assert isinstance(df_dev, pd.DataFrame), "Should be a DataFrame."
-        assert isinstance(df_test, pd.DataFrame), "Should be a DataFrame."
+        assert isinstance(data.df_dev, pd.DataFrame), "Should be a DataFrame."
+        assert isinstance(data.df_test, pd.DataFrame), "Should be a DataFrame."
         assert isinstance(
-            target_trans, AbstractTargetTransform
+            data.target_transform,
+            AbstractTargetTransform,
         ), "Should be an instance of AbstractTargetTransform."
 
         assert isinstance(

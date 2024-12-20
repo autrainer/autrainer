@@ -114,10 +114,6 @@ class ModularTaskTrainer:
         self.train_dataset = self.data.train_dataset
         self.dev_dataset = self.data.dev_dataset
         self.test_dataset = self.data.test_dataset
-        self.df_dev, self.df_test, self.stratify, self.target_transform = (
-            self.data.get_evaluation_data()
-        )
-        self.task = self.data.task
 
         # ? Misc Training Parameters
         self.disable_progress_bar = not self.cfg.get("progress_bar", False)
@@ -232,7 +228,7 @@ class ModularTaskTrainer:
             )
 
         self.bookkeeping.save_audobject(
-            self.target_transform, "target_transform.yaml"
+            self.data.target_transform, "target_transform.yaml"
         )
         self.bookkeeping.save_audobject(self.model, "model.yaml")
         self.bookkeeping.save_audobject(
@@ -395,7 +391,7 @@ class ModularTaskTrainer:
             -1,
             "_test",
             self.test_loader,
-            self.df_test,
+            self.data.df_test,
             dev_evaluation=False,
             save_to="test_holistic",
             tracker=self.test_tracker,
@@ -506,7 +502,7 @@ class ModularTaskTrainer:
                     epoch,
                     epoch_folder,
                     self.dev_loader,
-                    self.df_dev,
+                    self.data.df_dev,
                     tracker=self.dev_tracker,
                 )
                 self.dev_timer.stop()
@@ -601,7 +597,7 @@ class ModularTaskTrainer:
                     step,
                     step_folder,
                     self.dev_loader,
-                    self.df_dev,
+                    self.data.df_dev,
                     tracker=self.dev_tracker,
                 )
                 self.dev_timer.stop()
@@ -725,7 +721,7 @@ class ModularTaskTrainer:
             groundtruth=df,
             metrics=self.data.metrics,
             target_column=self.data.target_column,
-            stratify=self.stratify,
+            stratify=self.data.stratify,
         )
         if dev_evaluation:
             logging_results["dev_loss"] = {"all": results["dev_loss"]}
