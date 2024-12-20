@@ -105,11 +105,10 @@ class AbstractDataset(ABC):
         self.stratify = stratify or []
 
         self._generator = torch.Generator().manual_seed(self.seed)
-        self.df_train, self.df_dev, self.df_test = self.load_dataframes()
         self._assert_stratify()
 
     @property
-    def audio_subdir(self):
+    def audio_subdir(self) -> str:
         """Subfolder containing audio data.
 
         Defaults to `default` for our standard format.
@@ -183,30 +182,31 @@ class AbstractDataset(ABC):
             instance_of=AbstractFileHandler,
         )
 
-    def load_dataframes(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        """Load the dataframes.
+    @cached_property
+    def df_train(self) -> pd.DataFrame:
+        """Dataframe for the training set, loaded from `train.csv` by default.
 
         Returns:
-            Dataframes for training, development, and testing.
+            Training dataframe.
         """
-        return (
-            self.train_df,
-            self.dev_df,
-            self.test_df,
-        )
-
-    @cached_property
-    def train_df(self):
         return pd.read_csv(os.path.join(self.path, "train.csv"))
 
     @cached_property
-    def dev_df(self):
+    def df_dev(self) -> pd.DataFrame:
+        """Dataframe for the development set, loaded from `dev.csv` by default.
+
+        Returns:
+            Development dataframe.
+        """
         return pd.read_csv(os.path.join(self.path, "dev.csv"))
 
     @cached_property
-    def test_df(self):
+    def df_test(self) -> pd.DataFrame:
+        """Dataframe for the test set, loaded from `test.csv` by default.
+
+        Returns:
+            Test dataframe.
+        """
         return pd.read_csv(os.path.join(self.path, "test.csv"))
 
     def _init_dataset(
