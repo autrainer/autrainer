@@ -5,10 +5,12 @@ import torch
 from torchvision import transforms as T
 
 from .abstract_transform import AbstractTransform
+from .global_transform import GlobalTransform
 
 
-if TYPE_CHECKING:
-    from autrainer.datasets import AbstractDataset  # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
+    from autrainer.datasets import AbstractDataset
+    from autrainer.datasets.utils import DatasetWrapper
 
 
 class SmartCompose(T.Compose, audobject.Object):
@@ -32,6 +34,7 @@ class SmartCompose(T.Compose, audobject.Object):
         """
         super().__init__(transforms, **kwargs)
         self._sort()
+        self._skip_augmentations = False
 
     def __add__(
         self,
@@ -90,6 +93,23 @@ class SmartCompose(T.Compose, audobject.Object):
         if collate_fn is not None:
             return collate_fn(data)
 
+    def setup(self, data: "DatasetWrapper") -> None:
+        """Setup all global transforms with the dataset.
+        Each global transform is setup with only its preceding transforms
+        applied to the dataset.
+
+        Args:
+            data: Dataset to setup the transforms with.
+        """
+        for i, t in enumerate(self.transforms):
+            if isinstance(t, GlobalTransform):
+                self._skip_augmentations = t.skip_augmentations
+                if t.resolve_by_position:
+                    data.transform = SmartCompose(self.transforms[:i])
+                t.setup(data)
+                self._skip_augmentations = False
+                data.transform = self
+
     def __call__(self, x: torch.Tensor, index: int) -> torch.Tensor:
         """Apply the transforms to the input tensor.
 
@@ -101,6 +121,8 @@ class SmartCompose(T.Compose, audobject.Object):
             Transformed tensor.
         """
         for t in self.transforms:
+            if self._skip_augmentations and hasattr(t, "apply"):
+                continue
             if "index" in t.__call__.__annotations__.keys():
                 x = t(x, index=index)
             else:
