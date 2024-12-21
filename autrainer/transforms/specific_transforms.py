@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 import warnings
 
 from audtorch import transforms as AT
@@ -26,7 +26,10 @@ try:
 
     OPENSMILE_AVAILABLE = True
 except ImportError:  # pragma: no cover
-    OPENSMILE_AVAILABLE = False  # pragma: no cover
+    OPENSMILE_AVAILABLE = False
+
+if TYPE_CHECKING:  # pragma: no cover
+    from autrainer.datasets.utils import DatasetWrapper
 
 
 FE_MAPPINGS = {
@@ -321,12 +324,55 @@ class Normalize(AbstractTransform):
         super().__init__(order=order)
         self.mean = mean
         self.std = std
-        self._normalize = T.Normalize(mean=mean, std=std)
+        self._mean = torch.as_tensor(mean)
+        self._std = torch.as_tensor(std)
 
     def __call__(self, data: torch.Tensor) -> torch.Tensor:
         if data.dtype == torch.uint8:
             data = data.float()
-        return self._normalize(data)
+        if data.ndim == 3:
+            mean, std = self._mean.view(-1, 1, 1), self._std.view(-1, 1, 1)
+        elif data.ndim == 2:
+            mean, std = self._mean.view(-1, 1), self._std.view(-1, 1)
+        elif data.ndim == 1:
+            mean, std = self._mean, self._std
+        else:
+            raise ValueError(f"Unsupported data dimensions: {data.shape}")
+        return data.sub(mean).div(std)
+
+    @classmethod
+    def from_global(cls, data: "DatasetWrapper", **kwargs) -> "Normalize":
+        """Instantiate a Normalize transform with global mean and standard
+        deviation calculated from a dataset.
+
+        Args:
+            data: The dataset to calculate the mean and standard deviation
+                from.
+            **kwargs: Additional keyword arguments to pass to the Normalize
+                constructor.
+
+        Returns:
+            The Normalize transform with the calculated mean and standard
+            deviation.
+        """
+        collected = torch.cat([x for x, *_ in data], dim=0)
+
+        if collected.ndim == 4:
+            mean = collected.mean(dim=(0, 2, 3)).tolist()
+            std = collected.std(dim=(0, 2, 3)).tolist()
+        elif collected.ndim == 3:
+            mean = collected.mean(dim=(0, 2)).tolist()
+            std = collected.std(dim=(0, 2)).tolist()
+        elif collected.ndim == 2:
+            mean = collected.mean(dim=0).tolist()
+            std = collected.std(dim=0).tolist()
+        elif collected.ndim == 1:
+            mean = [collected.mean().item()]
+            std = [collected.std().item()]
+        else:
+            raise ValueError(f"Unsupported data dimensions: {collected.shape}")
+
+        return cls(mean=mean, std=std, **kwargs)
 
 
 class FeatureExtractor(AbstractTransform):
