@@ -90,12 +90,7 @@ class TransformManager:
             t for t in dataset_transforms if self._get_key(t) not in seen
         )
 
-        return SmartCompose(
-            [
-                autrainer.instantiate_shorthand(t, AbstractTransform)
-                for t in combined
-            ]
-        )
+        return SmartCompose([self._instantiate(t) for t in combined])
 
     @staticmethod
     def _combine_subset(
@@ -120,6 +115,17 @@ class TransformManager:
         if isinstance(transform, dict):
             return next(iter(transform.keys()))
         return transform
+
+    @staticmethod
+    def _instantiate(transform: Union[str, Dict]) -> AbstractTransform:
+        if isinstance(transform, str):
+            t = transform.split("@")[0]
+            return autrainer.instantiate_shorthand(t, AbstractTransform)
+        key = next(iter(transform.keys()))
+        return autrainer.instantiate_shorthand(
+            {key.split("@")[0]: transform[key]},
+            AbstractTransform,
+        )
 
     def _match_model_dataset(self) -> SmartCompose:
         """Match the model input type with the dataset type by adding
