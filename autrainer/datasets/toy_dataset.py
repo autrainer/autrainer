@@ -235,7 +235,7 @@ class ToyDataset(AbstractDataset):
         df: pd.DataFrame,
         transform: SmartCompose,
     ) -> ToyDatasetWrapper:
-        return ToyDatasetWrapper(
+        dataset = ToyDatasetWrapper(
             df=df,
             target_column=self.target_column,
             feature_shape=self.feature_shape,
@@ -244,6 +244,8 @@ class ToyDataset(AbstractDataset):
             transform=transform,
             target_transform=self.target_transform,
         )
+        transform.setup(dataset)
+        return dataset
 
     @cached_property
     def target_transform(self) -> AbstractTargetTransform:
