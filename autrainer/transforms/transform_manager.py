@@ -76,7 +76,8 @@ class TransformManager:
         seen = set()
         model_transforms = self._combine_subset(self.model_transform, subset)
         dataset_transforms = self._combine_subset(
-            self.dataset_transform, subset
+            self.dataset_transform,
+            subset,
         )
 
         for transform in model_transforms:

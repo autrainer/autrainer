@@ -447,13 +447,9 @@ class TestTransformManager:
     def test_dictconfig(self) -> None:
         TransformManager(DictConfig(self.m), DictConfig(self.d))
 
-    @pytest.mark.parametrize("subset", ["base", "train", "dev", "test"])
-    def test_specific(self, subset: str) -> None:
-        TransformManager(self.m, self.d)._specific(subset)
-
-    def test_invalid_specific(self) -> None:
-        with pytest.raises(ValueError):
-            TransformManager(self.m, self.d)._specific("fizz")
+    @pytest.mark.parametrize("subset", ["train", "dev", "test"])
+    def test_build(self, subset: str) -> None:
+        TransformManager(self.m, self.d)._build(subset)
 
     def test_filter_transforms(self) -> None:
         m = {
