@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import audiofile
 import numpy as np
@@ -143,7 +143,10 @@ class TestBaseDatasets(BaseIndividualTempDir):
         ],
     )
     def test_preprocessing(
-        self, preprocess, sampling_rate, features_path
+        self,
+        preprocess: Dict,
+        sampling_rate: int,
+        features_path: Optional[str],
     ) -> None:
         self._mock_dataframes("data/TestDataset")
         self._mock_data("data/TestDataset", sampling_rate)
