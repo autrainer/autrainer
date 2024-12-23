@@ -223,7 +223,7 @@ class AbstractDataset(ABC):
         Returns:
             Initialized dataset.
         """
-        dataset = DatasetWrapper(
+        return DatasetWrapper(
             path=self.features_path,
             features_subdir=self.features_subdir,
             index_column=self.index_column,
@@ -234,8 +234,6 @@ class AbstractDataset(ABC):
             transform=transform,
             target_transform=self.target_transform,
         )
-        transform.setup(dataset)
-        return dataset
 
     @cached_property
     def train_dataset(self) -> DatasetWrapper:
