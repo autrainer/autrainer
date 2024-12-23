@@ -120,7 +120,7 @@ class AIBO(BaseClassificationDataset):
             )
 
     @property
-    def audio_subdir(self):
+    def audio_subdir(self) -> str:
         """Subfolder containing audio data."""
         return "wav"
 
@@ -140,7 +140,7 @@ class AIBO(BaseClassificationDataset):
         return df
 
     @cached_property
-    def train_df(self) -> pd.DataFrame:
+    def df_train(self) -> pd.DataFrame:
         df = self._load_df
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
@@ -150,7 +150,7 @@ class AIBO(BaseClassificationDataset):
         return df_train
 
     @cached_property
-    def dev_df(self) -> pd.DataFrame:
+    def df_dev(self) -> pd.DataFrame:
         df = self._load_df
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
@@ -158,7 +158,7 @@ class AIBO(BaseClassificationDataset):
         return df_dev
 
     @cached_property
-    def test_df(self) -> pd.DataFrame:
+    def df_test(self) -> pd.DataFrame:
         df = self._load_df
         df_test = df.loc[df["school"] == "Mont"]
         return df_test

@@ -107,19 +107,19 @@ class DCASE2016Task1(BaseClassificationDataset):
         )
 
     @cached_property
-    def train_df(self):
+    def df_train(self) -> pd.DataFrame:
         return pd.read_csv(
             os.path.join(self.path, f"fold{self.fold}_train.csv")
         )
 
     @cached_property
-    def dev_df(self):
+    def df_dev(self) -> pd.DataFrame:
         return pd.read_csv(
             os.path.join(self.path, f"fold{self.fold}_evaluate.csv")
         )
 
     @cached_property
-    def test_df(self):
+    def df_test(self) -> pd.DataFrame:
         return pd.read_csv(os.path.join(self.path, "test.csv"))
 
     @staticmethod

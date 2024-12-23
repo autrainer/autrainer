@@ -226,11 +226,11 @@ class TestBaseDatasets(BaseIndividualTempDir):
         y_shape: Tuple[int, ...],
     ) -> None:
         assert data.output_dim == output_dim, f"Should be {output_dim}."
-        df_dev, df_test, _, target_trans = data.get_evaluation_data()
-        assert isinstance(df_dev, pd.DataFrame), "Should be a DataFrame."
-        assert isinstance(df_test, pd.DataFrame), "Should be a DataFrame."
+        assert isinstance(data.df_dev, pd.DataFrame), "Should be a DataFrame."
+        assert isinstance(data.df_test, pd.DataFrame), "Should be a DataFrame."
         assert isinstance(
-            target_trans, AbstractTargetTransform
+            data.target_transform,
+            AbstractTargetTransform,
         ), "Should be an instance of AbstractTargetTransform."
 
         assert isinstance(
@@ -277,7 +277,7 @@ class TestAIBO(BaseIndividualTempDir):
         df = pd.DataFrame()
         random.seed(42)
 
-        def school():
+        def school() -> str:
             if random.random() < 0.5:
                 return "Ohm"
             else:
@@ -555,7 +555,7 @@ class TestToyDataset(BaseIndividualTempDir):
         kwargs = self._mock_toy_dataset_kwargs()
         kwargs["size"] = size
         with pytest.raises(ValueError):
-            ToyDataset(**kwargs)
+            ToyDataset(**kwargs).df_train
 
     @staticmethod
     def _test_data_shapes(
