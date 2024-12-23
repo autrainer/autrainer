@@ -7,7 +7,7 @@ import torch
 from .abstract_transform import AbstractTransform
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from autrainer.datasets.utils import DatasetWrapper
 
 
@@ -39,18 +39,24 @@ class GlobalTransform(AbstractTransform):
             raise ValueError("The transform must be a fully qualified name.")
         module, cls = transform.rsplit(".", 1)
         cls = getattr(importlib.import_module(module), cls)
-        _method = inspect.getattr_static(cls, "from_global")
+        _method = inspect.getattr_static(cls, "from_global", default=None)
         if not isinstance(_method, classmethod):
             raise ValueError(
                 f"Transform '{cls.__name__}' requires a class method "
                 "`from_global` to be instantiated as a global transform."
             )
 
-        order = inspect.signature(cls).parameters.get("order")
-        if order and not isinstance(order.default, inspect._empty):
-            order = order.default
+        default_order = inspect.signature(cls).parameters.get("order")
+        if kwargs.get("order") is not None:
+            order = kwargs["order"]
+        elif default_order and default_order.default is not inspect._empty:
+            order = default_order.default
         else:
-            order = 0
+            raise ValueError(
+                f"Transform '{cls.__name__}' requires a default order "
+                "value or an explicit order to be instantiated as a global "
+                "transform."
+            )
         super().__init__(order=order)
         self.transform = transform
         self.skip_augmentations = skip_augmentations
@@ -68,5 +74,5 @@ class GlobalTransform(AbstractTransform):
         self.__class__ = transform.__class__
         self.__dict__ = transform.__dict__
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
+    def __call__(self, data: torch.Tensor) -> torch.Tensor:  # pragma: no cover
         return data
