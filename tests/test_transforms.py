@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 import warnings
 
 import numpy as np
@@ -14,6 +14,7 @@ from autrainer.transforms import (
     AnyToTensor,
     Expand,
     FeatureExtractor,
+    GlobalTransform,
     GrayscaleToRGB,
     ImageToFloat,
     Normalize,
@@ -63,6 +64,39 @@ TRANSFORM_FIXTURES = [
     (SquarePadCrop, {"mode": "crop"}, (3, 32, 64), (3, 32, 32)),
     (StereoToMono, {}, (2, 16000), (1, 16000)),
 ]
+
+
+class MockDatasetWrapper(torch.utils.data.Dataset):
+    def __init__(
+        self,
+        data: torch.Tensor,
+        transform: Optional[SmartCompose] = None,
+    ) -> None:
+        self.data = data
+        self.transform = transform or SmartCompose([])
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def __getitem__(self, item: int) -> Tuple[torch.Tensor, int, int]:
+        return self.transform(self.data[item], item), 0, 0
+
+
+class MockInvalidOrderTransform(AbstractTransform):
+    def __init__(self, order: int) -> None:
+        super().__init__(order)
+
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+        return x
+
+    @classmethod
+    def from_global(
+        cls,
+        data: MockDatasetWrapper,
+        **kwargs,
+    ) -> "MockInvalidOrderTransform":
+        [d for d in data]  # exhaust the iterator
+        return cls(**kwargs)
 
 
 class TestAllTransforms:
@@ -276,19 +310,6 @@ class TestImageToFloat:
 
 
 class TestNormalize:
-    def _mock_data_wrapper(self, data: torch.Tensor) -> torch.Tensor:
-        class MockDatasetWrapper(torch.utils.data.Dataset):
-            def __init__(self, data: torch.Tensor):
-                self.data = data
-
-            def __len__(self):
-                return len(self.data)
-
-            def __getitem__(self, idx):
-                return self.data[idx], 0, 0
-
-        return MockDatasetWrapper(data)
-
     @pytest.mark.parametrize(
         "data",
         [
@@ -309,7 +330,7 @@ class TestNormalize:
     )
     def test_invalid_from_global(self, data: torch.Tensor) -> None:
         with pytest.raises(ValueError):
-            Normalize.from_global(self._mock_data_wrapper(data))(data[0])
+            Normalize.from_global(MockDatasetWrapper(data))(data[0])
 
     @pytest.mark.parametrize(
         "data",
@@ -338,7 +359,7 @@ class TestNormalize:
         ],
     )
     def test_from_global(self, data: torch.Tensor) -> None:
-        y = Normalize.from_global(self._mock_data_wrapper(data))(data[0])
+        y = Normalize.from_global(MockDatasetWrapper(data))(data[0])
         assert torch.is_tensor(y), "Output should be a tensor"
         assert y.shape == data[0].shape, "Output shape should match input"
         assert y.dtype == torch.float32, "Output should be float32"
@@ -422,6 +443,41 @@ class TestOpenSMILE:
             OpenSMILE(feature_set="fizz", sample_rate=16000)
 
 
+class TestGlobalTransform:
+    @pytest.mark.parametrize(
+        "transform",
+        ["autrainer.transforms.AnyToTensor", "Normalize"],
+    )
+    def test_invalid_transform(self, transform: str) -> None:
+        with pytest.raises(ValueError):
+            GlobalTransform(transform)
+
+    def test_invalid_order(self) -> None:
+        with pytest.raises(ValueError):
+            GlobalTransform("tests.test_transforms.MockInvalidOrderTransform")
+
+    @pytest.mark.parametrize(
+        "transform, kwargs, expected",
+        [
+            ("autrainer.transforms.Normalize", {}, 95),
+            ("autrainer.transforms.Normalize", {"order": 100}, 100),
+            (
+                "autrainer.transforms.Normalize",
+                {"skip_augmentations": False},
+                95,
+            ),
+            (
+                "autrainer.transforms.Normalize",
+                {"resolve_by_position": False},
+                95,
+            ),
+        ],
+    )
+    def test_order(self, transform: str, kwargs: dict, expected: int) -> None:
+        gt = GlobalTransform(transform, **kwargs)
+        assert gt.order == expected, "Order should match the expected value."
+
+
 class TestSmartCompose:
     @pytest.mark.parametrize(
         "other",
@@ -490,6 +546,29 @@ class TestSmartCompose:
         y = sc(x, 0)
         assert torch.is_tensor(y), "Output should be a tensor"
         assert torch.allclose(x, y), "Output should match the input"
+
+    @pytest.mark.parametrize(
+        "transforms",
+        [
+            [AnyToTensor(), Normalize(mean=[0.0], std=[1.0])],
+            [
+                AnyToTensor(),
+                GlobalTransform("autrainer.transforms.Normalize"),
+                Normalize(mean=[0.0], std=[1.0]),
+            ],
+            [
+                GlobalTransform("autrainer.transforms.Normalize"),
+                CutMix(p=0.5),
+            ],
+        ],
+    )
+    def test_setup(self, transforms: List[AbstractTransform]) -> None:
+        sc = SmartCompose(transforms)
+        sc.setup(MockDatasetWrapper(torch.randn(4, 3, 32, 32)))
+        for t in sc.transforms:
+            assert not isinstance(
+                t, GlobalTransform
+            ), "GlobalTransform should be resolved."
 
 
 class TestTransformManager:
