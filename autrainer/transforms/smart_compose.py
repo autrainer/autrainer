@@ -105,7 +105,9 @@ class SmartCompose(T.Compose, audobject.Object):
             if isinstance(t, GlobalTransform):
                 self._skip_augmentations = t.skip_augmentations
                 if t.resolve_by_position:
-                    data.transform = SmartCompose(self.transforms[:i])
+                    c = SmartCompose(self.transforms[:i])
+                    c._skip_augmentations = self._skip_augmentations
+                    data.transform = c
                 t.setup(data)
                 self._skip_augmentations = False
                 data.transform = self
