@@ -276,10 +276,48 @@ class TestImageToFloat:
 
 
 class TestNormalize:
+    def _mock_data_wrapper(self, data: torch.Tensor) -> torch.Tensor:
+        class MockDatasetWrapper(torch.utils.data.Dataset):
+            def __init__(self, data: torch.Tensor):
+                self.data = data
+
+            def __len__(self):
+                return len(self.data)
+
+            def __getitem__(self, idx):
+                return self.data[idx], 0, 0
+
+        return MockDatasetWrapper(data)
+
     @pytest.mark.parametrize(
         "data",
         [
-            torch.randn(3, 32, 32),
+            torch.randn(4, 3, 32, 32, dtype=torch.float32),
+            torch.randint(0, 255, (4, 3, 32, 32), dtype=torch.uint8),
+        ],
+    )
+    def test_invalid_normalize(self, data: torch.Tensor) -> None:
+        with pytest.raises(ValueError):
+            Normalize(mean=[0.0, 1.0], std=[1.0])(data)
+
+    @pytest.mark.parametrize(
+        "data",
+        [
+            torch.randn(4, 4, 3, 32, 32, dtype=torch.float32),
+            torch.randint(0, 255, (4, 4, 3, 32, 32), dtype=torch.uint8),
+        ],
+    )
+    def test_invalid_from_global(self, data: torch.Tensor) -> None:
+        with pytest.raises(ValueError):
+            Normalize.from_global(self._mock_data_wrapper(data))(data[0])
+
+    @pytest.mark.parametrize(
+        "data",
+        [
+            torch.randn(64, dtype=torch.float32),
+            torch.randn(4, 64, dtype=torch.float32),
+            torch.randn(1, 64, 101, dtype=torch.float32),
+            torch.randn(3, 32, 32, dtype=torch.float32),
             torch.randint(0, 255, (3, 32, 32), dtype=torch.uint8),
         ],
     )
@@ -287,6 +325,22 @@ class TestNormalize:
         y = Normalize(mean=[0.0], std=[1.0])(data)
         assert torch.is_tensor(y), "Output should be a tensor"
         assert y.shape == data.shape, "Output shape should match input"
+        assert y.dtype == torch.float32, "Output should be float32"
+
+    @pytest.mark.parametrize(
+        "data",
+        [
+            torch.randn(4, 64, dtype=torch.float32),
+            torch.randn(4, 4, 64, dtype=torch.float32),
+            torch.randn(4, 1, 64, 101, dtype=torch.float32),
+            torch.randn(4, 3, 32, 32, dtype=torch.float32),
+            torch.randint(0, 255, (4, 3, 32, 32), dtype=torch.uint8),
+        ],
+    )
+    def test_from_global(self, data: torch.Tensor) -> None:
+        y = Normalize.from_global(self._mock_data_wrapper(data))(data[0])
+        assert torch.is_tensor(y), "Output should be a tensor"
+        assert y.shape == data[0].shape, "Output shape should match input"
         assert y.dtype == torch.float32, "Output should be float32"
 
 

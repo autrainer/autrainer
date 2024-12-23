@@ -328,17 +328,16 @@ class Normalize(AbstractTransform):
         self._std = torch.as_tensor(std)
 
     def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        if data.dtype == torch.uint8:
-            data = data.float()
-        if data.ndim == 3:
-            mean, std = self._mean.view(-1, 1, 1), self._std.view(-1, 1, 1)
-        elif data.ndim == 2:
-            mean, std = self._mean.view(-1, 1), self._std.view(-1, 1)
-        elif data.ndim == 1:
-            mean, std = self._mean, self._std
+        views = {3: (-1, 1, 1), 2: (-1, 1), 1: (-1,)}
+
+        for dim, axes in views.items():
+            if data.ndim == dim:
+                break
         else:
             raise ValueError(f"Unsupported data dimensions: {data.shape}")
-        return data.sub(mean).div(std)
+
+        mean, std = self._mean.view(*axes), self._std.view(*axes)
+        return data.to(torch.float32).sub(mean).div(std)
 
     @classmethod
     def from_global(cls, data: "DatasetWrapper", **kwargs) -> "Normalize":
@@ -355,23 +354,17 @@ class Normalize(AbstractTransform):
             The Normalize transform with the calculated mean and standard
             deviation.
         """
-        collected = torch.cat([x for x, *_ in data], dim=0)
+        reductions = {4: (0, 2, 3), 3: (0, 2), 2: (0,)}
+        collected = torch.stack([x for x, *_ in data]).to(torch.float32)
 
-        if collected.ndim == 4:
-            mean = collected.mean(dim=(0, 2, 3)).tolist()
-            std = collected.std(dim=(0, 2, 3)).tolist()
-        elif collected.ndim == 3:
-            mean = collected.mean(dim=(0, 2)).tolist()
-            std = collected.std(dim=(0, 2)).tolist()
-        elif collected.ndim == 2:
-            mean = collected.mean(dim=0).tolist()
-            std = collected.std(dim=0).tolist()
-        elif collected.ndim == 1:
-            mean = [collected.mean().item()]
-            std = [collected.std().item()]
+        for dim, axes in reductions.items():
+            if collected.ndim == dim:
+                break
         else:
             raise ValueError(f"Unsupported data dimensions: {collected.shape}")
 
+        mean = collected.mean(dim=axes).tolist()
+        std = collected.std(dim=axes).tolist()
         return cls(mean=mean, std=std, **kwargs)
 
 
