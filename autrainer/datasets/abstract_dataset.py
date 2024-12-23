@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
 import os
-from typing import Dict, List, Optional, Tuple, TypeVar, Union
+from typing import Dict, List, Optional, TypeVar, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -306,17 +306,6 @@ class AbstractDataset(ABC):
             generator=self._generator,
             collate_fn=self.dev_transform.get_collate_fn(self),
         )
-
-    def get_evaluation_data(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, List[str], AbstractTargetTransform]:
-        """Get the evaluation data.
-
-        Returns:
-            Dataframes for development and testing, columns to stratify on, and
-                the target transform.
-        """
-        return self.df_dev, self.df_test, self.stratify, self.target_transform
 
     @staticmethod
     def download(path: str) -> None:
