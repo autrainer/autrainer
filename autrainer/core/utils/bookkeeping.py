@@ -11,6 +11,11 @@ import torch
 from torchinfo import summary
 import yaml
 
+from autrainer.datasets import (
+    BaseClassificationDataset,
+    BaseMLClassificationDataset,
+    BaseRegressionDataset,
+)
 from autrainer.metrics import AbstractMetric
 
 
@@ -100,6 +105,96 @@ class Bookkeeping:
             os.path.join(self.output_directory, path, folder_name),
             exist_ok=True,
         )
+
+    def save_dataset_summary(
+        self,
+        data: "AbstractDataset",
+        filename: str,
+        val_exists: bool = False,
+    ) -> None:
+        """Save some overview of the dataset to a file.
+
+        Args:
+            data: dataset object
+            filename: Name of the file to save the overview to.
+        """
+        if val_exists:
+            split_datasets = [
+                data.train_dataset,
+                data.val_dataset,
+                data.test_dataset,
+            ]
+            index = ["Train", "Development", "Test", "Total"]
+        else:
+            split_datasets = [data.train_dataset, data.test_dataset]
+            index = ["Train", "Test", "Total"]
+        n_samples = []
+        if isinstance(data, BaseClassificationDataset) or isinstance(
+            data, BaseMLClassificationDataset
+        ):
+            n_classes = []
+            n_majority_class = []
+            n_minority_class = []
+            class_imbalance = []
+        elif isinstance(data, BaseRegressionDataset):
+            mean_label = []
+            std_label = []
+            max_value = []
+            min_value = []
+
+        data_dfs = [dataset.df for dataset in split_datasets]
+        aggregated_data_df = pd.concat(data_dfs, axis=0, ignore_index=True)
+        data_dfs.append(aggregated_data_df)
+        target_column = split_datasets[0].target_column
+        for data_df in data_dfs:
+            n_samples.append(data_df.shape[0])
+            if isinstance(data, BaseClassificationDataset):
+                label_counts = data_df[target_column].value_counts()
+                n_classes.append(label_counts.count())
+                n_majority_class.append(label_counts.max())
+                n_minority_class.append(label_counts.min())
+                class_imbalance.append(label_counts.max() / label_counts.min())
+            elif isinstance(data, BaseMLClassificationDataset):
+                label_counts = data_df[target_column].sum(axis=0)
+                n_classes.append(len(target_column))
+                n_majority_class.append(label_counts.max())
+                n_minority_class.append(label_counts.min())
+                class_imbalance.append(label_counts.max() / label_counts.min())
+            elif isinstance(data, BaseRegressionDataset):
+                label_values = data_df[target_column].values
+                mean_label.append(label_values.mean())
+                std_label.append(label_values.std())
+                max_value.append(label_values.max())
+                min_value.append(label_values.min())
+        if isinstance(data, BaseClassificationDataset) or isinstance(
+            data, BaseMLClassificationDataset
+        ):
+            data_overview_df = pd.DataFrame(
+                {
+                    "n_samples": n_samples,
+                    "n_classes": n_classes,
+                    "n_majority_class": n_majority_class,
+                    "n_minority_class": n_minority_class,
+                    "imbalance_ratio": class_imbalance,
+                },
+                index=index,
+            )
+        elif isinstance(data, BaseRegressionDataset):
+            data_overview_df = pd.DataFrame(
+                {
+                    "n_samples": n_samples,
+                    "mean_label": mean_label,
+                    "std_label": std_label,
+                    "max_value": max_value,
+                    "min_value": min_value,
+                },
+                index=index,
+            )
+        else:
+            data_overview_df = pd.DataFrame(
+                {"n_samples": n_samples}, index=index
+            )
+        data_overview_df.to_csv(os.path.join(self.output_directory, filename))
 
     def save_model_summary(
         self,
