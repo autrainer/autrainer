@@ -607,10 +607,19 @@ class TestTransformManager:
         train, _, _ = TransformManager(m, d).get_transforms()
         assert len(train.transforms) == 2, "Transforms should be filtered"
 
-    def test_combine_transforms(self) -> None:
+    @pytest.mark.parametrize(
+        "sub1, sub2",
+        [
+            ("base", "base"),
+            ("base", "train"),
+            ("train", "base"),
+            ("train", "train"),
+        ],
+    )
+    def test_override_transforms(self, sub1: str, sub2: str) -> None:
         m = {
             "type": "image",
-            "train": [
+            sub1: [
                 "autrainer.transforms.AnyToTensor",
                 {
                     "autrainer.transforms.Normalize": {
@@ -622,7 +631,7 @@ class TestTransformManager:
         }
         d = {
             "type": "image",
-            "train": [
+            sub2: [
                 {
                     "autrainer.transforms.Normalize": {
                         "mean": [0.0],
@@ -637,6 +646,129 @@ class TestTransformManager:
         assert norm.mean == [10] and norm.std == [
             20
         ], "Transform should be overridden"
+
+    @pytest.mark.parametrize(
+        "sub1, sub2",
+        [
+            ("base", "base"),
+            ("base", "train"),
+            ("train", "base"),
+            ("train", "train"),
+        ],
+    )
+    def test_remove_transforms(self, sub1: str, sub2: str) -> None:
+        m = {
+            "type": "image",
+            sub1: [
+                "autrainer.transforms.AnyToTensor",
+                {"autrainer.transforms.Normalize": None},
+            ],
+        }
+        d = {
+            "type": "image",
+            sub2: [
+                {
+                    "autrainer.transforms.Normalize": {
+                        "mean": [0.0],
+                        "std": [1.0],
+                    }
+                },
+            ],
+        }
+        train, _, _ = TransformManager(m, d).get_transforms()
+        assert len(train.transforms) == 1, "Normalize should be removed."
+
+    @pytest.mark.parametrize(
+        "sub1, sub2",
+        [
+            ("base", "base"),
+            ("base", "train"),
+            ("train", "base"),
+            ("train", "train"),
+        ],
+    )
+    def test_replace_tag_transforms(self, sub1: str, sub2: str) -> None:
+        m = {
+            "type": "image",
+            sub1: [
+                "autrainer.transforms.AnyToTensor",
+                {
+                    "autrainer.transforms.Normalize@Tag": {
+                        "mean": [0.0],
+                        "std": [1.0],
+                    }
+                },
+            ],
+        }
+        d = {
+            "type": "image",
+            sub2: [
+                {
+                    "autrainer.transforms.Normalize@Tag": {
+                        "mean": [100],
+                        "std": [100],
+                    }
+                },
+                {
+                    "autrainer.transforms.Normalize": {
+                        "mean": [0.0],
+                        "std": [1.0],
+                    }
+                },
+            ],
+        }
+        train, _, _ = TransformManager(m, d).get_transforms()
+        assert len(train.transforms) == 3, "Transforms should be combined."
+        for t in train.transforms:
+            if isinstance(t, Normalize):
+                assert t.mean != [100] and t.std != [
+                    100
+                ], "All instances of Normalize@Tag should be changed."
+
+    @pytest.mark.parametrize(
+        "sub1, sub2",
+        [
+            ("base", "base"),
+            ("base", "train"),
+            ("train", "base"),
+            ("train", "train"),
+        ],
+    )
+    def test_remove_tag_transforms(self, sub1: str, sub2: str) -> None:
+        m = {
+            "type": "image",
+            sub1: [
+                "autrainer.transforms.AnyToTensor",
+                {"autrainer.transforms.Normalize@Tag": None},
+            ],
+        }
+        d = {
+            "type": "image",
+            sub2: [
+                {
+                    "autrainer.transforms.Normalize@Tag": {
+                        "mean": [100],
+                        "std": [200],
+                    }
+                },
+                {
+                    "autrainer.transforms.Normalize": {
+                        "mean": [0.0],
+                        "std": [1.0],
+                    }
+                },
+            ],
+        }
+        train, _, _ = TransformManager(m, d).get_transforms()
+        assert len(train.transforms) == 2, "Normalize@Tag should be removed."
+        found = False
+        for t in train.transforms:
+            if isinstance(t, Normalize):
+                found = True
+                assert t.mean == [0.0] and t.std == [
+                    1.0
+                ], "Transform without tag should be unchanged."
+        assert found, "Transform without tag should be present."
 
     @pytest.mark.parametrize(
         "model_type, dataset_type, valid",
