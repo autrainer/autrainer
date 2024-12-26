@@ -139,7 +139,7 @@ class SAM(torch.optim.Optimizer):
         target: torch.Tensor,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
-    ) -> Tuple[float, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """Sharpness Aware Minimization requires two forward-backward passes
         over the batch to simultaneously minimize the loss value and the loss
         sharpness.
@@ -152,16 +152,15 @@ class SAM(torch.optim.Optimizer):
             probabilities_fn: Function to get probabilities from model outputs.
 
         Returns:
-            Reduced loss over the batch and detached model outputs.
+            Tuple containing the non-reduced loss and model outputs.
         """
         output = model(data)
         loss = criterion(probabilities_fn(output), target)
-        loss.backward()
+        loss.mean().backward()
         self.first_step(zero_grad=True)
 
         output = model(data)
         loss = criterion(probabilities_fn(output), target)
-        loss.backward()
+        loss.mean().backward()
         self.second_step(zero_grad=True)
-        _loss = loss.item()
-        return _loss, output.detach()
+        return loss, output

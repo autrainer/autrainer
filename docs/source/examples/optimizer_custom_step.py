@@ -11,7 +11,7 @@ class SomeOptimizer(torch.optim.Optimizer):
         target: torch.Tensor,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
-    ) -> Tuple[float, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """Custom step function for the optimizer.
 
         Args:
@@ -22,5 +22,5 @@ class SomeOptimizer(torch.optim.Optimizer):
             probabilities_fn: Function to get probabilities from model outputs.
 
         Returns:
-            Reduced loss over the batch and detached model outputs.
+            Tuple containing the non-reduced loss and model outputs.
         """
