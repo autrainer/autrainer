@@ -121,6 +121,7 @@ class ModularTaskTrainer:
         self.criterion = autrainer.instantiate_shorthand(
             config=self.cfg.criterion,
             instance_of=torch.nn.modules.loss._Loss,
+            reduction="none",
         )
         if hasattr(self.criterion, "setup"):
             self.criterion.setup(self.data)
@@ -336,17 +337,15 @@ class ModularTaskTrainer:
             exports=[self.cfg.save_dev_outputs, self.cfg.save_test_outputs],
             prefixes=["dev", "test"],
             data=self.data,
-            criterion=self.criterion,
             bookkeeping=self.bookkeeping,
         )
         if self.cfg.save_train_outputs:
-            self.train_tracker = init_trackers(
-                exports=[True],
-                prefixes=["train"],
+            self.train_tracker = OutputsTracker(
+                export=True,
+                prefix="train",
                 data=self.data,
-                criterion=self.criterion,
                 bookkeeping=self.bookkeeping,
-            )[0]
+            )
         else:
             self.train_tracker = None
 
@@ -470,25 +469,33 @@ class ModularTaskTrainer:
                     iteration=epoch,
                     batch_idx=batch_idx,
                 )
-                l, o = self.train_step_fn(
+                loss, output = self.train_step_fn(
                     self.model,
                     data,
                     target,
                     self.criterion,
                     self.data.target_transform.probabilities_training,
                 )
+                loss = loss.detach()
+                output = output.detach()
+                reduced_loss = loss.mean().item()
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
                 if self.train_tracker:
-                    self.train_tracker.update(o, target, sample_idx)
+                    self.train_tracker.update(
+                        output,
+                        target,
+                        loss,
+                        sample_idx,
+                    )
                 self.callback_manager.callback(
                     position="cb_on_step_end",
                     trainer=self,
                     iteration=epoch,
                     batch_idx=batch_idx,
-                    loss=l,
+                    loss=reduced_loss,
                 )
-                train_loss.append(l)
+                train_loss.append(reduced_loss)
             if epoch % self.cfg.eval_frequency == 0:
                 if self.scheduler and self.scheduler_frequency == "evaluation":
                     self.scheduler.step()
@@ -563,25 +570,28 @@ class ModularTaskTrainer:
                 iteration=step,
                 batch_idx=(step - 1) % self.cfg.eval_frequency,
             )
-            l, o = self.train_step_fn(
+            loss, output = self.train_step_fn(
                 self.model,
                 data,
                 target,
                 self.criterion,
                 self.data.target_transform.probabilities_training,
             )
+            loss = loss.detach()
+            output = output.detach()
+            reduced_loss = loss.mean().item()
             if self.scheduler and self.scheduler_frequency == "batch":
                 self.scheduler.step()
             if self.train_tracker:
-                self.train_tracker.update(o, target, sample_idx)
+                self.train_tracker.update(output, target, loss, sample_idx)
             self.callback_manager.callback(
                 position="cb_on_step_end",
                 trainer=self,
                 iteration=step,
                 batch_idx=(step - 1) % self.cfg.eval_frequency,
-                loss=l,
+                loss=reduced_loss,
             )
-            train_loss.append(l)
+            train_loss.append(reduced_loss)
             if step % self.cfg.eval_frequency == 0:
                 if self.scheduler and self.scheduler_frequency == "evaluation":
                     self.scheduler.step()
@@ -630,7 +640,7 @@ class ModularTaskTrainer:
         target: torch.Tensor,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
-    ) -> Tuple[float, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """Train the model for a single step.
 
         Args:
@@ -642,14 +652,14 @@ class ModularTaskTrainer:
                 probabilities.
 
         Returns:
-            Tuple containing the loss and detached model output.
+            Tuple containing the non-reduced loss and model outputs.
         """
         self.optimizer.zero_grad()
         output = model(data)
         loss = criterion(probabilities_fn(output), target)
-        loss.backward()
+        loss.mean().backward()
         self.optimizer.step()
-        return loss.item(), output.detach()
+        return loss, output
 
     def evaluate(
         self,
@@ -791,7 +801,7 @@ class ModularTaskTrainer:
             Dictionary containing the results on the dev or test set.
         """
         with torch.no_grad():
-            loss = 0
+            losses = 0
             for batch_idx, (features, target, sample_idx) in enumerate(
                 tqdm(
                     loader,
@@ -805,28 +815,23 @@ class ModularTaskTrainer:
                     batch_idx=batch_idx,
                 )
                 output = self.model(features.to(self.DEVICE))
-                probabilities_fn = (
-                    self.data.target_transform.probabilities_training
+                loss = self.criterion(
+                    self.data.target_transform.probabilities_training(output),
+                    target.to(self.DEVICE),
                 )
-                loss += (
-                    self.criterion(
-                        probabilities_fn(output),
-                        target.to(self.DEVICE),
-                    )
-                    .cpu()
-                    .item()
-                )
-                tracker.update(output, target, sample_idx)
+                reduced_loss = loss.mean().item()
+                losses += reduced_loss
+                tracker.update(output, target, loss, sample_idx)
                 self.callback_manager.callback(
                     position=f"cb_on_{cb_type}_step_end",
                     trainer=self,
                     batch_idx=batch_idx,
-                    loss=loss,
+                    loss=reduced_loss,
                 )
-            loss /= len(loader) + 1
+            losses /= len(loader) + 1
         tracker.save(iteration_folder, reset=False)
         results = {
-            "loss": loss,
+            "loss": losses,
         }
         for metric in self.data.metrics:
             results[metric.name] = metric(tracker.targets, tracker.predictions)
