@@ -1,13 +1,14 @@
-import copy
-from typing import List
+from typing import Callable, List, TypeVar
 
 import numpy as np
-from omegaconf import DictConfig
 import pandas as pd
 import torch
 
 from autrainer.core.utils import Bookkeeping
 from autrainer.datasets import AbstractDataset
+
+
+T = TypeVar("T")
 
 
 class OutputsTracker:
@@ -16,22 +17,32 @@ class OutputsTracker:
         export: bool,
         prefix: str,
         data: AbstractDataset,
-        criterion: DictConfig,
-        bookkeeping: Bookkeeping = None,
+        bookkeeping: Bookkeeping,
     ) -> None:
+        """Tracker for model outputs, targets, losses, and predictions.
+
+        Args:
+            export: Whether to export the results.
+            prefix: Prefix for the exported files.
+            data: Instance of the dataset.
+            bookkeeping: Instance of the bookkeeping class.
+        """
         self._export = export
         self._prefix = prefix
         self._data = data
         self._bookkeeping = bookkeeping
-        self._tracker_criterion = copy.deepcopy(criterion).cpu()
-        self._tracker_criterion.reduction = "none"
         self.reset()
 
     def reset(self) -> None:
+        """Reset the tracker. Clears all the stored data accumulated over a
+        single iteration.
+        """
         self._outputs = torch.zeros(
             (0, self._data.output_dim), dtype=torch.float32
         )
-        self._targets = torch.zeros(0, dtype=torch.long)
+        self._targets = torch.zeros(
+            0, dtype=torch.long
+        )  # automatic type promotion in case of float targets
         self._indices = torch.zeros(0, dtype=torch.long)
         self._losses = torch.zeros(0, dtype=torch.float32)
         self._predictions = None
@@ -41,19 +52,31 @@ class OutputsTracker:
         self,
         output: torch.Tensor,
         target: torch.Tensor,
+        loss: torch.Tensor,
         sample_idx: torch.Tensor,
     ) -> None:
-        output = output.cpu()
-        target = target.cpu()
-        self._outputs = torch.cat([self._outputs, output], dim=0)
-        self._targets = torch.cat([self._targets, target], dim=0)
-        self._indices = torch.cat([self._indices, sample_idx], dim=0)
+        """Update the tracker with the current model outputs, targets, losses,
+        and sample indices.
 
-        with torch.no_grad():
-            loss = self._tracker_criterion(output, target)
-            self._losses = torch.cat([self._losses, loss], dim=0)
+        Args:
+            output: Detached model outputs.
+            target: Targets.
+            loss: Per-sample losses.
+            sample_idx: Sample indices.
+        """
+        self._outputs = torch.cat([self._outputs, output.cpu()], dim=0)
+        self._targets = torch.cat([self._targets, target.cpu()], dim=0)
+        self._losses = torch.cat([self._losses, loss.cpu()], dim=0)
+        self._indices = torch.cat([self._indices, sample_idx.cpu()], dim=0)
 
-    def save(self, iteration_folder: str, reset=True) -> None:
+    def save(self, iteration_folder: str, reset: bool = True) -> None:
+        """Save the tracked data to disk.
+
+        Args:
+            iteration_folder: Current iteration folder.
+            reset: Whether to reset the tracker after saving the results.
+                Defaults to True.
+        """
         results = {
             "outputs": self._outputs.numpy(),
             "targets": self._targets.numpy(),
@@ -95,8 +118,8 @@ class OutputsTracker:
         if reset:
             self.reset()
 
-    def check_saved(func):
-        def wrapper(self, *args, **kwargs):
+    def check_saved(func: Callable[..., T]) -> Callable[..., T]:
+        def wrapper(self: "OutputsTracker", *args, **kwargs) -> T:
             if self._results_df is None:
                 raise ValueError("Results not saved yet.")
             return func(self, *args, **kwargs)
@@ -106,31 +129,61 @@ class OutputsTracker:
     @property
     @check_saved
     def outputs(self) -> np.ndarray:
+        """Get the model outputs.
+
+        Returns:
+            Model outputs.
+        """
         return self._outputs.numpy()
 
     @property
     @check_saved
     def targets(self) -> np.ndarray:
+        """Get the targets.
+
+        Returns:
+            Targets.
+        """
         return self._targets.numpy()
 
     @property
     @check_saved
     def indices(self) -> np.ndarray:
+        """Get the sample indices.
+
+        Returns:
+            Sample indices.
+        """
         return self._indices.numpy()
 
     @property
     @check_saved
     def losses(self) -> np.ndarray:
+        """Get the per-sample losses.
+
+        Returns:
+            Per-sample losses.
+        """
         return self._losses.numpy()
 
     @property
     @check_saved
     def predictions(self) -> np.ndarray:
+        """Get the predictions.
+
+        Returns:
+            Predictions.
+        """
         return np.array(self._predictions)
 
     @property
     @check_saved
     def results_df(self) -> pd.DataFrame:
+        """Get the results as a DataFrame.
+
+        Returns:
+            Results as a DataFrame.
+        """
         return self._results_df
 
 
@@ -138,9 +191,19 @@ def init_trackers(
     exports: List[bool],
     prefixes: List[str],
     data: AbstractDataset,
-    criterion: DictConfig,
-    bookkeeping: Bookkeeping = None,
+    bookkeeping: Bookkeeping,
 ) -> List[OutputsTracker]:
+    """Utility function to initialize multiple trackers at once.
+
+    Args:
+        exports: Whether to export the results.
+        prefixes: Prefixes for the exported files.
+        data: Instance of the dataset.
+        bookkeeping: Instance of the bookkeeping class.
+
+    Returns:
+        List of initialized trackers.
+    """
     trackers = []
     for export, prefix in zip(exports, prefixes):
         trackers.append(
@@ -148,7 +211,6 @@ def init_trackers(
                 export=export,
                 prefix=prefix,
                 data=data,
-                criterion=criterion,
                 bookkeeping=bookkeeping,
             )
         )
