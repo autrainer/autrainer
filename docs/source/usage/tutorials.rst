@@ -194,6 +194,11 @@ To create a custom :ref:`criterion <criterions>`, inherit from :class:`torch.nn.
 If the criterion relies on the dataset, an optional :ref:`criterion setup method <criterion_setup>`
 can be defined which is called after the dataset is initialized.
 
+.. note::
+
+   The :attr:`reduction` attribute of each criterion is automatically set to :attr:`"none"` during instantiation and
+   the :meth:`forward` method should return the per-example loss.
+
 For example, the following criterion implements `CrossEntropyLoss <https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html>`_
 with an additional scaling factor:
 
