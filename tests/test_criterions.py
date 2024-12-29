@@ -38,8 +38,6 @@ class TestCrossEntropyLoss:
         "cls",
         [
             CrossEntropyLoss,
-            CrossEntropyLoss,
-            BalancedCrossEntropyLoss,
             BalancedCrossEntropyLoss,
         ],
     )
@@ -48,7 +46,7 @@ class TestCrossEntropyLoss:
         cls: Type[CrossEntropyLoss],
     ) -> None:
         x = torch.rand(10, 5)
-        y = torch.randint(0, 5, (10,), dtype=torch.float32)
+        y = torch.randint(0, 5, (10,), dtype=torch.long)
         loss = cls()(x, y)
         assert isinstance(loss, torch.Tensor), "Should return a torch.Tensor"
 
