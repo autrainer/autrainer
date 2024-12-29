@@ -41,8 +41,7 @@ class BalancedCrossEntropyLoss(CrossEntropyLoss):
             .values
         )
         weight = torch.tensor(1 / frequency, dtype=torch.float32)
-        weight /= weight.sum()
-        self.weight = weight
+        self.weight = weight * len(weight) / weight.sum()
 
 
 class MSELoss(torch.nn.MSELoss):

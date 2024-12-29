@@ -36,7 +36,7 @@ def instantiate(
     convert: Optional[HydraConvertEnum] = None,
     recursive: bool = False,
     **kwargs,
-) -> Optional[T]:
+) -> T:
     """Instantiate an object from a configuration Dict or DictConfig.
 
     The config must contain a `_target_` field that specifies a relative import
@@ -94,7 +94,7 @@ def instantiate_shorthand(
     convert: Optional[HydraConvertEnum] = None,
     recursive: bool = False,
     **kwargs,
-) -> Optional[T]:
+) -> T:
     """Instantiate an object from a shorthand configuration.
 
     A shorthand config is either a string or a dictionary with a single key.

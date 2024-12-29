@@ -10,6 +10,14 @@ Criterions are specified in the :ref:`Dataset<datasets>` configuration with :ref
    To create custom criterions, refer to the :ref:`custom criterions tutorial <tut_criterions>`.
 
 
+.. note::
+
+   The :attr:`reduction` attribute of each criterion is automatically set to :attr:`"none"` during training, validation, and testing.
+   This allows the per-example loss to be reported directly, without the need for re-calculating the loss for logging purposes.
+
+   This is handled automatically during the instantiation of the criterion.
+
+
 Criterion Wrappers
 ------------------
 

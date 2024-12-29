@@ -27,7 +27,7 @@ class TestBalancedCrossEntropyLoss:
             criterion.weight is not None
         ), "Should have calculated the weights"
         test_weights = torch.tensor([1 / 1, 1 / 2, 1 / 3], dtype=torch.float32)
-        test_weights /= test_weights.sum()
+        test_weights = test_weights * len(test_weights) / test_weights.sum()
         assert torch.allclose(
             criterion.weight, test_weights
         ), "Should have calculated frequency-based weights"
