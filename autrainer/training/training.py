@@ -57,9 +57,6 @@ class ModularTaskTrainer:
             run_name: Run name for the run. If None, the name is automatically
                 set based on the output directory. Defaults to None.
         """
-        import time
-
-        ts = time.perf_counter()
         self._cfg = cfg
         self._cfg.criterion = self._cfg.dataset.pop("criterion")
 
@@ -350,8 +347,6 @@ class ModularTaskTrainer:
             )
         else:
             self.train_tracker = None
-
-        print(f"Time to initialize trainer: {time.perf_counter() - ts}")
 
     def train(self) -> float:
         """Train the model.
