@@ -31,9 +31,8 @@ For example, :class:`torch.optim.Adam` can be used as follows:
 
    .. configurations::
       :subdir: optimizer
-      :configs: Adam SGD
-      :headline:
-
+      :configs: SGD Adam AdamW Adadelta Adagrad Adamax NAdam RAdam SparseAdam RMSprop Rprop ASGD LBFGS
+      :exact:
 
 .. _custom_optimizers:
 
