@@ -5,10 +5,53 @@ import pytest
 import torch
 
 from autrainer.criterions import (
+    BalancedBCEWithLogitsLoss,
     BalancedCrossEntropyLoss,
     CrossEntropyLoss,
     MSELoss,
 )
+
+
+class TestBalancedBCEWithLogitsLoss:
+    def _mock_criterion_setup(self) -> BalancedBCEWithLogitsLoss:
+        class MockDataset:
+            class MockTargetTransform:
+                labels = ["target1", "target2", "target3"]
+
+                def __call__(self, x: Any) -> Any:
+                    return torch.tensor(x)
+
+            target_column = ["target1", "target2", "target3"]
+            df_train = pd.DataFrame(
+                {
+                    "target1": [0, 1, 0, 1, 0],
+                    "target2": [1, 0, 1, 0, 1],
+                    "target3": [0, 0, 1, 1, 1],
+                }
+            )
+            target_transform = MockTargetTransform()
+
+        criterion = BalancedBCEWithLogitsLoss()
+        criterion.setup(MockDataset())
+        return criterion
+
+    def test_setup(self) -> None:
+        criterion = self._mock_criterion_setup()
+        assert (
+            criterion.weight is not None
+        ), "Should have calculated the weights"
+        test_weights = torch.tensor([1 / 2, 1 / 3, 1 / 3], dtype=torch.float32)
+        test_weights = test_weights * len(test_weights) / test_weights.sum()
+        assert torch.allclose(
+            criterion.weight, test_weights
+        ), "Should have calculated frequency-based weights"
+
+    def test_forward_dtype(self) -> None:
+        criterion = self._mock_criterion_setup()
+        x = torch.rand(10, 3)
+        y = torch.randint(0, 2, (10, 3), dtype=torch.long)
+        loss = criterion(x, y)
+        assert isinstance(loss, torch.Tensor), "Should return a torch.Tensor"
 
 
 class TestBalancedCrossEntropyLoss:
