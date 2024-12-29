@@ -1,5 +1,6 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
+import pandas as pd
 import torch
 
 
@@ -42,6 +43,48 @@ class BalancedCrossEntropyLoss(CrossEntropyLoss):
         )
         weight = torch.tensor(1 / frequency, dtype=torch.float32)
         self.weight = weight * len(weight) / weight.sum()
+
+
+class BalancedBCEWithLogitsLoss(torch.nn.BCEWithLogitsLoss):
+    weight: torch.Tensor
+
+    def setup(self, data: "AbstractDataset") -> None:
+        """Calculate balanced weights for the dataset based on the target
+        frequency in the training set.
+
+        Args:
+            data: Instance of the dataset.
+        """
+
+        def encode(x: pd.Series) -> List[int]:
+            return data.target_transform(x.to_list()).tolist()
+
+        frequency = (
+            pd.DataFrame(
+                data.df_train[data.target_column]
+                .apply(encode, axis=1)
+                .to_list(),
+                columns=data.target_transform.labels,
+            )
+            .sum(axis=0)
+            .values
+        )
+        weight = torch.tensor(1 / frequency, dtype=torch.float32)
+        weight = weight * len(weight) / weight.sum()
+        self.register_buffer("weight", weight)
+
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        """Wrapper for `torch.nn.BCEWithLogitsLoss.forward` with balanced
+        weights.
+
+        Args:
+            x: Batched model outputs.
+            y: Targets.
+
+        Returns:
+            Loss.
+        """
+        return super().forward(x, y.float()) * self.weight.expand_as(y)
 
 
 class MSELoss(torch.nn.MSELoss):
