@@ -33,6 +33,9 @@ For more information see `this discussion <https://discuss.pytorch.org/t/dataloa
 .. autoclass:: autrainer.criterions.BalancedCrossEntropyLoss
    :members:
 
+.. autoclass:: autrainer.criterions.BalancedBCEWithLogitsLoss
+   :members:
+
 .. autoclass:: autrainer.criterions.MSELoss
    :members:
 
@@ -43,7 +46,7 @@ Torch criterions, such as :class:`torch.nn.BCEWithLogitsLoss` for multi-label cl
 can be specified using :ref:`shorthand_syntax` in the dataset configuration, analogous to the criterion wrappers.
 
 .. note::
-   It may be necessary to wrap the criterion similar to :class:`autrainer.criterions.CrossEntropyLoss`
+   It may be necessary to wrap criterions similar to :class:`autrainer.criterions.CrossEntropyLoss`
    or :class:`autrainer.criterions.MSELoss` to cast the model outputs and targets to the correct types.
 
 
