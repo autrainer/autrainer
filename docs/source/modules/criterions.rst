@@ -30,19 +30,41 @@ For more information see `this discussion <https://discuss.pytorch.org/t/dataloa
 .. autoclass:: autrainer.criterions.CrossEntropyLoss
    :members:
 
-.. autoclass:: autrainer.criterions.BalancedCrossEntropyLoss
-   :members:
-
-.. autoclass:: autrainer.criterions.BalancedBCEWithLogitsLoss
+.. autoclass:: autrainer.criterions.BCEWithLogitsLoss
    :members:
 
 .. autoclass:: autrainer.criterions.MSELoss
    :members:
 
+
+Balanced and Weigted Criterions
+-------------------------------
+
+For imbalanced datasets, it is often beneficial to use a balanced or weighted loss function.
+Balanced loss functions automatically adjust the loss for each class or target
+based on their frequency using a :ref:`setup<criterion_setup>` function.
+Weighted loss functions allow for the manual specification of weights for each class or target.
+
+.. autoclass:: autrainer.criterions.BalancedCrossEntropyLoss
+   :members:
+
+.. autoclass:: autrainer.criterions.WeightedCrossEntropyLoss
+   :members:
+
+.. autoclass:: autrainer.criterions.BalancedBCEWithLogitsLoss
+   :members:
+
+.. autoclass:: autrainer.criterions.WeightedBCEWithLogitsLoss
+   :members:
+
+.. autoclass:: autrainer.criterions.WeightedMSELoss
+   :members:
+
+
 Torch Criterions
 ----------------
 
-Torch criterions, such as :class:`torch.nn.BCEWithLogitsLoss` for multi-label classification tasks,
+Other torch criterions, such as :class:`torch.nn.HuberLoss` or :class:`torch.nn.SmoothL1Loss`,
 can be specified using :ref:`shorthand_syntax` in the dataset configuration, analogous to the criterion wrappers.
 
 .. note::
