@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import os
 from pathlib import Path
 import re
+import sys
 from typing import List, Optional, Tuple
 
 
@@ -72,8 +73,9 @@ class LocalModelPath(AbstractModelPath):
 
 
 class HubModelPath(AbstractModelPath):
-    def __init__(self, model_path: str) -> None:
+    def __init__(self, model_path: str, trust_remote: bool) -> None:
         super().__init__(model_path)
+        self.trust_remote = trust_remote
         self.verify()
 
     def verify(self) -> None:
@@ -120,6 +122,21 @@ class HubModelPath(AbstractModelPath):
             for f in files
             if f.startswith(model_file_loc) and f.endswith(SAVE_FILES)
         ]
+        python_files = [
+            Path(f).as_posix()
+            for f in files
+            if f.startswith(model_file_loc) and f.endswith(".py")
+        ]
+        if python_files and not self.trust_remote:
+            raise ValueError(
+                f"The Hugging Face repository '{repo_id}' likely requires "
+                "the execution of custom Python code.\nTo trust the remote "
+                "repository, pass the '--trust-remote' flag.\n\nWarning: "
+                "This can be dangerous as it may run arbitrary code on your "
+                "machine!"
+            )
+
+        self.files.extend(python_files)
         self.subdir = model_file_loc
 
     def create_model_path(self) -> str:
@@ -134,7 +151,10 @@ class HubModelPath(AbstractModelPath):
             Local directory of the model.
         """
         self._download()
-        return os.path.join(self.local_dir, self.subdir)
+        local_path = os.path.join(self.local_dir, self.subdir)
+        if self.trust_remote:
+            sys.path.append(local_path)
+        return local_path
 
     def _parse_hub_path(
         self,
@@ -211,7 +231,7 @@ class HubModelPath(AbstractModelPath):
         hf_api = HfApi(endpoint=os.environ.get("HF_ENDPOINT"))
         pbar = tqdm(self.files, desc="Downloading:")
         for file in pbar:
-            pbar.set_description(f"Downloading: {file}")
+            pbar.set_description(f"Downloading: {os.path.basename(file)}")
             with silence():
                 hf_api.hf_hub_download(
                     repo_id=self.repo_id,
@@ -222,7 +242,7 @@ class HubModelPath(AbstractModelPath):
                 )
 
 
-def get_model_path(model_path: str) -> str:
+def get_model_path(model_path: str, trust_remote: bool) -> str:
     if model_path.startswith("hf:"):
-        return HubModelPath(model_path).get_model_path()
+        return HubModelPath(model_path, trust_remote).get_model_path()
     return LocalModelPath(model_path).get_model_path()
