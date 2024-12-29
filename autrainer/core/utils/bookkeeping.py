@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from typing import TYPE_CHECKING, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 import warnings
 
 import audobject
@@ -12,10 +12,6 @@ from torchinfo import summary
 import yaml
 
 from autrainer.metrics import AbstractMetric
-
-
-if TYPE_CHECKING:
-    from autrainer.datasets import AbstractDataset  # pragma: no cover
 
 
 class Bookkeeping:
@@ -104,36 +100,26 @@ class Bookkeeping:
     def save_model_summary(
         self,
         model: torch.nn.Module,
-        dataset: "AbstractDataset",
+        shape: Tuple[int, ...],
+        device: torch.device,
         filename: str,
     ) -> None:
         """Save a model summary to a file.
 
         Args:
             model: Model to summarize.
-            dataset: Dataset to get the input size from.
+            shape: Shape of the input to the model.
             filename: Name of the file to save the summary to.
         """
-        x = np.expand_dims(dataset[0][0], axis=0).shape
-        with open(
-            os.path.join(self.output_directory, filename),
-            "w",
-            encoding="utf-8",
-        ) as f:
-            sys.stdout = f
-            s = summary(
-                model=model,
-                input_size=(x),
-                col_names=[
-                    "input_size",
-                    "output_size",
-                    "num_params",
-                    "trainable",
-                ],
-                col_width=20,
-                row_settings=["var_names"],
-            )
-            sys.stdout = self.original_stdout
+        s = summary(
+            model=model,
+            device=device,
+            input_size=(shape),
+            col_names=["input_size", "output_size", "num_params", "trainable"],
+            row_settings=["var_names"],
+            verbose=0,
+        )
+
         model_summary = {
             "total_mult_adds": s.total_mult_adds,
             "total_output_bytes": s.total_output_bytes,
@@ -141,20 +127,22 @@ class Bookkeeping:
             "trainable_params": s.trainable_params,
             "total_param_bytes": s.total_param_bytes,
         }
-        with open(
-            os.path.join(
-                self.output_directory, filename.replace(".txt", ".yaml")
-            ),
-            "w",
-        ) as f:
+
+        out_path = os.path.join(self.output_directory, filename)
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(str(s))
+
+        with open(out_path.replace(".txt", ".yaml"), "w") as f:
             yaml.dump(model_summary, f)
 
     def save_state(
         self,
-        obj: Union[
-            torch.nn.Module,
-            torch.optim.Optimizer,
-            torch.optim.lr_scheduler.LRScheduler,
+        obj: Optional[
+            Union[
+                torch.nn.Module,
+                torch.optim.Optimizer,
+                torch.optim.lr_scheduler.LRScheduler,
+            ]
         ],
         filename: str,
         path: str = "",
@@ -162,13 +150,15 @@ class Bookkeeping:
         """Save the state of an object.
 
         Args:
-            obj: Object to save the state of.
+            obj: Object to save the state of. If None, do nothing.
             filename: Name of the file to save the state to.
             path: Subdirectory to save the state to. Defaults to "".
 
         Raises:
             TypeError: If the object type is not supported.
         """
+        if obj is None:
+            return
         p = os.path.join(self.output_directory, path, filename)
         _i = (
             torch.nn.Module,

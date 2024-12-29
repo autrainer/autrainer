@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 from omegaconf import DictConfig, OmegaConf
-import torch
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
@@ -35,6 +34,7 @@ def preprocess_main(
     import os
     from pathlib import Path
 
+    import torch
     from tqdm import tqdm
 
     from autrainer.datasets.utils import AbstractFileHandler
