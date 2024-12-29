@@ -14,7 +14,7 @@ target_column:
 file_type: wav
 file_handler: autrainer.datasets.utils.AudioFileHandler
 
-criterion: torch.nn.BCEWithLogitsLoss
+criterion: autrainer.criterions.BCEWithLogitsLoss
 metrics:
   - autrainer.metrics.MLAccuracy
   - autrainer.metrics.MLF1Micro

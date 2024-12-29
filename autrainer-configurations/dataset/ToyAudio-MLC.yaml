@@ -8,7 +8,7 @@ feature_shape: [1, 48000]
 dev_split: 0.2
 test_split: 0.2
 
-criterion: torch.nn.BCEWithLogitsLoss
+criterion: autrainer.criterions.BCEWithLogitsLoss
 metrics:
   - autrainer.metrics.MLAccuracy
   - autrainer.metrics.MLF1Micro
