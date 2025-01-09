@@ -221,17 +221,16 @@ class ModularTaskTrainer:
         self.best_iteration = 1
 
         # ? Save initial (and best) Model, Optimizer and Scheduler states
-        [
-            spawn_thread(self.bookkeeping.save_state, args)
-            for args in [
-                (self.model, "model.pt", "_initial"),
-                (self.optimizer, "optimizer.pt", "_initial"),
-                (self.scheduler, "scheduler.pt", "_initial"),
-                (self.model, "model.pt", "_best"),
-                (self.optimizer, "optimizer.pt", "_best"),
-                (self.scheduler, "scheduler.pt", "_best"),
-            ]
+        save_tasks = [
+            (self.model, "model.pt", "_initial"),
+            (self.optimizer, "optimizer.pt", "_initial"),
+            (self.scheduler, "scheduler.pt", "_initial"),
+            (self.model, "model.pt", "_best"),
+            (self.optimizer, "optimizer.pt", "_best"),
+            (self.scheduler, "scheduler.pt", "_best"),
         ]
+        for task in save_tasks:
+            spawn_thread(self.bookkeeping.save_audobject, task)
 
         # ? Load and Save Preprocessing Pipeline if specified
         _preprocess_pipe = SmartCompose([])
@@ -255,17 +254,16 @@ class ModularTaskTrainer:
                 ]
             )
 
-        [
-            spawn_thread(self.bookkeeping.save_audobject, args)
-            for args in [
-                (self.data.target_transform, "target_transform.yaml"),
-                (self.model, "model.yaml"),
-                (self.data.test_transform, "inference_transform.yaml"),
-                (self.data.file_handler, "file_handler.yaml"),
-                (_preprocess_pipe, "preprocess_pipeline.yaml"),
-                (_file_handler, "preprocess_file_handler.yaml"),
-            ]
+        save_tasks = [
+            (self.data.target_transform, "target_transform.yaml"),
+            (self.model, "model.yaml"),
+            (self.data.test_transform, "inference_transform.yaml"),
+            (self.data.file_handler, "file_handler.yaml"),
+            (_preprocess_pipe, "preprocess_pipeline.yaml"),
+            (_file_handler, "preprocess_file_handler.yaml"),
         ]
+        for task in save_tasks:
+            spawn_thread(self.bookkeeping.save_audobject, task)
 
         # ? Create Timers
         self.train_timer = Timer(output_directory, "train")
