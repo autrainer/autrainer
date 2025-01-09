@@ -230,7 +230,7 @@ class ModularTaskTrainer:
             (self.scheduler, "scheduler.pt", "_best"),
         ]
         for task in save_tasks:
-            spawn_thread(self.bookkeeping.save_audobject, task)
+            spawn_thread(self.bookkeeping.save_state, task)
 
         # ? Load and Save Preprocessing Pipeline if specified
         _preprocess_pipe = SmartCompose([])
