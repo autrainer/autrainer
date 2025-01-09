@@ -9,16 +9,14 @@ import psutil
 import torch
 
 
-def spawn_thread(target: Callable, args: tuple = (), daemon=False) -> None:
+def spawn_thread(target: Callable, args: tuple = ()) -> None:
     """Spawn and start a new thread for the target function.
 
     Args:
         target: Function to run in the thread.
         args: Arguments to pass to the function. Defaults to an empty tuple.
-        daemon: Whether the thread should be run as a daemon thread.
-            Defaults to False.
     """
-    threading.Thread(target=target, args=args, daemon=daemon).start()
+    threading.Thread(target=target, args=args).start()
 
 
 def get_gpu_info(device: torch.device) -> Optional[dict]:
