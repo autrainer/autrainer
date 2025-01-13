@@ -16,50 +16,74 @@ from autrainer.criterions import (
 )
 
 
+class MockCTargetTransform:
+    def __init__(self) -> None:
+        self.labels = ["target1", "target2", "target3", "target4", "target5"]
+
+    def __len__(self) -> int:
+        return len(self.labels)
+
+    def __call__(self, x: Any) -> Any:
+        return x
+
+
 class MockClassificationDataset:
-    target_column = "target"
-    df_train = pd.DataFrame({"target": [0, 1, 1, 2, 2, 2, 3, 4]})
+    def __init__(self) -> None:
+        self.target_column = "target"
+        self.df_train = pd.DataFrame({"target": [0, 1, 1, 2, 2, 2, 3, 4]})
+        self.task = "classification"
+        self.target_transform = MockCTargetTransform()
 
-    class MockTargetTransform:
-        labels = ["target1", "target2", "target3", "target4", "target5"]
 
-        def __call__(self, x: Any) -> Any:
-            return x
+class MockMLCTargetTransform:
+    def __init__(self) -> None:
+        self.labels = ["target1", "target2", "target3", "target4", "target5"]
 
-    task = "classification"
-    target_transform = MockTargetTransform()
+    def __len__(self) -> int:
+        return len(self.labels)
+
+    def __call__(self, x: Any) -> Any:
+        return torch.tensor(x)
 
 
 class MockMLClassificationDataset:
-    class MockTargetTransform:
-        labels = ["target1", "target2", "target3", "target4", "target5"]
+    def __init__(self) -> None:
+        self.target_column = [
+            "target1",
+            "target2",
+            "target3",
+            "target4",
+            "target5",
+        ]
+        self.df_train = pd.DataFrame(
+            {
+                "target1": [0, 1, 0, 1, 0],
+                "target2": [1, 0, 1, 0, 1],
+                "target3": [0, 0, 1, 1, 1],
+                "target4": [1, 1, 1, 1, 1],
+                "target5": [1, 0, 1, 1, 1],
+            }
+        )
+        self.task = "ml-classification"
+        self.target_transform = MockMLCTargetTransform()
 
-        def __call__(self, x: Any) -> Any:
-            return torch.tensor(x)
 
-    target_column = ["target1", "target2", "target3", "target4", "target5"]
-    df_train = pd.DataFrame(
-        {
-            "target1": [0, 1, 0, 1, 0],
-            "target2": [1, 0, 1, 0, 1],
-            "target3": [0, 0, 1, 1, 1],
-            "target4": [1, 1, 1, 1, 1],
-            "target5": [1, 0, 1, 1, 1],
-        }
-    )
-    task = "ml-classification"
-    target_transform = MockTargetTransform()
+class MockMTRTargetTransform:
+    def __init__(self) -> None:
+        self.target = ["target1", "target2", "target3", "target4", "target5"]
+
+    def __len__(self) -> int:
+        return len(self.target)
+
+    def __call__(self, x: Any) -> Any:
+        return torch.tensor(x)
 
 
 class MockMTRegressionDataset(MockMLClassificationDataset):
-    class MockTargetTransform:
-        target = ["target1", "target2", "target3", "target4", "target5"]
-
-        def __call__(self, x: Any) -> Any:
-            return torch.tensor(x)
-
-    task = "mt-regression"
-    target_transform = MockTargetTransform()
+    def __init__(self) -> None:
+        super().__init__()
+        self.task = "mt-regression"
+        self.target_transform = MockMTRTargetTransform()
 
 
 class TestBalancedCrossEntropyLoss:
@@ -74,6 +98,13 @@ class TestBalancedCrossEntropyLoss:
         )
         weights = weights * len(weights) / weights.sum()
         return criterion, weights
+
+    def test_invalid_frequency_setup(self) -> None:
+        criterion = BalancedCrossEntropyLoss()
+        dataset = MockClassificationDataset()
+        dataset.df_train = pd.DataFrame({"target": [0, 1, 1, 2, 2, 2, 3, 0]})
+        with pytest.raises(ValueError):
+            criterion.setup(dataset)
 
     def test_setup(self) -> None:
         criterion, weights = self._mock_criterion_setup()
@@ -111,6 +142,19 @@ class TestWeightedCrossEntropyLoss(TestBalancedCrossEntropyLoss):
         weights = weights * len(weights) / weights.sum()
         return criterion, weights
 
+    def test_invalid_frequency_setup(self) -> None:
+        criterion = criterion = WeightedCrossEntropyLoss(
+            class_weights={
+                "target1": 1,
+                "target2": 2,
+                "target3": 3,
+                "target4": 5,
+                "target5": 0,
+            }
+        )
+        with pytest.raises(ValueError):
+            criterion.setup(MockClassificationDataset())
+
     def test_missing_target_weight(self) -> None:
         criterion = WeightedCrossEntropyLoss(class_weights={"target1": 1})
         with pytest.raises(ValueError):
@@ -129,6 +173,13 @@ class TestBalancedBCEWithLogitsLoss(TestBalancedCrossEntropyLoss):
         )
         weights = weights * len(weights) / weights.sum()
         return criterion, weights
+
+    def test_invalid_frequency_setup(self) -> None:
+        criterion = BalancedBCEWithLogitsLoss()
+        dataset = MockMLClassificationDataset()
+        dataset.target_transform.labels += ["target6"]
+        with pytest.raises(ValueError):
+            criterion.setup(dataset)
 
     def test_forward_dtype(self) -> None:
         criterion, _ = self._mock_criterion_setup()
@@ -155,6 +206,19 @@ class TestWeightedBCEWithLogitsLoss(TestBalancedBCEWithLogitsLoss):
         weights = torch.tensor([1, 2, 3, 5, 4], dtype=torch.float32)
         weights = weights * len(weights) / weights.sum()
         return criterion, weights
+
+    def test_invalid_frequency_setup(self) -> None:
+        criterion = WeightedBCEWithLogitsLoss(
+            class_weights={
+                "target1": 1,
+                "target2": 2,
+                "target3": 3,
+                "target4": 5,
+                "target5": 0,
+            }
+        )
+        with pytest.raises(ValueError):
+            criterion.setup(MockMLClassificationDataset())
 
     def test_missing_target_weight(self) -> None:
         criterion = WeightedBCEWithLogitsLoss(class_weights={"target1": 1})
@@ -184,6 +248,19 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
         criterion = WeightedMSELoss(target_weights=None)
         with pytest.raises(ValueError):
             criterion.setup(MockClassificationDataset())
+
+    def test_invalid_frequency_setup(self) -> None:
+        criterion = WeightedMSELoss(
+            target_weights={
+                "target1": 1,
+                "target2": 2,
+                "target3": 3,
+                "target4": 5,
+                "target5": 0,
+            }
+        )
+        with pytest.raises(ValueError):
+            criterion.setup(MockMTRegressionDataset())
 
     def test_missing_target_weight(self) -> None:
         criterion = WeightedMSELoss(target_weights={"target1": 1})
