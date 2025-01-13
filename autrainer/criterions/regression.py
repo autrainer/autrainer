@@ -1,6 +1,9 @@
 from typing import TYPE_CHECKING, Dict
 
+import numpy as np
 import torch
+
+from .utils import assert_nonzero_frequency
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -66,6 +69,7 @@ class WeightedMSELoss(MSELoss):
                 )
             values.append(self.target_weights[target])
 
+        assert_nonzero_frequency(np.array(values), len(data.target_transform))
         weight = torch.tensor(values, dtype=torch.float32)
         weight = weight * len(weight) / weight.sum()
         self.register_buffer("weight", weight)

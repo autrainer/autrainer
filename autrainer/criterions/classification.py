@@ -1,7 +1,10 @@
 from typing import TYPE_CHECKING, Dict, List
 
+import numpy as np
 import pandas as pd
 import torch
+
+from .utils import assert_nonzero_frequency
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -41,6 +44,8 @@ class BalancedCrossEntropyLoss(CrossEntropyLoss):
             .sort_index()
             .values
         )
+
+        assert_nonzero_frequency(frequency, len(data.target_transform))
         weight = torch.tensor(1 / frequency, dtype=torch.float32)
         self.weight = weight * len(weight) / weight.sum()
 
@@ -74,6 +79,7 @@ class WeightedCrossEntropyLoss(BalancedCrossEntropyLoss):
                 raise ValueError(f"Missing class weight for label '{label}'.")
             values.append(self.class_weights[label])
 
+        assert_nonzero_frequency(np.array(values), len(data.target_transform))
         weight = torch.tensor(values, dtype=torch.float32)
         self.weight = weight * len(weight) / weight.sum()
 
@@ -116,6 +122,8 @@ class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
             .sum(axis=0)
             .values
         )
+
+        assert_nonzero_frequency(frequency, len(data.target_transform))
         weight = torch.tensor(1 / frequency, dtype=torch.float32)
         weight = weight * len(weight) / weight.sum()
         self.register_buffer("weight", weight)
@@ -163,6 +171,7 @@ class WeightedBCEWithLogitsLoss(BalancedBCEWithLogitsLoss):
                 raise ValueError(f"Missing class weight for label '{label}'.")
             values.append(self.class_weights[label])
 
+        assert_nonzero_frequency(np.array(values), len(data.target_transform))
         weight = torch.tensor(values, dtype=torch.float32)
         weight = weight * len(weight) / weight.sum()
         self.register_buffer("weight", weight)
