@@ -37,8 +37,8 @@ For more information see `this discussion <https://discuss.pytorch.org/t/dataloa
    :members:
 
 
-Balanced and Weigted Criterions
--------------------------------
+Balanced and Weighted Criterions
+--------------------------------
 
 For imbalanced datasets, it is often beneficial to use a balanced or weighted loss function.
 Balanced loss functions automatically adjust the loss for each class or target
