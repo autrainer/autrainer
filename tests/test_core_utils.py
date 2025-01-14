@@ -19,9 +19,11 @@ from autrainer.core.utils import (
     Timer,
     get_hardware_info,
     save_hardware_info,
+    save_requirements,
     set_device,
     set_seed,
     silence,
+    spawn_thread,
 )
 from autrainer.metrics import UAR, Accuracy
 from autrainer.models import FFNN
@@ -69,8 +71,13 @@ class TestBookkeeping(BaseIndividualTempDir):
     def test_save_model_summary(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
-        dataset = [[torch.randn(64)]]
-        bookkeeping.save_model_summary(model, dataset, "summary.txt")
+        shape = (1, 64)
+        bookkeeping.save_model_summary(
+            model,
+            shape,
+            torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
+            "summary.txt",
+        )
         assert os.path.isfile(
             os.path.join(self.temp_dir, "summary.txt")
         ), "Should save model summary txt."
@@ -255,6 +262,23 @@ class TestHardware(BaseIndividualTempDir):
             "Device 'invalid' is not available. Falling back to CPU."
             in caplog.text
         ), "Should log warning."
+
+    def test_spawning_thread(self, capsys: pytest.CaptureFixture) -> None:
+        def test_fn(value: str) -> None:
+            print(value)
+
+        spawn_thread(test_fn, ("Test",))
+        time.sleep(0.1)
+        out, _ = capsys.readouterr()
+        assert "Test" in out, "Should spawn thread."
+
+
+class TestSaveRequirements(BaseIndividualTempDir):
+    def test_save_requirements(self) -> None:
+        save_requirements(self.temp_dir)
+        assert os.path.isfile(
+            os.path.join(self.temp_dir, "requirements.txt")
+        ), "Should save requirements."
 
 
 class TestSetSeed:

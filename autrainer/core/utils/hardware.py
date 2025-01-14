@@ -1,11 +1,22 @@
 import logging
 import os
 import platform
-from typing import Optional
+import threading
+from typing import Callable, Optional
 
 from omegaconf import OmegaConf
 import psutil
 import torch
+
+
+def spawn_thread(target: Callable, args: tuple = ()) -> None:
+    """Spawn and start a new thread for the target function.
+
+    Args:
+        target: Function to run in the thread.
+        args: Arguments to pass to the function. Defaults to an empty tuple.
+    """
+    threading.Thread(target=target, args=args).start()
 
 
 def get_gpu_info(device: torch.device) -> Optional[dict]:

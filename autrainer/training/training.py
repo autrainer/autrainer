@@ -16,8 +16,10 @@ from autrainer.core.utils import (
     Bookkeeping,
     Timer,
     save_hardware_info,
+    save_requirements,
     set_device,
     set_seed,
+    spawn_thread,
 )
 from autrainer.datasets import AbstractDataset
 from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
@@ -69,9 +71,7 @@ class ModularTaskTrainer:
         self.initial_iteration = 1
 
         # ? Save current requirements.txt
-        reqs_output = os.path.join(output_directory, "requirements.txt")
-        with open(reqs_output, "w") as f:
-            f.write(os.popen("pip freeze").read())
+        spawn_thread(save_requirements, (self.output_directory,))
 
         # ? Load Model and Dataset Transforms and Augmentations
         model_config = self.cfg.model
@@ -92,7 +92,6 @@ class ModularTaskTrainer:
         train_transform, dev_transform, test_transform = transforms
 
         # ? Load Dataset
-
         self.data = autrainer.instantiate(
             config=dataset_config,
             instance_of=AbstractDataset,
@@ -151,8 +150,15 @@ class ModularTaskTrainer:
                 state_dict,
                 skip_last_layer,
             )
-        self.bookkeeping.save_model_summary(
-            self.model, self.train_dataset, "model_summary.txt"
+
+        spawn_thread(
+            self.bookkeeping.save_model_summary,
+            (
+                deepcopy(self.model),
+                self.data.train_dataset[0][0].unsqueeze(0).shape,
+                self.DEVICE,
+                "model_summary.txt",
+            ),
         )
 
         # ? Load Optimizer
@@ -175,27 +181,30 @@ class ModularTaskTrainer:
             )
 
         # ? Load Scheduler
-        _scheduler_cfg = self.cfg.scheduler
-        self.scheduler_frequency = _scheduler_cfg.pop(
-            "step_frequency", "evaluation"
-        )
-        if self.scheduler_frequency not in ["batch", "evaluation"]:
-            raise ValueError(
-                f"Scheduler frequency {self.scheduler_frequency} not supported"
+        if self.cfg.scheduler.id != "None":
+            _scheduler_cfg = self.cfg.scheduler
+            self.scheduler_frequency = _scheduler_cfg.pop(
+                "step_frequency", "evaluation"
             )
-        self.scheduler = autrainer.instantiate(
-            config=_scheduler_cfg,
-            instance_of=torch.optim.lr_scheduler.LRScheduler,
-            optimizer=self.optimizer,
-        )
-        if self.scheduler is not None and scheduler_checkpoint:
-            self.scheduler.load_state_dict(
-                torch.load(
-                    scheduler_checkpoint,
-                    map_location="cpu",
-                    weights_only=True,
+            if self.scheduler_frequency not in ["batch", "evaluation"]:
+                raise ValueError(
+                    f"Scheduler frequency {self.scheduler_frequency} not supported"
                 )
+            self.scheduler = autrainer.instantiate(
+                config=_scheduler_cfg,
+                instance_of=torch.optim.lr_scheduler.LRScheduler,
+                optimizer=self.optimizer,
             )
+            if self.scheduler is not None and scheduler_checkpoint:
+                self.scheduler.load_state_dict(
+                    torch.load(
+                        scheduler_checkpoint,
+                        map_location="cpu",
+                        weights_only=True,
+                    )
+                )
+        else:
+            self.scheduler = None
 
         # ? Create Dataloaders
         self.train_loader = self.data.train_loader
@@ -211,33 +220,17 @@ class ModularTaskTrainer:
         self.max_dev_metric = self.data.tracking_metric.starting_metric
         self.best_iteration = 1
 
-        # ? Save initial (and best) Model, Optimizer and Encoder State
-        self.bookkeeping.create_folder("_initial")
-        self.bookkeeping.save_state(self.model, "model.pt", "_initial")
-        self.bookkeeping.save_state(self.optimizer, "optimizer.pt", "_initial")
-        if self.scheduler:
-            self.bookkeeping.save_state(
-                self.scheduler, "scheduler.pt", "_initial"
-            )
-
-        self.bookkeeping.create_folder("_best")
-        self.bookkeeping.save_state(self.model, "model.pt", "_best")
-        self.bookkeeping.save_state(self.optimizer, "optimizer.pt", "_best")
-        if self.scheduler:
-            self.bookkeeping.save_state(
-                self.scheduler, "scheduler.pt", "_best"
-            )
-
-        self.bookkeeping.save_audobject(
-            self.data.target_transform, "target_transform.yaml"
-        )
-        self.bookkeeping.save_audobject(self.model, "model.yaml")
-        self.bookkeeping.save_audobject(
-            self.data.test_transform, "inference_transform.yaml"
-        )
-        self.bookkeeping.save_audobject(
-            self.data.file_handler, "file_handler.yaml"
-        )
+        # ? Save initial (and best) Model, Optimizer and Scheduler states
+        save_tasks = [
+            (self.model, "model.pt", "_initial"),
+            (self.optimizer, "optimizer.pt", "_initial"),
+            (self.scheduler, "scheduler.pt", "_initial"),
+            (self.model, "model.pt", "_best"),
+            (self.optimizer, "optimizer.pt", "_best"),
+            (self.scheduler, "scheduler.pt", "_best"),
+        ]
+        for task in save_tasks:
+            spawn_thread(self.bookkeeping.save_state, task)
 
         # ? Load and Save Preprocessing Pipeline if specified
         _preprocess_pipe = SmartCompose([])
@@ -261,12 +254,16 @@ class ModularTaskTrainer:
                 ]
             )
 
-        self.bookkeeping.save_audobject(
-            _preprocess_pipe, "preprocess_pipeline.yaml"
-        )
-        self.bookkeeping.save_audobject(
-            _file_handler, "preprocess_file_handler.yaml"
-        )
+        save_tasks = [
+            (self.data.target_transform, "target_transform.yaml"),
+            (self.model, "model.yaml"),
+            (self.data.test_transform, "inference_transform.yaml"),
+            (self.data.file_handler, "file_handler.yaml"),
+            (_preprocess_pipe, "preprocess_pipeline.yaml"),
+            (_file_handler, "preprocess_file_handler.yaml"),
+        ]
+        for task in save_tasks:
+            spawn_thread(self.bookkeeping.save_audobject, task)
 
         # ? Create Timers
         self.train_timer = Timer(output_directory, "train")
