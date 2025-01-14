@@ -61,7 +61,7 @@ def preprocess_main(
     dataset["batch_size"] = 8  # ignored
     dataset.pop("criterion")
     dataset.pop("transform")
-    features_path = dataset.pop("features_path")
+    features_path = dataset.pop("features_path", None)
     if features_path is None:
         features_path = dataset["path"]
     features_subdir = dataset["features_subdir"]
