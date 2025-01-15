@@ -110,7 +110,7 @@ def set_device(device_name: str) -> torch.device:
     try:
         device = torch.device(device_name)
         torch.tensor(1).to(device)
-    except RuntimeError:
+    except (RuntimeError, AssertionError):
         device = torch.device("cpu")
         logging.warning(
             f"Device '{device_name}' is not available. Falling back to CPU.",
