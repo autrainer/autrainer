@@ -30,7 +30,7 @@ class MSELoss(torch.nn.MSELoss):
 
 
 class WeightedMSELoss(MSELoss):
-    weight: torch.Tensor
+    weights_buffer: torch.Tensor
 
     def __init__(self, target_weights: Dict[str, float], **kwargs) -> None:
         """Wrapper for `torch.nn.MSELoss` with manual target weights intended
@@ -72,7 +72,7 @@ class WeightedMSELoss(MSELoss):
         assert_nonzero_frequency(np.array(values), len(data.target_transform))
         weight = torch.tensor(values, dtype=torch.float32)
         weight = weight * len(weight) / weight.sum()
-        self.register_buffer("weight", weight)
+        self.register_buffer("weights_buffer", weight)
 
     def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         """Wrapper for `torch.nn.MSELoss.forward` with manual target weights.
@@ -84,4 +84,4 @@ class WeightedMSELoss(MSELoss):
         Returns:
             Loss.
         """
-        return super().forward(x, y) * self.weight.expand_as(y)
+        return super().forward(x, y) * self.weights_buffer.expand_as(y)

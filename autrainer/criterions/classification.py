@@ -99,7 +99,7 @@ class BCEWithLogitsLoss(torch.nn.BCEWithLogitsLoss):
 
 
 class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
-    weight: torch.Tensor
+    weights_buffer: torch.Tensor
 
     def setup(self, data: "AbstractDataset") -> None:
         """Calculate balanced weights for the dataset based on the target
@@ -126,7 +126,7 @@ class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
         assert_nonzero_frequency(frequency, len(data.target_transform))
         weight = torch.tensor(1 / frequency, dtype=torch.float32)
         weight = weight * len(weight) / weight.sum()
-        self.register_buffer("weight", weight)
+        self.register_buffer("weights_buffer", weight)
 
     def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         """Wrapper for `torch.nn.BCEWithLogitsLoss.forward` with balanced
@@ -139,7 +139,7 @@ class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
         Returns:
             Loss.
         """
-        return super().forward(x, y) * self.weight.expand_as(y)
+        return super().forward(x, y) * self.weights_buffer.expand_as(y)
 
 
 class WeightedBCEWithLogitsLoss(BalancedBCEWithLogitsLoss):
@@ -170,8 +170,7 @@ class WeightedBCEWithLogitsLoss(BalancedBCEWithLogitsLoss):
             if label not in self.class_weights:
                 raise ValueError(f"Missing class weight for label '{label}'.")
             values.append(self.class_weights[label])
-
         assert_nonzero_frequency(np.array(values), len(data.target_transform))
         weight = torch.tensor(values, dtype=torch.float32)
         weight = weight * len(weight) / weight.sum()
-        self.register_buffer("weight", weight)
+        self.register_buffer("weights_buffer", weight)
