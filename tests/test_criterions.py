@@ -174,6 +174,16 @@ class TestBalancedBCEWithLogitsLoss(TestBalancedCrossEntropyLoss):
         weights = weights * len(weights) / weights.sum()
         return criterion, weights
 
+    def test_setup(self) -> None:
+        criterion, weights = self._mock_criterion_setup()
+        assert (
+            criterion.weights_buffer is not None
+        ), "Should have calculated the weights"
+
+        assert torch.allclose(
+            criterion.weights_buffer, weights
+        ), "Should have calculated frequency-based weights"
+
     def test_invalid_frequency_setup(self) -> None:
         criterion = BalancedBCEWithLogitsLoss()
         dataset = MockMLClassificationDataset()
@@ -243,6 +253,16 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
         weights = torch.tensor([1, 2, 3, 5, 4], dtype=torch.float32)
         weights = weights * len(weights) / weights.sum()
         return criterion, weights
+
+    def test_setup(self) -> None:
+        criterion, weights = self._mock_criterion_setup()
+        assert (
+            criterion.weights_buffer is not None
+        ), "Should have calculated the weights"
+
+        assert torch.allclose(
+            criterion.weights_buffer, weights
+        ), "Should have calculated frequency-based weights"
 
     def test_invalid_task(self) -> None:
         criterion = WeightedMSELoss(target_weights=None)
