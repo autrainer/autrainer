@@ -143,6 +143,7 @@ class ToyDataset(AbstractDataset):
             test_transform=test_transform,
             stratify=None,
         )
+        self._mock_df  # required due to super().__init__ with placeholders
 
     @staticmethod
     def _assert_splits(dev_split: int, test_split: float) -> None:
