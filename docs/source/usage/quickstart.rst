@@ -222,6 +222,36 @@ Now, run the following :ref:`training <cli_training>` command to train the model
     autrainer train
 
 
+.. _quick_overriding_configurations:
+
+Overriding Configurations
+-------------------------
+
+All `autrainer` default configurations can be easily overridden by creating a new configuration file in the corresponding
+directory with the same name as the default configuration.
+The new configuration file will be used instead of the default configuration.
+
+To override the default :attr:`path` the :class:`~autrainer.datasets.DCASE2016Task1` dataset stores files in, the following
+:ref:`configuration management <cli_configuration_management>` command is used to locally save the default configuration:
+
+.. code-block:: autrainer
+
+    autrainer show dataset DCASE2016Task1-32k --save
+
+Alternatively, use the following :ref:`configuration management <cli_wrapper_configuration_management>` CLI wrapper function:
+
+.. code-block:: python
+
+    autrainer.cli.show("dataset", "DCASE2016Task1-32k", save=True)
+
+This will save the default configuration to the :file:`conf/dataset/DCASE2016Task1-32k.yaml` file, which can be edited to override the :attr:`path`:
+
+.. literalinclude:: ../examples/quickstart/config_dataset_path.yaml
+   :language: yaml
+   :caption: conf/dataset/DCASE2016Task1-32k.yaml
+   :linenos:
+
+
 .. _quick_training_configurations:
 
 Training Duration & Step-based Training
