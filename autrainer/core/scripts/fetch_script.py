@@ -73,6 +73,10 @@ class FetchScript(AbstractPreprocessScript):
         for name, model in self.models.items():
             print(f" - {name}")
             model.pop("transform", None)
+            model.pop("model_checkpoint", None)
+            model.pop("optimizer_checkpoint", None)
+            model.pop("scheduler_checkpoint", None)
+            model.pop("skip_last_layer", None)
             autrainer.instantiate(config=model, output_dim=10)
 
 
