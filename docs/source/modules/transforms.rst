@@ -117,9 +117,9 @@ Model and dataset configurations specify the transforms to be applied to the inp
 Each :attr:`transform` configuration includes a :attr:`type` attribute, specifying the type of data the model expects or the dataset provides:
 
 * :attr:`image`: RGB images
-* :attr:`grayscale`: Grayscale images (e.g. spectrograms or other single-channel images)
+* :attr:`grayscale`: Grayscale images (e.g., spectrograms or other single-channel images)
 * :attr:`raw`: Raw audio waveforms
-* :attr:`tabular`: Tabular data (e.g. openSMILE features)
+* :attr:`tabular`: Tabular data (e.g., openSMILE features)
 
 .. note::
    The conversion between RGB and grayscale images is handled automatically by the pipeline to ensure compatibility between models and datasets.

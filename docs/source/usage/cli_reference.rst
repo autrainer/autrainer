@@ -109,7 +109,7 @@ To avoid race conditions when using :ref:`hydra_launcher_plugins` that may run m
 :ref:`autrainer fetch <cli_autrainer_fetch>` and :ref:`autrainer preprocess <cli_autrainer_preprocess>` allow for
 downloading and :ref:`preprocessing <preprocessing_transforms>` of :ref:`datasets` (and pretrained model states) before training.
 
-Both commands are based on the :ref:`main configuration <main_configuration>` file (e.g. :file:`conf/config.yaml`),
+Both commands are based on the :ref:`main configuration <main_configuration>` file (e.g., :file:`conf/config.yaml`),
 such that the specified models and datasets are fetched and preprocessed accordingly.
 If a model or dataset is already fetched or preprocessed, it will be skipped.
 
@@ -156,7 +156,7 @@ Training
 --------
 
 Training is managed by :ref:`autrainer train <cli_autrainer_train>`, which starts the training process
-based on the :ref:`main configuration <main_configuration>` file (e.g. :file:`conf/config.yaml`).
+based on the :ref:`main configuration <main_configuration>` file (e.g., :file:`conf/config.yaml`).
 
 .. _cli_autrainer_train:
 
@@ -191,13 +191,13 @@ This syntax consists of the following components:
 
 * :code:`hf`: The Hugging Face Hub prefix indicating that the model is fetched from the Hugging Face Hub.
 * :code:`repo_id`: The repository ID of the model consisting of the user name and the model card name separated by a slash
-  (e.g. :code:`autrainer/example`).
-* :code:`revision` (`optional`): The revision as a commit hash, branch name, or tag name (e.g. :code:`main`).
+  (e.g., :code:`autrainer/example`).
+* :code:`revision` (`optional`): The revision as a commit hash, branch name, or tag name (e.g., :code:`main`).
   If not specified, the latest revision is used.
-* :code:`subdir` (`optional`): The subdirectory of the repository containing the model directory (e.g. :code:`AudioModel`).
+* :code:`subdir` (`optional`): The subdirectory of the repository containing the model directory (e.g., :code:`AudioModel`).
   If not specified, the model directory is automatically inferred.
   If multiple models are present in the :code:`repo_id`, :code:`subdir` must be specified, as the correct model cannot be automatically inferred.
-* :code:`local_dir` (`optional`): The local directory to which the model is downloaded to (e.g. :code:`.hf_local`).
+* :code:`local_dir` (`optional`): The local directory to which the model is downloaded to (e.g., :code:`.hf_local`).
   If not specified, the model is placed in the
   `torch hub cache directory <https://pytorch.org/docs/stable/hub.html#where-are-my-downloaded-models-saved>`_.
 
@@ -214,7 +214,7 @@ the following :ref:`autrainer inference <cli_autrainer_inference>` CLI command c
       To access private repositories, the environment variable :code:`HF_HOME` should point to the
       `Hugging Face User Access Token <https://huggingface.co/docs/hub/security-tokens>`_.
 
-      To use a custom endpoint (e.g. for a `self-hosted hub <https://huggingface.co/enterprise>`_),
+      To use a custom endpoint (e.g., for a `self-hosted hub <https://huggingface.co/enterprise>`_),
       the environment variable :code:`HF_ENDPOINT` should point to the desired endpoint URL.
 
 

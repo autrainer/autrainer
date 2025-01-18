@@ -161,7 +161,7 @@ The ending :attr:`32k-T` indicates that the model using transfer learning and ha
 
 .. tip::
    
-   To discover all available default configurations for e.g. different models,
+   To discover all available default configurations for e.g., different models,
    the :ref:`configuration management CLI <cli_configuration_management>`,
    the :ref:`configuration management CLI wrapper <cli_wrapper_configuration_management>`,
    and the :ref:`models documentation <models>` can be used.
