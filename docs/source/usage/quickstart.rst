@@ -150,6 +150,20 @@ update the :ref:`main configuration <main_configuration>` (:file:`conf/config.ya
    :caption: conf/config.yaml
    :linenos:
 
+The following :ref:`configuration management <cli_configuration_management>` command is used to discover all available
+default configurations for the :class:`~autrainer.models.Cnn10` model:
+
+.. code-block:: autrainer
+
+    autrainer list model --pattern=Cnn10*
+
+Alternatively, use the following :ref:`configuration management <cli_wrapper_configuration_management>` CLI wrapper function:
+
+.. code-block:: python
+
+    autrainer.cli.list("model", pattern="Cnn10*")
+
+
 For the :class:`~autrainer.models.Cnn10` model, the following configuration is used:
 
 .. configurations::
