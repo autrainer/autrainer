@@ -171,7 +171,7 @@ For the :class:`~autrainer.models.Cnn10` model, the following configuration is u
    :configs: Cnn10-32k-T
    :exact:
 
-The ending :attr:`32k-T` indicates that the model using transfer learning and has been pretrained with a sample rate of 32 kHz.
+The ending :attr:`32k-T` indicates that the model uses transfer learning and has been pretrained with a sample rate of 32 kHz.
 
 .. tip::
    
