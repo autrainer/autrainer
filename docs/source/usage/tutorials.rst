@@ -571,7 +571,7 @@ Custom Plotting
 To create a custom :ref:`plotting <core_plotting>` configuration, create a new file in the :file:`conf/plotting/` directory.
 
 For example, the following configuration uses the `LaTeX <https://matplotlib.org/stable/users/explain/text/usetex.html>`_ backend,
-the Palatino font with a font size of 9, replaces :attr:`None` values in the run name with :attr:`~` for better readability,
+the Palatino font with a font size of 9, replaces :attr:`None` values in the run name with :attr:`~~` for better readability,
 and adds labels as well as titles to the plot.
 
 .. literalinclude:: ../examples/tutorials/LaTeX.yaml
