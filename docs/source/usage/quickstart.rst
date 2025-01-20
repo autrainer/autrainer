@@ -94,7 +94,7 @@ Now, run the following :ref:`training <cli_training>` command to train the model
 Grid Search Configuration
 -------------------------
 
-To perform a grid search over multiple multiple configurations defined in the :attr:`params`, update the
+To perform a grid search over multiple configurations defined in the :attr:`params`, update the
 :ref:`main configuration <main_configuration>` (:file:`conf/config.yaml`) to include multiple values separated by a comma.
 
 The following configuration performs a grid search over the default :class:`~autrainer.models.FFNN` model with 2 and 3 hidden layers
