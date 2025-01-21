@@ -12,11 +12,11 @@ from torchinfo import summary
 import yaml
 
 from autrainer.metrics import AbstractMetric
-from autrainer.training.utils import create_model_inputs
+from autrainer.models.utils import create_model_inputs
 
 
 if TYPE_CHECKING:
-    from autrainer.datasets import AbstractDataset  # pragma: no cover
+    from autrainer.datasets.utils import DataItem, DatasetWrapper
 
 
 class Bookkeeping:
@@ -105,22 +105,20 @@ class Bookkeeping:
     def save_model_summary(
         self,
         model: torch.nn.Module,
-        dataset: "AbstractDataset",
+        dataset: Union[List["DataItem"], "DatasetWrapper"],
         filename: str,
     ) -> None:
         """Save a model summary to a file.
 
         Args:
             model: Model to summarize.
-            dataset: Dataset to get the input size from.
+            dataset: Data to get the input sizes from.
+                Either a batch or a list of data points
             filename: Name of the file to save the summary to.
         """
-        batch = next(iter(dataset.train_loader))
-        model_inputs = create_model_inputs(model, batch)
+        model_inputs = create_model_inputs(model, dataset[0])
         x = [
-            np.expand_dims(
-                getattr(dataset.train_dataset[0], key), axis=0
-            ).shape
+            np.expand_dims(getattr(dataset[0], key), axis=0).shape
             for key in model_inputs.keys()
         ]
 
