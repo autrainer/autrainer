@@ -345,11 +345,11 @@ class AudioRNNModel(AbstractModel):
 
         return rnn_out
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            x ((torch.Tensor) - BS x S x 1 x T)
+            features ((torch.Tensor) - BS x S x 1 x T)
         """
-        rnn_out = self.embeddings(x)
+        rnn_out = self.embeddings(features)
         output = self.linear(rnn_out)
         return output
