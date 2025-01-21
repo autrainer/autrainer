@@ -158,7 +158,7 @@ class ModularTaskTrainer:
             )
 
         self.bookkeeping.save_model_summary(
-            self.model, self.data.train_dataset, "model_summary.txt"
+            self.model, self.data, "model_summary.txt"
         )
 
         # ? Load Optimizer

@@ -12,6 +12,7 @@ from torchinfo import summary
 import yaml
 
 from autrainer.metrics import AbstractMetric
+from autrainer.training.utils import create_model_inputs
 
 
 if TYPE_CHECKING:
@@ -114,7 +115,14 @@ class Bookkeeping:
             dataset: Dataset to get the input size from.
             filename: Name of the file to save the summary to.
         """
-        x = np.expand_dims(dataset[0].features, axis=0).shape
+        batch = next(iter(dataset.train_loader))
+        model_inputs = create_model_inputs(model, batch)
+        x = [
+            np.expand_dims(
+                getattr(dataset.train_dataset[0], key), axis=0
+            ).shape
+            for key in model_inputs.keys()
+        ]
 
         with open(
             os.path.join(self.output_directory, filename),
@@ -124,7 +132,7 @@ class Bookkeeping:
             sys.stdout = f
             s = summary(
                 model=model,
-                input_size=(x),
+                input_size=x,
                 col_names=[
                     "input_size",
                     "output_size",
