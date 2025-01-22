@@ -54,6 +54,6 @@ class TDNNFFNN(AbstractModel):
         embs = self.backbone(feats).squeeze(1)
         return embs
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        embs = self.embeddings(x)
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        embs = self.embeddings(features)
         return self.frontend(embs)

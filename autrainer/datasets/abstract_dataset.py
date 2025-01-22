@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
 import os
-from typing import Dict, List, Optional, Tuple, TypeVar, Union
+from typing import Callable, Dict, List, Optional, Tuple, TypeVar, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -263,6 +263,10 @@ class AbstractDataset(ABC):
         """
         return self._init_dataset(self.df_test, self.test_transform)
 
+    @property
+    def default_collate_fn(self) -> Callable:
+        return DataBatch.collate
+
     @cached_property
     def train_loader(self) -> DataLoader:
         """Get the training loader.
@@ -276,7 +280,7 @@ class AbstractDataset(ABC):
             shuffle=True,
             generator=self._generator,
             collate_fn=self.train_transform.get_collate_fn(
-                self, default=DataBatch.collate
+                self, default=self.default_collate_fn
             ),
         )
 
@@ -293,7 +297,7 @@ class AbstractDataset(ABC):
             shuffle=False,
             generator=self._generator,
             collate_fn=self.dev_transform.get_collate_fn(
-                self, default=DataBatch.collate
+                self, default=self.default_collate_fn
             ),
         )
 
@@ -310,7 +314,7 @@ class AbstractDataset(ABC):
             shuffle=False,
             generator=self._generator,
             collate_fn=self.test_transform.get_collate_fn(
-                self, default=DataBatch.collate
+                self, default=self.default_collate_fn
             ),
         )
 

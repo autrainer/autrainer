@@ -6,9 +6,7 @@ import pandas as pd
 import torch
 import torch.nn.common_types
 
-from autrainer.datasets.utils import AbstractDataBatch
 from autrainer.metrics import AbstractMetric
-from autrainer.models import AbstractModel
 
 
 def disaggregated_evaluation(
@@ -154,15 +152,3 @@ def load_checkpoint(checkpoint: str) -> Dict[str, torch.Tensor]:
     if not os.path.isfile(checkpoint):
         raise FileNotFoundError(f"Checkpoint file not found: {checkpoint}")
     return torch.load(checkpoint)
-
-
-def create_model_inputs(
-    model: AbstractModel,
-    data: AbstractDataBatch,
-) -> Dict[str, torch.Tensor]:
-    _forbidden = ["features", "target", "index"]
-    model_inputs = {model.inputs[0]: data.features}
-    for key, value in vars(data).items():
-        if key not in _forbidden and key in model.inputs:
-            model_inputs[key] = value
-    return model_inputs

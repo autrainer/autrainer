@@ -5,7 +5,7 @@ import torch
 import autrainer
 from autrainer.datasets.utils import AbstractDataBatch
 from autrainer.models import AbstractModel
-from autrainer.training.utils import create_model_inputs
+from autrainer.models.utils import create_model_inputs
 
 
 class SAM(torch.optim.Optimizer):

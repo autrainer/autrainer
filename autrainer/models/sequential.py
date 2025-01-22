@@ -43,8 +43,8 @@ class Sequential(AbstractModel):
             x = x.mean(1)
         return x
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.embeddings(x)
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        return self.embeddings(features)
 
 
 class SeqFFNN(AbstractModel):
@@ -111,5 +111,5 @@ class SeqFFNN(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.backbone(x.squeeze(1))
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.frontend(self.embeddings(x))
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        return self.frontend(self.embeddings(features))
