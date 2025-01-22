@@ -15,7 +15,7 @@ from autrainer.metrics import AbstractMetric
 from autrainer.models.utils import create_model_inputs
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from autrainer.datasets.utils import DataItem, DatasetWrapper
 
 
