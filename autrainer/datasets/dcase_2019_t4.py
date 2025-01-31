@@ -18,20 +18,20 @@ FILES = {
     # Development dataset - Synthetic data ~1 GB
     "Synthetic_dataset.zip": "https://zenodo.org/records/2583796/files/Synthetic_dataset.zip?download=1",
     # TODO: Development set - Weak data, unlabel_in_domain_dev_path -requires youtube-dl package
-        # https://github.com/turpaultn/DESED/blob/master/desed/desed/download.py 
-        # https://github.com/turpaultn/DCASE2019_task4/blob/public/baseline/download_data.py  
+    # https://github.com/turpaultn/DESED/blob/master/desed/desed/download.py
+    # https://github.com/turpaultn/DCASE2019_task4/blob/public/baseline/download_data.py
     # Evaluation dataset - Public evaluation set ~1 GB
     "DESED_public_eval.tar.gz": "https://zenodo.org/records/3588172/files/DESEDpublic_eval.tar.gz?download=1",
 }
 
 EVENTS = [
     "Speech",
-    "Dog", 
+    "Dog",
     "Cat",
     "Alarm_bell_ringing",
-    "Dishes", 
+    "Dishes",
     "Frying",
-    "Blender", 
+    "Blender",
     "Running_water",
     "Vacuum_cleaner",
     "Electric_shaver_toothbrush",
@@ -42,6 +42,7 @@ DURATIONS = {
     "min_dur_inter": 0.15,
     "length_sec": 10,
 }
+
 
 class DCASE2019Task4(BaseSEDDataset):
     def __init__(
@@ -62,7 +63,7 @@ class DCASE2019Task4(BaseSEDDataset):
         test_transform: Optional[SmartCompose] = None,
     ) -> None:
         """DCASE 2019 Task 4 dataset.
-        
+
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
@@ -95,9 +96,11 @@ class DCASE2019Task4(BaseSEDDataset):
             min_event_gap=0.15,
         )
 
-    def load_dataframes(self) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def load_dataframes(
+        self,
+    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """Load train, validation and test dataframes.
-        
+
         Returns:
             Tuple containing (train_df, val_df, test_df)
         """
@@ -105,20 +108,20 @@ class DCASE2019Task4(BaseSEDDataset):
         return (
             pd.read_csv(base_path / "synthetic_train.csv"),
             pd.read_csv(base_path / "synthetic_val.csv"),
-            pd.read_csv(base_path / "public_test.csv")
+            pd.read_csv(base_path / "public_test.csv"),
         )
-    
+
     def _split_train_dataset(
         self,
         df: pd.DataFrame,
         val_size: float = 0.1,
     ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """Split data into train and validation sets.
-        
+
         Args:
             df: DataFrame to split
             val_size: Fraction of data to use for validation
-            
+
         Returns:
             Tuple containing (train_df, val_df, None)
         """
@@ -127,11 +130,7 @@ class DCASE2019Task4(BaseSEDDataset):
         val_split = int(len(indices) * (1 - val_size))
         train_indices = indices[:val_split]
         val_indices = indices[val_split:]
-        return (
-            df.loc[train_indices].copy(),
-            df.loc[val_indices].copy(),
-            None
-        )
+        return (df.loc[train_indices].copy(), df.loc[val_indices].copy(), None)
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover
@@ -152,39 +151,51 @@ class DCASE2019Task4(BaseSEDDataset):
         # download and extract files
         dl_manager = ZipDownloadManager(FILES, path)
         dl_manager.download(
-            check_exist=[
-                "Synthetic_dataset", 
-                "DESED_public_eval"
-            ]
+            check_exist=["Synthetic_dataset", "DESED_public_eval"]
         )
         dl_manager.extract(
-            check_exist=[
-                "Synthetic_dataset", 
-                "DESED_public_eval"
-            ]
+            check_exist=["Synthetic_dataset", "DESED_public_eval"]
         )
 
         # move audio files to the same directory
-        synth_dev_path = os.path.join(path, "audio") # synthetic development set
-        pub_eval_path = os.path.join(path, "dataset") # public evaluation set
+        synth_dev_path = os.path.join(
+            path, "audio"
+        )  # synthetic development set
+        pub_eval_path = os.path.join(path, "dataset")  # public evaluation set
 
-        for file in os.listdir(os.path.join(synth_dev_path, "train", "synthetic")):
+        for file in os.listdir(
+            os.path.join(synth_dev_path, "train", "synthetic")
+        ):
             if file.endswith(".wav"):
-                shutil.move(os.path.join(synth_dev_path, "train", "synthetic", file), out_path)
-        for file in os.listdir(os.path.join(pub_eval_path, "audio", "eval", "public")):
+                shutil.move(
+                    os.path.join(synth_dev_path, "train", "synthetic", file),
+                    out_path,
+                )
+        for file in os.listdir(
+            os.path.join(pub_eval_path, "audio", "eval", "public")
+        ):
             if file.endswith(".wav"):
-                shutil.move(os.path.join(pub_eval_path, "audio", "eval", "public", file), out_path)
+                shutil.move(
+                    os.path.join(
+                        pub_eval_path, "audio", "eval", "public", file
+                    ),
+                    out_path,
+                )
         shutil.copy2(
             os.path.join(pub_eval_path, "metadata", "eval", "public.tsv"),
-            os.path.join(path, "public_test.csv")
+            os.path.join(path, "public_test.csv"),
         )
 
         def process_dataset(csv_path: str, **kwargs) -> pd.DataFrame:
             df = pd.read_csv(csv_path, sep="\t")
             return SegmentedDatasetWrapper.create_fixed_windows(
-                df, path=out_path, window_size=DURATIONS["min_dur_event"],
+                df,
+                path=out_path,
+                window_size=DURATIONS["min_dur_event"],
                 min_event_length=DURATIONS["min_dur_event"],
-                event_list=EVENTS, seq2seq=True, **kwargs
+                event_list=EVENTS,
+                seq2seq=True,
+                **kwargs,
             )
 
         train_df = process_dataset(os.path.join(path, "synthetic_dataset.csv"))
@@ -199,10 +210,12 @@ class DCASE2019Task4(BaseSEDDataset):
         train_indices = indices[:val_split]
         val_indices = indices[val_split:]
         train_df.loc[train_indices].to_csv(
-            os.path.join(path, "synthetic_train.csv"), index=False)
+            os.path.join(path, "synthetic_train.csv"), index=False
+        )
         train_df.loc[val_indices].to_csv(
-            os.path.join(path, "synthetic_val.csv"), index=False)
-        
+            os.path.join(path, "synthetic_val.csv"), index=False
+        )
+
         def remove_if_exists(path: str) -> None:
             if os.path.exists(path):
                 if os.path.isdir(path):
@@ -212,7 +225,10 @@ class DCASE2019Task4(BaseSEDDataset):
 
         for temp_dir in [synth_dev_path, pub_eval_path]:
             remove_if_exists(temp_dir)
-        for license_file in ["._license_public_eval.tsv", "license_public_eval.tsv"]:
+        for license_file in [
+            "._license_public_eval.tsv",
+            "license_public_eval.tsv",
+        ]:
             remove_if_exists(os.path.join(path, license_file))
         for archive in ["DESED_public_eval.tar.gz", "Synthetic_dataset.zip"]:
             remove_if_exists(os.path.join(path, archive))
