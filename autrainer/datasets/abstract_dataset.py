@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
 import os
-from typing import Dict, List, Optional, TypeVar, Union
+from typing import Dict, List, Optional, Tuple, TypeVar, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -21,6 +21,7 @@ from .utils import (
     MinMaxScaler,
     MultiLabelEncoder,
     MultiTargetMinMaxScaler,
+    SegmentedDatasetWrapper,
 )
 
 
@@ -42,7 +43,6 @@ class AbstractDataset(ABC):
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
         inference_batch_size: Optional[int] = None,
-        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -53,9 +53,6 @@ class AbstractDataset(ABC):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             task: Task of the dataset in
                 :const:`~autrainer.core.constants.TrainingConstants.TASKS`.
@@ -68,10 +65,6 @@ class AbstractDataset(ABC):
             batch_size: Batch size.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different folder than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -81,14 +74,9 @@ class AbstractDataset(ABC):
             stratify: Columns to stratify the dataset on. Defaults to None.
         """
         self._assert_task(task)
-        self.features_subdir = features_subdir
-        if self.features_subdir is None:
-            self.features_subdir = self.audio_subdir
+        self._assert_directory(path, features_subdir)
         self.path = path
-        self.features_path = features_path
-        if self.features_path is None:
-            self.features_path = self.path
-        self._assert_directory(self.features_path, self.features_subdir)
+        self.features_subdir = features_subdir
         self.seed = seed
         self.task = task
         self.metrics = [self._init_metric(m) for m in metrics]
@@ -105,17 +93,8 @@ class AbstractDataset(ABC):
         self.stratify = stratify or []
 
         self._generator = torch.Generator().manual_seed(self.seed)
+        self.df_train, self.df_dev, self.df_test = self.load_dataframes()
         self._assert_stratify()
-
-    @property
-    def audio_subdir(self) -> str:
-        """Subfolder containing audio data.
-
-        Defaults to `default` for our standard format.
-        Should be overridden for datasets
-        that do not conform to it.
-        """
-        return "default"
 
     @staticmethod
     def _assert_task(task: str) -> None:
@@ -182,32 +161,19 @@ class AbstractDataset(ABC):
             instance_of=AbstractFileHandler,
         )
 
-    @cached_property
-    def df_train(self) -> pd.DataFrame:
-        """Dataframe for the training set, loaded from `train.csv` by default.
+    def load_dataframes(
+        self,
+    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        """Load the dataframes.
 
         Returns:
-            Training dataframe.
+            Dataframes for training, development, and testing.
         """
-        return pd.read_csv(os.path.join(self.path, "train.csv"))
-
-    @cached_property
-    def df_dev(self) -> pd.DataFrame:
-        """Dataframe for the development set, loaded from `dev.csv` by default.
-
-        Returns:
-            Development dataframe.
-        """
-        return pd.read_csv(os.path.join(self.path, "dev.csv"))
-
-    @cached_property
-    def df_test(self) -> pd.DataFrame:
-        """Dataframe for the test set, loaded from `test.csv` by default.
-
-        Returns:
-            Test dataframe.
-        """
-        return pd.read_csv(os.path.join(self.path, "test.csv"))
+        return (
+            pd.read_csv(os.path.join(self.path, "train.csv")),
+            pd.read_csv(os.path.join(self.path, "dev.csv")),
+            pd.read_csv(os.path.join(self.path, "test.csv")),
+        )
 
     def _init_dataset(
         self,
@@ -224,7 +190,7 @@ class AbstractDataset(ABC):
             Initialized dataset.
         """
         return DatasetWrapper(
-            path=self.features_path,
+            path=self.path,
             features_subdir=self.features_subdir,
             index_column=self.index_column,
             target_column=self.target_column,
@@ -316,6 +282,17 @@ class AbstractDataset(ABC):
             collate_fn=self.dev_transform.get_collate_fn(self),
         )
 
+    def get_evaluation_data(
+        self,
+    ) -> Tuple[pd.DataFrame, pd.DataFrame, List[str], AbstractTargetTransform]:
+        """Get the evaluation data.
+
+        Returns:
+            Dataframes for development and testing, columns to stratify on, and
+                the target transform.
+        """
+        return self.df_dev, self.df_test, self.stratify, self.target_transform
+
     @staticmethod
     def download(path: str) -> None:
         """Download the dataset. Can be implemented by subclasses, but is not
@@ -340,7 +317,6 @@ class BaseClassificationDataset(AbstractDataset):
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
         inference_batch_size: Optional[int] = None,
-        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -351,9 +327,6 @@ class BaseClassificationDataset(AbstractDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -364,10 +337,6 @@ class BaseClassificationDataset(AbstractDataset):
             batch_size: Batch size.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different folder than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -389,7 +358,6 @@ class BaseClassificationDataset(AbstractDataset):
             file_handler=file_handler,
             batch_size=batch_size,
             inference_batch_size=inference_batch_size,
-            features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
@@ -427,7 +395,6 @@ class BaseMLClassificationDataset(AbstractDataset):
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
         inference_batch_size: Optional[int] = None,
-        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -439,9 +406,6 @@ class BaseMLClassificationDataset(AbstractDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -452,10 +416,6 @@ class BaseMLClassificationDataset(AbstractDataset):
             batch_size: Batch size.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different folder than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -480,7 +440,6 @@ class BaseMLClassificationDataset(AbstractDataset):
             file_handler=file_handler,
             batch_size=batch_size,
             inference_batch_size=inference_batch_size,
-            features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
@@ -529,7 +488,6 @@ class BaseRegressionDataset(AbstractDataset):
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
         inference_batch_size: Optional[int] = None,
-        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -540,9 +498,6 @@ class BaseRegressionDataset(AbstractDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -553,10 +508,6 @@ class BaseRegressionDataset(AbstractDataset):
             batch_size: Batch size.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different folder than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -578,7 +529,6 @@ class BaseRegressionDataset(AbstractDataset):
             file_handler=file_handler,
             batch_size=batch_size,
             inference_batch_size=inference_batch_size,
-            features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
@@ -608,7 +558,6 @@ class BaseMTRegressionDataset(AbstractDataset):
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
         inference_batch_size: Optional[int] = None,
-        features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -619,9 +568,6 @@ class BaseMTRegressionDataset(AbstractDataset):
         Args:
             path: Root path to the dataset.
             features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -632,10 +578,6 @@ class BaseMTRegressionDataset(AbstractDataset):
             batch_size: Batch size.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different folder than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -657,7 +599,6 @@ class BaseMTRegressionDataset(AbstractDataset):
             file_handler=file_handler,
             batch_size=batch_size,
             inference_batch_size=inference_batch_size,
-            features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
@@ -667,7 +608,137 @@ class BaseMTRegressionDataset(AbstractDataset):
     @cached_property
     def target_transform(self) -> MultiTargetMinMaxScaler:
         return MultiTargetMinMaxScaler(
-            target=self.target_column,
+            targets=self.target_column,
             minimum=self.df_train[self.target_column].min().to_list(),
             maximum=self.df_train[self.target_column].max().to_list(),
         )
+
+
+class BaseSEDDataset(AbstractDataset):
+    def __init__(
+        self,
+        path: str,
+        features_subdir: str,
+        seed: int,
+        metrics: List[Union[str, DictConfig, Dict]],
+        tracking_metric: Union[str, DictConfig, Dict],
+        index_column: str,
+        target_column: List[str],
+        file_type: str,
+        file_handler: Union[str, DictConfig, Dict],
+        batch_size: int,
+        inference_batch_size: Optional[int] = None,
+        train_transform: Optional[SmartCompose] = None,
+        dev_transform: Optional[SmartCompose] = None,
+        test_transform: Optional[SmartCompose] = None,
+        min_event_length: float = 0.25,
+        min_event_gap: float = 0.15,
+        threshold: float = 0.5,
+    ) -> None:
+        """Base Sound Event Detection dataset.
+        
+        Args:
+            path: Root path to dataset
+            features_subdir: Subdirectory for features
+            seed: Random seed
+            metrics: Evaluation metrics
+            tracking_metric: Metric for model selection
+            index_column: Column name for file identifiers
+            file_type: Feature file type
+            file_handler: Handler for loading features
+            batch_size: Training batch size
+            inference_batch_size: Inference batch size
+            train_transform: Training transforms
+            dev_transform: Development transforms  
+            test_transform: Test transforms
+            min_event_length: Minimum event length in seconds
+            min_event_gap: Minimum gap between events in seconds
+            threshold: Threshold for classification
+        """
+        self._assert_threshold(threshold)
+        self.threshold = threshold
+        super().__init__(
+            path=path,
+            features_subdir=features_subdir,
+            seed=seed,
+            task="ml-classification",
+            metrics=metrics,
+            tracking_metric=tracking_metric,
+            index_column=index_column,
+            target_column=target_column,
+            file_type=file_type,
+            file_handler=file_handler,
+            batch_size=batch_size,
+            inference_batch_size=inference_batch_size,
+            train_transform=train_transform,
+            dev_transform=dev_transform,
+            test_transform=test_transform,
+        )
+        self.min_event_length = min_event_length
+        self.min_event_gap = min_event_gap
+
+    @staticmethod
+    def _assert_threshold(threshold: float) -> None:
+        if not 0 <= threshold <= 1:
+            raise ValueError(
+                f"Threshold '{threshold}' must be between 0 and 1."
+            )
+
+    @cached_property
+    def target_transform(self) -> MultiLabelEncoder:
+        return MultiLabelEncoder(self.threshold, self.target_column)
+
+    def _init_dataset(
+        self,
+        df: pd.DataFrame,
+        transform: SmartCompose,
+    ) -> SegmentedDatasetWrapper:
+        """Initialize a wrapper around torch.utils.data.Dataset.
+
+        Args:
+            df: Dataframe to use.
+            transform: Transform to apply to the features.
+
+        Returns:
+            Initialized dataset.
+        """
+        return SegmentedDatasetWrapper(
+            path=self.path,
+            features_subdir=self.features_subdir,
+            index_column=self.index_column,
+            target_column=self.target_column,
+            file_type=self.file_type,
+            file_handler=self.file_handler,
+            df=df,
+            transform=transform,
+            target_transform=self.target_transform,
+            min_event_length=self.min_event_length,
+            min_event_gap=self.min_event_gap,
+        )
+
+    @cached_property
+    def train_dataset(self) -> SegmentedDatasetWrapper:
+        """Get the training dataset.
+
+        Returns:
+            Training dataset.
+        """
+        return self._init_dataset(self.df_train, self.train_transform)
+
+    @cached_property
+    def dev_dataset(self) -> SegmentedDatasetWrapper:
+        """Get the development dataset.
+
+        Returns:
+            Development dataset.
+        """
+        return self._init_dataset(self.df_dev, self.dev_transform)
+
+    @cached_property
+    def test_dataset(self) -> SegmentedDatasetWrapper:
+        """Get the test dataset.
+
+        Returns:
+            Test dataset.
+        """
+        return self._init_dataset(self.df_test, self.test_transform)
