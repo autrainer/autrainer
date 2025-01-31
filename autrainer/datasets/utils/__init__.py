@@ -4,7 +4,10 @@ from .data_struct import (
     DataBatch,
     DataItem,
 )
-from .dataset_wrapper import DatasetWrapper
+from .dataset_wrapper import (
+    DatasetWrapper,
+    SegmentedDatasetWrapper,
+)
 from .file_handlers import (
     AbstractFileHandler,
     AudioFileHandler,
@@ -38,5 +41,7 @@ __all__ = [
     "MultiLabelEncoder",
     "MultiTargetMinMaxScaler",
     "NumpyFileHandler",
+    "SegmentedDatasetWrapper",
     "ZipDownloadManager",
 ]
+    
