@@ -627,7 +627,7 @@ class BaseSEDDataset(AbstractDataset):
         threshold: float = 0.5,
     ) -> None:
         """Base Sound Event Detection dataset.
-        
+
         Args:
             path: Root path to dataset
             features_subdir: Subdirectory for features
@@ -640,7 +640,7 @@ class BaseSEDDataset(AbstractDataset):
             batch_size: Training batch size
             inference_batch_size: Inference batch size
             train_transform: Training transforms
-            dev_transform: Development transforms  
+            dev_transform: Development transforms
             test_transform: Test transforms
             min_event_length: Minimum event length in seconds
             min_event_gap: Minimum gap between events in seconds

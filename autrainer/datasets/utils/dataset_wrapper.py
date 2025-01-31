@@ -94,16 +94,16 @@ class DatasetWrapper(torch.utils.data.Dataset):
 
 class SegmentedDatasetWrapper(DatasetWrapper):
     def __init__(
-        self, 
+        self,
         window_size: float = 0.25,
         hop_size: float = 0.25,
-        min_event_length: float = .25,
-        min_event_gap: float = .15,
+        min_event_length: float = 0.25,
+        min_event_gap: float = 0.15,
         **kwargs,
     ):
         """Wrapper around torch.utils.data.Dataset for segmented audio files.
         If data is already windowed (has 'start' and 'end' columns), windowing parameters are ignored.
-        
+
         Args:
             window_size: Size of the segmented window in seconds. Ignored if data is pre-windowed.
             hop_size: Hop size in seconds. Ignored if data is pre-windowed.
@@ -111,10 +111,14 @@ class SegmentedDatasetWrapper(DatasetWrapper):
             min_event_gap: Minimum duration between events in seconds. Ignored if data is pre-windowed.
         """
         super().__init__(**kwargs)
-        self.is_prewindowed = "start" in self.df.columns and "end" in self.df.columns
+        self.is_prewindowed = (
+            "start" in self.df.columns and "end" in self.df.columns
+        )
         if not self.is_prewindowed:
             if window_size is None:
-                raise ValueError("window_size must be provided for non-windowed data")
+                raise ValueError(
+                    "window_size must be provided for non-windowed data"
+                )
             self.window_size = window_size
             self.hop_size = hop_size
             self.min_event_length = min_event_length
@@ -133,7 +137,7 @@ class SegmentedDatasetWrapper(DatasetWrapper):
         Returns:
             Tuple containing the data, target and item index.
         """
-        
+
         index = self.df.index[item]
         item_path = self.df.loc[index, self.index_column]
         if isinstance(self.file_handler, AudioFileHandler):
@@ -141,8 +145,9 @@ class SegmentedDatasetWrapper(DatasetWrapper):
                 data = audiofile.read(
                     item_path,
                     offset=self.df.loc[index, "start"],
-                    duration=self.df.loc[index, "end"] - self.df.loc[index, "start"],
-                    always_2d=True
+                    duration=self.df.loc[index, "end"]
+                    - self.df.loc[index, "start"],
+                    always_2d=True,
                 )[0]
                 data = torch.from_numpy(data)
             except Exception as e:
@@ -150,7 +155,7 @@ class SegmentedDatasetWrapper(DatasetWrapper):
                 exit()
         else:
             data = self.file_handler.load(item_path)
-    
+
         target = self.df.loc[index, self.target_column]
         if isinstance(target, str) and target.startswith("[["):
             target = torch.tensor(eval(target), dtype=torch.float32)
@@ -162,7 +167,7 @@ class SegmentedDatasetWrapper(DatasetWrapper):
             target = self.target_transform(target)
 
         return data, target, item
-    
+
     @staticmethod
     def create_fixed_windows(
         df: pd.DataFrame,
@@ -171,7 +176,7 @@ class SegmentedDatasetWrapper(DatasetWrapper):
         min_event_length: float = 0.25,
         event_list: Optional[List[str]] = None,
         seq2seq: bool = False,
-        max_duration: float = 10.0
+        max_duration: float = 10.0,
     ) -> pd.DataFrame:
         """Static version of convert_to_fixed_windows for use during download.
 
@@ -212,45 +217,47 @@ class SegmentedDatasetWrapper(DatasetWrapper):
         Returns:
             DataFrame with columns [filename, start, end] + event_labels
         """
-        
+
         # Check presence of event labels
         event_labels = sorted(df["event_label"].unique())
         if event_list is not None:
             unknown_events = set(event_labels) - set(event_list)
             missing_events = set(event_list) - set(event_labels)
             if unknown_events:
-                raise ValueError(f"Unknown event labels found: {unknown_events}")
+                raise ValueError(
+                    f"Unknown event labels found: {unknown_events}"
+                )
             if missing_events:
-                print(f"Warning: Some event labels not present in data: {missing_events}")
+                print(
+                    f"Warning: Some event labels not present in data: {missing_events}"
+                )
             event_labels = event_list
-        
+
         windows = []
         for file in tqdm(
-            df["filename"].unique(), 
-            desc="Processing files", 
-            unit="file"
+            df["filename"].unique(), desc="Processing files", unit="file"
         ):
             file_path = os.path.join(path, file)
             file_duration = audiofile.duration(file_path)
             if file_duration > max_duration:
                 file_duration = max_duration
             file_events = df[df["filename"] == file]
-            
+
             # Process segments s_i
             segment_events = []
             for start in tqdm(
-                np.arange(0, file_duration, window_size), 
-                desc=f"Processing segments for {file}", 
+                np.arange(0, file_duration, window_size),
+                desc=f"Processing segments for {file}",
                 unit="segment",
                 leave=False,
-                total=len(np.arange(0, file_duration, window_size))
+                total=len(np.arange(0, file_duration, window_size)),
             ):
                 end = min(start + window_size, file_duration)
                 segment_vector = [0] * len(event_labels)
                 window = {
-                        "filename": file,
-                        "start": 0.0 if seq2seq else start,
-                        "end": file_duration if seq2seq else end
+                    "filename": file,
+                    "start": 0.0 if seq2seq else start,
+                    "end": file_duration if seq2seq else end,
                 }
 
                 # Check event presence a_1, ... a_N in s_i
@@ -261,20 +268,25 @@ class SegmentedDatasetWrapper(DatasetWrapper):
                     if overlap_duration > (min_event_length * 0.5):
                         event_idx = event_labels.index(event["event_label"])
                         segment_vector[event_idx] = 1
-                
+
                 if seq2seq:
                     # Collect segments over time
                     segment_events.append(segment_vector)
                 else:
                     # Annotate segment_window with event_labels
-                    window.update({label: segment_vector[idx] for idx, label in enumerate(event_labels)})
+                    window.update(
+                        {
+                            label: segment_vector[idx]
+                            for idx, label in enumerate(event_labels)
+                        }
+                    )
                     windows.append(window)
-            
+
             if seq2seq:
                 # Annotate window with segment_events
                 window["segment_events"] = segment_events
                 windows.append(window)
-            
+
         return pd.DataFrame(windows)
 
     def convert_to_fixed_windows(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -282,7 +294,7 @@ class SegmentedDatasetWrapper(DatasetWrapper):
             df,
             path=self.path,
             window_size=self.window_size,
-            min_event_length=self.min_event_length
+            min_event_length=self.min_event_length,
         )
 
     def get_bounding_box(self, spectrogram, threshold=0.5):
@@ -303,12 +315,11 @@ class SegmentedDatasetWrapper(DatasetWrapper):
         time_mask = energy_over_time > threshold
         t_start = np.where(time_mask)[0][0]
         t_end = np.where(time_mask)[0][-1]
-        
+
         # Frequency bounds
         energy_over_freq = np.mean(spectrogram, axis=1)
         freq_mask = energy_over_freq > threshold
         f_low = np.where(freq_mask)[0][0]
         f_high = np.where(freq_mask)[0][-1]
-        
+
         return t_start, t_end, f_low, f_high
-    
