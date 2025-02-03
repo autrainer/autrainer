@@ -141,18 +141,14 @@ class SegmentedDatasetWrapper(DatasetWrapper):
         index = self.df.index[item]
         item_path = self.df.loc[index, self.index_column]
         if isinstance(self.file_handler, AudioFileHandler):
-            try:
-                data = audiofile.read(
-                    item_path,
-                    offset=self.df.loc[index, "start"],
-                    duration=self.df.loc[index, "end"]
-                    - self.df.loc[index, "start"],
-                    always_2d=True,
-                )[0]
-                data = torch.from_numpy(data)
-            except Exception as e:
-                print(f"Crashed with {e} at {item_path}")
-                exit()
+            data = audiofile.read(
+                item_path,
+                offset=self.df.loc[index, "start"],
+                duration=self.df.loc[index, "end"]
+                - self.df.loc[index, "start"],
+                always_2d=True,
+            )[0]
+            data = torch.from_numpy(data)
         else:
             data = self.file_handler.load(item_path)
 
