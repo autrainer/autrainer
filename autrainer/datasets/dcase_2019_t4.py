@@ -7,7 +7,6 @@ import numpy as np
 from omegaconf import DictConfig
 import pandas as pd
 
-from autrainer.datasets.utils.dataset_wrapper import SegmentedDatasetWrapper
 from autrainer.transforms import SmartCompose
 
 from .abstract_dataset import BaseSEDDataset
@@ -188,19 +187,18 @@ class DCASE2019Task4(BaseSEDDataset):
 
         def process_dataset(csv_path: str, **kwargs) -> pd.DataFrame:
             df = pd.read_csv(csv_path, sep="\t")
-            return SegmentedDatasetWrapper.create_fixed_windows(
+            return BaseSEDDataset.create_fixed_windows(
                 df,
                 path=out_path,
                 window_size=DURATIONS["min_dur_event"],
                 min_event_length=DURATIONS["min_dur_event"],
                 event_list=EVENTS,
-                seq2seq=True,
                 **kwargs,
             )
 
         train_df = process_dataset(os.path.join(path, "synthetic_dataset.csv"))
         pub_eval_df = process_dataset(os.path.join(path, "public_test.csv"))
-        pub_eval_df.to_csv(os.path.join(path, "public_test.csv"), index=False)
+        pub_eval_df.to_csv(os.path.join(path, "test.csv"), index=False)
 
         # TODO: adapt official train/val split with synthetic + real data
         val_size = 0.2
@@ -210,10 +208,10 @@ class DCASE2019Task4(BaseSEDDataset):
         train_indices = indices[:val_split]
         val_indices = indices[val_split:]
         train_df.loc[train_indices].to_csv(
-            os.path.join(path, "synthetic_train.csv"), index=False
+            os.path.join(path, "train.csv"), index=False
         )
         train_df.loc[val_indices].to_csv(
-            os.path.join(path, "synthetic_val.csv"), index=False
+            os.path.join(path, "dev.csv"), index=False
         )
 
         def remove_if_exists(path: str) -> None:
@@ -233,4 +231,5 @@ class DCASE2019Task4(BaseSEDDataset):
         for archive in ["DESED_public_eval.tar.gz", "Synthetic_dataset.zip"]:
             remove_if_exists(os.path.join(path, archive))
         remove_if_exists(os.path.join(path, "synthetic_dataset.csv"))
+        remove_if_exists(os.path.join(path, "public_test.csv"))
         remove_if_exists(os.path.join(path, "__MACOSX"))
