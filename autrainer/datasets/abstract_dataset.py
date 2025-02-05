@@ -676,11 +676,11 @@ class BaseSEDDataset(BaseMLClassificationDataset):
     ) -> pd.DataFrame:
         """Static version of convert_to_fixed_windows for use during download.
         Converts event segments into flattened columns in format s{segment_idx}_e{event_idx}.
-        
+
         Output format:
         filename       start  end    s0_e0  s0_e1  ...  s39_e8  s39_e9
         1123.wav      0.0    10.0   0      1      ...  0       0
-        
+
         Where sX_eY represents:
         - X: segment index (0-39 for 10s file with 0.25s windows)
         - Y: event index (0-9 for 10 event types)
@@ -693,7 +693,7 @@ class BaseSEDDataset(BaseMLClassificationDataset):
             event_list: Optional list of expected event labels. If provided,
                 validates that all events in df match this list.
             max_duration: Maximum duration of an audio file in seconds
-                
+
         Returns:
             DataFrame with columns [filename, start, end] + [s{i}_e{j} for i in segments for j in events]
         """
@@ -702,16 +702,18 @@ class BaseSEDDataset(BaseMLClassificationDataset):
             unknown_events = set(event_labels) - set(event_list)
             missing_events = set(event_list) - set(event_labels)
             if unknown_events:
-                raise ValueError(f"Unknown event labels found: {unknown_events}")
+                raise ValueError(
+                    f"Unknown event labels found: {unknown_events}"
+                )
             if missing_events:
-                print(f"Warning: Some event labels not present in data: {missing_events}")
+                print(
+                    f"Warning: Some event labels not present in data: {missing_events}"
+                )
             event_labels = event_list
 
         windows = []
         for file in tqdm(
-            df["filename"].unique(), 
-            desc="Processing files", 
-            unit="file"
+            df["filename"].unique(), desc="Processing files", unit="file"
         ):
             file_path = os.path.join(path, file)
             file_duration = audiofile.duration(file_path)

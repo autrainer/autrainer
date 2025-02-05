@@ -142,7 +142,8 @@ class SegmentedDatasetWrapper(DatasetWrapper):
             data = audiofile.read(
                 item_path,
                 offset=self.df.loc[index, "start"],
-                duration=self.df.loc[index, "end"] - self.df.loc[index, "start"],
+                duration=self.df.loc[index, "end"]
+                - self.df.loc[index, "start"],
                 always_2d=True,
             )[0]
             data = torch.from_numpy(data)
@@ -159,5 +160,3 @@ class SegmentedDatasetWrapper(DatasetWrapper):
             target = self.target_transform(target)
 
         return DataItem(features=data, target=target, index=item)
-    
-
