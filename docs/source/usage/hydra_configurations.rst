@@ -262,7 +262,7 @@ which includes:
 
 .. _hydra_plugins:
 
-Hydra Plugings
+Hydra Plugins
 --------------
 
 Any Hydra :ref:`sweeper <hydra_sweeper_plugins>` or :ref:`launcher <hydra_launcher_plugins>` plugin can be used to customize
