@@ -145,7 +145,7 @@ class TestPreprocessing(BaseIndividualTempDir):
             ),
         ],
     )
-    def test_preprocessing(
+    def test_log_mel_spectrogram_preprocessing(
         self, preprocess, sampling_rate, features_path
     ) -> None:
         self._mock_dataframes("data/TestDataset")
