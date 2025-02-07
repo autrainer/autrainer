@@ -36,9 +36,12 @@ class TestPreprocessing(BaseIndividualTempDir):
             df[target_column] = [i % 10 for i in range(num_files)]
         elif target_type == "regression":
             df[target_column] = [i for i in range(num_files)]
-        else:
+        elif target_type in ["ml-classification", "mt-regression"]:
             for i in range(10):
                 df[f"target_{i}"] = torch.randint(0, 2, (num_files,)).tolist()
+        else:
+            msg = f"Target type '{target_type}' not implemented."
+            raise NotImplementedError(msg)
 
         output_files = output_files or ["train", "dev", "test"]
         for output_file in output_files:
