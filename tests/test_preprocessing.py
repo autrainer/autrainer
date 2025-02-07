@@ -13,7 +13,7 @@ from autrainer.datasets import BaseClassificationDataset
 from .utils import BaseIndividualTempDir
 
 
-class TestBaseDatasets(BaseIndividualTempDir):
+class TestPreprocessing(BaseIndividualTempDir):
     @staticmethod
     def _mock_dataframes(
         path: str,
