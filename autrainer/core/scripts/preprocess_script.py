@@ -37,6 +37,7 @@ def preprocess_main(
     import torch
     from tqdm import tqdm
 
+    from autrainer.datasets import AbstractDataset
     from autrainer.datasets.utils import AbstractFileHandler
     from autrainer.transforms import SmartCompose
 
@@ -67,7 +68,7 @@ def preprocess_main(
     features_subdir = dataset["features_subdir"]
 
     dataset["features_subdir"] = None
-    data = autrainer.instantiate(dataset)
+    data = autrainer.instantiate(dataset, instance_of=AbstractDataset)
     # manually disable dataset transforms
     data.train_transform = None
     data.dev_transform = None
