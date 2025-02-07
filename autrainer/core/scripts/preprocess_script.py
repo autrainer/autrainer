@@ -76,10 +76,10 @@ def preprocess_main(
     pipeline = SmartCompose(
         [autrainer.instantiate_shorthand(t) for t in preprocess["pipeline"]]
     )
-    for d, n in (
-        (data.train_dataset, "train"),
-        (data.dev_dataset, "dev"),
-        (data.test_dataset, "test"),
+    for d, df, n in (
+        (data.train_dataset, data.df_train, "train"),
+        (data.dev_dataset, data.df_dev, "dev"),
+        (data.test_dataset, data.df_test, "test"),
     ):
         # TODO: dataloader underutilized
         # workers only parallelize loading
@@ -96,8 +96,7 @@ def preprocess_main(
             disable=update_frequency == 0,
         ):
             # TODO: will be streamlined once we switch to dataclass
-            index = d.df.index[int(instance[2])]
-            item_path = d.df.loc[index, d.index_column]
+            item_path = df.loc[df.index[int(instance[2])], d.index_column]
             out_path = Path(
                 features_path,
                 features_subdir,
