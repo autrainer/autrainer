@@ -30,8 +30,12 @@ class TestPreprocessing(BaseIndividualTempDir):
             "regression",
         ]
         os.makedirs(os.path.join(path, "default"), exist_ok=True)
+        nested_prefix = {0: "", 1: "foo/", 2: "foo/bar/"}
         df = pd.DataFrame()
-        df[index_column] = [f"file{i}.{file_type}" for i in range(num_files)]
+        df[index_column] = [
+            os.path.join(nested_prefix[i % 3], f"file{i}.{file_type}")
+            for i in range(num_files)
+        ]
         if target_type == "classification":
             df[target_column] = [i % 10 for i in range(num_files)]
         elif target_type == "regression":
@@ -62,8 +66,10 @@ class TestPreprocessing(BaseIndividualTempDir):
         ]
         for df in dfs:
             for filename in df[index_column]:
+                filepath = os.path.join(path, features_subdir, filename)
+                os.makedirs(os.path.dirname(filepath), exist_ok=True)
                 audiofile.write(
-                    os.path.join(path, features_subdir, filename),
+                    filepath,
                     np.random.rand(sampling_rate),
                     sampling_rate,
                 )
@@ -158,7 +164,14 @@ class TestPreprocessing(BaseIndividualTempDir):
         data = BaseClassificationDataset(**dataset_args)
         for d in (data.train_dataset, data.dev_dataset, data.test_dataset):
             for x in d:
-                assert x[0].shape == (1, sampling_rate)
+                assert x[0].shape == (
+                    1,
+                    sampling_rate,
+                ), "Should match shape of mono audio."
+
+        df_train_audio = data.df_train
+        df_dev_audio = data.df_dev
+        df_test_audio = data.df_test
 
         dataset_args["criterion"] = criterion
         dataset_args["transform"] = transform
@@ -188,17 +201,26 @@ class TestPreprocessing(BaseIndividualTempDir):
         )
         dataset_args["features_subdir"] = "log_mel_16k"
 
+        _mel = preprocess["pipeline"][-1]["autrainer.transforms.PannMel"]
+        shape_time = sampling_rate // _mel["hop_size"] + 1
+        shape_freq = _mel["mel_bins"]
+
         data = BaseClassificationDataset(**dataset_args)
         for d in (data.train_dataset, data.dev_dataset, data.test_dataset):
             for x in d:
                 assert x[0].shape == (
                     1,
-                    sampling_rate
-                    // preprocess["pipeline"][-1][
-                        "autrainer.transforms.PannMel"
-                    ]["hop_size"]
-                    + 1,
-                    preprocess["pipeline"][-1]["autrainer.transforms.PannMel"][
-                        "mel_bins"
-                    ],
-                )
+                    shape_time,
+                    shape_freq,
+                ), "Should match shape of log mel spectrogram."
+
+        for df_audio, df_numpy in zip(
+            (df_train_audio, df_dev_audio, df_test_audio),
+            (data.df_train, data.df_dev, data.df_test),
+        ):
+            for audio_file, numpy_file in zip(
+                df_audio[data.index_column], df_numpy[data.index_column]
+            ):
+                assert audio_file == numpy_file.replace(
+                    "npy", "wav"
+                ), "Should match audio file path."
