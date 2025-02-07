@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
 import os
+import re
 from typing import Dict, List, Optional, TypeVar, Union
 
 import audiofile
@@ -619,7 +620,7 @@ class BaseSEDDataset(BaseMLClassificationDataset):
     def _assert_target_column(self, allowed_columns):
         """Override parent method to handle comma-separated string of target columns"""
         if isinstance(self.target_column, str):
-            target_columns = self.target_column.split(",")
+            target_columns = self.parse_target_column(self.target_column)
         else:
             target_columns = self.target_column
 
@@ -665,8 +666,6 @@ class BaseSEDDataset(BaseMLClassificationDataset):
         window_size: float = 0.25,
         min_event_length: float = 0.25,
         event_list: Optional[List[str]] = None,
-        seq2seq: bool = True,
-        flattened: bool = True,
         max_duration: float = 10.0,
     ) -> pd.DataFrame:
         """Static version of convert_to_fixed_windows for use during download.
@@ -674,7 +673,7 @@ class BaseSEDDataset(BaseMLClassificationDataset):
 
         Output format:
         filename       start  end    s0_e0  s0_e1  ...  s39_e8  s39_e9
-        1123.wav      0.0    10.0   0      1      ...  0       0
+        1123.wav      0.0    10.0    0      1      ...  0       0
 
         Where sX_eY represents:
         - X: segment index (0-39 for 10s file with 0.25s windows)
@@ -751,6 +750,44 @@ class BaseSEDDataset(BaseMLClassificationDataset):
             windows.append(window)
 
         return pd.DataFrame(windows)
+
+    @staticmethod
+    def parse_target_column(target_descriptor: str) -> str:
+        """Parse target column descriptor into list of column names.
+        Args:
+            target_descriptor: String descriptor of target columns pattern
+                or list of column names
+        Returns:
+            List of column names, e.g., ["s0_e0", "s0_e1", ..., "s39_e9"]
+        """
+        if isinstance(target_descriptor, list):
+            return target_descriptor
+
+        if isinstance(target_descriptor, str) and "," in target_descriptor:
+            return target_descriptor.split(",")
+
+        if isinstance(target_descriptor, str) and target_descriptor.startswith(
+            "s["
+        ):
+            s_range = re.search(r"s\[(\d+):(\d+)\]", target_descriptor)
+            e_range = re.search(r"e\[(\d+):(\d+)\]", target_descriptor)
+
+            if not (s_range and e_range):
+                raise ValueError(
+                    f"Invalid target column descriptor: {target_descriptor}"
+                )
+
+            s_start, s_end = map(int, s_range.groups())
+            e_start, e_end = map(int, e_range.groups())
+
+            return [
+                f"s{s}_e{e}"
+                for s in range(s_start, s_end)
+                for e in range(e_start, e_end)
+            ]
+
+        if isinstance(target_descriptor, str):
+            return [target_descriptor]
 
 
 class BaseRegressionDataset(AbstractDataset):
