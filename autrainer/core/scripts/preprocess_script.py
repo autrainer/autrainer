@@ -31,7 +31,6 @@ def preprocess_main(
     num_workers: int,
     update_frequency: int,
 ):
-    import os
     from pathlib import Path
 
     import torch
@@ -102,10 +101,10 @@ def preprocess_main(
             out_path = Path(
                 features_path,
                 features_subdir,
-                os.path.basename(item_path),
-            ).with_suffix("." + output_file_type)
-            os.makedirs(os.path.dirname(out_path), exist_ok=True)
-            if os.path.exists(out_path):
+                item_path,
+            ).with_suffix(f".{output_file_type}")
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            if out_path.exists():
                 continue
             output_file_handler.save(
                 out_path, pipeline(instance[0].squeeze(dim=0), 0)
