@@ -86,7 +86,12 @@ class SpectToImage(AbstractTransform):
         cmap: str = "magma",
         order: int = -90,
     ):
-        """Convert a spectrogram to a 3-channel image based on a colormap.
+        """Convert a spectrogram in the range [0, 1] to a 3-channel uint8 image
+        in the range [0, 255] using a specific colormap.
+
+        Note: The transform should be used in combination with
+        `~autrainer.transforms.ImageToFloat` to convert the image back to the
+        range [0, 1] for training.
 
         Args:
             height: The height of the image.
