@@ -86,7 +86,12 @@ class SpectToImage(AbstractTransform):
         cmap: str = "magma",
         order: int = -90,
     ):
-        """Convert a spectrogram to a 3-channel image based on a colormap.
+        """Convert a spectrogram in the range [0, 1] to a 3-channel uint8 image
+        in the range [0, 255] using a specific colormap.
+
+        Note: The transform should be used in combination with
+        `~autrainer.transforms.ImageToFloat` to convert the image back to the
+        range [0, 1] for training.
 
         Args:
             height: The height of the image.
@@ -281,6 +286,22 @@ class ScaleRange(AbstractTransform):
             return torch.full_like(data, data_min)
         data = (data - data_min) / (data_max - data_min)
         return data * (self.range[1] - self.range[0]) + self.range[0]
+
+
+class ImageToFloat(AbstractTransform):
+    def __init__(self, order: int = 90) -> None:
+        """Transform a uint8 image in the range [0, 255] to a float32 image in
+        the range [0.0, 1.0].
+
+        Args:
+            order: The order of the transform in the pipeline. Defaults to 90.
+        """
+        super().__init__(order=order)
+
+    def __call__(self, data: torch.Tensor) -> torch.Tensor:
+        if data.dtype == torch.uint8:
+            data = data.float() / 255
+        return data
 
 
 class Normalize(AbstractTransform):
