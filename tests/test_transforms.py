@@ -15,6 +15,7 @@ from autrainer.transforms import (
     Expand,
     FeatureExtractor,
     GrayscaleToRGB,
+    ImageToFloat,
     Normalize,
     NumpyToTensor,
     OpenSMILE,
@@ -43,6 +44,7 @@ TRANSFORM_FIXTURES = [
     (Expand, {"size": 16000, "axis": -1}, (1, 8000), (1, 16000)),
     (GrayscaleToRGB, {}, (1, 32, 32), (3, 32, 32)),
     (NumpyToTensor, {}, (3, 32, 32), (3, 32, 32)),
+    (ImageToFloat, {}, (3, 32, 32), (3, 32, 32)),
     (Normalize, {"mean": [0.0], "std": [1.0]}, (3, 32, 32), (3, 32, 32)),
     (RandomCrop, {"size": 8000, "axis": -1}, (1, 16000), (1, 8000)),
     (
@@ -256,6 +258,21 @@ class TestScaleRange:
         assert y.dtype == torch.float32, "Output should be float32"
         assert y.min() == range[0], "Min value should match the range"
         assert y.max() == range[1], "Max value should match the range"
+
+
+class TestImageToFloat:
+    @pytest.mark.parametrize(
+        "data",
+        [
+            torch.randint(0, 255, (3, 32, 32), dtype=torch.uint8),
+            torch.randn(3, 32, 32),
+        ],
+    )
+    def test_image_to_float(self, data: torch.Tensor) -> None:
+        y = ImageToFloat()(data)
+        assert torch.is_tensor(y), "Output should be a tensor"
+        assert y.shape == data.shape, "Output shape should match input"
+        assert y.dtype == torch.float32, "Output should be float32"
 
 
 class TestNormalize:
