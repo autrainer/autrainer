@@ -283,6 +283,22 @@ class ScaleRange(AbstractTransform):
         return data * (self.range[1] - self.range[0]) + self.range[0]
 
 
+class ImageToFloat(AbstractTransform):
+    def __init__(self, order: int = 90) -> None:
+        """Transform a uint8 image in the range [0, 255] to a float32 image in
+        the range [0.0, 1.0].
+
+        Args:
+            order: The order of the transform in the pipeline. Defaults to 90.
+        """
+        super().__init__(order=order)
+
+    def __call__(self, data: torch.Tensor) -> torch.Tensor:
+        if data.dtype == torch.uint8:
+            data = data.float() / 255
+        return data
+
+
 class Normalize(AbstractTransform):
     def __init__(
         self,
