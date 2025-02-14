@@ -38,7 +38,7 @@ All configuration files (not provided by `autrainer` or overridden) should be st
 directory and published alongside the :file:`conf/config.yaml` file.
 To ensure reproducibility on any system, it is recommended to solely use relative paths in the configuration files.
 
-Custom configuration files (e.g. custom models or datasets) should be placed in the :attr:`conf/` directory.
+Custom configuration files (e.g., custom models or datasets) should be placed in the :attr:`conf/` directory.
 The implementation of these configurations or further processing scripts should be placed in the :attr:`src/`
 directory or in the root directory of the project.
 

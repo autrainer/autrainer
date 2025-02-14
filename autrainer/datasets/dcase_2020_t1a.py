@@ -181,7 +181,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
         """Split the training dataset into training and development sets
         taking into account the location.
         Data is split to include at least the `dev_split` fraction of the
-        training data in the development set, e.g. favoring the development
+        training data in the development set, e.g., favoring the development
         set and the split is not exactly `dev_split`.
 
 

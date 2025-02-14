@@ -26,8 +26,8 @@ The main configuration file defines the following parameters:
 * :attr:`experiment_id`: The ID of the experiment.
 * :attr:`hydra/sweeper/params`: The parameters of the sweep.
 
-  * :attr:`\<attr\>`: An attribute to sweep over from the :ref:`defaults_list` (with comma-separated values, e.g. a list of models).
-  * :attr:`+\<attr\>`: An attribute to sweep over that is not in the :ref:`defaults_list` (with comma-separated values, e.g. a list of batch sizes).
+  * :attr:`\<attr\>`: An attribute to sweep over from the :ref:`defaults_list` (with comma-separated values, e.g., a list of models).
+  * :attr:`+\<attr\>`: An attribute to sweep over that is not in the :ref:`defaults_list` (with comma-separated values, e.g., a list of batch sizes).
 * :attr:`hydra/sweeper/filters`: A list of filters to filter out unwanted hyperparameter combinations (see :ref:`hydra_sweeper_plugins`).
 
 
@@ -61,7 +61,7 @@ Configuration Directories
 -------------------------
 
 Configuration files imported through the :ref:`defaults_list` are stored in the :file:`conf/` directory.
-The configuration files are organized in subdirectories (e.g. :file:`conf/dataset/`, :file:`conf/model/`, :file:`conf/optimizer/`, etc.).
+The configuration files are organized in subdirectories (e.g., :file:`conf/dataset/`, :file:`conf/model/`, :file:`conf/optimizer/`, etc.).
 This directory structure tells Hydra where to look for the configuration files.
 The following configuration subdirectories are available:
 
@@ -81,7 +81,7 @@ Creating Configurations
 
 `autrainer` provides a number of default configurations for models, datasets, optimizers, etc.
 that can be used out of the box without creating custom configurations.
-To use a default configuration e.g. a `MobileNetV3-Large-T` model, add it to the :file:`conf/config.yaml` file:
+To use a default configuration e.g., a `MobileNetV3-Large-T` model, add it to the :file:`conf/config.yaml` file:
 
 .. code-block:: yaml
    :linenos:
@@ -149,7 +149,7 @@ For more information on how to create custom models, see :ref:`models`.
 Shorthand Syntax
 ----------------
 
-For configurations that are not primitive types (e.g. numbers or strings) and are not included in the :ref:`defaults_list`,
+For configurations that are not primitive types (e.g., numbers or strings) and are not included in the :ref:`defaults_list`,
 shorthand syntax is used to reduce the number of configuration files required.
 Instead of a configuration file, shorthand syntax configurations can be either a string or a dictionary.
 
@@ -226,7 +226,7 @@ Optional Defaults and Overrides
 
 Optional defaults like :attr:`scheduler` and :attr:`augmentation` are set to :attr:`None`
 by default and not required to be defined in the main configuration.
-:attr:`None` is a special value that tells Hydra to ignore the default and e.g. not use a :ref:`scheduler <schedulers>`
+:attr:`None` is a special value that tells Hydra to ignore the default and e.g., not use a :ref:`scheduler <schedulers>`
 or :ref:`augmentation <augmentations>` for training.
 
 Optional defaults which are not overridden in the :attr:`hydra/sweeper/params` configuration, can be overridden using the :attr:`override`

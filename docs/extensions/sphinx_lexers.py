@@ -1,7 +1,15 @@
 from typing import Any, Dict
 
 from pygments.lexer import RegexLexer, bygroups
-from pygments.token import Keyword, Name, Number, Operator, String, Text
+from pygments.token import (
+    Keyword,
+    Literal,
+    Name,
+    Number,
+    Operator,
+    String,
+    Text,
+)
 from sphinx.application import Sphinx
 from sphinx.highlighting import lexers
 
@@ -33,9 +41,10 @@ class AutrainerLexer(RegexLexer):
                 bygroups(Name.Builtin, Text, Keyword),
             ),
             (r"\b(autrainer)\b", Name.Builtin),
-            (r"(--\w+)", Operator),
-            (r"(-\w+)", Operator),
-            (r"[^-\s]+", Text),
+            (r"--\w+", Operator),
+            (r"=\S+", Literal),
+            (r"-\w+", Operator),
+            (r"[^\s]+", Text),
             (r"\s+", Text),
         ]
     }
