@@ -118,7 +118,7 @@ class TestAllTransforms:
         if len(input_shape) == 2:
             x = torch.randn(*input_shape, dtype=torch.float32)
         else:
-            x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
+            x = torch.randint(0, 256, input_shape, dtype=torch.uint8)
         y = instance(x)
         assert (
             y.shape == output_shape
@@ -259,7 +259,7 @@ class TestScaleRange:
     @pytest.mark.parametrize("range", [(0, 1), (-1, 1), (0, 255)])
     def test_range_uint8(self, range: Tuple[int, int]) -> None:
         self._test_range(
-            torch.randint(0, 255, (3, 32, 32), dtype=torch.uint8),
+            torch.randint(0, 256, (3, 32, 32), dtype=torch.uint8),
             range,
         )
 
@@ -298,7 +298,7 @@ class TestImageToFloat:
     @pytest.mark.parametrize(
         "data",
         [
-            torch.randint(0, 255, (3, 32, 32), dtype=torch.uint8),
+            torch.randint(0, 256, (3, 32, 32), dtype=torch.uint8),
             torch.randn(3, 32, 32),
         ],
     )
@@ -314,7 +314,7 @@ class TestNormalize:
         "data",
         [
             torch.randn(4, 3, 32, 32, dtype=torch.float32),
-            torch.randint(0, 255, (4, 3, 32, 32), dtype=torch.uint8),
+            torch.randint(0, 256, (4, 3, 32, 32), dtype=torch.uint8),
         ],
     )
     def test_invalid_normalize(self, data: torch.Tensor) -> None:
@@ -339,7 +339,7 @@ class TestNormalize:
             torch.randn(4, 64, dtype=torch.float32),
             torch.randn(1, 64, 101, dtype=torch.float32),
             torch.randn(3, 32, 32, dtype=torch.float32),
-            torch.randint(0, 255, (3, 32, 32), dtype=torch.uint8),
+            torch.randint(0, 256, (3, 32, 32), dtype=torch.uint8),
         ],
     )
     def test_normalize(self, data: torch.Tensor) -> None:

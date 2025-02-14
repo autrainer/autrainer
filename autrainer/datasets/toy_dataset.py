@@ -54,7 +54,7 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
         else:
             data = torch.randint(
                 0,
-                255,
+                256,
                 self.feature_shape,
                 dtype=torch.uint8,
                 generator=self.generator,
