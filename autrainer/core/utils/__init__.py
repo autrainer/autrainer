@@ -1,9 +1,9 @@
 from .bookkeeping import Bookkeeping
 from .hardware import (
+    ThreadManager,
     get_hardware_info,
     save_hardware_info,
     set_device,
-    spawn_thread,
 )
 from .requirements import save_requirements
 from .set_seed import set_seed
@@ -19,6 +19,6 @@ __all__ = [
     "set_device",
     "set_seed",
     "silence",
-    "spawn_thread",
+    "ThreadManager",
     "Timer",
 ]

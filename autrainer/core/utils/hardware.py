@@ -4,19 +4,36 @@ import platform
 import threading
 from typing import Callable, Optional
 
+import matplotlib
 from omegaconf import OmegaConf
 import psutil
 import torch
 
 
-def spawn_thread(target: Callable, args: tuple = ()) -> None:
-    """Spawn and start a new thread for the target function.
+class ThreadManager:
+    def __init__(self) -> None:
+        """Manager for tracking spawned threads."""
+        self.threads = []
+        self._matplotlib_backend = matplotlib.get_backend()
 
-    Args:
-        target: Function to run in the thread.
-        args: Arguments to pass to the function. Defaults to an empty tuple.
-    """
-    threading.Thread(target=target, args=args).start()
+    def spawn(self, target: Callable, *args) -> None:
+        """Spawn and start a new thread for the target function.
+
+        Args:
+            target: Function to run in the thread.
+            args: Arguments to pass to the function.
+        """
+        matplotlib.use("Agg")  # TkAgg is not thread-safe
+        t = threading.Thread(target=target, args=args or ())
+        t.start()
+        self.threads.append(t)
+
+    def join(self) -> None:
+        """Join all spawned threads."""
+        for t in self.threads:
+            t.join()
+        self.threads.clear()
+        matplotlib.use(self._matplotlib_backend)
 
 
 def get_gpu_info(device: torch.device) -> Optional[dict]:
