@@ -99,6 +99,8 @@ class BCEWithLogitsLoss(torch.nn.BCEWithLogitsLoss):
 
 
 class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
+    weights_buffer: torch.Tensor
+
     def __init__(
         self,
         weight: Optional[torch.Tensor] = None,
@@ -115,11 +117,7 @@ class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
             reduction: Specifies the reduction to apply to the output. Defaults
                 to 'mean'.
         """
-        super().__init__(
-            weight=weight,
-            reduction=reduction,
-        )
-        self.weights_buffer: torch.Tensor = None
+        super().__init__(weight=weight, reduction=reduction)
 
     def setup(self, data: "AbstractDataset") -> None:
         """Calculate balanced weights for the dataset based on the target
