@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -99,7 +99,27 @@ class BCEWithLogitsLoss(torch.nn.BCEWithLogitsLoss):
 
 
 class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
-    weights_buffer: torch.Tensor
+    def __init__(
+        self,
+        weight: Optional[torch.Tensor] = None,
+        reduction: str = "mean",
+    ):
+        """Balanced version of `torch.nn.BCEWithLogitsLoss`.
+
+        `pos_weight` is not supported, as the weights are calculated based on
+        the target frequency in the training set.
+
+        Args:
+            weight: A manual rescaling weight given to the positive class.
+                Defaults to None.
+            reduction: Specifies the reduction to apply to the output. Defaults
+                to 'mean'.
+        """
+        super().__init__(
+            weight=weight,
+            reduction=reduction,
+        )
+        self.weights_buffer: torch.Tensor = None
 
     def setup(self, data: "AbstractDataset") -> None:
         """Calculate balanced weights for the dataset based on the target
