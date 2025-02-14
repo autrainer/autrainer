@@ -54,7 +54,6 @@ class DatasetWrapper(torch.utils.data.Dataset):
         self.df[self.index_column] = self.df[self.index_column].apply(
             self._create_file_path
         )
-        self.transform.setup(self)
 
     def _create_file_path(self, file: str) -> str:
         path = Path(self.path, self.features_subdir, file)

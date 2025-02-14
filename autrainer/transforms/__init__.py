@@ -1,5 +1,4 @@
 from .abstract_transform import AbstractTransform
-from .global_transform import GlobalTransform
 from .smart_compose import SmartCompose
 from .specific_transforms import (
     AnyToTensor,
@@ -20,6 +19,7 @@ from .specific_transforms import (
     ScaleRange,
     SpectToImage,
     SquarePadCrop,
+    Standardizer,
     StereoToMono,
 )
 from .transform_manager import TransformManager
@@ -30,7 +30,6 @@ __all__ = [
     "AnyToTensor",
     "Expand",
     "FeatureExtractor",
-    "GlobalTransform",
     "GrayscaleToRGB",
     "ImageToFloat",
     "Normalize",
@@ -48,5 +47,6 @@ __all__ = [
     "SpectToImage",
     "SquarePadCrop",
     "StereoToMono",
+    "Standardizer",
     "TransformManager",
 ]

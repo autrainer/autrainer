@@ -1,5 +1,4 @@
-import copy
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -54,11 +53,11 @@ class TransformManager:
             The composed transform pipelines for the train, dev, and test
                 datasets.
         """
-        compatibility = self._match_model_dataset()
+        base = self._build("base") + self._match_model_dataset()
 
-        train = self._build("train") + compatibility + self.train_augmentation
-        dev = self._build("dev") + compatibility + self.dev_augmentation
-        test = self._build("test") + compatibility + self.test_augmentation
+        train = base + self._build("train") + self.train_augmentation
+        dev = base + self._build("dev") + self.dev_augmentation
+        test = base + self._build("test") + self.test_augmentation
         return train, dev, test
 
     def _build(self, subset: str) -> SmartCompose:
@@ -74,11 +73,8 @@ class TransformManager:
         """
         combined = []
         seen = set()
-        model_transforms = self._combine_subset(self.model_transform, subset)
-        dataset_transforms = self._combine_subset(
-            self.dataset_transform,
-            subset,
-        )
+        model_transforms = self.model_transform.get(subset, [])
+        dataset_transforms = self.dataset_transform.get(subset, [])
 
         for transform in model_transforms:
             key = self._get_key(transform)
@@ -92,24 +88,6 @@ class TransformManager:
         )
 
         return SmartCompose([self._instantiate(t) for t in combined])
-
-    @staticmethod
-    def _combine_subset(
-        transform: Dict,
-        subset: str,
-    ) -> List[Union[str, Dict]]:
-        """Combine a subset of the transform list.
-
-        Args:
-            transform: The model or dataset transform.
-            subset: The subset to combine with the base transforms.
-
-        Returns:
-            The subset of the transform list.
-        """
-        base = copy.deepcopy(transform.get("base", []))
-        specific = copy.deepcopy(transform.get(subset, []))
-        return base + specific
 
     @staticmethod
     def _get_key(transform: Union[str, Dict]) -> str:
