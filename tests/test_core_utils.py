@@ -3,6 +3,7 @@ import os
 import random
 import time
 
+import matplotlib
 import numpy as np
 from omegaconf import OmegaConf
 import pandas as pd
@@ -16,6 +17,7 @@ from autrainer.core.constants import (
 )
 from autrainer.core.utils import (
     Bookkeeping,
+    ThreadManager,
     Timer,
     get_hardware_info,
     save_hardware_info,
@@ -23,12 +25,14 @@ from autrainer.core.utils import (
     set_device,
     set_seed,
     silence,
-    spawn_thread,
 )
 from autrainer.metrics import UAR, Accuracy
 from autrainer.models import FFNN
 
 from .utils import BaseIndividualTempDir
+
+
+matplotlib.use("Agg")
 
 
 class TestBookkeeping(BaseIndividualTempDir):
@@ -263,12 +267,15 @@ class TestHardware(BaseIndividualTempDir):
             in caplog.text
         ), "Should log warning."
 
+
+class TestThreadManager:
     def test_spawning_thread(self, capsys: pytest.CaptureFixture) -> None:
         def test_fn(value: str) -> None:
             print(value)
 
-        spawn_thread(test_fn, ("Test",))
-        time.sleep(0.1)
+        tm = ThreadManager()
+        tm.spawn(test_fn, "Test")
+        tm.join()
         out, _ = capsys.readouterr()
         assert "Test" in out, "Should spawn thread."
 

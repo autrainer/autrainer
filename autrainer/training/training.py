@@ -14,12 +14,12 @@ from autrainer.augmentations import AugmentationManager
 from autrainer.core.plotting import PlotMetrics
 from autrainer.core.utils import (
     Bookkeeping,
+    ThreadManager,
     Timer,
     save_hardware_info,
     save_requirements,
     set_device,
     set_seed,
-    spawn_thread,
 )
 from autrainer.datasets import AbstractDataset
 from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
@@ -57,6 +57,7 @@ class ModularTaskTrainer:
             run_name: Run name for the run. If None, the name is automatically
                 set based on the output directory. Defaults to None.
         """
+        self._thread_manager = ThreadManager()
         self._cfg = cfg
         self._cfg.criterion = self._cfg.dataset.pop("criterion")
 
@@ -71,7 +72,7 @@ class ModularTaskTrainer:
         self.initial_iteration = 1
 
         # ? Save current requirements.txt
-        spawn_thread(save_requirements, (self.output_directory,))
+        self._thread_manager.spawn(save_requirements, self.output_directory)
 
         # ? Load Model and Dataset Transforms and Augmentations
         model_config = self.cfg.model
@@ -151,14 +152,12 @@ class ModularTaskTrainer:
                 skip_last_layer,
             )
 
-        spawn_thread(
+        self._thread_manager.spawn(
             self.bookkeeping.save_model_summary,
-            (
-                deepcopy(self.model),
-                self.data.train_dataset[0][0].unsqueeze(0).shape,
-                self.DEVICE,
-                "model_summary.txt",
-            ),
+            deepcopy(self.model),
+            self.data.train_dataset[0][0].unsqueeze(0).shape,
+            self.DEVICE,
+            "model_summary.txt",
         )
 
         # ? Load Optimizer
@@ -230,7 +229,7 @@ class ModularTaskTrainer:
             (self.scheduler, "scheduler.pt", "_best"),
         ]
         for task in save_tasks:
-            spawn_thread(self.bookkeeping.save_state, task)
+            self._thread_manager.spawn(self.bookkeeping.save_state, *task)
 
         # ? Load and Save Preprocessing Pipeline if specified
         _preprocess_pipe = SmartCompose([])
@@ -263,7 +262,7 @@ class ModularTaskTrainer:
             (_file_handler, "preprocess_file_handler.yaml"),
         ]
         for task in save_tasks:
-            spawn_thread(self.bookkeeping.save_audobject, task)
+            self._thread_manager.spawn(self.bookkeeping.save_audobject, *task)
 
         # ? Create Timers
         self.train_timer = Timer(output_directory, "train")
@@ -436,6 +435,7 @@ class ModularTaskTrainer:
             position="cb_on_train_end", trainer=self
         )
         self.bookkeeping.save_results_df(self.metrics, "metrics.csv")
+        self._thread_manager.join()
         return self.metrics.loc[self.best_iteration][
             self.data.tracking_metric.name
         ]
