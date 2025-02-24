@@ -52,7 +52,7 @@ class FFNN(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self._embedding_extractor(x)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
         for layer in self.children():
-            x = layer(x)
-        return x
+            features = layer(features)
+        return features

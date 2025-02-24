@@ -35,4 +35,15 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         Returns:
             Model inputs.
         """
-        return [v.name for v in signature(self.forward).parameters.values()]
+        names = [v.name for v in signature(self.forward).parameters.values()]
+        if names[0] != "features":
+            raise NameError(
+                (
+                    f"Model {type(self).__name__} "
+                    f"does not have 'features' "
+                    f"as the first argument of its 'forward' class. "
+                    f"Its arguments are: {names}. "
+                    f"Please rewrite 'forward' method accordingly."
+                )
+            )
+        return names

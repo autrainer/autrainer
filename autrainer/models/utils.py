@@ -1,10 +1,13 @@
 import os
-from typing import Callable, List
+from typing import Callable, Dict, List, Union
 import warnings
 
 import requests
 import torch
 import torch.nn.functional as F
+
+from autrainer.datasets.utils import AbstractDataBatch, DataItem
+from autrainer.models import AbstractModel
 
 
 def _download_weights(url: str, destination: str) -> None:
@@ -185,3 +188,15 @@ class ExtractLayerEmbeddings:
         self.model(x)
         self._unregister()
         return self._embeddings
+
+
+def create_model_inputs(
+    model: AbstractModel,
+    data: Union[AbstractDataBatch, DataItem],
+) -> Dict[str, torch.Tensor]:
+    _forbidden = ["features", "target", "index"]
+    model_inputs = {model.inputs[0]: data.features}
+    for key, value in vars(data).items():
+        if key not in _forbidden and key in model.inputs:
+            model_inputs[key] = value
+    return model_inputs

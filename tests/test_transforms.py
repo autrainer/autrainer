@@ -394,15 +394,15 @@ class TestSmartCompose:
         class MockDataset:
             output_dim = 10
 
+            @property
+            def default_collate_fn(x):
+                return DataBatch.collate
+
         assert (
-            sc.get_collate_fn(MockDataset(), default=DataBatch.collate)
-            is not None
+            sc.get_collate_fn(MockDataset()) is not None
         ), "Collate function should be present"
         assert (
-            (
-                sc.get_collate_fn(MockDataset(), default=DataBatch.collate)
-                == DataBatch.collate
-            )
+            (sc.get_collate_fn(MockDataset()) == DataBatch.collate)
             != has_collate_fn
         ), f"Collate function should be default: {not has_collate_fn}"
 

@@ -23,8 +23,8 @@ class WhisperBackbone(AbstractModel):
         ][:, 0, :]
         return x
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.embeddings(x)
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        return self.embeddings(features)
 
 
 class WhisperFFNN(AbstractModel):
@@ -64,5 +64,5 @@ class WhisperFFNN(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.backbone(x)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.frontend(self.embeddings(x))
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        return self.frontend(self.embeddings(features))
