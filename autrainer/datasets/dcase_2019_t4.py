@@ -60,6 +60,8 @@ class DCASE2019Task4(BaseSEDDataset):
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
+        start_column: str = "start",
+        end_column: str = "end",
     ) -> None:
         """DCASE 2019 Task 4 dataset.
 
@@ -84,6 +86,8 @@ class DCASE2019Task4(BaseSEDDataset):
             tracking_metric=tracking_metric,
             index_column=index_column,
             target_column=target_column,
+            start_column=start_column,
+            end_column=end_column,
             file_type=file_type,
             file_handler=file_handler,
             batch_size=batch_size,

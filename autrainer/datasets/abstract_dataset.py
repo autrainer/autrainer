@@ -521,6 +521,8 @@ class BaseSEDDataset(BaseMLClassificationDataset):
         tracking_metric: Union[str, DictConfig, Dict],
         index_column: str,
         target_column: List[str],
+        start_column: str,
+        end_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
@@ -559,6 +561,8 @@ class BaseSEDDataset(BaseMLClassificationDataset):
         """
         self.min_event_length = min_event_length
         self.min_event_gap = min_event_gap
+        self.start_column = start_column
+        self.end_column = end_column
         super().__init__(
             path=path,
             features_subdir=features_subdir,
@@ -599,13 +603,13 @@ class BaseSEDDataset(BaseMLClassificationDataset):
             features_subdir=self.features_subdir,
             index_column=self.index_column,
             target_column=self.target_column,
+            start_column=self.start_column,
+            end_column=self.end_column,
             file_type=self.file_type,
             file_handler=self.file_handler,
             df=df,
             transform=transform,
             target_transform=self.target_transform,
-            min_event_length=self.min_event_length,
-            min_event_gap=self.min_event_gap,
         )
 
     def _assert_target_column(self, allowed_columns):
