@@ -279,9 +279,7 @@ class AbstractDataset(ABC):
             batch_size=self.batch_size,
             shuffle=True,
             generator=self._generator,
-            collate_fn=self.train_transform.get_collate_fn(
-                self, default=self.default_collate_fn
-            ),
+            collate_fn=self.train_transform.get_collate_fn(self),
         )
 
     @cached_property
@@ -296,9 +294,7 @@ class AbstractDataset(ABC):
             batch_size=self.inference_batch_size,
             shuffle=False,
             generator=self._generator,
-            collate_fn=self.dev_transform.get_collate_fn(
-                self, default=self.default_collate_fn
-            ),
+            collate_fn=self.dev_transform.get_collate_fn(self),
         )
 
     @cached_property
@@ -313,9 +309,7 @@ class AbstractDataset(ABC):
             batch_size=self.inference_batch_size,
             shuffle=False,
             generator=self._generator,
-            collate_fn=self.test_transform.get_collate_fn(
-                self, default=self.default_collate_fn
-            ),
+            collate_fn=self.test_transform.get_collate_fn(self),
         )
 
     def get_evaluation_data(
