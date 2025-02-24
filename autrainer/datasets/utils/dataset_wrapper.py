@@ -1,12 +1,13 @@
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
+import audiofile
 import pandas as pd
 import torch
 
 from autrainer.transforms import SmartCompose
 
-from .file_handlers import AbstractFileHandler
+from .file_handlers import AbstractFileHandler, AudioFileHandler
 from .target_transforms import AbstractTargetTransform
 
 
@@ -86,6 +87,84 @@ class DatasetWrapper(torch.utils.data.Dataset):
         if self.transform is not None:
             data = self.transform(data, index=item).float()
 
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        return data, target, item
+
+
+class SegmentedDatasetWrapper(DatasetWrapper):
+    def __init__(
+        self,
+        path: str,
+        features_subdir: str,
+        index_column: str,
+        target_column: Union[str, List[str]],
+        start_column: str,
+        end_column: str,
+        file_handler: AbstractFileHandler,
+        df: pd.DataFrame,
+        file_type: Optional[str] = None,
+        transform: Optional[SmartCompose] = None,
+        target_transform: Optional[AbstractTargetTransform] = None,
+    ) -> None:
+        """Wrapper for segmented audio files.
+
+        Args:
+            path: Root path to the dataset.
+            features_subdir: Subdirectory containing the features.
+            index_column: Index column of the dataframe.
+            target_column: Target column of the dataframe.
+            start_column: Name of column containing segment start times.
+            end_column: Name of column containing segment end times.
+            file_handler: File handler to load the data.
+            df: Dataframe containing the index and target column(s).
+            file_type: File type of the features. If `None`,
+                will not enforce a file_type. This can be useful
+                in case the dataset contains audio files
+                with different formats. Defaults to `None`.
+            transform: Transform to apply to the features. Defaults to None.
+            target_transform: Target transform to apply to the target.
+                Defaults to None.
+        """
+        self.start_column = start_column
+        self.end_column = end_column
+        super().__init__(
+            path=path,
+            features_subdir=features_subdir,
+            index_column=index_column,
+            target_column=target_column,
+            file_handler=file_handler,
+            df=df,
+            file_type=file_type,
+            transform=transform,
+            target_transform=target_transform,
+        )
+
+    def __getitem__(
+        self,
+        item: int,
+    ) -> Tuple[torch.Tensor, Union[int, torch.Tensor], int]:
+        index = self.df.index[item]
+        item_path = self.df.loc[index, self.index_column]
+        if isinstance(self.file_handler, AudioFileHandler):
+            data = audiofile.read(
+                item_path,
+                offset=self.df.loc[index, self.start_column],
+                duration=self.df.loc[index, self.end_column]
+                - self.df.loc[index, self.start_column],
+                always_2d=True,
+            )[0]
+            data = torch.from_numpy(data)
+        else:
+            data = self.file_handler.load(item_path)
+
+        target = self.df.loc[index, self.target_column]
+        if isinstance(target, pd.Series):
+            target = torch.Tensor(target.to_list())
+
+        if self.transform is not None:
+            data = self.transform(data, index=item).float()
         if self.target_transform is not None:
             target = self.target_transform(target)
 
