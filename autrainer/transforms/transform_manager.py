@@ -79,8 +79,12 @@ class TransformManager:
         for transform in model_transforms:
             key = self._get_key(transform)
             seen.add(key)
+
+            # allow the model to remove a transform by setting it to None
+            # e.g. autrainer.transforms.Normalize: null
             if isinstance(transform, dict) and transform[key] is None:
                 continue
+
             combined.append(transform)
 
         combined.extend(
