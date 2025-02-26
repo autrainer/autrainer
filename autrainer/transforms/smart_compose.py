@@ -7,8 +7,8 @@ from torchvision import transforms as T
 from .abstract_transform import AbstractTransform
 
 
-if TYPE_CHECKING:
-    from autrainer.datasets import AbstractDataset  # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
+    from autrainer.datasets import AbstractDataset
 
 
 class SmartCompose(T.Compose, audobject.Object):
@@ -89,6 +89,12 @@ class SmartCompose(T.Compose, audobject.Object):
                 collate_fn = fn
         if collate_fn is not None:
             return collate_fn(data)
+
+    def setup(self, data: "AbstractDataset") -> "SmartCompose":
+        for t in self.transforms:
+            if hasattr(t, "setup"):
+                t.setup(data)
+        return self
 
     def __call__(self, x: torch.Tensor, index: int) -> torch.Tensor:
         """Apply the transforms to the input tensor.

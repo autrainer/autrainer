@@ -235,6 +235,15 @@ class AbstractDataset(ABC):
             target_transform=self.target_transform,
         )
 
+    def setup_transforms(self) -> None:
+        """Setup the transforms for the dataset.
+
+        Has to be called before accessing the loaders.
+        """
+        self.train_transform.setup(self)
+        self.dev_transform.setup(self)
+        self.test_transform.setup(self)
+
     @cached_property
     def train_dataset(self) -> DatasetWrapper:
         """Get the training dataset.

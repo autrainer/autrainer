@@ -9,6 +9,7 @@ import torch
 from torchvision import transforms as T
 
 from autrainer.augmentations import AbstractAugmentation, CutMix
+from autrainer.datasets import AbstractDataset, ToyDataset
 from autrainer.transforms import (
     AbstractTransform,
     AnyToTensor,
@@ -30,6 +31,7 @@ from autrainer.transforms import (
     SmartCompose,
     SpectToImage,
     SquarePadCrop,
+    Standardizer,
     StereoToMono,
     TransformManager,
 )
@@ -84,7 +86,7 @@ class TestAllTransforms:
         if len(input_shape) == 2:
             x = torch.randn(*input_shape, dtype=torch.float32)
         else:
-            x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
+            x = torch.randint(0, 256, input_shape, dtype=torch.uint8)
         y = instance(x)
         assert (
             y.shape == output_shape
@@ -225,7 +227,7 @@ class TestScaleRange:
     @pytest.mark.parametrize("range", [(0, 1), (-1, 1), (0, 255)])
     def test_range_uint8(self, range: Tuple[int, int]) -> None:
         self._test_range(
-            torch.randint(0, 255, (3, 32, 32), dtype=torch.uint8),
+            torch.randint(0, 256, (3, 32, 32), dtype=torch.uint8),
             range,
         )
 
@@ -264,7 +266,7 @@ class TestImageToFloat:
     @pytest.mark.parametrize(
         "data",
         [
-            torch.randint(0, 255, (3, 32, 32), dtype=torch.uint8),
+            torch.randint(0, 256, (3, 32, 32), dtype=torch.uint8),
             torch.randn(3, 32, 32),
         ],
     )
@@ -279,8 +281,22 @@ class TestNormalize:
     @pytest.mark.parametrize(
         "data",
         [
-            torch.randn(3, 32, 32),
-            torch.randint(0, 255, (3, 32, 32), dtype=torch.uint8),
+            torch.randn(4, 3, 32, 32, dtype=torch.float32),
+            torch.randint(0, 256, (4, 3, 32, 32), dtype=torch.uint8),
+        ],
+    )
+    def test_invalid_normalize(self, data: torch.Tensor) -> None:
+        with pytest.raises(ValueError):
+            Normalize(mean=[0.0, 1.0], std=[1.0])(data)
+
+    @pytest.mark.parametrize(
+        "data",
+        [
+            torch.randn(64, dtype=torch.float32),
+            torch.randn(4, 64, dtype=torch.float32),
+            torch.randn(1, 64, 101, dtype=torch.float32),
+            torch.randn(3, 32, 32, dtype=torch.float32),
+            torch.randint(0, 256, (3, 32, 32), dtype=torch.uint8),
         ],
     )
     def test_normalize(self, data: torch.Tensor) -> None:
@@ -368,6 +384,56 @@ class TestOpenSMILE:
             OpenSMILE(feature_set="fizz", sample_rate=16000)
 
 
+class TestStandardizer:
+    def _mock_dataset(self, feature_shape: List[int]) -> AbstractDataset:
+        return ToyDataset(
+            task="classification",
+            size=100,
+            num_targets=10,
+            feature_shape=feature_shape,
+            dev_split=0.2,
+            test_split=0.1,
+            seed=0,
+            batch_size=32,
+            dtype="uint8",
+            metrics=["autrainer.metrics.Accuracy"],
+            tracking_metric="autrainer.metrics.Accuracy",
+        )
+
+    @pytest.mark.parametrize("subset", ["fizz", "buzz", "jazz"])
+    def test_invalid_subset(self, subset: str) -> None:
+        with pytest.raises(ValueError):
+            Standardizer(subset=subset)
+
+    @pytest.mark.parametrize(
+        "mean, std",
+        [
+            ([0.0], [1.0]),
+            ([0.0, 1.0, 2.0], [1.0, 2.0, 3.0]),
+            ([10, 20, 30], [1, 2, 3]),
+        ],
+    )
+    def test_precomputed(self, mean: List[float], std: List[float]) -> None:
+        t1 = Standardizer(mean=mean, std=std)
+        t2 = Normalize(mean=mean, std=std)
+        x = torch.randn(3, 32, 32)
+        assert torch.allclose(t1(x), t2(x)), "Output should match Normalize."
+
+    def test_invalid_call(self) -> None:
+        t = Standardizer()
+        with pytest.raises(ValueError):
+            t(torch.randn(3, 32, 32))
+
+    def test_invalid_setup(self) -> None:
+        dataset = self._mock_dataset(feature_shape=[4, 3, 32, 32])
+        with pytest.raises(ValueError):
+            Standardizer().setup(dataset)
+
+    def test_setup(self) -> None:
+        dataset = self._mock_dataset([3, 32, 32])
+        Standardizer().setup(dataset)
+
+
 class TestSmartCompose:
     @pytest.mark.parametrize(
         "other",
@@ -437,6 +503,23 @@ class TestSmartCompose:
         assert torch.is_tensor(y), "Output should be a tensor"
         assert torch.allclose(x, y), "Output should match the input"
 
+    def test_setup(self) -> None:
+        dataset = ToyDataset(
+            task="classification",
+            size=100,
+            num_targets=10,
+            feature_shape=[3, 32, 32],
+            dev_split=0.2,
+            test_split=0.1,
+            seed=0,
+            batch_size=32,
+            dtype="uint8",
+            metrics=["autrainer.metrics.Accuracy"],
+            tracking_metric="autrainer.metrics.Accuracy",
+        )
+        sc = SmartCompose([AnyToTensor(), Standardizer(), CutMix(p=0)])
+        sc.setup(dataset)
+
 
 class TestTransformManager:
     @classmethod
@@ -448,23 +531,20 @@ class TestTransformManager:
         TransformManager(DictConfig(self.m), DictConfig(self.d))
 
     @pytest.mark.parametrize("subset", ["base", "train", "dev", "test"])
-    def test_specific(self, subset: str) -> None:
-        TransformManager(self.m, self.d)._specific(subset)
+    def test_build(self, subset: str) -> None:
+        TransformManager(self.m, self.d)._build(subset)
 
-    def test_invalid_specific(self) -> None:
-        with pytest.raises(ValueError):
-            TransformManager(self.m, self.d)._specific("fizz")
-
-    def test_filter_transforms(self) -> None:
+    @pytest.mark.parametrize("subset", ["base", "train", "dev", "test"])
+    def test_filter_transforms(self, subset: str) -> None:
         m = {
             "type": "image",
-            "train": [
+            subset: [
                 {"autrainer.transforms.Normalize": None},
             ],
         }
         d = {
             "type": "image",
-            "train": [
+            subset: [
                 "autrainer.transforms.AnyToTensor",
                 {"autrainer.augmentations.CutMix": {"p": 0.5}},
                 {
@@ -475,13 +555,30 @@ class TestTransformManager:
                 },
             ],
         }
-        train, _, _ = TransformManager(m, d).get_transforms()
-        assert len(train.transforms) == 2, "Transforms should be filtered"
+        t = TransformManager(m, d).get_transforms()
+        t = {"train": t[0], "dev": t[1], "test": t[2]}
+        assert (
+            len(t.get(subset, t["train"]).transforms) == 2
+        ), "Transforms should be filtered"
 
-    def test_combine_transforms(self) -> None:
+    @pytest.mark.parametrize(
+        "sub1, sub2, count",
+        [
+            ("base", "base", 2),
+            ("base", "train", 3),
+            ("train", "base", 3),
+            ("train", "train", 2),
+        ],
+    )
+    def test_override_transforms(
+        self,
+        sub1: str,
+        sub2: str,
+        count: int,
+    ) -> None:
         m = {
             "type": "image",
-            "train": [
+            sub1: [
                 "autrainer.transforms.AnyToTensor",
                 {
                     "autrainer.transforms.Normalize": {
@@ -493,7 +590,7 @@ class TestTransformManager:
         }
         d = {
             "type": "image",
-            "train": [
+            sub2: [
                 {
                     "autrainer.transforms.Normalize": {
                         "mean": [0.0],
@@ -503,11 +600,129 @@ class TestTransformManager:
             ],
         }
         train, _, _ = TransformManager(m, d).get_transforms()
-        assert len(train.transforms) == 2, "Transforms should be combined"
-        norm = train.transforms[1]
-        assert norm.mean == [10] and norm.std == [
-            20
-        ], "Transform should be overridden"
+        assert len(train.transforms) == count, "Transforms should be combined"
+
+    @pytest.mark.parametrize(
+        "sub1, sub2, count",
+        [
+            ("base", "base", 1),
+            ("base", "train", 2),
+            ("train", "base", 2),
+            ("train", "train", 1),
+        ],
+    )
+    def test_remove_transforms(self, sub1: str, sub2: str, count: int) -> None:
+        m = {
+            "type": "image",
+            sub1: [
+                "autrainer.transforms.AnyToTensor",
+                {"autrainer.transforms.Normalize": None},
+            ],
+        }
+        d = {
+            "type": "image",
+            sub2: [
+                {
+                    "autrainer.transforms.Normalize": {
+                        "mean": [0.0],
+                        "std": [1.0],
+                    }
+                },
+            ],
+        }
+        train, _, _ = TransformManager(m, d).get_transforms()
+        assert len(train.transforms) == count, "Should remove the transform."
+
+    @pytest.mark.parametrize(
+        "sub1, sub2, count",
+        [
+            ("base", "base", 3),
+            ("base", "train", 4),
+            ("train", "base", 4),
+            ("train", "train", 3),
+        ],
+    )
+    def test_replace_tag_transforms(
+        self,
+        sub1: str,
+        sub2: str,
+        count: int,
+    ) -> None:
+        m = {
+            "type": "image",
+            sub1: [
+                "autrainer.transforms.AnyToTensor",
+                {
+                    "autrainer.transforms.Normalize@Tag": {
+                        "mean": [0.0],
+                        "std": [1.0],
+                    }
+                },
+            ],
+        }
+        d = {
+            "type": "image",
+            sub2: [
+                {
+                    "autrainer.transforms.Normalize@Tag": {
+                        "mean": [100],
+                        "std": [100],
+                    }
+                },
+                {
+                    "autrainer.transforms.Normalize": {
+                        "mean": [0.0],
+                        "std": [1.0],
+                    }
+                },
+            ],
+        }
+        train, _, _ = TransformManager(m, d).get_transforms()
+        assert len(train.transforms) == count, "Transforms should be combined."
+
+    @pytest.mark.parametrize(
+        "sub1, sub2, count",
+        [
+            ("base", "base", 2),
+            ("base", "train", 3),
+            ("train", "base", 3),
+            ("train", "train", 2),
+        ],
+    )
+    def test_remove_tag_transforms(
+        self,
+        sub1: str,
+        sub2: str,
+        count: int,
+    ) -> None:
+        m = {
+            "type": "image",
+            sub1: [
+                "autrainer.transforms.AnyToTensor",
+                {"autrainer.transforms.Normalize@Tag": None},
+            ],
+        }
+        d = {
+            "type": "image",
+            sub2: [
+                {
+                    "autrainer.transforms.Normalize@Tag": {
+                        "mean": [100],
+                        "std": [200],
+                    }
+                },
+                {
+                    "autrainer.transforms.Normalize": {
+                        "mean": [0.0],
+                        "std": [1.0],
+                    }
+                },
+            ],
+        }
+        train, _, _ = TransformManager(m, d).get_transforms()
+        assert (
+            len(train.transforms) == count
+        ), "Normalize@Tag should be removed."
 
     @pytest.mark.parametrize(
         "model_type, dataset_type, valid",

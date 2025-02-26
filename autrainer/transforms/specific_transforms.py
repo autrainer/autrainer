@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 import warnings
 
 from audtorch import transforms as AT
@@ -26,7 +26,10 @@ try:
 
     OPENSMILE_AVAILABLE = True
 except ImportError:  # pragma: no cover
-    OPENSMILE_AVAILABLE = False  # pragma: no cover
+    OPENSMILE_AVAILABLE = False
+
+if TYPE_CHECKING:  # pragma: no cover
+    from autrainer.datasets import AbstractDataset
 
 
 FE_MAPPINGS = {
@@ -321,12 +324,105 @@ class Normalize(AbstractTransform):
         super().__init__(order=order)
         self.mean = mean
         self.std = std
-        self._normalize = T.Normalize(mean=mean, std=std)
+        self._mean = torch.as_tensor(mean)
+        self._std = torch.as_tensor(std)
 
     def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        if data.dtype == torch.uint8:
-            data = data.float()
-        return self._normalize(data)
+        # reshapes mean and std to match the data dimensions and broadcast
+        # the values along the correct axes
+        views = {
+            3: (-1, 1, 1),  # 3D images: normalize along the channel axis
+            2: (-1, 1),  # 2D audio: normalize along the channel axis
+            1: (-1,),  # 1D tabular data: normalize along the feature axis
+        }
+
+        for dim, axes in views.items():
+            if data.ndim == dim:
+                break
+        else:
+            raise ValueError(f"Unsupported data dimensions: {data.shape}")
+
+        mean, std = self._mean.view(*axes), self._std.view(*axes)
+        return data.to(torch.float32).sub(mean).div(std)
+
+
+class Standardizer(AbstractTransform):
+    def __init__(
+        self,
+        mean: Optional[List[float]] = None,
+        std: Optional[List[float]] = None,
+        subset: str = "train",
+        order: int = -101,
+    ) -> None:
+        """Standardize a dataset by calculating the mean and standard deviation
+        of the data and applying the normalization.
+
+        The mean and standard deviation are automatically calculated from the
+        data in the specified subset.
+
+        Note: The transform has to be applied as the first transform in the
+        pipeline.
+
+        Args:
+            mean: The mean to use for normalization. If None, the mean will be
+                calculated from the data. Defaults to None.
+            std: The standard deviation to use for normalization. If None, the
+                standard deviation will be calculated from the data. Defaults
+                to None.
+            subset: The subset to use for calculating the mean and standard
+                deviation. Must be one of ["train", "dev", "test"]. Defaults to
+                "train".
+            order: The order of the transform in the pipeline. Defaults to
+                -101.
+        """
+        super().__init__(order=order)
+        self._validate_subset(subset)
+        self.subset = subset
+        self.mean = mean
+        self.std = std
+        self._transform = self._init_transform()
+
+    def _validate_subset(self, subset: str) -> None:
+        if subset not in {"train", "dev", "test"}:
+            raise ValueError(
+                f"Invalid subset '{subset}'. Must be one of 'train', 'dev', "
+                "or 'test'."
+            )
+
+    def _init_transform(self) -> Optional[AbstractTransform]:
+        if self.mean and self.std:
+            return Normalize(self.mean, self.std, self.order)
+
+    def _collect_data(self, data: "AbstractDataset") -> torch.Tensor:
+        dataset_wrapper = getattr(data, f"{self.subset}_dataset")
+        original_transform = dataset_wrapper.transform
+        dataset_wrapper.transform = None
+        data = torch.stack([x for x, *_ in dataset_wrapper]).to(torch.float32)
+        dataset_wrapper.transform = original_transform
+        return data
+
+    def setup(self, data: "AbstractDataset") -> None:
+        # select all dimensions except the dimension along which to normalize
+        views = {
+            4: (0, 2, 3),  # 3D images: normalize along the channel axis
+            3: (0, 2),  # 2D audio: normalize along the channel axis
+            2: (0,),  # 1D tabular data: normalize along the feature axis
+        }
+        collected = self._collect_data(data)
+        for dim, axes in views.items():
+            if collected.ndim == dim:
+                break
+        else:
+            raise ValueError(f"Unsupported data dimensions: {collected.shape}")
+
+        self.mean = collected.mean(dim=axes).tolist()
+        self.std = collected.std(dim=axes).tolist()
+        self._transform = self._init_transform()
+
+    def __call__(self, data: torch.Tensor) -> torch.Tensor:
+        if self._transform is None:
+            raise ValueError("Standardize transform not initialized.")
+        return self._transform(data)
 
 
 class FeatureExtractor(AbstractTransform):
