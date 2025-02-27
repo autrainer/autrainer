@@ -47,6 +47,18 @@ class TestCLIIntegration(BaseIndividualTempDir):
         config["progress_bar"] = False
         config["hydra"]["sweeper"]["params"]["dataset"] = dataset
         config["hydra"]["sweeper"]["params"]["model"] = model
+        config["loggers"] = [
+            {
+                "autrainer.loggers.MLFlowLogger": {
+                    "output_dir": "${results_dir}/.mlflowruns"
+                },
+            },
+            {
+                "autrainer.loggers.TensorBoardLogger": {
+                    "output_dir": "${results_dir}/.tensorboard"
+                },
+            },
+        ]
         OmegaConf.save(config, "conf/config.yaml")
         self._train_postprocess(capfd)
 
