@@ -362,6 +362,7 @@ class ModularTaskTrainer:
             self.optimizer.custom_step if custom_step else self._train_step
         )
 
+        self._thread_manager.join()
         self.callback_manager.callback(
             position="cb_on_train_begin", trainer=self
         )
@@ -431,11 +432,10 @@ class ModularTaskTrainer:
         # ? Plot Metrics
         self.plot_metrics.plot_run(self.metrics)
 
+        self.bookkeeping.save_results_df(self.metrics, "metrics.csv")
         self.callback_manager.callback(
             position="cb_on_train_end", trainer=self
         )
-        self.bookkeeping.save_results_df(self.metrics, "metrics.csv")
-        self._thread_manager.join()
         return self.metrics.loc[self.best_iteration][
             self.data.tracking_metric.name
         ]
