@@ -314,9 +314,9 @@ class ModularTaskTrainer:
                 self.optimizer,
                 self.scheduler,
                 self.criterion,
-                self.continue_training,
                 *self.loggers,
                 *self.callbacks,
+                self.continue_training,  # has to be last as it might overwrite other callbacks
             ]
         )
 
