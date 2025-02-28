@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 
 import autrainer
 from autrainer.core.constants import TrainingConstants
+from autrainer.core.utils import set_seed_worker
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 
@@ -106,6 +107,10 @@ class AbstractDataset(ABC):
 
         self._generator = torch.Generator().manual_seed(self.seed)
         self._assert_stratify()
+
+        self._train_loader_kwargs = {}
+        self._dev_loader_kwargs = {}
+        self._test_loader_kwargs = {}
 
     @property
     def audio_subdir(self) -> str:
@@ -262,49 +267,82 @@ class AbstractDataset(ABC):
         """
         return self._init_dataset(self.df_test, self.test_transform)
 
-    @cached_property
-    def train_loader(self) -> DataLoader:
-        """Get the training loader.
-
-        Returns:
-            Training loader.
-        """
+    def create_train_loader(
+        self,
+        num_workers: int = 0,
+        pin_memory: bool = False,
+        drop_last: bool = False,
+        timeout: float = 0,
+        prefetch_factor: Optional[int] = None,
+        persistent_workers: bool = False,
+        pin_memory_device: str = "",
+    ) -> DataLoader:
         return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
             shuffle=True,
             generator=self._generator,
             collate_fn=self.train_transform.get_collate_fn(self),
+            num_workers=num_workers,
+            worker_init_fn=set_seed_worker,
+            pin_memory=pin_memory,
+            drop_last=drop_last,
+            timeout=timeout,
+            prefetch_factor=prefetch_factor,
+            persistent_workers=persistent_workers,
+            pin_memory_device=pin_memory_device,
         )
 
-    @cached_property
-    def dev_loader(self) -> DataLoader:
-        """Get the development loader.
-
-        Returns:
-            Development loader.
-        """
+    def create_dev_loader(
+        self,
+        num_workers: int = 0,
+        pin_memory: bool = False,
+        drop_last: bool = False,
+        timeout: float = 0,
+        prefetch_factor: Optional[int] = None,
+        persistent_workers: bool = False,
+        pin_memory_device: str = "",
+    ) -> DataLoader:
         return DataLoader(
             self.dev_dataset,
             batch_size=self.inference_batch_size,
             shuffle=False,
             generator=self._generator,
             collate_fn=self.dev_transform.get_collate_fn(self),
+            num_workers=num_workers,
+            worker_init_fn=set_seed_worker,
+            pin_memory=pin_memory,
+            drop_last=drop_last,
+            timeout=timeout,
+            prefetch_factor=prefetch_factor,
+            persistent_workers=persistent_workers,
+            pin_memory_device=pin_memory_device,
         )
 
-    @cached_property
-    def test_loader(self) -> DataLoader:
-        """Get the test loader.
-
-        Returns:
-            Test loader.
-        """
+    def create_test_loader(
+        self,
+        num_workers: int = 0,
+        pin_memory: bool = False,
+        drop_last: bool = False,
+        timeout: float = 0,
+        prefetch_factor: Optional[int] = None,
+        persistent_workers: bool = False,
+        pin_memory_device: str = "",
+    ) -> DataLoader:
         return DataLoader(
             self.test_dataset,
             batch_size=self.inference_batch_size,
             shuffle=False,
             generator=self._generator,
-            collate_fn=self.dev_transform.get_collate_fn(self),
+            collate_fn=self.test_transform.get_collate_fn(self),
+            num_workers=num_workers,
+            worker_init_fn=set_seed_worker,
+            pin_memory=pin_memory,
+            drop_last=drop_last,
+            timeout=timeout,
+            prefetch_factor=prefetch_factor,
+            persistent_workers=persistent_workers,
+            pin_memory_device=pin_memory_device,
         )
 
     @staticmethod

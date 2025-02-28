@@ -78,6 +78,11 @@ class ModularTaskTrainer:
         model_config = self.cfg.model
         dataset_config = self.cfg.dataset
 
+        loader_cfg = {}
+        for l in {"train", "dev", "test"}:
+            key = f"{l}_loader_kwargs"
+            loader_cfg[l] = dataset_config.pop(key, self.cfg.get(key, {}))
+
         augmentation_manager = AugmentationManager(self.cfg.augmentation)
         train_aug, dev_aug, test_aug = augmentation_manager.get_augmentations()
 
@@ -206,9 +211,11 @@ class ModularTaskTrainer:
             self.scheduler = None
 
         # ? Create Dataloaders
-        self.train_loader = self.data.train_loader
-        self.dev_loader = self.data.dev_loader
-        self.test_loader = self.data.test_loader
+        self.train_loader = self.data.create_train_loader(
+            **loader_cfg["train"]
+        )
+        self.dev_loader = self.data.create_dev_loader(**loader_cfg["dev"])
+        self.test_loader = self.data.create_test_loader(**loader_cfg["test"])
 
         # ? Take metrics from dataset and add train/dev loss
         metrics = [m.name for m in self.data.metrics] + [
