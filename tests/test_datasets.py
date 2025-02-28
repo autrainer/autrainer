@@ -247,17 +247,20 @@ class TestBaseDatasets(BaseIndividualTempDir):
         assert len(data.dev_dataset) == 10, "Should be 10."
         assert len(data.test_dataset) == 10, "Should be 10."
 
+        train_loader = data.create_train_loader()
+        dev_loader = data.create_dev_loader()
+        test_loader = data.create_test_loader()
         assert isinstance(
-            data.train_loader, torch.utils.data.DataLoader
+            train_loader, torch.utils.data.DataLoader
         ), "Should be an instance of DataLoader."
         assert isinstance(
-            data.dev_loader, torch.utils.data.DataLoader
+            dev_loader, torch.utils.data.DataLoader
         ), "Should be an instance of DataLoader."
         assert isinstance(
-            data.test_loader, torch.utils.data.DataLoader
+            test_loader, torch.utils.data.DataLoader
         ), "Should be an instance of DataLoader."
 
-        for loader in [data.train_loader, data.dev_loader, data.test_loader]:
+        for loader in [train_loader, dev_loader, test_loader]:
             x, y, _ = next(iter(loader))
             assert x.shape == (4, 101, 64), "Should be (4, 101, 64)."
             assert y.shape == y_shape, f"Should be {y_shape}."
@@ -347,7 +350,7 @@ class TestAIBO(BaseIndividualTempDir):
         )
         expected = (4, 101, 64)
         assert (
-            next(iter(data.train_loader))[0].shape == expected
+            next(iter(data.create_train_loader()))[0].shape == expected
         ), "Standardized data should have the same shape."
 
 
@@ -566,7 +569,7 @@ class TestToyDataset(BaseIndividualTempDir):
         assert len(data.dev_dataset) == 20, "Should be 20."
         assert len(data.test_dataset) == 20, "Should be 20."
 
-        x, y, _ = next(iter(data.train_loader))
+        x, y, _ = next(iter(data.create_train_loader()))
         assert x.shape == (4, 101, 64), "Should be (4, 101, 64)."
         assert y.shape == y_shape, f"Should be {y_shape}."
 
