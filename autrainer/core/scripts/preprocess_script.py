@@ -58,7 +58,6 @@ def preprocess_main(
     # None allows dataset to work with all audio files
     dataset["file_type"] = None
     dataset["seed"] = 0  # ignored
-    dataset["batch_size"] = 8  # ignored
     dataset.pop("criterion")
     dataset.pop("transform")
     features_path = dataset.pop("features_path", None)
