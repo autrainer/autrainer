@@ -41,8 +41,6 @@ class AbstractDataset(ABC):
         target_column: Union[str, List[str]],
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -66,9 +64,6 @@ class AbstractDataset(ABC):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -98,8 +93,6 @@ class AbstractDataset(ABC):
         self.target_column = target_column
         self.file_type = file_type
         self.file_handler = self._init_file_handler(file_handler)
-        self.batch_size = batch_size
-        self.inference_batch_size = inference_batch_size or batch_size
         self.train_transform = train_transform or SmartCompose([])
         self.dev_transform = dev_transform or SmartCompose([])
         self.test_transform = test_transform or SmartCompose([])
@@ -269,6 +262,7 @@ class AbstractDataset(ABC):
 
     def create_train_loader(
         self,
+        batch_size: int,
         num_workers: int = 0,
         pin_memory: bool = False,
         drop_last: bool = False,
@@ -279,7 +273,7 @@ class AbstractDataset(ABC):
     ) -> DataLoader:
         return DataLoader(
             self.train_dataset,
-            batch_size=self.batch_size,
+            batch_size=batch_size,
             shuffle=True,
             generator=self._generator,
             collate_fn=self.train_transform.get_collate_fn(self),
@@ -295,6 +289,7 @@ class AbstractDataset(ABC):
 
     def create_dev_loader(
         self,
+        batch_size: int,
         num_workers: int = 0,
         pin_memory: bool = False,
         drop_last: bool = False,
@@ -305,7 +300,7 @@ class AbstractDataset(ABC):
     ) -> DataLoader:
         return DataLoader(
             self.dev_dataset,
-            batch_size=self.inference_batch_size,
+            batch_size=batch_size,
             shuffle=False,
             generator=self._generator,
             collate_fn=self.dev_transform.get_collate_fn(self),
@@ -321,6 +316,7 @@ class AbstractDataset(ABC):
 
     def create_test_loader(
         self,
+        batch_size: int,
         num_workers: int = 0,
         pin_memory: bool = False,
         drop_last: bool = False,
@@ -331,7 +327,7 @@ class AbstractDataset(ABC):
     ) -> DataLoader:
         return DataLoader(
             self.test_dataset,
-            batch_size=self.inference_batch_size,
+            batch_size=batch_size,
             shuffle=False,
             generator=self._generator,
             collate_fn=self.test_transform.get_collate_fn(self),
@@ -367,8 +363,6 @@ class BaseClassificationDataset(AbstractDataset):
         target_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -390,9 +384,6 @@ class BaseClassificationDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -416,8 +407,6 @@ class BaseClassificationDataset(AbstractDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
@@ -454,8 +443,6 @@ class BaseMLClassificationDataset(AbstractDataset):
         target_column: List[str],
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -478,9 +465,6 @@ class BaseMLClassificationDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -507,8 +491,6 @@ class BaseMLClassificationDataset(AbstractDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
@@ -556,8 +538,6 @@ class BaseRegressionDataset(AbstractDataset):
         target_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -579,9 +559,6 @@ class BaseRegressionDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -605,8 +582,6 @@ class BaseRegressionDataset(AbstractDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
@@ -635,8 +610,6 @@ class BaseMTRegressionDataset(AbstractDataset):
         target_column: List[str],
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -658,9 +631,6 @@ class BaseMTRegressionDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -684,8 +654,6 @@ class BaseMTRegressionDataset(AbstractDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,

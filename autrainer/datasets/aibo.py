@@ -41,8 +41,6 @@ class AIBO(BaseClassificationDataset):
         target_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -66,9 +64,6 @@ class AIBO(BaseClassificationDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -95,8 +90,6 @@ class AIBO(BaseClassificationDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
