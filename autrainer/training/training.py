@@ -78,10 +78,10 @@ class ModularTaskTrainer:
         model_config = self.cfg.model
         dataset_config = self.cfg.dataset
 
-        loader_cfg = {}
+        loader_kwargs = {}
         for l in {"train", "dev", "test"}:
             key = f"{l}_loader_kwargs"
-            loader_cfg[l] = dataset_config.pop(key, self.cfg.get(key, {}))
+            loader_kwargs[l] = dataset_config.pop(key, self.cfg.get(key, {}))
 
         augmentation_manager = AugmentationManager(self.cfg.augmentation)
         train_aug, dev_aug, test_aug = augmentation_manager.get_augmentations()
@@ -105,8 +105,6 @@ class ModularTaskTrainer:
             dev_transform=dev_transform,
             test_transform=test_transform,
             seed=dataset_seed,
-            batch_size=self.cfg.batch_size,
-            inference_batch_size=self.cfg.inference_batch_size,
         )
 
         # ? Create Bookkeeping
@@ -212,10 +210,17 @@ class ModularTaskTrainer:
 
         # ? Create Dataloaders
         self.train_loader = self.data.create_train_loader(
-            **loader_cfg["train"]
+            batch_size=self.cfg.batch_size,
+            **loader_kwargs["train"],
         )
-        self.dev_loader = self.data.create_dev_loader(**loader_cfg["dev"])
-        self.test_loader = self.data.create_test_loader(**loader_cfg["test"])
+        self.dev_loader = self.data.create_dev_loader(
+            batch_size=self.cfg.inference_batch_size or self.cfg.batch_size,
+            **loader_kwargs["dev"],
+        )
+        self.test_loader = self.data.create_test_loader(
+            batch_size=self.cfg.inference_batch_size or self.cfg.batch_size,
+            **loader_kwargs["test"],
+        )
 
         # ? Take metrics from dataset and add train/dev loss
         metrics = [m.name for m in self.data.metrics] + [
