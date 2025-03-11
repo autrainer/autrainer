@@ -107,13 +107,17 @@ Online transforms can be specified with the :attr:`transform` attribute in both 
 applied to the input data before it is passed to the model.
 Each pipeline is specified as a list of transforms using :ref:`shorthand_syntax`.
 
+Model and dataset configurations specify the transforms to be applied to the input data.
+If :ref:`augmentations <augmentations>` are used, they are merged with the online transforms to create a single pipeline.
+
 .. tip::
 
    To create custom online transforms, refer to the :ref:`custom online transforms tutorial <tut_online_transforms>`.
 
-If :ref:`augmentations <augmentations>` are used, they are merged with the online transforms to create a single pipeline.
 
-Model and dataset configurations specify the transforms to be applied to the input data.
+Types
+~~~~~
+
 Each :attr:`transform` configuration includes a :attr:`type` attribute, specifying the type of data the model expects or the dataset provides:
 
 * :attr:`image`: RGB images
@@ -123,6 +127,10 @@ Each :attr:`transform` configuration includes a :attr:`type` attribute, specifyi
 
 .. note::
    The conversion between RGB and grayscale images is handled automatically by the pipeline to ensure compatibility between models and datasets.
+
+
+Pipelines
+~~~~~~~~~
 
 Different transforms can be specified for :attr:`train`, :attr:`dev`, and :attr:`test` pipelines.
 In addition, :attr:`base` provides a common set of transforms to include in all pipelines.
@@ -148,6 +156,9 @@ transforms for the :attr:`train`, :attr:`dev`, and :attr:`test` pipelines (which
            size: 131
 
 
+Removing and Overriding
+~~~~~~~~~~~~~~~~~~~~~~~
+
 Models and datasets can remove any existing transform if it exists to ensure compatibility between datasets and models.
 Removal is done by setting the transform to :attr:`null` in the configuration.
 If a transform is set to :attr:`null` but is not present in the pipeline, it is ignored.
@@ -166,11 +177,49 @@ to remove it from the pipeline as it is not needed for spectrograms:
        - autrainer.transforms.Normalize: null
 
 
+Model :ref:`online transforms <online_transforms>` outweigh dataset :ref:`online transforms <online_transforms>`.
+If a model specifies a transform that is also specified in the dataset,
+the model transform is used, overriding the dataset transform.
+
+.. note::
+   Removing and overriding transforms is useful for ensuring compatibility between models and datasets, however,
+   both are bound to the same pipeline (e.g. :attr:`base`, :attr:`train`, :attr:`dev`, or :attr:`test`).
+
+   If multiple transforms of the same type are specified in a pipeline, overriding or removing a transform affects all transforms
+   of that type in the pipeline.
+
+
+Tags
+~~~~
+
+In case multiple transforms of the same type are specified in the pipeline, they can be tagged with a unique identifier
+using an :attr:`@` symbol followed by the tag name.
+
+For example, the following configuration applies two :class:`~autrainer.transforms.Normalize` transforms to the pipeline,
+each with a different tag:
+
+.. code-block:: yaml
+   :caption: conf/model/SpectrogramModel.yaml
+   :linenos:
+
+   ...
+   transform:
+     type: grayscale
+     base:
+       - autrainer.transforms.Normalize@first:
+           mean: 0.5
+           std: 0.5
+       - autrainer.transforms.Normalize@second:
+           mean: 123
+           std: 456
+
+
+Transforms with tags can be removed or overridden analogously to transforms without tags, by appending the tag name to the transform name.
+
 .. note::
 
-   Model :ref:`online transforms <online_transforms>` outweigh dataset :ref:`online transforms <online_transforms>`.
-   If a model specifies a transform that is also specified in the dataset,
-   the model transform is used, overriding the dataset transform.
+   If a transform with a tag is removed or overridden, only the transform with the specified tag (if it exists) is affected,
+   allowing for the removal or overriding of specific transforms in the pipeline.
 
 
 Transform Manager

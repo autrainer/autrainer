@@ -54,16 +54,16 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
         else:
             data = torch.randint(
                 0,
-                255,
+                256,
                 self.feature_shape,
                 dtype=torch.uint8,
                 generator=self.generator,
             )
         if self.transform:
-            img = self.transform(data, index=index)
+            data = self.transform(data, index=index)
         if self.target_transform:
             target = self.target_transform(target)
-        return img, target, index
+        return data, target, index
 
 
 class ToyDataset(AbstractDataset):
