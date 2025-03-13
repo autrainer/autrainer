@@ -60,6 +60,8 @@ def preprocess_main(
     dataset["seed"] = 0  # ignored
     dataset.pop("criterion")
     dataset.pop("transform")
+    for subset in ["train", "dev", "test"]:
+        dataset.pop(f"{subset}_loader_kwargs", None)
     features_path = dataset.pop("features_path", None)
     if features_path is None:
         features_path = dataset["path"]
