@@ -1,7 +1,7 @@
 from copy import deepcopy
 import os
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -78,10 +78,13 @@ class ModularTaskTrainer:
         model_config = self.cfg.model
         dataset_config = self.cfg.dataset
 
-        loader_kwargs = {}
+        self._loader_kwargs = {}
         for l in {"train", "dev", "test"}:
             key = f"{l}_loader_kwargs"
-            loader_kwargs[l] = dataset_config.pop(key, self.cfg.get(key, {}))
+            self._loader_kwargs[l] = dataset_config.pop(
+                key,
+                self.cfg.get(key, {}),
+            )
 
         augmentation_manager = AugmentationManager(self.cfg.augmentation)
         train_aug, dev_aug, test_aug = augmentation_manager.get_augmentations()
@@ -106,7 +109,6 @@ class ModularTaskTrainer:
             test_transform=test_transform,
             seed=dataset_seed,
         )
-        self.data.setup_transforms()
 
         # ? Create Bookkeeping
         self.bookkeeping = Bookkeeping(
@@ -207,15 +209,15 @@ class ModularTaskTrainer:
         # ? Create Dataloaders
         self.train_loader = self.data.create_train_loader(
             batch_size=self.cfg.batch_size,
-            **loader_kwargs["train"],
+            **self._loader_kwargs["train"],
         )
         self.dev_loader = self.data.create_dev_loader(
             batch_size=self.cfg.inference_batch_size or self.cfg.batch_size,
-            **loader_kwargs["dev"],
+            **self._loader_kwargs["dev"],
         )
         self.test_loader = self.data.create_test_loader(
             batch_size=self.cfg.inference_batch_size or self.cfg.batch_size,
-            **loader_kwargs["test"],
+            **self._loader_kwargs["test"],
         )
 
         # ? Take metrics from dataset and add train/dev loss
@@ -467,7 +469,12 @@ class ModularTaskTrainer:
                     disable=self.disable_progress_bar,
                 )
             ):
-                data, target = data.to(self.DEVICE), target.to(self.DEVICE)
+                pm = (
+                    self._loader_kwargs["train"].get("pin_memory", False)
+                    and self.DEVICE.type == "cuda"
+                )
+                data = data.to(self.DEVICE, non_blocking=pm)
+                target = target.to(self.DEVICE, non_blocking=pm)
                 self.callback_manager.callback(
                     position="cb_on_step_begin",
                     trainer=self,
@@ -568,7 +575,12 @@ class ModularTaskTrainer:
                 )
                 self.train_loader_iter = iter(self.train_loader)
                 data, target, sample_idx = next(self.train_loader_iter)
-            data, target = data.to(self.DEVICE), target.to(self.DEVICE)
+            pm = (
+                self._loader_kwargs["train"].get("pin_memory", False)
+                and self.DEVICE.type == "cuda"
+            )
+            data = data.to(self.DEVICE, non_blocking=pm)
+            target = target.to(self.DEVICE, non_blocking=pm)
             self.callback_manager.callback(
                 position="cb_on_step_begin",
                 trainer=self,
@@ -700,10 +712,12 @@ class ModularTaskTrainer:
         )
         self.model.eval()
         self.model = self.model.to(self.DEVICE)
+        lk = self._loader_kwargs["dev" if dev_evaluation else "test"]
         results = self._evaluate(
             loader=loader,
             tracker=tracker,
             iteration_folder=iteration_folder,
+            loader_kwargs=lk,
             cb_type=cb_type,
         )
         if dev_evaluation:
@@ -792,6 +806,7 @@ class ModularTaskTrainer:
         loader: torch.utils.data.DataLoader,
         tracker: OutputsTracker,
         iteration_folder: str,
+        loader_kwargs: Dict[str, Any],
         cb_type: str = "val",
     ) -> Dict[str, float]:
         """Evaluate the model on the dev or test set.
@@ -819,10 +834,14 @@ class ModularTaskTrainer:
                     trainer=self,
                     batch_idx=batch_idx,
                 )
-                output = self.model(features.to(self.DEVICE))
+                pm = (
+                    loader_kwargs.get("pin_memory", False)
+                    and self.DEVICE.type == "cuda"
+                )
+                output = self.model(features.to(self.DEVICE, non_blocking=pm))
                 loss = self.criterion(
                     self.data.target_transform.probabilities_training(output),
-                    target.to(self.DEVICE),
+                    target.to(self.DEVICE, non_blocking=pm),
                 )
                 reduced_loss = loss.mean().item()
                 losses += reduced_loss
