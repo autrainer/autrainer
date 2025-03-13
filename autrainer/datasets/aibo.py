@@ -4,29 +4,10 @@ from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 import pandas as pd
-import torch
 
-from autrainer.transforms import AbstractTransform, SmartCompose
+from autrainer.transforms import SmartCompose
 
 from .abstract_dataset import BaseClassificationDataset
-
-
-class Standardizer(AbstractTransform):
-    def __init__(self, mean: List[float], std: List[float]) -> None:
-        super().__init__(order=-100)
-        self.mean = mean
-        self.std = std
-        self._mean = torch.Tensor(mean)
-        self._std = torch.Tensor(std)
-
-    def __call__(self, x: torch.Tensor) -> torch.Tensor:
-        return self.encode(x)
-
-    def encode(self, x: torch.Tensor) -> torch.Tensor:
-        return (x - self._mean) / (self._std)
-
-    def decode(self, x: torch.Tensor) -> torch.Tensor:  # pragma: no cover
-        return x * self._std + self._mean
 
 
 class AIBO(BaseClassificationDataset):
@@ -46,7 +27,6 @@ class AIBO(BaseClassificationDataset):
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
         stratify: Optional[List[str]] = None,
-        standardize: bool = False,
         aibo_task: str = "2cl",
     ) -> None:
         """FAU AIBO dataset.
@@ -75,7 +55,6 @@ class AIBO(BaseClassificationDataset):
             test_transform: Transform to apply to the test set.
                 Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
-            standardize: Whether to standardize the data. Defaults to False.
             aibo_task: Task to load in ["2cl", "5cl"]. Defaults to "2cl".
         """
         self._assert_choice(aibo_task, ["2cl", "5cl"], "aibo_task")
@@ -96,21 +75,6 @@ class AIBO(BaseClassificationDataset):
             test_transform=test_transform,
             stratify=stratify,
         )
-        self.standardize = standardize
-        if self.standardize:
-            train_data = torch.cat([x for x, *_ in self.train_dataset])
-            standardizer = Standardizer(
-                mean=train_data.mean(0).tolist(),
-                std=train_data.std(0).tolist(),
-            )
-
-            self.train_transform += standardizer
-            self.dev_transform += standardizer
-            self.test_transform += standardizer
-
-            self.train_dataset = self._init_dataset(
-                self.df_train, self.train_transform
-            )
 
     @property
     def audio_subdir(self) -> str:

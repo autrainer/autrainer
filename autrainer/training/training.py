@@ -106,17 +106,13 @@ class ModularTaskTrainer:
             test_transform=test_transform,
             seed=dataset_seed,
         )
+        self.data.setup_transforms()
 
         # ? Create Bookkeeping
         self.bookkeeping = Bookkeeping(
             output_directory=output_directory,
             file_handler_path=os.path.join(output_directory, "training.log"),
         )
-
-        # ? Datasets and Evaluation Data
-        self.train_dataset = self.data.train_dataset
-        self.dev_dataset = self.data.dev_dataset
-        self.test_dataset = self.data.test_dataset
 
         # ? Misc Training Parameters
         self.disable_progress_bar = not self.cfg.get("progress_bar", False)

@@ -333,24 +333,6 @@ class TestAIBO(BaseIndividualTempDir):
         )
         AIBO(**self._mock_dataset_kwargs(), aibo_task=aibo_task)
 
-    def test_standardizer(self) -> None:
-        self._mock_dataframes(
-            "data/TestDataset",
-        )
-        self._mock_data(
-            "data/TestDataset",
-            (101, 64),
-        )
-        data = AIBO(
-            **self._mock_dataset_kwargs(),
-            standardize=True,
-            aibo_task="2cl",
-        )
-        expected = (4, 101, 64)
-        assert (
-            next(iter(data.create_train_loader(4)))[0].shape == expected
-        ), "Standardized data should have the same shape."
-
 
 class TestEDANSA2019(BaseIndividualTempDir):
     def test_invalid_target_column(self) -> None:

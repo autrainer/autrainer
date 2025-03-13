@@ -66,11 +66,11 @@ def preprocess_main(
     features_subdir = dataset["features_subdir"]
 
     dataset["features_subdir"] = None
-    data = autrainer.instantiate(dataset, instance_of=AbstractDataset)
+    data = autrainer.instantiate(dataset, AbstractDataset)
     # manually disable dataset transforms
-    data.train_transform = None
-    data.dev_transform = None
-    data.test_transform = None
+    data.train_transform = SmartCompose([])
+    data.dev_transform = SmartCompose([])
+    data.test_transform = SmartCompose([])
 
     pipeline = SmartCompose(
         [autrainer.instantiate_shorthand(t) for t in preprocess["pipeline"]]

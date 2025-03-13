@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -53,139 +53,62 @@ class TransformManager:
             The composed transform pipelines for the train, dev, and test
                 datasets.
         """
-        base = self._specific("base") + self._match_model_dataset()
+        base = self._build("base") + self._match_model_dataset()
 
-        train = base + self._specific("train") + self.train_augmentation
-        dev = base + self._specific("dev") + self.dev_augmentation
-        test = base + self._specific("test") + self.test_augmentation
+        train = base + self._build("train") + self.train_augmentation
+        dev = base + self._build("dev") + self.dev_augmentation
+        test = base + self._build("test") + self.test_augmentation
         return train, dev, test
 
-    def _specific(self, subset: str) -> SmartCompose:
-        """Get and build the specific transforms for the model and dataset
-        specified in the transform configurations.
+    def _build(self, subset: str) -> SmartCompose:
+        """Build and combine the model and dataset transforms into a single
+        transform. Model transforms override dataset transforms when they share
+        the same key (or key + tag).
 
         Args:
-            subset: The transform subset to get. Must be one of "train", "dev",
-                "test", or "base".
-
-        Raises:
-            ValueError: If the subset is not one of "train", "dev", "test",
-                or "base".
+            subset: The subset of the transforms to combine.
 
         Returns:
-            The composed transform pipeline.
+            The combined transform.
         """
-        if subset not in ["train", "dev", "test", "base"]:
-            raise ValueError(
-                "Transform subset must be one of 'train', 'dev', 'test', "
-                f"or 'base', got {subset}."
-            )
+        combined = []
+        seen = set()
         model_transforms = self.model_transform.get(subset, [])
         dataset_transforms = self.dataset_transform.get(subset, [])
-        if not model_transforms and not dataset_transforms:
-            return SmartCompose([])
-        model_transforms, dataset_transforms = self._filter_transforms(
-            model_transforms, dataset_transforms
+
+        for transform in model_transforms:
+            key = self._get_key(transform)
+            seen.add(key)
+
+            # allow the model to remove a transform by setting it to None
+            # e.g. autrainer.transforms.Normalize: null
+            if isinstance(transform, dict) and transform[key] is None:
+                continue
+
+            combined.append(transform)
+
+        combined.extend(
+            t for t in dataset_transforms if self._get_key(t) not in seen
         )
-        combined_transforms = self._combine_transforms(
-            model_transforms,
-            dataset_transforms,
-        )
-        transforms = [
-            autrainer.instantiate_shorthand(t, instance_of=AbstractTransform)
-            for t in combined_transforms
-        ]
-        return SmartCompose(transforms)
 
-    def _filter_transforms(
-        self,
-        model_transforms: List[Union[str, Dict]],
-        dataset_transforms: List[Union[str, Dict]],
-    ) -> Tuple[List[Union[str, Dict]], List[Union[str, Dict]]]:
-        """Remove None values from the model and dataset transforms.
-        None values are used to indicate that the transform was removed
-        from the config by either the model or dataset transform.
-        See `Automatic Transforms` for more details.
-
-        Args:
-            model_transforms: List of model transforms.
-            dataset_transforms: List of dataset transforms.
-
-        Returns:
-            The filtered model and dataset transforms.
-        """
-
-        def _filter(l1, l2):
-            for transform in l1.copy():
-                if isinstance(transform, str):
-                    continue
-                key = next(iter(transform.keys()))
-                if transform[key] is None and len(transform.keys()) == 1:
-                    l1.remove(transform)
-                    d_idx = self._find_matching_transform(l2, key)
-                    if d_idx is not None:
-                        l2.pop(d_idx)
-            return l1, l2
-
-        model_transforms, dataset_transforms = _filter(
-            model_transforms, dataset_transforms
-        )
-        dataset_transforms, model_transforms = _filter(
-            dataset_transforms, model_transforms
-        )
-        return model_transforms, dataset_transforms
-
-    def _combine_transforms(
-        self,
-        model_transforms: List[Union[str, Dict]],
-        dataset_transforms: List[Union[str, Dict]],
-    ) -> List[Union[str, Dict]]:
-        """Combine model and dataset transforms into a single list.
-        Model transforms outweigh dataset transforms, so if a transform
-        is present in both lists, the model transform will be used.
-
-        Args:
-            model_transforms: List of model transforms.
-            dataset_transforms: List of dataset transforms.
-
-        Returns:
-            The combined list of transforms.
-        """
-        combined = model_transforms
-        for transform in dataset_transforms:
-            if isinstance(transform, str):
-                if transform not in combined:
-                    combined.append(transform)
-            else:
-                key = next(iter(transform.keys()))
-                if self._find_matching_transform(combined, key) is None:
-                    combined.append(transform)
-        return combined
+        return SmartCompose([self._instantiate(t) for t in combined])
 
     @staticmethod
-    def _find_matching_transform(
-        l: List[Union[str, Dict]],
-        key: str,
-    ) -> Optional[int]:
-        """Find the index of a transform in a list of transforms.
-        If the transform is a dictionary, the key is used to find the
-        transform. If the transform is a string, the string itself is
-        used to find the transform.
+    def _get_key(transform: Union[str, Dict]) -> str:
+        if isinstance(transform, dict):
+            return next(iter(transform.keys()))
+        return transform
 
-        Args:
-            l: List of transforms.
-            key: The key to search for.
-
-        Returns:
-            The index of the transform in the list. If the transform is not
-                found, None is returned.
-        """
-        x = (
-            idx
-            for idx, t in enumerate(l)
-            if (isinstance(t, dict) and key in t.keys()) or t == key
+    @staticmethod
+    def _instantiate(transform: Union[str, Dict]) -> AbstractTransform:
+        if isinstance(transform, str):
+            t = transform.split("@")[0]
+            return autrainer.instantiate_shorthand(t, AbstractTransform)
+        key = next(iter(transform.keys()))
+        return autrainer.instantiate_shorthand(
+            {key.split("@")[0]: transform[key]},
+            AbstractTransform,
         )
-        return next(x, None)
 
     def _match_model_dataset(self) -> SmartCompose:
         """Match the model input type with the dataset type by adding

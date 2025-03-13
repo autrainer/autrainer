@@ -19,6 +19,7 @@ from .specific_transforms import (
     ScaleRange,
     SpectToImage,
     SquarePadCrop,
+    Standardizer,
     StereoToMono,
 )
 from .transform_manager import TransformManager
@@ -26,7 +27,6 @@ from .transform_manager import TransformManager
 
 __all__ = [
     "AbstractTransform",
-    "SmartCompose",
     "AnyToTensor",
     "Expand",
     "FeatureExtractor",
@@ -39,12 +39,14 @@ __all__ = [
     "RandomCrop",
     "Resample",
     "Resize",
-    "RGBAToRGB",
     "RGBAToGrayscale",
-    "ScaleRange",
+    "RGBAToRGB",
     "RGBToGrayscale",
+    "ScaleRange",
+    "SmartCompose",
     "SpectToImage",
     "SquarePadCrop",
     "StereoToMono",
+    "Standardizer",
     "TransformManager",
 ]
