@@ -22,7 +22,3 @@ def set_seed(seed: int) -> None:
         torch.cuda.manual_seed_all(seed)
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
-
-
-def set_seed_worker(worker_id: int) -> None:
-    set_seed(torch.initial_seed() + worker_id)

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from functools import cached_property
+from functools import cached_property, partial
 import os
 from typing import Dict, List, Optional, TypeVar, Union
 
@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 
 import autrainer
 from autrainer.core.constants import TrainingConstants
-from autrainer.core.utils import set_seed_worker
+from autrainer.core.utils import set_seed
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 
@@ -233,15 +233,6 @@ class AbstractDataset(ABC):
             target_transform=self.target_transform,
         )
 
-    def setup_transforms(self) -> None:
-        """Setup the transforms for the dataset.
-
-        Has to be called before accessing the loaders.
-        """
-        self.train_transform.setup(self)
-        self.dev_transform.setup(self)
-        self.test_transform.setup(self)
-
     @cached_property
     def train_dataset(self) -> DatasetWrapper:
         """Get the training dataset.
@@ -280,6 +271,7 @@ class AbstractDataset(ABC):
         persistent_workers: bool = False,
         pin_memory_device: str = "",
     ) -> DataLoader:
+        self.train_transform.setup(self)
         return DataLoader(
             self.train_dataset,
             batch_size=batch_size,
@@ -287,7 +279,11 @@ class AbstractDataset(ABC):
             generator=self._generator,
             collate_fn=self.train_transform.get_collate_fn(self),
             num_workers=num_workers,
-            worker_init_fn=set_seed_worker,
+            worker_init_fn=partial(
+                self._seed_worker,
+                seed=self.seed,
+                transform=self.train_transform,
+            ),
             pin_memory=pin_memory,
             drop_last=drop_last,
             timeout=timeout,
@@ -307,6 +303,7 @@ class AbstractDataset(ABC):
         persistent_workers: bool = False,
         pin_memory_device: str = "",
     ) -> DataLoader:
+        self.dev_transform.setup(self)
         return DataLoader(
             self.dev_dataset,
             batch_size=batch_size,
@@ -314,7 +311,11 @@ class AbstractDataset(ABC):
             generator=self._generator,
             collate_fn=self.dev_transform.get_collate_fn(self),
             num_workers=num_workers,
-            worker_init_fn=set_seed_worker,
+            worker_init_fn=partial(
+                self._seed_worker,
+                seed=self.seed,
+                transform=self.dev_transform,
+            ),
             pin_memory=pin_memory,
             drop_last=drop_last,
             timeout=timeout,
@@ -334,6 +335,7 @@ class AbstractDataset(ABC):
         persistent_workers: bool = False,
         pin_memory_device: str = "",
     ) -> DataLoader:
+        self.test_transform.setup(self)
         return DataLoader(
             self.test_dataset,
             batch_size=batch_size,
@@ -341,7 +343,11 @@ class AbstractDataset(ABC):
             generator=self._generator,
             collate_fn=self.test_transform.get_collate_fn(self),
             num_workers=num_workers,
-            worker_init_fn=set_seed_worker,
+            worker_init_fn=partial(
+                self._seed_worker,
+                seed=self.seed,
+                transform=self.test_transform,
+            ),
             pin_memory=pin_memory,
             drop_last=drop_last,
             timeout=timeout,
@@ -349,6 +355,15 @@ class AbstractDataset(ABC):
             persistent_workers=persistent_workers,
             pin_memory_device=pin_memory_device,
         )
+
+    @staticmethod
+    def _seed_worker(
+        worker_id: int,
+        seed: int,
+        transform: SmartCompose,
+    ) -> None:
+        set_seed(seed + worker_id)
+        transform.offset_generator_seed(worker_id)
 
     @staticmethod
     def download(path: str) -> None:

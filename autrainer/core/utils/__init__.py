@@ -6,7 +6,7 @@ from .hardware import (
     set_device,
 )
 from .requirements import save_requirements
-from .set_seed import set_seed, set_seed_worker
+from .set_seed import set_seed
 from .silence import silence
 from .timer import Timer
 
@@ -18,7 +18,6 @@ __all__ = [
     "save_requirements",
     "set_device",
     "set_seed",
-    "set_seed_worker",
     "silence",
     "ThreadManager",
     "Timer",
