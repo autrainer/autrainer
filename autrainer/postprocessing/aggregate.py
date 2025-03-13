@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import deepcopy
 import os
 import shutil
 from typing import List, Optional
@@ -314,7 +315,7 @@ class AggregateGrid:
         )
         for logger in loggers:
             logger.setup()
-            logger.log_params(cfg)
+            logger.log_params(deepcopy(cfg))
             logger.log_timers(
                 {
                     "time.train.mean": timers["train"]["mean"],

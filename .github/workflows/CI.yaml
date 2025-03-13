@@ -27,4 +27,3 @@ jobs:
         run: poetry install --all-extras
       - name: Run Tests
         run: poetry run pytest
-

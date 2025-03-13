@@ -9,7 +9,8 @@ Loggers can be added by specifying a list of :attr:`loggers` in the :ref:`main c
 
    To create custom loggers, refer to the :ref:`custom loggers tutorial <tut_loggers>`.
 
-For example, to add a :class:`MLFlowLogger`, specify it in the :ref:`main configuration <main_configuration>` by adding a list of :attr:`loggers`:
+For example, to add a :class:`~autrainer.loggers.MLFlowLogger`,
+specify it in the :ref:`main configuration <main_configuration>` by adding a list of :attr:`loggers`:
 
 .. code-block:: yaml
    :caption: conf/config.yaml
@@ -24,7 +25,7 @@ For example, to add a :class:`MLFlowLogger`, specify it in the :ref:`main config
 Abstract Logger
 ---------------
 
-All loggers inherit from the :class:`AbstractLogger` class.
+All loggers inherit from the :class:`~autrainer.loggers.AbstractLogger` class.
 
 .. autoclass:: autrainer.loggers.AbstractLogger
    :members:
@@ -33,7 +34,7 @@ All loggers inherit from the :class:`AbstractLogger` class.
 Optional Loggers
 ----------------
 
-The :class:`MLFlowLogger` logs data to MLFlow, while the :class:`TensorBoardLogger` logs data to TensorBoard.
+The :class:`~autrainer.loggers.MLFlowLogger` logs data to MLFlow, while the :class:`~autrainer.loggers.TensorBoardLogger` logs data to TensorBoard.
 Both loggers require additional dependencies, which are not installed by default.
 To install all necessary dependencies, refer to the :ref:`installation` section.
 
@@ -54,9 +55,9 @@ In both cases, the path should be the same as the :code:`output_dir` specified i
 Fallback Logger
 ---------------
 
-If a logger such as :class:`MLFlowLogger` is specified in the configuration,
+If a logger such as :class:`~autrainer.loggers.MLFlowLogger` is specified in the configuration,
 but the required dependencies are not installed,
-the :class:`FallbackLogger` will be used instead.
+the :class:`~autrainer.loggers.FallbackLogger` will be used instead.
 This logger will log a warning message and will not log any data.
 
 .. autoclass:: autrainer.loggers.FallbackLogger
