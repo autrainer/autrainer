@@ -150,6 +150,42 @@ class TestAllAugmentations:
         y4 = aug2(x)
         assert torch.allclose(y3, y4), "Should be deterministic"
 
+    @pytest.mark.parametrize(
+        "augmentation, params, input_shape, output_shape",
+        AUGMENTATION_FIXTURES,
+    )
+    def test_offset_generator_seed(
+        self,
+        augmentation: Type[AbstractAugmentation],
+        params: Dict[str, Any],
+        input_shape: Union[Tuple[int, int], Tuple[int, int, int]],
+        output_shape: Union[Tuple[int, int], Tuple[int, int, int]],
+    ) -> None:
+        for _ in range(10):  # should be enough to detect drifts
+            params["p"] = 0.5
+            if len(input_shape) == 2:
+                x = torch.randn(*input_shape)
+            else:
+                x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
+            aug1 = augmentation(**params, generator_seed=AUGMENTATION_SEED + 1)
+            aug2 = augmentation(**params, generator_seed=AUGMENTATION_SEED)
+            aug2.offset_generator_seed(1)
+            if hasattr(aug1, "_deterministic") and not aug1._deterministic:
+                return  # Skip if known to be non-deterministic
+            y1 = aug1(x)
+            y2 = aug2(x)
+            assert torch.allclose(y1, y2), "Should be deterministic"
+            y3 = aug1(x)
+            y4 = aug2(x)
+            assert torch.allclose(y3, y4), "Should be deterministic"
+
+    def test_unset_offset_generator_seed(self) -> None:
+        aug = GaussianNoise(generator_seed=None)
+        aug.offset_generator_seed(1)
+        assert (
+            aug.generator_seed is None
+        ), "Should not change the seed if it was not set."
+
 
 class TestAugmentationManagerPipeline:
     pipline_cfg1 = {

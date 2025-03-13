@@ -218,6 +218,20 @@ class TestBaseDatasets(BaseIndividualTempDir):
         data = BaseMTRegressionDataset(**kwargs)
         self._test_data(data, 10, (4, 10))
 
+    def test_multiple_workers(self) -> None:
+        self._mock_dataframes("data/TestDataset")
+        self._mock_data("data/TestDataset", (101, 64))
+        train_loader_kwargs = {"num_workers": 2}
+        data = BaseClassificationDataset(**self._mock_dataset_kwargs())
+        data._generator.manual_seed(0)
+        loader = iter(data.create_train_loader(4, **train_loader_kwargs))
+        (x1, *_), (x2, *_) = next(loader), next(loader)
+        data._generator.manual_seed(0)
+        loader = iter(data.create_train_loader(4, **train_loader_kwargs))
+        (x3, *_), (x4, *_) = next(loader), next(loader)
+        assert torch.allclose(x1, x3), "Should be equal."
+        assert torch.allclose(x2, x4), "Should be equal."
+
     def _test_data(
         self,
         data: AbstractDataset,
