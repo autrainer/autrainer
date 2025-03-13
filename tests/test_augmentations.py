@@ -162,13 +162,16 @@ class TestAllAugmentations:
         output_shape: Union[Tuple[int, int], Tuple[int, int, int]],
     ) -> None:
         for _ in range(10):  # should be enough to detect drifts
-            params["p"] = 0.5
             if len(input_shape) == 2:
                 x = torch.randn(*input_shape)
             else:
                 x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
-            aug1 = augmentation(**params, generator_seed=AUGMENTATION_SEED + 1)
-            aug2 = augmentation(**params, generator_seed=AUGMENTATION_SEED)
+            aug1 = augmentation(
+                **params, generator_seed=AUGMENTATION_SEED + 1, p=0.5
+            )
+            aug2 = augmentation(
+                **params, generator_seed=AUGMENTATION_SEED, p=0.5
+            )
             aug2.offset_generator_seed(1)
             if hasattr(aug1, "_deterministic") and not aug1._deterministic:
                 return  # Skip if known to be non-deterministic
