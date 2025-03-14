@@ -86,7 +86,6 @@ class TestPreprocessing(BaseIndividualTempDir):
             "target_column": "target",
             "file_type": "wav",
             "file_handler": "autrainer.datasets.utils.AudioFileHandler",
-            "batch_size": 4,
             "criterion": "autrainer.criterion.CrossEntropyLoss",
             "transform": "wav",
             "_target_": "autrainer.datasets.BaseClassificationDataset",

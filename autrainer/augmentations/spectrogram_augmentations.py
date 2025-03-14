@@ -37,6 +37,11 @@ class GaussianNoise(AbstractAugmentation):
         if generator_seed is not None:
             self._generator.manual_seed(generator_seed)
 
+    def offset_generator_seed(self, offset: int) -> None:
+        super().offset_generator_seed(offset)
+        if self.generator_seed is not None:
+            self._generator.manual_seed(self.generator_seed)
+
     def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
         r = torch.randn(x.size(), generator=self._generator)
         return x + r * self.std + self.mean
@@ -74,6 +79,11 @@ class TimeShift(AbstractAugmentation):
         self._generator = torch.Generator()
         if generator_seed is not None:
             self._generator.manual_seed(generator_seed)
+
+    def offset_generator_seed(self, offset: int) -> None:
+        super().offset_generator_seed(offset)
+        if self.generator_seed is not None:
+            self._generator.manual_seed(self.generator_seed)
 
     def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
         if self.time_steps == 0:
@@ -228,6 +238,11 @@ class TimeWarp(AbstractAugmentation):
         self._generator = torch.Generator()
         if generator_seed is not None:
             self._generator.manual_seed(generator_seed)
+
+    def offset_generator_seed(self, offset: int) -> None:
+        super().offset_generator_seed(offset)
+        if self.generator_seed is not None:
+            self._generator.manual_seed(self.generator_seed)
 
     def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
         device = x.device

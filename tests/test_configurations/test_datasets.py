@@ -31,14 +31,7 @@ class TestDatasetConfigurations:
         cls = get_class_from_import_path(config["_target_"])
         required_params = get_required_parameters(
             cls,
-            [
-                "train_transform",
-                "dev_transform",
-                "test_transform",
-                "seed",
-                "batch_size",
-                "inference_batch_size",
-            ],
+            ["train_transform", "dev_transform", "test_transform", "seed"],
         )
         for arg in required_params:
             assert arg in config, f"{name}: Missing required argument: {arg}"

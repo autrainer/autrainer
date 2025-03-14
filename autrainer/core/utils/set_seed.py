@@ -12,6 +12,8 @@ def set_seed(seed: int) -> None:
     Args:
         seed: Seed to set.
     """
+    if seed != seed % 2**32:
+        raise ValueError(f"Seed must be between 0 and 2**32-1, got '{seed}'.")
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
