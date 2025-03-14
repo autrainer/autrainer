@@ -453,6 +453,10 @@ class ModularTaskTrainer:
     def train_epochs(self):
         """Train the model for a fixed number of epochs."""
         train_loss = []
+        pm = (
+            self._loader_kwargs["train"].get("pin_memory", False)
+            and self.DEVICE.type == "cuda"
+        )
         self.train_timer.start()
         for epoch in range(self.initial_iteration, self.cfg.iterations + 1):
             self.callback_manager.callback(
@@ -469,10 +473,6 @@ class ModularTaskTrainer:
                     disable=self.disable_progress_bar,
                 )
             ):
-                pm = (
-                    self._loader_kwargs["train"].get("pin_memory", False)
-                    and self.DEVICE.type == "cuda"
-                )
                 data = data.to(self.DEVICE, non_blocking=pm)
                 target = target.to(self.DEVICE, non_blocking=pm)
                 self.callback_manager.callback(
@@ -559,6 +559,10 @@ class ModularTaskTrainer:
         )
         self.train_loader_iter = iter(self.train_loader)
         train_loss = []
+        pm = (
+            self._loader_kwargs["train"].get("pin_memory", False)
+            and self.DEVICE.type == "cuda"
+        )
         self.train_timer.start()
         while step < self.cfg.iterations:
             step += 1
@@ -575,10 +579,6 @@ class ModularTaskTrainer:
                 )
                 self.train_loader_iter = iter(self.train_loader)
                 data, target, sample_idx = next(self.train_loader_iter)
-            pm = (
-                self._loader_kwargs["train"].get("pin_memory", False)
-                and self.DEVICE.type == "cuda"
-            )
             data = data.to(self.DEVICE, non_blocking=pm)
             target = target.to(self.DEVICE, non_blocking=pm)
             self.callback_manager.callback(
@@ -820,6 +820,10 @@ class ModularTaskTrainer:
         Returns:
             Dictionary containing the results on the dev or test set.
         """
+        pm = (
+            loader_kwargs.get("pin_memory", False)
+            and self.DEVICE.type == "cuda"
+        )
         with torch.no_grad():
             losses = 0
             for batch_idx, (features, target, sample_idx) in enumerate(
@@ -833,10 +837,6 @@ class ModularTaskTrainer:
                     position=f"cb_on_{cb_type}_step_begin",
                     trainer=self,
                     batch_idx=batch_idx,
-                )
-                pm = (
-                    loader_kwargs.get("pin_memory", False)
-                    and self.DEVICE.type == "cuda"
                 )
                 output = self.model(features.to(self.DEVICE, non_blocking=pm))
                 loss = self.criterion(
