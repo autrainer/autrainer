@@ -40,10 +40,10 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
             raise NameError(
                 (
                     f"Model {type(self).__name__} "
-                    f"does not have 'features' "
-                    f"as the first argument of its 'forward' class. "
+                    "does not have 'features' "
+                    "as the first argument of its 'forward' method. "
                     f"Its arguments are: {names}. "
-                    f"Please rewrite 'forward' method accordingly."
+                    "Please rewrite the 'forward' method accordingly."
                 )
             )
         return names
