@@ -5,10 +5,13 @@ from .abstract_metric import (
 )
 from .classification import F1, UAR, Accuracy
 from .multi_label_classification import (
+    EventbasedF1,
     MLAccuracy,
     MLF1Macro,
     MLF1Micro,
     MLF1Weighted,
+    SegmentbasedErrorRate,
+    SegmentbasedF1,
 )
 from .regression import CCC, MAE, MSE, PCC
 
@@ -28,4 +31,7 @@ __all__ = [
     "MAE",
     "MSE",
     "PCC",
+    "EventbasedF1",
+    "SegmentbasedErrorRate",
+    "SegmentbasedF1",
 ]

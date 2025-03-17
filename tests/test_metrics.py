@@ -16,10 +16,13 @@ from autrainer.metrics import (
     UAR,
     AbstractMetric,
     Accuracy,
+    EventbasedF1,
     MLAccuracy,
     MLF1Macro,
     MLF1Micro,
     MLF1Weighted,
+    SegmentbasedErrorRate,
+    SegmentbasedF1,
 )
 from autrainer.training.utils import disaggregated_evaluation
 
@@ -139,6 +142,132 @@ class TestAllMetrics:
                 np.array([[1, 0, 1], [0, 1, 1], [0, 0, 1]]),
                 0.72,
             ),
+            (
+                EventbasedF1,
+                # 2 samples, 4 segments, 3 classes
+                np.array(
+                    [
+                        # Sample 1: Class 0 active in segments 0-1, Class 1 active in segment 2, Class 2 inactive
+                        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                        # Sample 2: Class 0 inactive, Class 1 active in segments 1-2, Class 2 active in segment 3
+                        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+                    ]
+                ),
+                # Predictions match ground truth exactly
+                np.array(
+                    [
+                        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+                    ]
+                ),
+                1.0,  # Perfect match
+            ),
+            (
+                EventbasedF1,
+                # 2 samples, 4 segments, 3 classes
+                np.array(
+                    [
+                        # Sample 1: Class 0 active in segments 0-1, Class 1 active in segment 2, Class 2 inactive
+                        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                        # Sample 2: Class 0 inactive, Class 1 active in segments 1-2, Class 2 active in segment 3
+                        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+                    ]
+                ),
+                # Predictions with some errors
+                np.array(
+                    [
+                        # Sample 1: Missed Class 0 in segment 0, detected Class 2 in segment 3 (false positive)
+                        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+                        # Sample 2: Detected Class 0 in segment 0 (false positive), missed Class 2 in segment 3
+                        [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+                    ]
+                ),
+                0.5,  # 3 correct events, 2 false positives, 2 false negatives
+            ),
+            (
+                SegmentbasedF1,
+                # 2 samples, 4 segments, 3 classes
+                np.array(
+                    [
+                        # Sample 1: Class 0 active in segments 0-1, Class 1 active in segment 2, Class 2 inactive
+                        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                        # Sample 2: Class 0 inactive, Class 1 active in segments 1-2, Class 2 active in segment 3
+                        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+                    ]
+                ),
+                # Predictions match ground truth exactly
+                np.array(
+                    [
+                        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+                    ]
+                ),
+                1.0,  # Perfect match
+            ),
+            (
+                SegmentbasedF1,
+                # 2 samples, 4 segments, 3 classes
+                np.array(
+                    [
+                        # Sample 1: Class 0 active in segments 0-1, Class 1 active in segment 2, Class 2 inactive
+                        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                        # Sample 2: Class 0 inactive, Class 1 active in segments 1-2, Class 2 active in segment 3
+                        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+                    ]
+                ),
+                # Predictions with some errors
+                np.array(
+                    [
+                        # Sample 1: Missed Class 0 in segment 0, detected Class 2 in segment 3 (false positive)
+                        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+                        # Sample 2: Detected Class 0 in segment 0 (false positive), missed Class 2 in segment 3
+                        [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+                    ]
+                ),
+                0.5,  # 3 correct segments, 2 false positives, 2 false negatives
+            ),
+            (
+                SegmentbasedF1,
+                # 2 samples, 4 segments, 3 classes
+                np.array(
+                    [
+                        # Sample 1
+                        [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0]],
+                        # Sample 2
+                        [[0, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1]],
+                    ]
+                ),
+                # Predictions match ground truth exactly
+                np.array(
+                    [
+                        [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0]],
+                        [[0, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1]],
+                    ]
+                ),
+                1.0,  # Perfect match
+            ),
+            (
+                SegmentbasedF1,
+                # 2 samples, 4 segments, 3 classes
+                np.array(
+                    [
+                        # Sample 1
+                        [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0]],
+                        # Sample 2
+                        [[0, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1]],
+                    ]
+                ),
+                # Predictions with some errors
+                np.array(
+                    [
+                        # Sample 1
+                        [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                        # Sample 2
+                        [[1, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 0]],
+                    ]
+                ),
+                0.5,  # 3 correct segments, 2 false positives, 2 false negatives
+            ),
         ],
     )
     def test_mlc_metrics(
@@ -229,3 +358,429 @@ class TestAllMetrics:
             stratify=stratify,
         )
         assert res == results
+
+    @pytest.mark.parametrize(
+        "cls,params,truth,pred,res",
+        [
+            (
+                EventbasedF1,
+                {
+                    "t_collar": 0.1,
+                    "percentage_of_length": 0.1,
+                    "n_segments": 10,
+                    "n_classes": 2,
+                },
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            1,
+                            0,  # class 0 events in segments 2-4, 7-8
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]  # class 1 events in segments 0-1, 6-7
+                    ]
+                ),
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                0.0,
+            ),
+            (
+                EventbasedF1,
+                {
+                    "t_collar": 3.0,
+                    "percentage_of_length": 0.8,
+                    "n_segments": 10,
+                    "n_classes": 2,
+                },
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                1.0,
+            ),
+            (
+                SegmentbasedF1,
+                {"segment_length": 1.0, "n_segments": 10, "n_classes": 2},
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                0.67,
+            ),
+            (
+                SegmentbasedF1,
+                {"segment_length": 1.0, "n_segments": 10, "n_classes": 2},
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            0,
+                            1,
+                            0,
+                            1,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                0.5,
+            ),
+            (
+                SegmentbasedErrorRate,
+                {"segment_length": 1.0, "n_segments": 10, "n_classes": 2},
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                0.6,
+            ),
+            (
+                SegmentbasedErrorRate,
+                {"segment_length": 1.0, "n_segments": 10, "n_classes": 2},
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                0.0,
+            ),
+            (
+                SegmentbasedErrorRate,
+                {"segment_length": 1.0, "n_segments": 10, "n_classes": 2},
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0,
+                        ]
+                    ]
+                ),
+                np.array(
+                    [
+                        [
+                            0,
+                            0,
+                            0,
+                            1,
+                            1,
+                            1,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            1,
+                        ]
+                    ]
+                ),
+                0.86,
+            ),
+        ],
+    )
+    def test_sed_metrics(
+        self,
+        cls: Type[AbstractMetric],
+        params: dict,
+        truth: np.ndarray,
+        pred: np.ndarray,
+        res: float,
+    ) -> None:
+        metric = cls(**params)
+        result = metric(truth, pred)
+        assert abs(result - res) < 0.01, f"Expected {res}, got {result}"
