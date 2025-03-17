@@ -10,7 +10,6 @@ from torchvision import transforms as T
 
 from autrainer.augmentations import AbstractAugmentation, CutMix
 from autrainer.datasets import AbstractDataset, ToyDataset
-from autrainer.datasets.utils.dataloader import default_data_collator
 from autrainer.datasets.utils import DataBatch
 from autrainer.transforms import (
     AbstractTransform,
