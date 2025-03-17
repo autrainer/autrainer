@@ -12,16 +12,8 @@ from torchinfo import summary
 import yaml
 
 from autrainer.metrics import AbstractMetric
-from autrainer.models.utils import create_model_inputs
 
 
-<<<<<<< HEAD
-=======
-if TYPE_CHECKING:  # pragma: no cover
-    from autrainer.datasets.utils import DataItem, DatasetWrapper
-
-
->>>>>>> Fix/dataset dataclass (#100)
 class Bookkeeping:
     def __init__(
         self,
