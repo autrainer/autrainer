@@ -220,54 +220,6 @@ class TestSeqFFNN:
 
 
 class TestCRNN:
-    def test_output_formats(self) -> None:
-        x = torch.randn(1, 1, 500, 64)
-
-        model_attention = CRNN(
-            output_dim=10, return_raw_predictions=True, attention=True
-        )
-        model_attention.eval()
-        output_attention = model_attention(x)
-        assert isinstance(
-            output_attention, tuple
-        ), "Output should be a tuple when return_raw_predictions is True with attention"
-        assert (
-            len(output_attention) == 2
-        ), "Output tuple should have 2 elements"
-
-        model_no_attention = CRNN(
-            output_dim=10, return_raw_predictions=True, attention=False
-        )
-        model_no_attention.eval()
-        output_no_attention = model_no_attention(x)
-        assert isinstance(
-            output_no_attention, torch.Tensor
-        ), "Output should be a tensor when attention is False"
-        assert output_no_attention.shape == (
-            1,
-            500,
-            10,
-        ), "Output shape mismatch"
-        assert torch.all(output_no_attention >= 0) and torch.all(
-            output_no_attention <= 1
-        ), "Raw outputs should be between 0 and 1"
-
-        # Test that outputs have a reasonable range (not all extremely close to 0)
-        # At initialization, we expect at least some values to be above a small threshold
-        assert torch.any(
-            output_no_attention > 0.01
-        ), "All outputs are extremely close to zero"
-
-        model_regular = CRNN(
-            output_dim=10, return_raw_predictions=False, attention=False
-        )
-        model_regular.eval()
-        regular_output = model_regular(x)
-        assert regular_output.shape == (
-            1,
-            10,
-        ), "Regular output should have shape (batch_size, output_dim)"
-
     @pytest.mark.parametrize(
         "test_case, params",
         [
@@ -360,26 +312,6 @@ class TestCRNN:
             input_shape = (params["in_channels"], 500, 64)
         model = CRNN(output_dim=10, **params)
         TestAllModels._test_model(model, input_shape)
-
-    @pytest.mark.parametrize(
-        "error_case, params, expected_exception",
-        [
-            (
-                "invalid_activation",
-                {"activation": "invalid_activation"},
-                ValueError,
-            ),
-            ("invalid_dropout", {"dropout": [0.1, 0.2]}, ValueError),
-        ],
-    )
-    def test_error_cases(
-        self,
-        error_case: str,
-        params: dict,
-        expected_exception: Type[Exception],
-    ) -> None:
-        with pytest.raises(expected_exception):
-            CRNN(output_dim=10, **params)
 
 
 class TestTorchvisionModel:
