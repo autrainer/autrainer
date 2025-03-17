@@ -29,13 +29,13 @@ from autrainer.datasets.utils import (
 )
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
+from autrainer.models.utils import create_model_inputs
 from autrainer.transforms import SmartCompose, TransformManager
 
 from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
 from .outputs_tracker import OutputsTracker, init_trackers
 from .utils import (
-    create_model_inputs,
     disaggregated_evaluation,
     format_results,
     load_pretrained_model_state,
