@@ -1,0 +1,5 @@
+id: FDYCrnn
+_target_: autrainer.models.FDYCRNN
+
+transform:
+  type: grayscale

@@ -1,0 +1,5 @@
+id: Crnn
+_target_: autrainer.models.CRNN
+
+transform:
+  type: grayscale

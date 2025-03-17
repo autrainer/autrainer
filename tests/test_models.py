@@ -18,6 +18,7 @@ from autrainer.models import (
     TorchvisionModel,
     WhisperFFNN,
 )
+from autrainer.models.crnn import CRNN
 from autrainer.models.utils import ExtractLayerEmbeddings
 
 
@@ -55,6 +56,7 @@ MODEL_FIXTURES = [
         {"model_name": "openai/whisper-tiny", "hidden_size": 128},
         (80, 3000),
     ),
+    (CRNN, {}, (1, 500, 64)),
 ]
 
 
@@ -215,6 +217,169 @@ class TestSeqFFNN:
     def test_invalid_cell(self) -> None:
         with pytest.raises(NotImplementedError):
             SeqFFNN(**self._mock_default_kwargs(), backbone_cell="RNN")
+
+
+class TestCRNN:
+    def test_output_formats(self) -> None:
+        x = torch.randn(1, 1, 500, 64)
+
+        model_attention = CRNN(
+            output_dim=10, return_raw_predictions=True, attention=True
+        )
+        model_attention.eval()
+        output_attention = model_attention(x)
+        assert isinstance(
+            output_attention, tuple
+        ), "Output should be a tuple when return_raw_predictions is True with attention"
+        assert (
+            len(output_attention) == 2
+        ), "Output tuple should have 2 elements"
+
+        model_no_attention = CRNN(
+            output_dim=10, return_raw_predictions=True, attention=False
+        )
+        model_no_attention.eval()
+        output_no_attention = model_no_attention(x)
+        assert isinstance(
+            output_no_attention, torch.Tensor
+        ), "Output should be a tensor when attention is False"
+        assert output_no_attention.shape == (
+            1,
+            500,
+            10,
+        ), "Output shape mismatch"
+        assert torch.all(output_no_attention >= 0) and torch.all(
+            output_no_attention <= 1
+        ), "Raw outputs should be between 0 and 1"
+
+        # Test that outputs have a reasonable range (not all extremely close to 0)
+        # At initialization, we expect at least some values to be above a small threshold
+        assert torch.any(
+            output_no_attention > 0.01
+        ), "All outputs are extremely close to zero"
+
+        model_regular = CRNN(
+            output_dim=10, return_raw_predictions=False, attention=False
+        )
+        model_regular.eval()
+        regular_output = model_regular(x)
+        assert regular_output.shape == (
+            1,
+            10,
+        ), "Regular output should have shape (batch_size, output_dim)"
+
+    @pytest.mark.parametrize(
+        "test_case, params",
+        [
+            ("activation_relu", {"activation": "relu"}),
+            ("activation_leakyrelu", {"activation": "leakyrelu"}),
+            ("activation_glu", {"activation": "glu"}),
+            ("activation_cg", {"activation": "cg"}),
+            ("cnn_single_layer", {"n_cnn_layers": 1, "kernel_size": 3}),
+            ("cnn_double_layer", {"n_cnn_layers": 2, "kernel_size": 5}),
+            (
+                "cnn_multi_layer",
+                {"n_cnn_layers": 4, "kernel_size": 3, "pooling": [1, 2]},
+            ),
+            (
+                "cnn_varying_kernels",
+                {
+                    "n_cnn_layers": 3,
+                    "kernel_size": [3, 3, 5],
+                    "pooling": [1, 2],
+                },
+            ),
+            ("rnn_small", {"hidden_size": 32, "n_layers_rnn": 1}),
+            ("rnn_medium", {"hidden_size": 64, "n_layers_rnn": 2}),
+            ("rnn_large", {"hidden_size": 128, "n_layers_rnn": 3}),
+            ("filters_small", {"nb_filters": 32, "pooling": [2, 2]}),
+            ("filters_medium", {"nb_filters": 64, "pooling": [4, 4]}),
+            (
+                "filters_varying",
+                {
+                    "nb_filters": [32, 64, 128],
+                    "pooling": [[2, 2], [2, 2], [2, 2]],
+                },
+            ),
+            ("dropout_none", {"dropout": 0.0}),
+            ("dropout_moderate", {"dropout": 0.3}),
+            ("dropout_varying", {"dropout": [0.1, 0.2, 0.3]}),
+            ("stride_padding_small", {"stride": 1, "padding": 1}),
+            ("stride_padding_medium", {"stride": 1, "padding": 2}),
+            (
+                "stride_padding_varying",
+                {"stride": [1, 1, 1], "padding": [1, 2, 1]},
+            ),
+            ("channels_1", {"in_channels": 1}),
+            ("channels_2", {"in_channels": 2}),
+            ("channels_3", {"in_channels": 3}),
+            ("attention_true", {"attention": True}),
+            ("attention_false", {"attention": False}),
+            (
+                "complex_combo_1",
+                {
+                    "activation": "leakyrelu",
+                    "n_cnn_layers": 2,
+                    "kernel_size": 5,
+                    "hidden_size": 64,
+                    "n_layers_rnn": 2,
+                    "dropout": [0.1, 0.2, 0.3],
+                    "attention": True,
+                },
+            ),
+            (
+                "complex_combo_2",
+                {
+                    "activation": "glu",
+                    "in_channels": 2,
+                    "n_cnn_layers": 3,
+                    "kernel_size": [3, 3, 5],
+                    "nb_filters": [32, 64, 128],
+                    "pooling": [[1, 2], [1, 2], [1, 2]],
+                    "hidden_size": 32,
+                    "attention": False,
+                },
+            ),
+            (
+                "complex_combo_3",
+                {
+                    "activation": "cg",
+                    "n_cnn_layers": 2,
+                    "stride": [1, 1],
+                    "padding": [2, 1],
+                    "nb_filters": 32,
+                    "n_layers_rnn": 3,
+                    "dropout": 0.2,
+                },
+            ),
+        ],
+    )
+    def test_model_configurations(self, test_case: str, params: dict) -> None:
+        input_shape = (1, 500, 64)
+        if "in_channels" in params:
+            input_shape = (params["in_channels"], 500, 64)
+        model = CRNN(output_dim=10, **params)
+        TestAllModels._test_model(model, input_shape)
+
+    @pytest.mark.parametrize(
+        "error_case, params, expected_exception",
+        [
+            (
+                "invalid_activation",
+                {"activation": "invalid_activation"},
+                ValueError,
+            ),
+            ("invalid_dropout", {"dropout": [0.1, 0.2]}, ValueError),
+        ],
+    )
+    def test_error_cases(
+        self,
+        error_case: str,
+        params: dict,
+        expected_exception: Type[Exception],
+    ) -> None:
+        with pytest.raises(expected_exception):
+            CRNN(output_dim=10, **params)
 
 
 class TestTorchvisionModel:
