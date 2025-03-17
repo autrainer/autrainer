@@ -5,7 +5,6 @@ from .cnn_14 import Cnn14
 from .crnn import CRNN, FDYCRNN
 from .end2you import AudioRNNModel
 from .ffnn import FFNN
-from .htsat import HTSATModel
 from .leaf import LEAFNet
 from .sequential import SeqFFNN
 from .tdnn import TDNNFFNN
@@ -24,7 +23,6 @@ __all__ = [
     "CRNN",
     "FDYCRNN",
     "FFNN",
-    "HTSATModel",
     "LEAFNet",
     "SeqFFNN",
     "TDNNFFNN",
