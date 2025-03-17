@@ -157,7 +157,7 @@ class ModularTaskTrainer:
         self._thread_manager.spawn(
             self.bookkeeping.save_model_summary,
             deepcopy(self.model),
-            self.data.train_dataset[0].features[0][0].unsqueeze(0).shape,
+            self.data.train_dataset[0].features.unsqueeze(0).shape,
             self.DEVICE,
             "model_summary.txt",
         )
@@ -481,10 +481,7 @@ class ModularTaskTrainer:
                     self.scheduler.step()
                 if self.train_tracker:
                     self.train_tracker.update(
-                        output,
-                        data.label.cpu(),
-                        loss,
-                        data.index.cpu()
+                        output, data.target.cpu(), loss, data.index.cpu()
                     )
                 self.callback_manager.callback(
                     position="cb_on_step_end",
@@ -580,7 +577,9 @@ class ModularTaskTrainer:
             if self.scheduler and self.scheduler_frequency == "batch":
                 self.scheduler.step()
             if self.train_tracker:
-                self.train_tracker.update(output, data.label, loss, data.index)
+                self.train_tracker.update(
+                    output, data.target, loss, data.index
+                )
             self.callback_manager.callback(
                 position="cb_on_step_end",
                 trainer=self,
@@ -650,8 +649,8 @@ class ModularTaskTrainer:
             Tuple containing the non-reduced loss and model outputs.
         """
         self.optimizer.zero_grad()
-        output = model(data)
-        loss = criterion(probabilities_fn(output), data.label)
+        output = model(**create_model_inputs(model, data))
+        loss = criterion(probabilities_fn(output), data.target)
         loss.mean().backward()
         self.optimizer.step()
         return loss, output
@@ -810,14 +809,14 @@ class ModularTaskTrainer:
                     batch_idx=batch_idx,
                 )
                 data.to(self.DEVICE)
-                output = self.model(data)
+                output = self.model(**create_model_inputs(self.model, data))
                 loss = self.criterion(
                     self.data.target_transform.probabilities_training(output),
-                    data.label,
+                    data.target,
                 )
                 reduced_loss = loss.mean().item()
                 losses += reduced_loss
-                tracker.update(output, data.label, loss, data.index)
+                tracker.update(output, data.target, loss, data.index)
                 self.callback_manager.callback(
                     position=f"cb_on_{cb_type}_step_end",
                     trainer=self,

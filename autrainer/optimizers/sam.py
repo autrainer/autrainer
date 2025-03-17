@@ -160,13 +160,13 @@ class SAM(torch.optim.Optimizer):
         Returns:
             Tuple containing the non-reduced loss and model outputs.
         """
-        output = model(create_model_inputs(model, data))
-        loss = criterion(probabilities_fn(output), data.label)
+        output = model(**create_model_inputs(model, data))
+        loss = criterion(probabilities_fn(output), data.target)
         loss.mean().backward()
         self.first_step(zero_grad=True)
 
-        output = model(create_model_inputs(model, data))
-        loss = criterion(probabilities_fn(output), data.label)
+        output = model(**create_model_inputs(model, data))
+        loss = criterion(probabilities_fn(output), data.target)
         loss.mean().backward()
         self.second_step(zero_grad=True)
         return loss, output
