@@ -1,0 +1,7 @@
+id: ToyMultiBranchModel
+_target_: model.ToyMultiBranchModel
+input_dim: 64
+hidden_dim: 64
+
+transform:
+  type: tabular
