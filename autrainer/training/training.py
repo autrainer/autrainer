@@ -796,7 +796,7 @@ class ModularTaskTrainer:
         """
         with torch.no_grad():
             losses = 0
-            for batch_idx, (data) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     loader,
                     desc="Evaluate" if cb_type == "val" else "Test",
