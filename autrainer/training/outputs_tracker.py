@@ -37,12 +37,8 @@ class OutputsTracker:
         """Reset the tracker. Clears all the stored data accumulated over a
         single iteration.
         """
-        self._outputs = torch.zeros(
-            (0, self._data.output_dim), dtype=torch.float32
-        )
-        self._targets = torch.zeros(
-            0, dtype=torch.long
-        )  # automatic type promotion in case of float targets
+        self._outputs = []
+        self._targets = []
         self._indices = torch.zeros(0, dtype=torch.long)
         self._losses = torch.zeros(0, dtype=torch.float32)
         self._predictions = None
@@ -64,8 +60,8 @@ class OutputsTracker:
             loss: Per-sample losses.
             sample_idx: Sample indices.
         """
-        self._outputs = torch.cat([self._outputs, output.cpu()], dim=0)
-        self._targets = torch.cat([self._targets, target.cpu()], dim=0)
+        self._outputs += [output.cpu()]
+        self._targets += [target.cpu()]
         self._losses = torch.cat([self._losses, loss.cpu()], dim=0)
         self._indices = torch.cat([self._indices, sample_idx.cpu()], dim=0)
 
@@ -78,31 +74,59 @@ class OutputsTracker:
                 Defaults to True.
         """
         results = {
-            "outputs": self._outputs.numpy(),
-            "targets": self._targets.numpy(),
+            "outputs": torch.cat(self._outputs, dim=0).numpy(),
+            "targets": torch.cat(self._targets, dim=0).numpy(),
             "indices": self._indices.numpy(),
             "losses": self._losses.numpy(),
         }
 
         _probabilities = self._data.target_transform.probabilities_inference(
-            self._outputs
+            torch.cat(self._outputs, dim=0)
         )
         self._predictions = self._data.target_transform.predict_inference(
             _probabilities
         )
-        self._results_df = pd.DataFrame(index=results["indices"])
-        self._results_df["predictions"] = self._predictions
-        self._results_df["predictions"] = self._results_df[
-            "predictions"
-        ].apply(self._data.target_transform.decode)
-        _probs_df = pd.DataFrame(
-            index=results["indices"],
-            data=(
-                self._data.target_transform.probabilities_to_dict(p)
-                for p in _probabilities
-            ),
-        )
-        self._results_df = pd.concat([self._results_df, _probs_df], axis=1)
+        if len(self._predictions.shape) == 3:  # sequential data
+            instances, tokens, classes = self._predictions.shape
+            # assume all sequences are uniformly sampled
+            # Note: we adopt "tokens" to symbolize the seq. index
+            self._results_df = pd.DataFrame(
+                data=self._predictions.view(-1, classes),
+                index=pd.Index(
+                    [
+                        z
+                        for y in [[x] * tokens for x in results["indices"]]
+                        for z in y
+                    ]
+                ),
+            )
+            self._results_df["token_id"] = list(range(tokens)) * instances
+            # print(self._results_df)
+            # print(self._predictions.shape)
+            results_dict = []
+            for i, x in enumerate(self._predictions):
+                res = self._data.target_transform.decode(x)
+                res_with_key = []
+                for element in res:
+                    element["index"] = results["indices"][i]
+                    res_with_key.append(element)
+                results_dict += res_with_key
+            res_df = pd.DataFrame(results_dict)
+            self._results_df = res_df
+        else:
+            self._results_df = pd.DataFrame(index=results["indices"])
+            self._results_df["predictions"] = self._predictions
+            self._results_df["predictions"] = self._results_df[
+                "predictions"
+            ].apply(self._data.target_transform.decode)
+            _probs_df = pd.DataFrame(
+                index=results["indices"],
+                data=(
+                    self._data.target_transform.probabilities_to_dict(p)
+                    for p in _probabilities
+                ),
+            )
+            self._results_df = pd.concat([self._results_df, _probs_df], axis=1)
 
         if self._export:
             for key, value in results.items():
@@ -134,7 +158,7 @@ class OutputsTracker:
         Returns:
             Model outputs.
         """
-        return self._outputs.numpy()
+        return torch.cat(self._outputs, dim=0).numpy()
 
     @property
     @check_saved
@@ -144,7 +168,7 @@ class OutputsTracker:
         Returns:
             Targets.
         """
-        return self._targets.numpy()
+        return torch.cat(self._targets, dim=0).numpy()
 
     @property
     @check_saved
