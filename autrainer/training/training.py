@@ -481,7 +481,7 @@ class ModularTaskTrainer:
                     self.scheduler.step()
                 if self.train_tracker:
                     self.train_tracker.update(
-                        output, data.target.cpu(), loss, data.index.cpu()
+                        output, data.target, loss, data.index
                     )
                 self.callback_manager.callback(
                     position="cb_on_step_end",
