@@ -2,15 +2,11 @@ from abc import ABC, abstractmethod
 from functools import cached_property
 import os
 from typing import Callable, Dict, List, Optional, TypeVar, Union
-import re
 
-import audiofile
-import numpy as np
 from omegaconf import DictConfig
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
-from tqdm import tqdm
 
 import autrainer
 from autrainer.core.constants import TrainingConstants
@@ -98,7 +94,10 @@ class AbstractDataset(ABC):
         self.seed = seed
         self.task = task
         self.metrics = [self._init_metric(m) for m in metrics]
-        self.tracking_metric = self._init_metric(tracking_metric)
+        if tracking_metric is not None:
+            self.tracking_metric = self._init_metric(tracking_metric)
+        else:
+            self.tracking_metric = None
         self.index_column = index_column
         self.target_column = target_column
         self.file_type = file_type
@@ -525,7 +524,7 @@ class BaseMLClassificationDataset(AbstractDataset):
         return MultiLabelEncoder(self.threshold, self.target_column)
 
 
-class BaseSEDDataset(BaseMLClassificationDataset):
+class BaseSEDDataset(BaseClassificationDataset):
     def __init__(
         self,
         path: str,
@@ -535,8 +534,6 @@ class BaseSEDDataset(BaseMLClassificationDataset):
         tracking_metric: Union[str, DictConfig, Dict],
         index_column: str,
         target_column: List[str],
-        start_column: str,
-        end_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
@@ -546,9 +543,6 @@ class BaseSEDDataset(BaseMLClassificationDataset):
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
         stratify: Optional[List[str]] = None,
-        threshold: float = 0.5,
-        min_event_length: float = 0.25,
-        min_event_gap: float = 0.15,
     ) -> None:
         """Base sound event detection dataset.
 
@@ -573,16 +567,12 @@ class BaseSEDDataset(BaseMLClassificationDataset):
             min_event_length: Minimum event length in seconds.
             min_event_gap: Minimum gap between events in seconds.
         """
-        self.min_event_length = min_event_length
-        self.min_event_gap = min_event_gap
-        self.start_column = start_column
-        self.end_column = end_column
         super().__init__(
             path=path,
             features_subdir=features_subdir,
             seed=seed,
-            metrics=metrics,
-            tracking_metric=tracking_metric,
+            metrics=[],  # postpone init
+            tracking_metric=None,
             index_column=index_column,
             target_column=target_column,
             file_type=file_type,
@@ -594,9 +584,20 @@ class BaseSEDDataset(BaseMLClassificationDataset):
             dev_transform=dev_transform,
             test_transform=test_transform,
             stratify=stratify,
-            threshold=threshold,
         )
-        self._assert_target_column(allowed_columns=self.df_train.columns)
+        self.metrics = [
+            autrainer.instantiate_shorthand(
+                config=m,
+                instance_of=AbstractMetric,
+                target_transform=self.target_transform,
+            )
+            for m in metrics
+        ]
+        self.tracking_metric = autrainer.instantiate_shorthand(
+            config=tracking_metric,
+            instance_of=AbstractMetric,
+            target_transform=self.target_transform,
+        )
 
     def _init_dataset(
         self,
@@ -612,191 +613,16 @@ class BaseSEDDataset(BaseMLClassificationDataset):
         Returns:
             Initialized dataset.
         """
-        return SegmentedDatasetWrapper(
+        return DatasetWrapper(
             path=self.path,
             features_subdir=self.features_subdir,
             index_column=self.index_column,
             target_column=self.target_column,
-            start_column=self.start_column,
-            end_column=self.end_column,
             file_type=self.file_type,
             file_handler=self.file_handler,
             df=df,
             transform=transform,
-            target_transform=self.target_transform,
         )
-
-    def _assert_target_column(self, allowed_columns):
-        """Override parent method to handle comma-separated string of target columns"""
-        if isinstance(self.target_column, str):
-            target_columns = self.parse_target_column(self.target_column)
-        else:
-            target_columns = self.target_column
-
-        for col in target_columns:
-            if col not in allowed_columns:
-                raise ValueError(
-                    f"Target column '{col}' not found in dataframe. "
-                    f"Available columns: {list(allowed_columns)}"
-                )
-        self.target_column = target_columns
-
-    @cached_property
-    def train_dataset(self) -> SegmentedDatasetWrapper:
-        """Get the training dataset.
-
-        Returns:
-            Training dataset.
-        """
-        return self._init_dataset(self.df_train, self.train_transform)
-
-    @cached_property
-    def dev_dataset(self) -> SegmentedDatasetWrapper:
-        """Get the development dataset.
-
-        Returns:
-            Development dataset.
-        """
-        return self._init_dataset(self.df_dev, self.dev_transform)
-
-    @cached_property
-    def test_dataset(self) -> SegmentedDatasetWrapper:
-        """Get the test dataset.
-
-        Returns:
-            Test dataset.
-        """
-        return self._init_dataset(self.df_test, self.test_transform)
-
-    @staticmethod
-    def create_fixed_windows(
-        df: pd.DataFrame,
-        path: str,
-        window_size: float = 0.25,
-        min_event_length: float = 0.25,
-        event_list: Optional[List[str]] = None,
-        max_duration: float = 10.0,
-    ) -> pd.DataFrame:
-        """Static version of convert_to_fixed_windows for use during download.
-        Converts event segments into flattened columns in format s{segment_idx}_e{event_idx}.
-
-        Output format:
-        filename       start  end    s0_e0  s0_e1  ...  s39_e8  s39_e9
-        1123.wav      0.0    10.0    0      1      ...  0       0
-
-        Where sX_eY represents:
-        - X: segment index (0-39 for 10s file with 0.25s windows)
-        - Y: event index (0-9 for 10 event types)
-
-        Args:
-            df: DataFrame with columns [filename, onset, offset, event_label]
-            path: Path to audio files
-            window_size: Size of the windows in seconds
-            min_event_length: Minimum duration of an event in seconds
-            event_list: Optional list of expected event labels. If provided,
-                validates that all events in df match this list.
-            max_duration: Maximum duration of an audio file in seconds
-
-        Returns:
-            DataFrame with columns [filename, start, end] + [s{i}_e{j} for i in segments for j in events]
-        """
-        event_labels = sorted(df["event_label"].unique())
-        if event_list is not None:
-            unknown_events = set(event_labels) - set(event_list)
-            missing_events = set(event_list) - set(event_labels)
-            if unknown_events:
-                raise ValueError(
-                    f"Unknown event labels found: {unknown_events}"
-                )
-            if missing_events:
-                print(
-                    f"Warning: Some event labels not present in data: {missing_events}"
-                )
-            event_labels = event_list
-
-        windows = []
-        for file in tqdm(
-            df["filename"].unique(), desc="Processing files", unit="file"
-        ):
-            file_path = os.path.join(path, file)
-            file_duration = audiofile.duration(file_path)
-            if file_duration > max_duration:
-                file_duration = max_duration
-            file_events = df[df["filename"] == file]
-
-            window = {
-                "filename": file,
-                "start": 0.0,
-                "end": file_duration,
-            }
-            num_segments = int(np.ceil(file_duration / window_size))
-
-            # Process each segment
-            for segment_idx in tqdm(
-                range(num_segments),
-                desc=f"Processing segments for {file}",
-                unit="segment",
-                leave=False,
-            ):
-                start = segment_idx * window_size
-                end = min(start + window_size, file_duration)
-                segment_vector = [0] * len(event_labels)
-
-                # Check event presence in segment
-                for _, event in file_events.iterrows():
-                    overlap_start = max(start, event["onset"])
-                    overlap_end = min(end, event["offset"])
-                    overlap_duration = max(0, overlap_end - overlap_start)
-                    if overlap_duration > (min_event_length * 0.5):
-                        event_idx = event_labels.index(event["event_label"])
-                        segment_vector[event_idx] = 1
-
-                # Add flattened columns for each event in this segment
-                for event_idx, value in enumerate(segment_vector):
-                    column = f"s{segment_idx}_e{event_idx}"
-                    window[column] = value
-
-            windows.append(window)
-
-        return pd.DataFrame(windows)
-
-    @staticmethod
-    def parse_target_column(target_descriptor: str) -> str:
-        """Parse target column descriptor into list of column names.
-        Args:
-            target_descriptor: String descriptor of target columns pattern
-                or list of column names
-        Returns:
-            List of column names, e.g., ["s0_e0", "s0_e1", ..., "s39_e9"]
-        """
-        if isinstance(target_descriptor, list):
-            return target_descriptor
-
-        if isinstance(target_descriptor, str) and "," in target_descriptor:
-            return target_descriptor.split(",")
-
-        if isinstance(target_descriptor, str) and target_descriptor.startswith(
-            "s["
-        ):
-            s_range = re.search(r"s\[(\d+):(\d+)\]", target_descriptor)
-            e_range = re.search(r"e\[(\d+):(\d+)\]", target_descriptor)
-
-            if not (s_range and e_range):
-                raise ValueError(
-                    f"Invalid target column descriptor: {target_descriptor}"
-                )
-
-            s_start, s_end = map(int, s_range.groups())
-            e_start, e_end = map(int, e_range.groups())
-
-            return [
-                f"s{s}_e{e}"
-                for s in range(s_start, s_end)
-                for e in range(e_start, e_end)
-            ]
-
-        if isinstance(target_descriptor, str):
-            return [target_descriptor]
 
 
 class BaseRegressionDataset(AbstractDataset):

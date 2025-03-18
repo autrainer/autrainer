@@ -4,19 +4,14 @@ _target_: autrainer.datasets.DCASE2019Task4
 path: data/DCASE2019
 features_subdir: log_mel_32k
 index_column: filename
-target_column: s[0:40]_e[0:10]
-start_column: start
-end_column: end
+target_column: event_label
 file_type: npy
 file_handler: autrainer.datasets.utils.NumpyFileHandler
 
 criterion: torch.nn.BCEWithLogitsLoss
 metrics:
-  - autrainer.metrics.MLAccuracy
-  - autrainer.metrics.MLF1Micro
-  - autrainer.metrics.MLF1Macro
-  - autrainer.metrics.MLF1Weighted
-tracking_metric: autrainer.metrics.MLF1Weighted
+  - autrainer.metrics.SegmentBasedF1
+tracking_metric: autrainer.metrics.SegmentBasedF1
 
 transform:
   type: grayscale
