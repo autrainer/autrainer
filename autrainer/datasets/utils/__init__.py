@@ -21,6 +21,7 @@ from .target_transforms import (
     MinMaxScaler,
     MultiLabelEncoder,
     MultiTargetMinMaxScaler,
+    SEDEncoder,
 )
 from .zip_download_manager import ZipDownloadManager
 
@@ -41,6 +42,7 @@ __all__ = [
     "MultiLabelEncoder",
     "MultiTargetMinMaxScaler",
     "NumpyFileHandler",
+    "SEDEncoder",
     "SegmentedDatasetWrapper",
     "ZipDownloadManager",
 ]
