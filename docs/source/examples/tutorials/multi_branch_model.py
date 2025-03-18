@@ -4,28 +4,20 @@ import pandas as pd
 import torch
 
 from autrainer.datasets.toy_dataset import ToyDataset, ToyDatasetWrapper
-from autrainer.datasets.utils.data_struct import AbstractDataBatch
+from autrainer.datasets.utils.data_struct import (
+    AbstractDataBatch,
+    AbstractDataItem,
+)
 from autrainer.models import AbstractModel
 from autrainer.transforms import SmartCompose
 
 
 @dataclass
-class DataItemMultiBranch:
+class DataItemMultiBranch(AbstractDataItem):
     features: torch.Tensor
+    meta: torch.Tensor
     target: int
     index: int
-    meta: torch.Tensor
-
-
-class ToyDatasetMultiBranch(ToyDatasetWrapper):
-    def __getitem__(self, index: int) -> DataItemMultiBranch:
-        data = super().__getitem__(index)
-        return DataItemMultiBranch(
-            features=data.features,
-            target=data.target,
-            index=data.index,
-            meta=data.features,
-        )
 
 
 @dataclass
@@ -48,6 +40,17 @@ class DataBatchMulti(AbstractDataBatch[DataItemMultiBranch]):
         self.features = self.features.to(device)
         self.meta = self.meta.to(device)
         self.target = self.target.to(device)
+
+
+class ToyDatasetMultiBranch(ToyDatasetWrapper):
+    def __getitem__(self, index: int) -> DataItemMultiBranch:
+        data = super().__getitem__(index)
+        return DataItemMultiBranch(
+            features=data.features,
+            target=data.target,
+            index=data.index,
+            meta=data.features,
+        )
 
 
 class ToyMultiBranchData(ToyDataset):
