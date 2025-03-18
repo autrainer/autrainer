@@ -1,7 +1,7 @@
+from functools import cached_property
 import os
-from pathlib import Path
 import shutil
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 from omegaconf import DictConfig
@@ -10,7 +10,7 @@ import pandas as pd
 from autrainer.transforms import SmartCompose
 
 from .abstract_dataset import BaseSEDDataset
-from .utils import ZipDownloadManager
+from .utils import SEDEncoder, ZipDownloadManager
 
 
 FILES = {
@@ -51,17 +51,16 @@ class DCASE2019Task4(BaseSEDDataset):
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
-        index_column: str = "filename",
-        target_column: str = "segment_events",
-        file_type: str = "npy",
-        file_handler: Union[str, DictConfig, Dict] = "numpy",
-        batch_size: int = 24,
+        file_type: str,
+        index_column: str,
+        target_column: str,
+        file_handler: Union[str, DictConfig, Dict],
+        batch_size: int = 1,
         inference_batch_size: Optional[int] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
-        start_column: str = "start",
-        end_column: str = "end",
+        frame_rate: float = 0.08,
     ) -> None:
         """DCASE 2019 Task 4 dataset.
 
@@ -78,6 +77,15 @@ class DCASE2019Task4(BaseSEDDataset):
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
         """
+        self.onset_column = "onset"
+        self.offset_column = "offset"
+        # FIXME: make more modular
+        self.duration = 10  # duration fixed @ 10s
+        self.frame_rate = frame_rate
+        assert self.frame_rate is not None
+        assert self.frame_rate > 0
+        # FIXME: Maybe np.ceil?
+        self.num_frames = int(self.duration / self.frame_rate)
         super().__init__(
             path=path,
             features_subdir=features_subdir,
@@ -86,8 +94,6 @@ class DCASE2019Task4(BaseSEDDataset):
             tracking_metric=tracking_metric,
             index_column=index_column,
             target_column=target_column,
-            start_column=start_column,
-            end_column=end_column,
             file_type=file_type,
             file_handler=file_handler,
             batch_size=batch_size,
@@ -95,45 +101,78 @@ class DCASE2019Task4(BaseSEDDataset):
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
-            min_event_length=0.25,
-            min_event_gap=0.15,
         )
 
-    def load_dataframes(
-        self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        """Load train, validation and test dataframes.
+    @cached_property
+    def target_transform(self) -> SEDEncoder:
+        return SEDEncoder(EVENTS)
 
-        Returns:
-            Tuple containing (train_df, val_df, test_df)
+    def _framewise_representation(self, df):
+        """Transform data to framewise representations.
+
+        Each row in the dataframe
+        corresponds to a file
+        with optional start/end times
+        and a 2D matrix
+        with 0s and 1s
+        marking event presence
+        in each frame
+        for all events in the dataset.
         """
-        base_path = Path(self.path)
-        return (
-            pd.read_csv(base_path / "synthetic_train.csv"),
-            pd.read_csv(base_path / "synthetic_val.csv"),
-            pd.read_csv(base_path / "public_test.csv"),
+
+        def collect_frames(df):
+            results = np.zeros(
+                (self.num_frames, len(self.target_transform.labels))
+            )
+            for _, row in df.iterrows():
+                start = int(row[self.onset_column] / self.frame_rate)
+                end = int(row[self.offset_column] / self.frame_rate)
+                results[
+                    start:end,
+                    self.target_transform.encode(row[self.target_column]),
+                ] = 1
+            return results
+
+        df = (
+            df.groupby(self.index_column)
+            .apply(collect_frames)
+            .to_frame()
+            .rename(columns={0: self.target_column})
+            .reset_index()
         )
+        return df
 
-    def _split_train_dataset(
-        self,
-        df: pd.DataFrame,
-        val_size: float = 0.1,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        """Split data into train and validation sets.
+    @property
+    def audio_subdir(self) -> str:
+        """Subfolder containing audio data."""
+        return ""
 
-        Args:
-            df: DataFrame to split
-            val_size: Fraction of data to use for validation
+    @cached_property
+    def df_train(self):
+        df = pd.read_csv(
+            os.path.join(self.path, "synthetic_dataset.csv"), sep="\t"
+        )
+        df["filename"] = df["filename"].apply(
+            lambda x: os.path.join("audio", "train", "synthetic", x)
+        )
+        return self._framewise_representation(df)
 
-        Returns:
-            Tuple containing (train_df, val_df, None)
-        """
-        rng = np.random.default_rng(self.seed)
-        indices = rng.permutation(df.index)
-        val_split = int(len(indices) * (1 - val_size))
-        train_indices = indices[:val_split]
-        val_indices = indices[val_split:]
-        return (df.loc[train_indices].copy(), df.loc[val_indices].copy(), None)
+    @cached_property
+    def df_dev(self):
+        return self.df_test
+
+    @cached_property
+    def df_test(self):
+        df = pd.read_csv(
+            os.path.join(
+                self.path, "dataset", "metadata", "eval", "public.tsv"
+            ),
+            sep="\t",
+        )
+        df["filename"] = df["filename"].apply(
+            lambda x: os.path.join("dataset", "audio", "eval", "public", x)
+        )
+        return self._framewise_representation(df)
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover
@@ -146,10 +185,6 @@ class DCASE2019Task4(BaseSEDDataset):
             path: Path to download the dataset to
             create_windows: If True, creates fixed windows during download
         """
-        out_path = os.path.join(path, "default")
-        if os.path.isdir(out_path):
-            return
-        os.makedirs(out_path, exist_ok=True)
 
         # download and extract files
         dl_manager = ZipDownloadManager(FILES, path)
@@ -160,64 +195,6 @@ class DCASE2019Task4(BaseSEDDataset):
             check_exist=["Synthetic_dataset", "DESED_public_eval"]
         )
 
-        # move audio files to the same directory
-        synth_dev_path = os.path.join(
-            path, "audio"
-        )  # synthetic development set
-        pub_eval_path = os.path.join(path, "dataset")  # public evaluation set
-
-        for file in os.listdir(
-            os.path.join(synth_dev_path, "train", "synthetic")
-        ):
-            if file.endswith(".wav"):
-                shutil.move(
-                    os.path.join(synth_dev_path, "train", "synthetic", file),
-                    out_path,
-                )
-        for file in os.listdir(
-            os.path.join(pub_eval_path, "audio", "eval", "public")
-        ):
-            if file.endswith(".wav"):
-                shutil.move(
-                    os.path.join(
-                        pub_eval_path, "audio", "eval", "public", file
-                    ),
-                    out_path,
-                )
-        shutil.copy2(
-            os.path.join(pub_eval_path, "metadata", "eval", "public.tsv"),
-            os.path.join(path, "public_test.csv"),
-        )
-
-        def process_dataset(csv_path: str, **kwargs) -> pd.DataFrame:
-            df = pd.read_csv(csv_path, sep="\t")
-            return BaseSEDDataset.create_fixed_windows(
-                df,
-                path=out_path,
-                window_size=DURATIONS["min_dur_event"],
-                min_event_length=DURATIONS["min_dur_event"],
-                event_list=EVENTS,
-                **kwargs,
-            )
-
-        train_df = process_dataset(os.path.join(path, "synthetic_dataset.csv"))
-        pub_eval_df = process_dataset(os.path.join(path, "public_test.csv"))
-        pub_eval_df.to_csv(os.path.join(path, "test.csv"), index=False)
-
-        # TODO: adapt official train/val split with synthetic + real data
-        val_size = 0.2
-        rng = np.random.default_rng(42)
-        indices = rng.permutation(train_df.index)
-        val_split = int(len(indices) * (1 - val_size))
-        train_indices = indices[:val_split]
-        val_indices = indices[val_split:]
-        train_df.loc[train_indices].to_csv(
-            os.path.join(path, "train.csv"), index=False
-        )
-        train_df.loc[val_indices].to_csv(
-            os.path.join(path, "dev.csv"), index=False
-        )
-
         def remove_if_exists(path: str) -> None:
             if os.path.exists(path):
                 if os.path.isdir(path):
@@ -225,15 +202,5 @@ class DCASE2019Task4(BaseSEDDataset):
                 else:
                     os.remove(path)
 
-        for temp_dir in [synth_dev_path, pub_eval_path]:
-            remove_if_exists(temp_dir)
-        for license_file in [
-            "._license_public_eval.tsv",
-            "license_public_eval.tsv",
-        ]:
-            remove_if_exists(os.path.join(path, license_file))
         for archive in ["DESED_public_eval.tar.gz", "Synthetic_dataset.zip"]:
             remove_if_exists(os.path.join(path, archive))
-        remove_if_exists(os.path.join(path, "synthetic_dataset.csv"))
-        remove_if_exists(os.path.join(path, "public_test.csv"))
-        remove_if_exists(os.path.join(path, "__MACOSX"))
