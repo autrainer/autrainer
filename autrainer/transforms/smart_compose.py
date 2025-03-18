@@ -74,7 +74,7 @@ class SmartCompose(T.Compose, audobject.Object):
 
     def get_collate_fn(self, data: "AbstractDataset") -> Callable:
         """Get the collate function. If no collate function is present in
-        the transforms, None is returned.
+        the transforms, the dataset default is returned.
         If multiple collate functions are present, the last one is used.
 
         Args:

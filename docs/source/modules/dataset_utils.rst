@@ -24,6 +24,9 @@ such as the *index* corresponding to each *instance*
 (where we assume that each :class:`~autrainer.datasets.AbstractDataset`
 is an ordered set of instances).
 
+.. autoclass:: autrainer.datasets.utils.AbstractDataItem
+   :members:
+
 .. autoclass:: autrainer.datasets.utils.DataItem
    :members:
 
@@ -32,9 +35,9 @@ Additionally,
 we provide classes
 that hold *batches* of individual instances,
 and provides an implementation
-of the `collate_fn`
+of the :meth:`collate_fn`
 that must be passed
-to `torch.utils.data.DataLoader`.
+to :class:`torch.utils.data.DataLoader`.
 
 .. autoclass:: autrainer.datasets.utils.AbstractDataBatch
    :members:

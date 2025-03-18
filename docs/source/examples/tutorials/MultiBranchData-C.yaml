@@ -1,6 +1,5 @@
-
 id: ToyMultiBranch-C
-_target_: dataset.ToyMultiBranchData
+_target_: multi_branch_data.ToyMultiBranchData
 
 task: classification
 size: 1000

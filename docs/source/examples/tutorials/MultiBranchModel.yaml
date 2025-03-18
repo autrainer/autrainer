@@ -1,5 +1,5 @@
 id: ToyMultiBranchModel
-_target_: model.ToyMultiBranchModel
+_target_: multi_branch_model.ToyMultiBranchModel
 input_dim: 64
 hidden_dim: 64
 

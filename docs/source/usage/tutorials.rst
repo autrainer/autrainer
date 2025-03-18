@@ -284,70 +284,70 @@ of a :ref:`dataset <datasets>` implementation.
 Advanced Data Pipelines
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-To create data and model pipelines that go beyond the standard :class:`~autrainer.dataset.DataItem` convention of using
-only :attr:`DataItem.features` as input to the model, first create a new :class:`~autrainer.dataset.DataItem` struct
-decorated with :class:`dataclasses.@dataclass`:
+To create data and model pipelines that go beyond the standard :class:`~autrainer.datasets.utils.DataItem` convention of using
+only :attr:`DataItem.features` as input to the model, first create a new :class:`~autrainer.datasets.utils.DataItem` struct
+decorated with :class:`dataclasses.dataclass`:
 
-.. literalinclude:: ../examples/tutorials/multi_branch_model.py
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
    :language: python
-   :caption: data_struct.py
-   :lines: 10-15
+   :caption: multi_branch_data.py
+   :lines: 14-19
 
-and override :class:`~autrainer.dataset.AbstractDataBatch`:
+and override :class:`~autrainer.datasets.utils.AbstractDataBatch`:
 
-.. literalinclude:: ../examples/tutorials/multi_branch_model.py
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
    :language: python
-   :caption: data_batch.py
-   :lines: 28-46
+   :caption: multi_branch_data.py
+   :lines: 22-41
 
-Following that, inherit :class:`~autrainer.datasets.dataset_wrapper.DatasetWrapper`
+Following that, inherit from :class:`~autrainer.datasets.utils.DatasetWrapper`
 to create a :class:`torch.utils.data.Dataset`
 that iterates over your data 
-and returns your custom :class:`~autrainer.dataset.AbstractDataBatch`
-(here we simply replicate :attr:`~autrainer.datasets.ToyDatasetWrapper.features`
+and returns your custom :class:`~autrainer.datasets.utils.AbstractDataBatch`
+(here we simply replicate :attr:`features`
 as our auxiliary features):
 
-.. literalinclude:: ../examples/tutorials/multi_branch_model.py
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
    :language: python
-   :caption: dataset.py
-   :lines: 18-26
+   :caption: multi_branch_data.py
+   :lines: 44-52
 
-Subsequently, inherit :class:`~autrainer.datasets.AbstractDataset`
+Subsequently, inherit from :class:`~autrainer.datasets.AbstractDataset`
 to create a dataset
-that instantiates your :class:`~autrainer.datasets.dataset_wrapper.DatasetWrapper`:
+that instantiates your :class:`~autrainer.datasets.utils.DatasetWrapper`:
 
 
-.. literalinclude:: ../examples/tutorials/multi_branch_model.py
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
    :language: python
-   :caption: dataset.py
-   :lines: 49-67
+   :caption: multi_branch_data.py
+   :lines: 55-73
 
-This is the dataset you will configure
-with hydra:
+Next, create a :attr:`ToyMultiBranch-C.yaml` configuration file for the dataset in the :attr:`conf/dataset/` directory:
 
 .. literalinclude:: ../examples/tutorials/MultiBranchData-C.yaml
    :language: yaml
-   :caption: conf/data/MultiBranchData-C.yaml
+   :caption: conf/data/ToyMultiBranch-C.yaml
    :linenos:
 
-Finally, you must inherit from :class:`~autrainer.datasets.AbstractModel` 
+Finally, you must inherit from :class:`~autrainer.models.AbstractModel` 
 and create a model **with a matching signature**,
-i.e. one which includes both :attr:`features`
-and the additional variables
-besides :attr:`target` and :attr:`index`
-in its :meth:`~autrainer.datasets.AbstractModel.forward` signature:
+in its forward pass to access the :attr:`meta` parameter:
 
 .. literalinclude:: ../examples/tutorials/multi_branch_model.py
    :language: python
-   :caption: model.py
-   :lines: 69-86
+   :caption: multi_branch_model.py
+   :lines: 6-26
 
 
-This model will be configured with hydra:
+Next, create a 
+:attr:`ToyMultiBranchModel.yaml` 
+configuration file 
+for the model in the :attr:`conf/model/` directory:
+
 
 .. literalinclude:: ../examples/tutorials/MultiBranchModel.yaml
    :language: yaml
-   :caption: conf/data/MultiBranchModel-C.yaml
+   :caption: conf/data/ToyMultiBranchModel.yaml
    :linenos:
 
 

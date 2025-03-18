@@ -18,11 +18,11 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         self.output_dim = output_dim
 
     @abstractmethod
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
         """Get embeddings from the model.
 
         Args:
-            x: Input tensor.
+            features: Input tensor.
 
         Returns:
             Embeddings.
@@ -47,3 +47,15 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
                 )
             )
         return names
+
+    @abstractmethod
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        """Get model output.
+
+        Args:
+            features: Input tensor.
+
+        Returns:
+            Model output.
+        """
+        raise NotImplementedError
