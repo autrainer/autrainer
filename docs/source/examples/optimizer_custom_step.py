@@ -19,7 +19,7 @@ class SomeOptimizer(torch.optim.Optimizer):
         Args:
             model: The model to train.
             data: The data batch containing features, target, and potentially
-                additional fields. The data batch is expected to be on the same
+                additional fields. The data batch is on the same
                 device as the model. Additional fields are passed to the model
                 as keyword arguments if they are present in the model's forward
                 method.
