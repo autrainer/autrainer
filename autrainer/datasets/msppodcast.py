@@ -5,30 +5,29 @@ from typing import Dict, List, Optional, Union
 from omegaconf import DictConfig
 import pandas as pd
 
-from autrainer.transforms import SmartCompose
-
-from .abstract_dataset import AbstractDataset
-from .utils import (
+from autrainer.datasets.abstract_dataset import AbstractDataset
+from autrainer.datasets.utils import (
     AbstractTargetTransform,
     LabelEncoder,
     MinMaxScaler,
     MultiTargetMinMaxScaler,
 )
+from autrainer.transforms import SmartCompose
 
 
 class MSPPodcast(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
         seed: int,
         metrics: List[str],
         tracking_metric: str,
-        index_column: str,
         target_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         batch_size: int,
+        index_column: str = "FileName",
+        features_subdir: str = None,
         inference_batch_size: Optional[int] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -188,6 +187,7 @@ class MSPPodcast(AbstractDataset):
                 )
             else:
                 return MinMaxScaler(
+                    target=self.target_column,
                     minimum=self.df_train[self.target_column].min(),
                     maximum=self.df_train[self.target_column].max(),
                 )
