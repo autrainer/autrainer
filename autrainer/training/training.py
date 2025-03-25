@@ -1,7 +1,7 @@
 from copy import deepcopy
 import os
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -83,6 +83,14 @@ class ModularTaskTrainer:
         model_config = self.cfg.model
         dataset_config = self.cfg.dataset
 
+        self._loader_kwargs = {}
+        for l in {"train", "dev", "test"}:
+            key = f"{l}_loader_kwargs"
+            self._loader_kwargs[l] = dataset_config.pop(
+                key,
+                self.cfg.get(key, {}),
+            )
+
         augmentation_manager = AugmentationManager(self.cfg.augmentation)
         train_aug, dev_aug, test_aug = augmentation_manager.get_augmentations()
 
@@ -105,10 +113,7 @@ class ModularTaskTrainer:
             dev_transform=dev_transform,
             test_transform=test_transform,
             seed=dataset_seed,
-            batch_size=self.cfg.batch_size,
-            inference_batch_size=self.cfg.inference_batch_size,
         )
-        self.data.setup_transforms()
 
         # ? Create Bookkeeping
         self.bookkeeping = Bookkeeping(
@@ -208,9 +213,18 @@ class ModularTaskTrainer:
             self.scheduler = None
 
         # ? Create Dataloaders
-        self.train_loader = self.data.train_loader
-        self.dev_loader = self.data.dev_loader
-        self.test_loader = self.data.test_loader
+        self.train_loader = self.data.create_train_loader(
+            batch_size=self.cfg.batch_size,
+            **self._loader_kwargs["train"],
+        )
+        self.dev_loader = self.data.create_dev_loader(
+            batch_size=self.cfg.inference_batch_size or self.cfg.batch_size,
+            **self._loader_kwargs["dev"],
+        )
+        self.test_loader = self.data.create_test_loader(
+            batch_size=self.cfg.inference_batch_size or self.cfg.batch_size,
+            **self._loader_kwargs["test"],
+        )
 
         # ? Take metrics from dataset and add train/dev loss
         metrics = [m.name for m in self.data.metrics] + [
@@ -445,6 +459,10 @@ class ModularTaskTrainer:
     def train_epochs(self):
         """Train the model for a fixed number of epochs."""
         train_loss = []
+        pm = (
+            self._loader_kwargs["train"].get("pin_memory", False)
+            and self.DEVICE.type == "cuda"
+        )
         self.train_timer.start()
         for epoch in range(self.initial_iteration, self.cfg.iterations + 1):
             self.callback_manager.callback(
@@ -461,7 +479,7 @@ class ModularTaskTrainer:
                     disable=self.disable_progress_bar,
                 )
             ):
-                data.to(self.DEVICE)
+                data.to(self.DEVICE, non_blocking=pm)
                 self.callback_manager.callback(
                     position="cb_on_step_begin",
                     trainer=self,
@@ -542,6 +560,10 @@ class ModularTaskTrainer:
         )
         self.train_loader_iter = iter(self.train_loader)
         train_loss = []
+        pm = (
+            self._loader_kwargs["train"].get("pin_memory", False)
+            and self.DEVICE.type == "cuda"
+        )
         self.train_timer.start()
         while step < self.cfg.iterations:
             step += 1
@@ -558,7 +580,7 @@ class ModularTaskTrainer:
                 )
                 self.train_loader_iter = iter(self.train_loader)
                 data = next(self.train_loader_iter)
-            data.to(self.DEVICE)
+            data.to(self.DEVICE, non_blocking=pm)
             self.callback_manager.callback(
                 position="cb_on_step_begin",
                 trainer=self,
@@ -689,10 +711,12 @@ class ModularTaskTrainer:
         )
         self.model.eval()
         self.model.to(self.DEVICE)
+        lk = self._loader_kwargs["dev" if dev_evaluation else "test"]
         results = self._evaluate(
             loader=loader,
             tracker=tracker,
             iteration_folder=iteration_folder,
+            loader_kwargs=lk,
             cb_type=cb_type,
         )
         if dev_evaluation:
@@ -787,6 +811,7 @@ class ModularTaskTrainer:
         loader: torch.utils.data.DataLoader,
         tracker: OutputsTracker,
         iteration_folder: str,
+        loader_kwargs: Dict[str, Any],
         cb_type: str = "val",
     ) -> Dict[str, float]:
         """Evaluate the model on the dev or test set.
@@ -800,6 +825,10 @@ class ModularTaskTrainer:
         Returns:
             Dictionary containing the results on the dev or test set.
         """
+        pm = (
+            loader_kwargs.get("pin_memory", False)
+            and self.DEVICE.type == "cuda"
+        )
         with torch.no_grad():
             losses = 0
             for batch_idx, data in enumerate(
@@ -814,7 +843,7 @@ class ModularTaskTrainer:
                     trainer=self,
                     batch_idx=batch_idx,
                 )
-                data.to(self.DEVICE)
+                data.to(self.DEVICE, non_blocking=pm)
                 output = self.model(**create_model_inputs(self.model, data))
                 loss = self.criterion(
                     self.data.target_transform.probabilities_training(output),

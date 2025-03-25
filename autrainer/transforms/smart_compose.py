@@ -99,6 +99,19 @@ class SmartCompose(T.Compose, audobject.Object):
                 t.setup(data)
         return self
 
+    def offset_generator_seed(self, offset: int) -> None:
+        """Offset the generator seed for transforms that use random
+        number generators. Useful for ensuring reproducibility and
+        randomness of augmentations when using multiple workers.
+
+        Args:
+            offset: Offset to add to the generator seed. Usually the
+                worker index.
+        """
+        for t in self.transforms:
+            if hasattr(t, "offset_generator_seed"):
+                t.offset_generator_seed(offset)
+
     def __call__(self, x: torch.Tensor, index: int) -> torch.Tensor:
         """Apply the transforms to the input tensor.
 
