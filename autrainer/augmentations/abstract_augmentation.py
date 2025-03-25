@@ -37,6 +37,20 @@ class AbstractAugmentation(AbstractTransform):
         if self.generator_seed is not None:
             self.g.manual_seed(self.generator_seed)
 
+    def offset_generator_seed(self, offset: int) -> None:
+        """Offset the generator seed used to draw the probability of applying
+        the augmentation. Useful for ensuring reproducibility and
+        randomness of augmentations when using multiple workers.
+
+        Args:
+            offset: Offset to add to the generator seed. Usually the
+                worker index.
+        """
+        if self.generator_seed is None:
+            return
+        self.generator_seed += offset
+        self.g.manual_seed(self.generator_seed)
+
     def __call__(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
         """Call the augmentation apply method with probability p.
 

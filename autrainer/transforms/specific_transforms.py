@@ -403,7 +403,7 @@ class Standardizer(AbstractTransform):
         preceding = SmartCompose(original_transform.transforms[:idx])
         ds.transform = preceding
 
-        data = torch.stack([x for x, *_ in ds]).to(torch.float32)
+        data = torch.stack([x.features for x in ds]).to(torch.float32)
         ds.transform = original_transform
         return data
 

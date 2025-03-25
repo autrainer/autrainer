@@ -5,6 +5,7 @@ from omegaconf import DictConfig, OmegaConf
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
+from autrainer.datasets.utils import DataBatch
 
 from .abstract_preprocess_script import (
     AbstractPreprocessScript,
@@ -58,9 +59,10 @@ def preprocess_main(
     # None allows dataset to work with all audio files
     dataset["file_type"] = None
     dataset["seed"] = 0  # ignored
-    dataset["batch_size"] = 8  # ignored
     dataset.pop("criterion")
     dataset.pop("transform")
+    for subset in ["train", "dev", "test"]:
+        dataset.pop(f"{subset}_loader_kwargs", None)
     features_path = dataset.pop("features_path", None)
     if features_path is None:
         features_path = dataset["path"]
@@ -88,6 +90,7 @@ def preprocess_main(
             shuffle=False,
             num_workers=num_workers,
             batch_size=1,
+            collate_fn=DataBatch.collate,
         )
         for instance in tqdm(
             loader,
@@ -96,7 +99,7 @@ def preprocess_main(
             disable=update_frequency == 0,
         ):
             # TODO: will be streamlined once we switch to dataclass
-            item_path = df.loc[df.index[int(instance[2])], d.index_column]
+            item_path = df.loc[df.index[int(instance.index)], d.index_column]
             out_path = Path(
                 features_path,
                 features_subdir,
@@ -106,7 +109,7 @@ def preprocess_main(
             if out_path.exists():
                 continue
             output_file_handler.save(
-                out_path, pipeline(instance[0].squeeze(dim=0), 0)
+                out_path, pipeline(instance.features.squeeze(dim=0), 0)
             )
 
 

@@ -115,7 +115,6 @@ class TestBaseDatasets(BaseIndividualTempDir):
             "target_column": "target",
             "file_type": "npy",
             "file_handler": "autrainer.datasets.utils.NumpyFileHandler",
-            "batch_size": 4,
         }
 
     def test_invalid_task(self) -> None:
@@ -219,6 +218,20 @@ class TestBaseDatasets(BaseIndividualTempDir):
         data = BaseMTRegressionDataset(**kwargs)
         self._test_data(data, 10, (4, 10))
 
+    def test_multiple_workers(self) -> None:
+        self._mock_dataframes("data/TestDataset")
+        self._mock_data("data/TestDataset", (101, 64))
+        train_loader_kwargs = {"num_workers": 2}
+        data = BaseClassificationDataset(**self._mock_dataset_kwargs())
+        data._generator.manual_seed(0)
+        loader = iter(data.create_train_loader(4, **train_loader_kwargs))
+        d1, d2 = next(loader), next(loader)
+        data._generator.manual_seed(0)
+        loader = iter(data.create_train_loader(4, **train_loader_kwargs))
+        d3, d4 = next(loader), next(loader)
+        assert torch.allclose(d1.features, d3.features), "Should be equal."
+        assert torch.allclose(d2.features, d4.features), "Should be equal."
+
     def _test_data(
         self,
         data: AbstractDataset,
@@ -247,20 +260,23 @@ class TestBaseDatasets(BaseIndividualTempDir):
         assert len(data.dev_dataset) == 10, "Should be 10."
         assert len(data.test_dataset) == 10, "Should be 10."
 
+        train_loader = data.create_train_loader(4)
+        dev_loader = data.create_dev_loader(4)
+        test_loader = data.create_test_loader(4)
         assert isinstance(
-            data.train_loader, torch.utils.data.DataLoader
+            train_loader, torch.utils.data.DataLoader
         ), "Should be an instance of DataLoader."
         assert isinstance(
-            data.dev_loader, torch.utils.data.DataLoader
+            dev_loader, torch.utils.data.DataLoader
         ), "Should be an instance of DataLoader."
         assert isinstance(
-            data.test_loader, torch.utils.data.DataLoader
+            test_loader, torch.utils.data.DataLoader
         ), "Should be an instance of DataLoader."
 
-        for loader in [data.train_loader, data.dev_loader, data.test_loader]:
-            x, y, _ = next(iter(loader))
-            assert x.shape == (4, 101, 64), "Should be (4, 101, 64)."
-            assert y.shape == y_shape, f"Should be {y_shape}."
+        for loader in [train_loader, dev_loader, test_loader]:
+            x = next(iter(loader))
+            assert x.features.shape == (4, 101, 64), "Should be (4, 101, 64)."
+            assert x.target.shape == y_shape, f"Should be {y_shape}."
 
 
 class TestAIBO(BaseIndividualTempDir):
@@ -317,7 +333,6 @@ class TestAIBO(BaseIndividualTempDir):
             "target_column": "class",
             "file_type": "npy",
             "file_handler": "autrainer.datasets.utils.NumpyFileHandler",
-            "batch_size": 4,
         }
 
     def test_invalid_aibo_task(self) -> None:
@@ -505,7 +520,6 @@ class TestToyDataset(BaseIndividualTempDir):
             "seed": 42,
             "metrics": ["autrainer.metrics.Accuracy"],
             "tracking_metric": "autrainer.metrics.Accuracy",
-            "batch_size": 4,
         }
 
     def test_invalid_task(self) -> None:
@@ -548,9 +562,9 @@ class TestToyDataset(BaseIndividualTempDir):
         assert len(data.dev_dataset) == 20, "Should be 20."
         assert len(data.test_dataset) == 20, "Should be 20."
 
-        x, y, _ = next(iter(data.train_loader))
-        assert x.shape == (4, 101, 64), "Should be (4, 101, 64)."
-        assert y.shape == y_shape, f"Should be {y_shape}."
+        x = next(iter(data.create_train_loader(4)))
+        assert x.features.shape == (4, 101, 64), "Should be (4, 101, 64)."
+        assert x.target.shape == y_shape, f"Should be {y_shape}."
 
     @pytest.mark.parametrize("dtype", ["float32", "uint8"])
     def test_dtype(self, dtype: str) -> None:

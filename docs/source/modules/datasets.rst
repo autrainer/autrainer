@@ -49,6 +49,11 @@ and :attr:`~autrainer.datasets.AbstractDataset.df_test`, properties of the datas
 * :attr:`metrics`: A list of :ref:`metrics <metrics>` to evaluate the model.
 * :attr:`tracking_metric`: The :ref:`metric <metrics>` to track for early stopping and model selection.
 * :attr:`transform`: The :ref:`online transforms <online_transforms>` to apply to the data and the output :attr:`type` of the dataset.
+* :attr:`train_loader_kwargs`, :attr:`dev_loader_kwargs`, and :attr:`test_loader_kwargs`:
+  Additional keyword arguments for the :class:`~torch.utils.data.DataLoader` such as the :attr:`num_workers`, :attr:`prefetch_factor`, etc.
+  The keyword arguments can also be specified globally in the :ref:`main configuration <main_configuration>` file, which will be passed to all datasets.
+  However, the dataset-specific keyword arguments will overwrite the global ones.
+
 
 .. note::
 
@@ -57,7 +62,6 @@ and :attr:`~autrainer.datasets.AbstractDataset.df_test`, properties of the datas
    * :attr:`train_transform`, :attr:`dev_transform`, and :attr:`test_transform`: The :class:`~autrainer.transforms.SmartCompose`
      transformation pipelines (which may include possible :ref:`online transforms <online_transforms>` or :ref:`augmentations <augmentations>`).
    * :attr:`seed`: The random seed for reproducibility during training.
-   * :attr:`batch_size`, :attr:`inference_batch_size`: The batch sizes for training and inference (dev, test).
 
    The :attr:`transform` attribute in the configuration is not passed to the dataset during initialization
    and is used to specify the :ref:`type of data <online_transforms>` the dataset provides as well as any

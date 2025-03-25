@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from functools import cached_property
+from functools import cached_property, partial
 import os
-from typing import Dict, List, Optional, TypeVar, Union
+from typing import Callable, Dict, List, Optional, TypeVar, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -10,6 +10,8 @@ from torch.utils.data import DataLoader
 
 import autrainer
 from autrainer.core.constants import TrainingConstants
+from autrainer.core.utils import set_seed
+from autrainer.datasets.utils import DataBatch
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 
@@ -40,8 +42,6 @@ class AbstractDataset(ABC):
         target_column: Union[str, List[str]],
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -65,9 +65,6 @@ class AbstractDataset(ABC):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -97,8 +94,6 @@ class AbstractDataset(ABC):
         self.target_column = target_column
         self.file_type = file_type
         self.file_handler = self._init_file_handler(file_handler)
-        self.batch_size = batch_size
-        self.inference_batch_size = inference_batch_size or batch_size
         self.train_transform = train_transform or SmartCompose([])
         self.dev_transform = dev_transform or SmartCompose([])
         self.test_transform = test_transform or SmartCompose([])
@@ -106,6 +101,10 @@ class AbstractDataset(ABC):
 
         self._generator = torch.Generator().manual_seed(self.seed)
         self._assert_stratify()
+
+        self._train_loader_kwargs = {}
+        self._dev_loader_kwargs = {}
+        self._test_loader_kwargs = {}
 
     @property
     def audio_subdir(self) -> str:
@@ -235,15 +234,6 @@ class AbstractDataset(ABC):
             target_transform=self.target_transform,
         )
 
-    def setup_transforms(self) -> None:
-        """Setup the transforms for the dataset.
-
-        Has to be called before accessing the loaders.
-        """
-        self.train_transform.setup(self)
-        self.dev_transform.setup(self)
-        self.test_transform.setup(self)
-
     @cached_property
     def train_dataset(self) -> DatasetWrapper:
         """Get the training dataset.
@@ -271,50 +261,114 @@ class AbstractDataset(ABC):
         """
         return self._init_dataset(self.df_test, self.test_transform)
 
-    @cached_property
-    def train_loader(self) -> DataLoader:
-        """Get the training loader.
+    @property
+    def default_collate_fn(self) -> Callable:
+        return DataBatch.collate
 
-        Returns:
-            Training loader.
-        """
+    def create_train_loader(
+        self,
+        batch_size: int,
+        num_workers: int = 0,
+        pin_memory: bool = False,
+        drop_last: bool = False,
+        timeout: float = 0,
+        prefetch_factor: Optional[int] = None,
+        persistent_workers: bool = False,
+        pin_memory_device: str = "",
+    ) -> DataLoader:
+        self.train_transform.setup(self)
         return DataLoader(
             self.train_dataset,
-            batch_size=self.batch_size,
+            batch_size=batch_size,
             shuffle=True,
             generator=self._generator,
             collate_fn=self.train_transform.get_collate_fn(self),
+            num_workers=num_workers,
+            worker_init_fn=partial(
+                self._seed_worker,
+                seed=self.seed,
+                transform=self.train_transform,
+            ),
+            pin_memory=pin_memory,
+            drop_last=drop_last,
+            timeout=timeout,
+            prefetch_factor=prefetch_factor,
+            persistent_workers=persistent_workers,
+            pin_memory_device=pin_memory_device,
         )
 
-    @cached_property
-    def dev_loader(self) -> DataLoader:
-        """Get the development loader.
-
-        Returns:
-            Development loader.
-        """
+    def create_dev_loader(
+        self,
+        batch_size: int,
+        num_workers: int = 0,
+        pin_memory: bool = False,
+        drop_last: bool = False,
+        timeout: float = 0,
+        prefetch_factor: Optional[int] = None,
+        persistent_workers: bool = False,
+        pin_memory_device: str = "",
+    ) -> DataLoader:
+        self.dev_transform.setup(self)
         return DataLoader(
             self.dev_dataset,
-            batch_size=self.inference_batch_size,
+            batch_size=batch_size,
             shuffle=False,
             generator=self._generator,
             collate_fn=self.dev_transform.get_collate_fn(self),
+            num_workers=num_workers,
+            worker_init_fn=partial(
+                self._seed_worker,
+                seed=self.seed,
+                transform=self.dev_transform,
+            ),
+            pin_memory=pin_memory,
+            drop_last=drop_last,
+            timeout=timeout,
+            prefetch_factor=prefetch_factor,
+            persistent_workers=persistent_workers,
+            pin_memory_device=pin_memory_device,
         )
 
-    @cached_property
-    def test_loader(self) -> DataLoader:
-        """Get the test loader.
-
-        Returns:
-            Test loader.
-        """
+    def create_test_loader(
+        self,
+        batch_size: int,
+        num_workers: int = 0,
+        pin_memory: bool = False,
+        drop_last: bool = False,
+        timeout: float = 0,
+        prefetch_factor: Optional[int] = None,
+        persistent_workers: bool = False,
+        pin_memory_device: str = "",
+    ) -> DataLoader:
+        self.test_transform.setup(self)
         return DataLoader(
             self.test_dataset,
-            batch_size=self.inference_batch_size,
+            batch_size=batch_size,
             shuffle=False,
             generator=self._generator,
-            collate_fn=self.dev_transform.get_collate_fn(self),
+            collate_fn=self.test_transform.get_collate_fn(self),
+            num_workers=num_workers,
+            worker_init_fn=partial(
+                self._seed_worker,
+                seed=self.seed,
+                transform=self.test_transform,
+            ),
+            pin_memory=pin_memory,
+            drop_last=drop_last,
+            timeout=timeout,
+            prefetch_factor=prefetch_factor,
+            persistent_workers=persistent_workers,
+            pin_memory_device=pin_memory_device,
         )
+
+    @staticmethod
+    def _seed_worker(
+        worker_id: int,
+        seed: int,
+        transform: SmartCompose,
+    ) -> None:
+        set_seed(seed + worker_id)
+        transform.offset_generator_seed(worker_id)
 
     @staticmethod
     def download(path: str) -> None:
@@ -338,8 +392,6 @@ class BaseClassificationDataset(AbstractDataset):
         target_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -361,9 +413,6 @@ class BaseClassificationDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -387,8 +436,6 @@ class BaseClassificationDataset(AbstractDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
@@ -425,8 +472,6 @@ class BaseMLClassificationDataset(AbstractDataset):
         target_column: List[str],
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -449,9 +494,6 @@ class BaseMLClassificationDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -478,8 +520,6 @@ class BaseMLClassificationDataset(AbstractDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
@@ -527,8 +567,6 @@ class BaseRegressionDataset(AbstractDataset):
         target_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -550,9 +588,6 @@ class BaseRegressionDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -576,8 +611,6 @@ class BaseRegressionDataset(AbstractDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
@@ -606,8 +639,6 @@ class BaseMTRegressionDataset(AbstractDataset):
         target_column: List[str],
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -629,9 +660,6 @@ class BaseMTRegressionDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
                 in a different folder than the root of the dataset.
@@ -655,8 +683,6 @@ class BaseMTRegressionDataset(AbstractDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,

@@ -260,3 +260,20 @@ class TestExtractLayerEmbeddings:
         embeddings._unregister()
         x = torch.randn(1, 64)
         assert embeddings(x).shape == (1, 128), "Embeddings shape mismatch"
+
+
+class TestWrongArgumentModel:
+    @pytest.mark.xfail(raises=NameError)
+    def test_wrong_arguments(self) -> None:
+        class Foo(AbstractModel):
+            def __init__(self, output_dim):
+                super().__init__(output_dim)
+
+            def embeddings(self, x):
+                return super().embeddings(x)
+
+            def forward(self, x):
+                return x
+
+        bar = Foo(1)
+        bar.inputs

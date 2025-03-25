@@ -7,6 +7,7 @@ import pandas as pd
 import torch
 
 from autrainer.core.constants import TrainingConstants
+from autrainer.datasets.utils import DataItem
 from autrainer.transforms import SmartCompose
 
 from .abstract_dataset import AbstractDataset
@@ -63,7 +64,7 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
             data = self.transform(data, index=index)
         if self.target_transform:
             target = self.target_transform(target)
-        return data, target, index
+        return DataItem(features=data, target=target, index=index)
 
 
 class ToyDataset(AbstractDataset):
@@ -78,9 +79,7 @@ class ToyDataset(AbstractDataset):
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
-        batch_size: int,
         dtype: str = "float32",
-        inference_batch_size: Optional[int] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -98,9 +97,6 @@ class ToyDataset(AbstractDataset):
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -136,8 +132,6 @@ class ToyDataset(AbstractDataset):
             seed=seed,
             metrics=metrics,
             tracking_metric=tracking_metric,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
