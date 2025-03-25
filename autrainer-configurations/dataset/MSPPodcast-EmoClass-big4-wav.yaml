@@ -3,7 +3,6 @@ id: MSPPodcast-EmoClass-big4-wav
 _target_: autrainer.datasets.MSPPodcast
 
 path: data/MSPPodcast
-features_subdir: Audios
 index_column: FileName
 target_column: EmoClass
 file_type: wav
