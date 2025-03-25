@@ -104,7 +104,7 @@ class Cnn14(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.get_embedding(x)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.embeddings(x)
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        x = self.embeddings(features)
         x = self.out(x)
         return x

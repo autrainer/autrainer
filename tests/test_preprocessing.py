@@ -166,7 +166,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         data = BaseClassificationDataset(**dataset_args)
         for d in (data.train_dataset, data.dev_dataset, data.test_dataset):
             for x in d:
-                assert x[0].shape == (
+                assert x.features.shape == (
                     1,
                     sampling_rate,
                 ), "Should match shape of mono audio."
@@ -210,7 +210,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         data = BaseClassificationDataset(**dataset_args)
         for d in (data.train_dataset, data.dev_dataset, data.test_dataset):
             for x in d:
-                assert x[0].shape == (
+                assert x.features.shape == (
                     1,
                     shape_time,
                     shape_freq,

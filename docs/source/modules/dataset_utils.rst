@@ -1,8 +1,69 @@
 Dataset Utils
 =============
 
-Dataset utilities provide :ref:`file handlers <dataset_file_handlers>`, :ref:`target (or label) transforms <dataset_target_transforms>`,
+Dataset utilities provide :ref:`dataset items and batches <dataset_items>`, 
+:ref:`file handlers <dataset_file_handlers>`, 
+:ref:`target (or label) transforms <dataset_target_transforms>`,
 and a :ref:`dataset wrapper <dataset_wrapper>` for :ref:`datasets <datasets>`.
+
+.. _dataset_items:
+
+Data Items and Batches
+----------------------
+We provide a base :class:`~autrainer.datasets.utils.DataItem` class 
+meant to represent individual data *instances*.
+These classes (or *structs*)
+are meant to hold
+all important attributes
+needed by :class:`~autrainer.models.AbstractModel`
+objects that are compatible
+with a particular dataset,
+as well as attributes
+needed by `autrainer`'s utilities,
+such as the *index* corresponding to each *instance*
+(where we assume that each :class:`~autrainer.datasets.AbstractDataset`
+is an ordered set of instances).
+
+.. autoclass:: autrainer.datasets.utils.AbstractDataItem
+   :members:
+
+.. autoclass:: autrainer.datasets.utils.DataItem
+   :members:
+
+
+Additionally,
+we provide classes
+that hold *batches* of individual instances,
+and provides an implementation
+of the :meth:`collate_fn`
+that must be passed
+to :class:`torch.utils.data.DataLoader`.
+
+.. autoclass:: autrainer.datasets.utils.AbstractDataBatch
+   :members:
+
+
+.. autoclass:: autrainer.datasets.utils.DataBatch
+   :members:
+
+
+.. warning::
+
+   :attr:`~autrainer.datasets.utils.AbstractDataItem.features`,
+   :attr:`~autrainer.datasets.utils.AbstractDataItem.target`,
+   and :attr:`~autrainer.datasets.utils.AbstractDataItem.index`
+   are the three **reserved** attributes
+   that every object derived from 
+   :class:`~autrainer.datasets.utils.AbstractDataItem`
+   **must** include.
+   Moreover,
+   every object derived from
+   :class:`~autrainer.models.AbstractModel`
+   **must** include :attr:`~autrainer.datasets.utils.AbstractDataItem.features`
+   as the first argument (after `self`)
+   of its :meth:`~autrainer.models.AbstractModel.forward` method.
+   
+
 
 .. _dataset_file_handlers:
 

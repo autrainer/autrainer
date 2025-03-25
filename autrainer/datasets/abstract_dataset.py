@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property, partial
 import os
-from typing import Dict, List, Optional, TypeVar, Union
+from typing import Callable, Dict, List, Optional, TypeVar, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 import autrainer
 from autrainer.core.constants import TrainingConstants
 from autrainer.core.utils import set_seed
+from autrainer.datasets.utils import DataBatch
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 
@@ -259,6 +260,10 @@ class AbstractDataset(ABC):
             Test dataset.
         """
         return self._init_dataset(self.df_test, self.test_transform)
+
+    @property
+    def default_collate_fn(self) -> Callable:
+        return DataBatch.collate
 
     def create_train_loader(
         self,

@@ -60,7 +60,7 @@ of the standard training step and should be defined as follows:
    :language: python
    :caption: `custom_step function of an optimizer`
    :linenos:
-   :lines: 6-
+   :lines: 9-
 
 .. note::
 

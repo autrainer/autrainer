@@ -22,9 +22,14 @@ from autrainer.core.utils import (
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
-from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
+from autrainer.datasets.utils import (
+    AbstractDataBatch,
+    AbstractFileHandler,
+    AudioFileHandler,
+)
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
+from autrainer.models.utils import create_model_inputs
 from autrainer.transforms import SmartCompose, TransformManager
 
 from .callback_manager import CallbackManager
@@ -141,6 +146,7 @@ class ModularTaskTrainer:
             instance_of=AbstractModel,
             output_dim=self.output_dim,
         )
+
         if model_checkpoint:
             state_dict = torch.load(
                 model_checkpoint,
@@ -156,7 +162,7 @@ class ModularTaskTrainer:
         self._thread_manager.spawn(
             self.bookkeeping.save_model_summary,
             deepcopy(self.model),
-            self.data.train_dataset[0][0].unsqueeze(0).shape,
+            self.data.train_dataset[0].features.unsqueeze(0).shape,
             self.DEVICE,
             "model_summary.txt",
         )
@@ -324,9 +330,9 @@ class ModularTaskTrainer:
                 self.optimizer,
                 self.scheduler,
                 self.criterion,
-                self.continue_training,
                 *self.loggers,
                 *self.callbacks,
+                self.continue_training,  # has to be last as it might overwrite other callbacks
             ]
         )
 
@@ -372,6 +378,7 @@ class ModularTaskTrainer:
             self.optimizer.custom_step if custom_step else self._train_step
         )
 
+        self._thread_manager.join()
         self.callback_manager.callback(
             position="cb_on_train_begin", trainer=self
         )
@@ -388,7 +395,7 @@ class ModularTaskTrainer:
         # ? Score best model on test set
         self.bookkeeping.load_state(self.model, "model.pt", "_best")
         self.bookkeeping.load_state(self.optimizer, "optimizer.pt", "_best")
-        self.model = self.model.to(self.DEVICE)
+        self.model.to(self.DEVICE)
         self.model.eval()
         self.bookkeeping.create_folder("_test")
         self.test_timer.start()
@@ -441,11 +448,10 @@ class ModularTaskTrainer:
         # ? Plot Metrics
         self.plot_metrics.plot_run(self.metrics)
 
+        self.bookkeeping.save_results_df(self.metrics, "metrics.csv")
         self.callback_manager.callback(
             position="cb_on_train_end", trainer=self
         )
-        self.bookkeeping.save_results_df(self.metrics, "metrics.csv")
-        self._thread_manager.join()
         return self.metrics.loc[self.best_iteration][
             self.data.tracking_metric.name
         ]
@@ -466,15 +472,14 @@ class ModularTaskTrainer:
             self.bookkeeping.create_folder(epoch_folder)
             self.model.train()
             self.model.to(self.DEVICE)
-            for batch_idx, (data, target, sample_idx) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     self.train_loader,
                     desc="Train",
                     disable=self.disable_progress_bar,
                 )
             ):
-                data = data.to(self.DEVICE, non_blocking=pm)
-                target = target.to(self.DEVICE, non_blocking=pm)
+                data.to(self.DEVICE, non_blocking=pm)
                 self.callback_manager.callback(
                     position="cb_on_step_begin",
                     trainer=self,
@@ -484,7 +489,6 @@ class ModularTaskTrainer:
                 loss, output = self.train_step_fn(
                     self.model,
                     data,
-                    target,
                     self.criterion,
                     self.data.target_transform.probabilities_training,
                 )
@@ -495,10 +499,7 @@ class ModularTaskTrainer:
                     self.scheduler.step()
                 if self.train_tracker:
                     self.train_tracker.update(
-                        output,
-                        target,
-                        loss,
-                        sample_idx,
+                        output, data.target, loss, data.index
                     )
                 self.callback_manager.callback(
                     position="cb_on_step_end",
@@ -570,7 +571,7 @@ class ModularTaskTrainer:
             self.model.train()
             self.model.to(self.DEVICE)
             try:
-                data, target, sample_idx = next(self.train_loader_iter)
+                data = next(self.train_loader_iter)
             except StopIteration:
                 self.callback_manager.callback(
                     position="cb_on_loader_exhausted",
@@ -578,9 +579,8 @@ class ModularTaskTrainer:
                     iteration=step,
                 )
                 self.train_loader_iter = iter(self.train_loader)
-                data, target, sample_idx = next(self.train_loader_iter)
-            data = data.to(self.DEVICE, non_blocking=pm)
-            target = target.to(self.DEVICE, non_blocking=pm)
+                data = next(self.train_loader_iter)
+            data.to(self.DEVICE, non_blocking=pm)
             self.callback_manager.callback(
                 position="cb_on_step_begin",
                 trainer=self,
@@ -590,7 +590,6 @@ class ModularTaskTrainer:
             loss, output = self.train_step_fn(
                 self.model,
                 data,
-                target,
                 self.criterion,
                 self.data.target_transform.probabilities_training,
             )
@@ -600,7 +599,9 @@ class ModularTaskTrainer:
             if self.scheduler and self.scheduler_frequency == "batch":
                 self.scheduler.step()
             if self.train_tracker:
-                self.train_tracker.update(output, target, loss, sample_idx)
+                self.train_tracker.update(
+                    output, data.target, loss, data.index
+                )
             self.callback_manager.callback(
                 position="cb_on_step_end",
                 trainer=self,
@@ -652,9 +653,8 @@ class ModularTaskTrainer:
 
     def _train_step(
         self,
-        model: torch.nn.Module,
-        data: torch.Tensor,
-        target: torch.Tensor,
+        model: AbstractModel,
+        data: AbstractDataBatch,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -662,8 +662,7 @@ class ModularTaskTrainer:
 
         Args:
             model: Model to train.
-            data: Features to train on.
-            target: Target values.
+            data: Data to train on.
             criterion: Criterion to optimize.
             probabilities_fn: Function to convert model output to
                 probabilities.
@@ -672,8 +671,8 @@ class ModularTaskTrainer:
             Tuple containing the non-reduced loss and model outputs.
         """
         self.optimizer.zero_grad()
-        output = model(data)
-        loss = criterion(probabilities_fn(output), target)
+        output = model(**create_model_inputs(model, data))
+        loss = criterion(probabilities_fn(output), data.target)
         loss.mean().backward()
         self.optimizer.step()
         return loss, output
@@ -711,7 +710,7 @@ class ModularTaskTrainer:
             **kwargs,
         )
         self.model.eval()
-        self.model = self.model.to(self.DEVICE)
+        self.model.to(self.DEVICE)
         lk = self._loader_kwargs["dev" if dev_evaluation else "test"]
         results = self._evaluate(
             loader=loader,
@@ -742,16 +741,22 @@ class ModularTaskTrainer:
                     iteration,
                 )
             )
-
-        logging_results = disaggregated_evaluation(
-            targets=tracker.targets,
-            predictions=tracker.predictions,
-            indices=tracker.indices,
-            groundtruth=df,
-            metrics=self.data.metrics,
-            target_column=self.data.target_column,
-            stratify=self.data.stratify,
-        )
+        if self.data.stratify or isinstance(self.data.target_column, list):
+            logging_results = disaggregated_evaluation(
+                targets=tracker.targets,
+                predictions=tracker.predictions,
+                indices=tracker.indices,
+                groundtruth=df,
+                metrics=self.data.metrics,
+                target_column=self.data.target_column,
+                stratify=self.data.stratify,
+            )
+        else:
+            logging_results = {
+                k: {"all": v}
+                for k, v in results.items()
+                if not k.endswith("loss")
+            }
         if dev_evaluation:
             logging_results["dev_loss"] = {"all": results["dev_loss"]}
             logging_results["iteration"] = iteration
@@ -826,7 +831,7 @@ class ModularTaskTrainer:
         )
         with torch.no_grad():
             losses = 0
-            for batch_idx, (features, target, sample_idx) in enumerate(
+            for batch_idx, data in enumerate(
                 tqdm(
                     loader,
                     desc="Evaluate" if cb_type == "val" else "Test",
@@ -838,14 +843,15 @@ class ModularTaskTrainer:
                     trainer=self,
                     batch_idx=batch_idx,
                 )
-                output = self.model(features.to(self.DEVICE, non_blocking=pm))
+                data.to(self.DEVICE, non_blocking=pm)
+                output = self.model(**create_model_inputs(self.model, data))
                 loss = self.criterion(
                     self.data.target_transform.probabilities_training(output),
-                    target.to(self.DEVICE, non_blocking=pm),
+                    data.target,
                 )
                 reduced_loss = loss.mean().item()
                 losses += reduced_loss
-                tracker.update(output, target, loss, sample_idx)
+                tracker.update(output, data.target, loss, data.index)
                 self.callback_manager.callback(
                     position=f"cb_on_{cb_type}_step_end",
                     trainer=self,
