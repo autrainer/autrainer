@@ -225,12 +225,12 @@ class TestBaseDatasets(BaseIndividualTempDir):
         data = BaseClassificationDataset(**self._mock_dataset_kwargs())
         data._generator.manual_seed(0)
         loader = iter(data.create_train_loader(4, **train_loader_kwargs))
-        (x1, *_), (x2, *_) = next(loader), next(loader)
+        d1, d2 = next(loader), next(loader)
         data._generator.manual_seed(0)
         loader = iter(data.create_train_loader(4, **train_loader_kwargs))
-        (x3, *_), (x4, *_) = next(loader), next(loader)
-        assert torch.allclose(x1, x3), "Should be equal."
-        assert torch.allclose(x2, x4), "Should be equal."
+        d3, d4 = next(loader), next(loader)
+        assert torch.allclose(d1.features, d3.features), "Should be equal."
+        assert torch.allclose(d2.features, d4.features), "Should be equal."
 
     def _test_data(
         self,
