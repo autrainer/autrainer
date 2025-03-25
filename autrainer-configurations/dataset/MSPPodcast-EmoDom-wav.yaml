@@ -3,7 +3,6 @@ id: MSPPodcast-EmoDom-wav
 _target_: autrainer.datasets.MSPPodcast
 
 path: data/MSPPodcast
-features_subdir: Audios
 index_column: FileName
 target_column: EmoDom
 file_type: wav
