@@ -7,7 +7,8 @@ Tutorials
 
 * :ref:`models <tut_models>`
 * :ref:`datasets <tut_datasets>` (including :ref:`metrics <tut_metrics>`, :ref:`criterions <tut_criterions>`,
-  :ref:`file handlers <tut_file_handlers>`, and :ref:`target transforms <tut_target_transforms>`)
+  :ref:`file handlers <tut_file_handlers>`, :ref:`target transforms <tut_target_transforms>`, 
+  and :ref:`advanced data pipelines <tut_advanced>`)
 * :ref:`optimizers <tut_optimizers>`
 * :ref:`schedulers <tut_schedulers>`
 * :ref:`transforms <tut_transforms>` (including :ref:`preprocessing transforms <tut_preprocessing_transforms>`
@@ -277,6 +278,77 @@ For example, the following target transform logarithmically encodes and decodes 
 
 The :ref:`target transforms <dataset_target_transforms>` are specified in the :attr:`~autrainer.datasets.AbstractDataset.target_transform` property
 of a :ref:`dataset <datasets>` implementation.
+
+.. _tut_advanced:
+
+Advanced Data Pipelines
+~~~~~~~~~~~~~~~~~~~~~~~
+
+To create data and model pipelines that go beyond the standard :class:`~autrainer.datasets.utils.DataItem` convention of using
+only :attr:`DataItem.features` as input to the model, first create a new :class:`~autrainer.datasets.utils.DataItem` struct
+decorated with :class:`dataclasses.dataclass`:
+
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
+   :language: python
+   :caption: multi_branch_data.py
+   :lines: 14-19
+
+and override :class:`~autrainer.datasets.utils.AbstractDataBatch`:
+
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
+   :language: python
+   :caption: multi_branch_data.py
+   :lines: 22-41
+
+Following that, inherit from :class:`~autrainer.datasets.utils.DatasetWrapper`
+to create a :class:`torch.utils.data.Dataset`
+that iterates over your data 
+and returns your custom :class:`~autrainer.datasets.utils.AbstractDataBatch`
+(here we simply replicate :attr:`features`
+as our auxiliary features):
+
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
+   :language: python
+   :caption: multi_branch_data.py
+   :lines: 44-52
+
+Subsequently, inherit from :class:`~autrainer.datasets.AbstractDataset`
+to create a dataset
+that instantiates your :class:`~autrainer.datasets.utils.DatasetWrapper`:
+
+
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
+   :language: python
+   :caption: multi_branch_data.py
+   :lines: 55-73
+
+Next, create a :attr:`ToyMultiBranch-C.yaml` configuration file for the dataset in the :attr:`conf/dataset/` directory:
+
+.. literalinclude:: ../examples/tutorials/MultiBranchData-C.yaml
+   :language: yaml
+   :caption: conf/data/ToyMultiBranch-C.yaml
+   :linenos:
+
+Finally, you must inherit from :class:`~autrainer.models.AbstractModel` 
+and create a model **with a matching signature**,
+in its forward pass to access the :attr:`meta` parameter:
+
+.. literalinclude:: ../examples/tutorials/multi_branch_model.py
+   :language: python
+   :caption: multi_branch_model.py
+   :lines: 6-26
+
+
+Next, create a 
+:attr:`ToyMultiBranchModel.yaml` 
+configuration file 
+for the model in the :attr:`conf/model/` directory:
+
+
+.. literalinclude:: ../examples/tutorials/MultiBranchModel.yaml
+   :language: yaml
+   :caption: conf/data/ToyMultiBranchModel.yaml
+   :linenos:
 
 
 .. _tut_optimizers:

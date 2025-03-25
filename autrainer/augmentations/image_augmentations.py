@@ -1,16 +1,18 @@
 import os
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Type
+from typing import TYPE_CHECKING, Callable, List, Optional, Type
 
 import pandas as pd
 import torch
-from torch.utils.data import default_collate
 from torchvision.transforms import v2
+
+from autrainer.datasets.utils import AbstractDataBatch
 
 from .abstract_augmentation import AbstractAugmentation
 
 
-if TYPE_CHECKING:
-    from autrainer.datasets import AbstractDataset  # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
+    from autrainer.datasets import AbstractDataset
+    from autrainer.datasets.utils import AbstractDataItem
 
 
 class BaseMixUpCutMix(AbstractAugmentation):
@@ -38,7 +40,9 @@ class BaseMixUpCutMix(AbstractAugmentation):
         self.augmentation_class = augmentation_class
         self.alpha = alpha
 
-    def get_collate_fn(self, data: "AbstractDataset") -> Callable:
+    def get_collate_fn(
+        self, data: "AbstractDataset", default: Callable
+    ) -> Callable:
         if data.output_dim <= 1:
             raise ValueError(
                 f"{self.augmentation_class.__name__} "
@@ -48,16 +52,18 @@ class BaseMixUpCutMix(AbstractAugmentation):
             num_classes=data.output_dim, alpha=self.alpha
         )
 
-        def _collate_fn(
-            batch: List[Tuple[torch.Tensor, int, int]],
-        ) -> List[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
+        def _collate_fn(batch: List["AbstractDataItem"]) -> AbstractDataBatch:
             probability = torch.rand(1, generator=self.g).item()
+            batched: AbstractDataBatch = default(batch)
             if probability < self.p:
-                return self.augmentation(*default_collate(batch))
-
-            batched = default_collate(batch)
-            batched[1] = torch.nn.functional.one_hot(
-                batched[1], data.output_dim
+                features = batched.features
+                target = batched.target
+                results = self.augmentation(features, target)
+                batched.features = results[0]
+                batched.target = results[1]
+                return batched
+            batched.target = torch.nn.functional.one_hot(
+                batched.target, data.output_dim
             ).float()
             return batched
 

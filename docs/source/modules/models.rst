@@ -39,10 +39,27 @@ To optionally use model, optimizer, or scheduler checkpoints, the following attr
    that the last layer of the model is specified as the final :class:`~torch.nn.Linear` or :class:`~torch.nn.modules.conv._ConvNd` module.
    If the last layer is not the final layer in the module order, it may not be correctly identified for skipping.
 
+
 Abstract Model
 --------------
 
 All models inherit from the :class:`AbstractModel` class and implement the :meth:`forward` and :meth:`embeddings` methods.
+These models must adhere 
+a specific signature 
+for their :meth:`forward` method
+as `autrainer` uses 
+argument names
+for its internal data flow.
+For this reason,
+:attr:`features`
+must always be the name
+of the first argument.
+All subsequent arguments
+can be named differently
+but they must be present
+as attributes
+in the corresponding
+:class:`~autrainer.datasets.utils.AbstractDataItem`.
 
 .. autoclass:: autrainer.models.AbstractModel
    :members:

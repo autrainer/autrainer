@@ -56,7 +56,7 @@ class ASTModel(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.model(x).last_hidden_state.mean(1)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.embeddings(x)
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        x = self.embeddings(features)
         x = self.out(x)
         return x

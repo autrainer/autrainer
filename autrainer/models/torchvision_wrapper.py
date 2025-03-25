@@ -83,5 +83,5 @@ class TorchvisionModel(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self._embedding_extractor(x)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.model(x)
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        return self.model(features)

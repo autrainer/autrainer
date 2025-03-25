@@ -130,8 +130,8 @@ class LEAFNet(AbstractModel):
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.leaf(x)
 
-    def forward(self, x: torch.Tensor):
-        x = self.leaf(x)
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        x = self.leaf(features)
         x = x.unsqueeze(1)
         x = self.classifier(x)
         return x

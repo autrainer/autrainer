@@ -397,7 +397,9 @@ class Standardizer(AbstractTransform):
         dataset_wrapper = getattr(data, f"{self.subset}_dataset")
         original_transform = dataset_wrapper.transform
         dataset_wrapper.transform = None
-        data = torch.stack([x for x, *_ in dataset_wrapper]).to(torch.float32)
+        data = torch.stack([x.features for x in dataset_wrapper]).to(
+            torch.float32
+        )
         dataset_wrapper.transform = original_transform
         return data
 
