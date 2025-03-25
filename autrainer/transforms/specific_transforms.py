@@ -408,7 +408,7 @@ class Standardizer(AbstractTransform):
         return data
 
     def setup(self, data: "AbstractDataset") -> None:
-        if self.mean and self.std:
+        if self.mean and self.std:  # if already computed for the current data
             return
 
         # select all dimensions except the dimension along which to normalize
