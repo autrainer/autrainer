@@ -23,11 +23,12 @@ class AbstractDataBatch(ABC, Generic[AbstractItemType]):
     index: torch.Tensor
 
     @abstractmethod
-    def to(self, device: torch.device) -> None:
+    def to(self, device: torch.device, **kwargs: dict) -> None:
         """Move the features, target, and additional data to a device.
 
         Args:
             device: Device to move the data to.
+            kwargs: Additional keyword arguments passed to the `to` method.
         """
 
     @classmethod
@@ -80,6 +81,6 @@ class DataBatch(AbstractDataBatch[DataItem]):
         index: Tensor of indices for the data samples.
     """
 
-    def to(self, device: torch.device) -> None:
-        self.features = self.features.to(device)
-        self.target = self.target.to(device)
+    def to(self, device: torch.device, **kwargs: dict) -> None:
+        self.features = self.features.to(device, **kwargs)
+        self.target = self.target.to(device, **kwargs)
