@@ -717,16 +717,22 @@ class ModularTaskTrainer:
                     iteration,
                 )
             )
-
-        logging_results = disaggregated_evaluation(
-            targets=tracker.targets,
-            predictions=tracker.predictions,
-            indices=tracker.indices,
-            groundtruth=df,
-            metrics=self.data.metrics,
-            target_column=self.data.target_column,
-            stratify=self.data.stratify,
-        )
+        if self.data.stratify or isinstance(self.data.target_column, list):
+            logging_results = disaggregated_evaluation(
+                targets=tracker.targets,
+                predictions=tracker.predictions,
+                indices=tracker.indices,
+                groundtruth=df,
+                metrics=self.data.metrics,
+                target_column=self.data.target_column,
+                stratify=self.data.stratify,
+            )
+        else:
+            logging_results = {
+                k: {"all": v}
+                for k, v in results.items()
+                if not k.endswith("loss")
+            }
         if dev_evaluation:
             logging_results["dev_loss"] = {"all": results["dev_loss"]}
             logging_results["iteration"] = iteration
