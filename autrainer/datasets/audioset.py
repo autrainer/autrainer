@@ -371,7 +371,26 @@ class AudioSet(BaseMLClassificationDataset):
         df["filename"] = df["filename"].apply(
             lambda x: os.path.join(relative_path, x)
         )
-        df = df.loc[df["filename"].apply(os.path.isfile)]
+        orig_len = len(df)
+        df = df.loc[
+            df["filename"].apply(
+                lambda x: os.path.isfile(
+                    os.path.join(
+                        self.features_path,
+                        self.features_subdir,
+                        x.replace(".wav", f".{self.file_type}")
+                    )
+                )
+            )
+        ]
+        avail_len = len(df)
+        if avail_len != orig_len:
+            self._log.warning(
+                f"Found only {avail_len} "
+                f"from the {orig_len} original samples "
+                f"included in the {relative_path} set of Audioset. "
+                "Please verify if some files are misplaced."
+            )
         return df
 
     @cached_property
@@ -412,7 +431,7 @@ class AudioSet(BaseMLClassificationDataset):
 
 if __name__ == "__main__":
     data = AudioSet(
-        path="/home/trianand/mnt/databases/UAU/AudioSet2021/",
+        path="/nas/databases/UAU/AudioSet2021/",
         metrics=["autrainer.metrics.MLF1Weighted"],
         tracking_metric="autrainer.metrics.MLF1Weighted",
         file_handler="autrainer.datasets.utils.AudioFileHandler",
