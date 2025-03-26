@@ -371,7 +371,7 @@ class AudioSet(BaseMLClassificationDataset):
         df["filename"] = df["filename"].apply(
             lambda x: os.path.join(relative_path, x)
         )
-        df = df.loc[df["filename"].apply(os.path.exist)]
+        df = df.loc[df["filename"].apply(os.path.isfile)]
         return df
 
     @cached_property
