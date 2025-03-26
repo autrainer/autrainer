@@ -19,6 +19,7 @@ from autrainer.datasets import (
     DCASE2018Task3,
     DCASE2020Task1A,
     EmoDB,
+    MSPPodcast,
     SpeechCommands,
     ToyDataset,
 )
@@ -493,6 +494,56 @@ class TestEmoDB(BaseIndividualTempDir):
         assert len(data.train_dataset) == 4, "Should be 4."
         assert len(data.dev_dataset) == 3, "Should be 3."
         assert len(data.test_dataset) == 3, "Should be 3."
+
+
+class TestMSPPodcast(BaseIndividualTempDir):
+    @pytest.mark.parametrize(
+        "task,target,metric,shape",
+        [
+            (
+                "classification",
+                "EmoClass",
+                "autrainer.metrics.Accuracy",
+                torch.Size([1]),
+            ),
+            ("regression", "EmoAct", "autrainer.metrics.CCC", torch.Size([1])),
+            (
+                "mt-regression",
+                ["target_0", "target_1"],
+                "autrainer.metrics.CCC",
+                torch.Size([2]),
+            ),
+        ],
+    )
+    def test_classification(self, task, target, metric, shape) -> None:
+        TestBaseDatasets._mock_dataframes(
+            "data/TestDataset",
+            target_type=task,
+            target_column=target,
+            output_files=["metadata"],
+        )
+        TestBaseDatasets._mock_data(
+            "data/TestDataset", shape=(1, 88), output_files=["metadata"]
+        )
+        df = pd.read_csv("data/TestDataset/metadata.csv")
+        os.makedirs("data/TestDataset/Labels/", exist_ok=True)
+        splits = ["Train"] * 4 + ["Development"] * 3 + ["Test1"] * 3
+        df["Split_Set"] = splits
+        df.to_csv("data/TestDataset/Labels/labels_consensus.csv", index=False)
+        kwargs = TestBaseDatasets._mock_dataset_kwargs()
+        kwargs["metrics"] = [metric]
+        kwargs["tracking_metric"] = metric
+        kwargs["target_column"] = (
+            target if isinstance(target, list) else [target]
+        )
+        data = MSPPodcast(**kwargs)
+        assert len(data.train_dataset) == 4, "Should be 4."
+        assert len(data.dev_dataset) == 3, "Should be 3."
+        assert len(data.test_dataset) == 3, "Should be 3."
+        assert data.test_dataset[0].target.shape == shape, (
+            f"Target shape should be {shape} "
+            f"but is {data.test_dataset[0].target.shape}"
+        )
 
 
 class TestSpeechCommands(BaseIndividualTempDir):
