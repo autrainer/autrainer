@@ -25,10 +25,8 @@ class MSPPodcast(AbstractDataset):
         target_column: str,
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
         index_column: str = "FileName",
         features_subdir: str = None,
-        inference_batch_size: Optional[int] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -65,13 +63,11 @@ class MSPPodcast(AbstractDataset):
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
-            index_column: Index column of the dataframe.
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
+            index_column: Index column of the dataframe.
+                Defaults to `FileName`, as in the original data.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
             dev_transform: Transform to apply to the development set.
@@ -99,8 +95,6 @@ class MSPPodcast(AbstractDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
