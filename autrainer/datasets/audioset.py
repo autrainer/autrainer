@@ -164,10 +164,10 @@ class AudioSet(BaseMLClassificationDataset):
         Data assumed to be in root folder
         under the name of the respective partition
         which is prepended once the CSV file is loaded.
-        Available partitions are:
-        - balanced_train_segments
-        - unbalanced_train_segments
-        - eval_segments
+        Available partitions are (with original number of instances):
+        - balanced_train_segments (n=22,160)
+        - unbalanced_train_segments (n=2,041,789)
+        - eval_segments (n=20,371)
         """
         return ""
 
