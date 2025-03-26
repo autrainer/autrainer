@@ -157,6 +157,20 @@ class AudioSet(BaseMLClassificationDataset):
             threshold=threshold,
         )
 
+    @property
+    def audio_subdir(self) -> str:
+        """Subfolder containing audio data.
+
+        Data assumed to be in root folder
+        under the name of the respective partition
+        which is prepended once the CSV file is loaded.
+        Available partitions are:
+        - balanced_train_segments
+        - unbalanced_train_segments
+        - eval_segments
+        """
+        return ""
+
     def _assert_target_column(self, allowed_columns: List[str]) -> None:
         """Override target column check.
 
@@ -357,6 +371,7 @@ class AudioSet(BaseMLClassificationDataset):
         df["filename"] = df["filename"].apply(
             lambda x: os.path.join(relative_path, x)
         )
+        df = df.loc[df["filename"].apply(os.path.exist)]
         return df
 
     @cached_property
