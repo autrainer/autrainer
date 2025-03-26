@@ -126,7 +126,7 @@ class MSPPodcast(AbstractDataset):
         return None
 
     @cached_property
-    def _load_df(
+    def _df(
         self,
     ) -> pd.DataFrame:
         """Load the dataframes.
@@ -146,18 +146,21 @@ class MSPPodcast(AbstractDataset):
 
     @cached_property
     def df_train(self):
-        df = self._load_df
-        return df.loc[df["Split_Set"] == "Train"].reset_index(drop=True)
+        return self._df.loc[self._df["Split_Set"] == "Train"].reset_index(
+            drop=True
+        )
 
     @cached_property
     def df_dev(self):
-        df = self._load_df
-        return df.loc[df["Split_Set"] == "Development"].reset_index(drop=True)
+        return self._df.loc[
+            self._df["Split_Set"] == "Development"
+        ].reset_index(drop=True)
 
     @cached_property
     def df_test(self):
-        df = self._load_df
-        return df.loc[df["Split_Set"] == "Test1"].reset_index(drop=True)
+        return self._df.loc[self._df["Split_Set"] == "Test1"].reset_index(
+            drop=True
+        )
 
     @cached_property
     def target_transform(self) -> AbstractTargetTransform:
@@ -185,27 +188,6 @@ class MSPPodcast(AbstractDataset):
                     minimum=self.df_train[self.target_column].min(),
                     maximum=self.df_train[self.target_column].max(),
                 )
-        else:
-            raise NotImplementedError(
-                f"{self.task} not supported for MSPPodcast"
-            )
-
-    @cached_property
-    def output_dim(self) -> int:
-        """Get the output dimension of the dataset.
-
-        Determined automatically based on the type of task.
-
-        Returns:
-            Number of classes.
-        """
-        if self.task == "classification":
-            return len(self.df_train[self.target_column].unique())
-        elif self.task == "regression":
-            if isinstance(self.target_column, list):
-                return len(self.target_column)
-            else:
-                return 1
         else:
             raise NotImplementedError(
                 f"{self.task} not supported for MSPPodcast"
