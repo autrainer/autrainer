@@ -1,46 +1,21 @@
-import copy
+"""Code for AudioSet dataset.
+Utility functions to filter data
+adapted from: https://github.com/audeering/audtorch/blob/master/audtorch/datasets/audio_set.py
+Originally written by https://github.com/hagenw
+"""
+
 from functools import cached_property
 import json
+import logging
 import os
 from typing import Dict, List, Optional, Union
 
+from audeer import flatten_list
 from omegaconf import DictConfig
 import pandas as pd
 
 from autrainer.datasets.abstract_dataset import BaseMLClassificationDataset
 from autrainer.transforms import SmartCompose
-
-
-def flatten_list(nested_list: list) -> list:
-    """Flatten an arbitrarily nested list.
-
-    Implemented without  recursion to avoid stack overflows.
-    Returns a new list, the original list is unchanged.
-
-    Args:
-        nested_list: nested list
-
-    Returns:
-        flattened list
-
-    Examples:
-        >>> audeer.flatten_list([1, 2, 3, [4], [], [[[[[[[[[5]]]]]]]]]])
-        [1, 2, 3, 4, 5]
-        >>> audeer.flatten_list([[1, 2], 3])
-        [1, 2, 3]
-
-    """
-
-    def _flat_generator(nested_list):
-        while nested_list:
-            sublist = nested_list.pop(0)
-            if isinstance(sublist, list):
-                nested_list = sublist + nested_list
-            else:
-                yield sublist
-
-    nested_list = copy.deepcopy(nested_list)
-    return list(_flat_generator(nested_list))
 
 
 class AudioSet(BaseMLClassificationDataset):
@@ -107,11 +82,9 @@ class AudioSet(BaseMLClassificationDataset):
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
         index_column: str,
-        target_column: List[str],
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
-        batch_size: int,
-        inference_batch_size: Optional[int] = None,
+        target_column: Optional[List[str]] = None,
         features_path: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
@@ -165,6 +138,7 @@ class AudioSet(BaseMLClassificationDataset):
         self.use_unbalanced = use_unbalanced
         self.include = include
         self.exclude = exclude
+        self._log = logging.getLogger(__name__)
         super().__init__(
             path=path,
             features_subdir=features_subdir,
@@ -175,8 +149,6 @@ class AudioSet(BaseMLClassificationDataset):
             target_column=target_column,
             file_type=file_type,
             file_handler=file_handler,
-            batch_size=batch_size,
-            inference_batch_size=inference_batch_size,
             features_path=features_path,
             train_transform=train_transform,
             dev_transform=dev_transform,
@@ -184,6 +156,27 @@ class AudioSet(BaseMLClassificationDataset):
             stratify=stratify,
             threshold=threshold,
         )
+
+    def _assert_target_column(self, allowed_columns: List[str]) -> None:
+        """Override target column check.
+
+        Allow `None` as a valid input.
+        Override it to support all available tags
+        in ontology, irrespective of whether
+        they appear at all in the data or not.
+        """
+        if self.target_column is None:
+            self.target_column = sorted([x["name"] for x in self.ontology])
+            if self.include is not None or self.exclude is not None:
+                self._log.warning(
+                    '"include" or "exclude" filter activated '
+                    "when no target column specified. "
+                    "This may result in undesired behavior "
+                    "as some tags may not have corresponding "
+                    "training/evaluation data."
+                )
+            return
+        return super()._assert_target_column(allowed_columns)
 
     def _filename_and_ids(self, df):
         r"""Return data frame with filenames and IDs.
@@ -199,12 +192,7 @@ class AudioSet(BaseMLClassificationDataset):
         # Translate labels from "label1,label2" to [label1, label2]
         df["ids"] = [label.strip('"').split(",") for label in df["ids"]]
         # Insert filename
-        df["filename"] = (
-            df["# YTID"]
-            + "_"
-            + [f"{x:.3f}" for x in df["start_seconds"]]
-            + ".wav"
-        )
+        df["filename"] = df["# YTID"] + ".wav"
         return df[["filename", "ids"]]
 
     def _add_parent_ids(self, child_ids):
@@ -274,19 +262,19 @@ class AudioSet(BaseMLClassificationDataset):
         ids = self._ids_for_categories(categories)
         if exclude_mode:
             # Remove rows that have an intersection of actual and desired IDs
-            df = df[
-                [
-                    False if set(row["ids"]) & set(ids) else True
-                    for _, row in df.iterrows()
-                ]
+            df = df.loc[
+                df.apply(
+                    lambda row: False if set(row["ids"]) & set(ids) else True,
+                    axis=1,
+                )
             ]
         else:
             # Include rows that have an intersection of actual and desired IDs
-            df = df[
-                [
-                    True if set(row["ids"]) & set(ids) else False
-                    for _, row in df.iterrows()
-                ]
+            df = df.loc[
+                df.apply(
+                    lambda row: True if set(row["ids"]) & set(ids) else False,
+                    axis=1,
+                )
             ]
         df = df.reset_index(drop=True)
         return df
@@ -339,50 +327,49 @@ class AudioSet(BaseMLClassificationDataset):
             df = self._filter_by_categories(
                 df, self.exclude, exclude_mode=True
             )
-        categories = df["ids"].map(self._convert_ids_to_categories)
-        print(categories)
-        print(df.head())
-        exit()
-        pass
+        df["categories"] = df["ids"].map(self._convert_ids_to_categories)
+        unique_categories = list(set([x["name"] for x in self.ontology]))
+        for c in unique_categories:
+            df = pd.concat(
+                (
+                    df,
+                    df["categories"]
+                    .apply(lambda x: 1 if c in x else 0)
+                    .to_frame(name=c),
+                ),
+                axis=1,
+            )
+        return df
 
     @cached_property
     def ontology(self) -> Dict:
         with open(os.path.join(self.path, "ontology.json"), "r") as fp:
             return json.load(fp)
 
-    @cached_property
-    def df_train(self) -> pd.DataFrame:
+    def _load_df(self, relative_path: str) -> pd.DataFrame:
         df = pd.read_csv(
-            os.path.join(self.path, "balanced_train_segments.csv"),
+            os.path.join(self.path, f"{relative_path}.csv"),
             skiprows=2,
             sep=", ",
             engine="python",
         )
+        df = self.map_to_classes(df)
+        df["filename"] = df["filename"].apply(
+            lambda x: os.path.join(relative_path, x)
+        )
+        return df
+
+    @cached_property
+    def df_train(self) -> pd.DataFrame:
+        df = self._load_df("balanced_train_segments")
         if self.use_unbalanced:
-            df = pd.concat(
-                (
-                    df,
-                    pd.read_csv(
-                        os.path.join(
-                            self.path, "unbalanced_train_segments.csv"
-                        ),
-                        skiprows=2,
-                        sep=", ",
-                        engine="python",
-                    ),
-                )
-            )
-        return self.map_to_classes(df)
+            u_df = self._load_df("unbalanced_train_segments")
+            df = pd.concat((df, u_df))
+        return df
 
     @cached_property
     def df_dev(self) -> pd.DataFrame:
-        df = pd.read_csv(
-            os.path.join(self.path, "eval_segments.csv"),
-            skiprows=2,
-            sep=", ",
-            engine="python",
-        )
-        return self.map_to_classes(df)
+        return self._load_df("eval_segments")
 
     @cached_property
     def df_test(self) -> pd.DataFrame:
@@ -417,9 +404,8 @@ if __name__ == "__main__":
         file_type="wav",
         features_subdir="",
         seed=0,
-        index_column="foo",
-        target_column="bar",
-        batch_size=1,
+        index_column="filename",
     )
-    batch = next(iter(data.train_loader))
+    loader = data.create_train_loader(1)
+    batch = next(iter(loader))
     print(batch)
