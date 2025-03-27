@@ -1,0 +1,28 @@
+# Important: should be used with inference_batch_size: 1
+id: MSPPodcast-EmoDom-wav
+_target_: autrainer.datasets.MSPPodcast
+
+path: data/MSPPodcast
+index_column: FileName
+target_column: EmoDom
+file_type: wav
+file_handler: autrainer.datasets.utils.AudioFileHandler
+
+criterion: autrainer.criterions.MSELoss
+metrics:
+  - autrainer.metrics.PCC
+  - autrainer.metrics.CCC
+  - autrainer.metrics.MSE
+  - autrainer.metrics.MAE
+tracking_metric: autrainer.metrics.CCC
+
+transform:
+  type: raw
+  base:
+    - autrainer.transforms.Expand:
+        size: 48000
+        axis: -1
+  train:
+    - autrainer.transforms.RandomCrop:
+        size: 48000
+        axis: -1

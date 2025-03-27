@@ -189,6 +189,17 @@ We provide a number of different audio-specific datasets.
          :subdir: dataset
          :configs: EmoDB
 
+
+.. autoclass:: autrainer.datasets.MSPPodcast
+   :members:
+
+   .. dropdown:: Default Configurations
+
+      .. configurations::
+         :subdir: dataset
+         :configs: MSPPodcast
+
+
 .. autoclass:: autrainer.datasets.SpeechCommands
    :members:
 
