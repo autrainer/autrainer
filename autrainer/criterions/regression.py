@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Dict
 
 import numpy as np
 import torch
+from torch.nn.modules.loss import _Loss
 
 from .utils import assert_nonzero_frequency
 
@@ -85,3 +86,70 @@ class WeightedMSELoss(MSELoss):
             Loss.
         """
         return super().forward(x, y) * self.weights_buffer.expand_as(y)
+
+
+class CCCLoss(_Loss):
+    """Concordance correlation coefficient loss.
+
+    A typical loss for dimensional speech emotion recognition
+    (https://arxiv.org/abs/2203.07378).
+    It is computed as 1 minus the concordance correlation coefficient,
+    also known as Lin's correlation coefficient
+    (https://en.wikipedia.org/wiki/Concordance_correlation_coefficient).
+    It is a scaled version
+    of the Pearson correlation coefficient.
+
+    The correlation is computed over targets in a batch.
+    It is recommended to use it with larger batch sizes
+    than the standard :class:`~autrainer.criterions.MSELoss`.
+
+    .. note::
+        We are using biased estimators
+        for the variance and standard deviation
+        of the prediction and ground truth tensors
+        in order to match the computation
+        in :meth:`~audmetric.concordance_cc`
+        which relies on `numpy`.
+        In some cases,
+        this may lead to different results
+        than when using unbiased estimators.
+    """
+
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        """Computation of CCC loss.
+
+        Args:
+            x: Batched model outputs.
+            y: Targets.
+
+        Returns:
+            Loss.
+        """
+
+        # squeeze needed in case of single-target regression
+        # to avoid dimension projection
+        y = y.squeeze()
+        x = x.squeeze()
+        mean_gt = torch.mean(y, axis=0)
+        mean_pred = torch.mean(x, axis=0)
+        var_gt = torch.var(y, axis=0, unbiased=False)
+        var_pred = torch.var(x, axis=0, unbiased=False)
+        v_pred = x - mean_pred
+        v_gt = y - mean_gt
+        corr = torch.sum(v_pred * v_gt, axis=0) / (
+            torch.sqrt(torch.sum(v_pred**2, axis=0))
+            * torch.sqrt(torch.sum(v_gt**2, axis=0))
+        )
+        sd_gt = torch.std(y, axis=0, unbiased=False)
+        sd_pred = torch.std(x, axis=0, unbiased=False)
+        numerator = 2 * corr * sd_gt * sd_pred
+        denominator = var_gt + var_pred + (mean_gt - mean_pred) ** 2
+        ccc = numerator / denominator
+        ccc = ccc.mean()
+        if ccc != ccc:
+            # handle NaNs
+            # these happen when denominator=0
+            # i.e. when both pred and truth
+            # are the same, constant vector
+            ccc = torch.tensor(0)
+        return 1 - ccc
