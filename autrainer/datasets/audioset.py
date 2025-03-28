@@ -453,25 +453,3 @@ class AudioSet(BaseMLClassificationDataset):
             path: Path to the directory to download the dataset to.
         """
         pass
-
-
-if __name__ == "__main__":
-    data = AudioSet(
-        path="/nas/databases/UAU/AudioSet2021/",
-        metrics=["autrainer.metrics.MLF1Weighted"],
-        tracking_metric="autrainer.metrics.MLF1Weighted",
-        file_handler={
-            "autrainer.datasets.utils.AudioFileHandler": {
-                "target_sample_rate": 32000
-            }
-        },
-        file_type="wav",
-        features_subdir="",
-        seed=0,
-        index_column="filename",
-        include=["Human sounds"],
-    )
-    print(data.target_column)
-    loader = data.create_train_loader(1)
-    batch = next(iter(loader))
-    print(batch)
