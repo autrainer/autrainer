@@ -208,15 +208,6 @@ class AudioSet(BaseMLClassificationDataset):
                     f"{self.target_column}"
                 )
             )
-            if self.include is not None or self.exclude is not None:
-                self._log.warning(
-                    '"include" or "exclude" filter activated '
-                    "when no target column specified. "
-                    "This may result in undesired behavior "
-                    "as some tags may not have corresponding "
-                    "training/evaluation data."
-                )
-            return
         return super()._assert_target_column(allowed_columns)
 
     def _filename_and_ids(self, df):
