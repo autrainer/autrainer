@@ -1,0 +1,25 @@
+id: AudioSet
+_target_: autrainer.datasets.AudioSet
+
+threshold: 0.5
+
+path: data/AudioSet2021/
+features_subdir: ""
+index_column: filename
+file_type: wav
+file_handler:
+  autrainer.datasets.utils.AudioFileHandler:
+    target_sample_rate: 32000
+
+criterion: autrainer.criterions.BCEWithLogitsLoss
+metrics:
+  - autrainer.metrics.MLAccuracy
+  - autrainer.metrics.MLF1Micro
+  - autrainer.metrics.MLF1Macro
+  - autrainer.metrics.MLF1Weighted
+tracking_metric: autrainer.metrics.MLF1Weighted
+
+transform:
+  type: raw
+  base:
+    - autrainer.transforms.StereoToMono:
