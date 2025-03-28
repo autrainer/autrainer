@@ -23,6 +23,7 @@ from .utils import (
     MinMaxScaler,
     MultiLabelEncoder,
     MultiTargetMinMaxScaler,
+    SegmentedDatasetWrapper,
 )
 
 
@@ -89,7 +90,10 @@ class AbstractDataset(ABC):
         self.seed = seed
         self.task = task
         self.metrics = [self._init_metric(m) for m in metrics]
-        self.tracking_metric = self._init_metric(tracking_metric)
+        if tracking_metric is not None:
+            self.tracking_metric = self._init_metric(tracking_metric)
+        else:
+            self.tracking_metric = None
         self.index_column = index_column
         self.target_column = target_column
         self.file_type = file_type
@@ -553,6 +557,107 @@ class BaseMLClassificationDataset(AbstractDataset):
     @cached_property
     def target_transform(self) -> MultiLabelEncoder:
         return MultiLabelEncoder(self.threshold, self.target_column)
+
+
+class BaseSEDDataset(BaseClassificationDataset):
+    def __init__(
+        self,
+        path: str,
+        features_subdir: str,
+        seed: int,
+        metrics: List[Union[str, DictConfig, Dict]],
+        tracking_metric: Union[str, DictConfig, Dict],
+        index_column: str,
+        target_column: List[str],
+        file_type: str,
+        file_handler: Union[str, DictConfig, Dict],
+        batch_size: int,
+        inference_batch_size: Optional[int] = None,
+        features_path: Optional[str] = None,
+        train_transform: Optional[SmartCompose] = None,
+        dev_transform: Optional[SmartCompose] = None,
+        test_transform: Optional[SmartCompose] = None,
+        stratify: Optional[List[str]] = None,
+    ) -> None:
+        """Base sound event detection dataset.
+
+        Args:
+            path: Root path to the dataset.
+            features_subdir: Subdirectory containing the features.
+            seed: Seed for reproducibility.
+            metrics: List of metrics to calculate.
+            tracking_metric: Metric to track.
+            index_column: Index column of the dataframe.
+            target_column: Target column of the dataframe.
+            file_type: File type of the features.
+            file_handler: File handler to load the data.
+            batch_size: Batch size.
+            inference_batch_size: Inference batch size.
+            features_path: Root path to features.
+            train_transform: Transform to apply to the training set.
+            dev_transform: Transform to apply to the development set.
+            test_transform: Transform to apply to the test set.
+            stratify: Columns to stratify the dataset on.
+            threshold: Threshold for classification.
+            min_event_length: Minimum event length in seconds.
+            min_event_gap: Minimum gap between events in seconds.
+        """
+        super().__init__(
+            path=path,
+            features_subdir=features_subdir,
+            seed=seed,
+            metrics=[],  # postpone init
+            tracking_metric=None,
+            index_column=index_column,
+            target_column=target_column,
+            file_type=file_type,
+            file_handler=file_handler,
+            batch_size=batch_size,
+            inference_batch_size=inference_batch_size,
+            features_path=features_path,
+            train_transform=train_transform,
+            dev_transform=dev_transform,
+            test_transform=test_transform,
+            stratify=stratify,
+        )
+        self.metrics = [
+            autrainer.instantiate_shorthand(
+                config=m,
+                instance_of=AbstractMetric,
+                target_transform=self.target_transform,
+            )
+            for m in metrics
+        ]
+        self.tracking_metric = autrainer.instantiate_shorthand(
+            config=tracking_metric,
+            instance_of=AbstractMetric,
+            target_transform=self.target_transform,
+        )
+
+    def _init_dataset(
+        self,
+        df: pd.DataFrame,
+        transform: SmartCompose,
+    ) -> SegmentedDatasetWrapper:
+        """Initialize a wrapper around torch.utils.data.Dataset.
+
+        Args:
+            df: Dataframe to use.
+            transform: Transform to apply to the features.
+
+        Returns:
+            Initialized dataset.
+        """
+        return DatasetWrapper(
+            path=self.path,
+            features_subdir=self.features_subdir,
+            index_column=self.index_column,
+            target_column=self.target_column,
+            file_type=self.file_type,
+            file_handler=self.file_handler,
+            df=df,
+            transform=transform,
+        )
 
 
 class BaseRegressionDataset(AbstractDataset):

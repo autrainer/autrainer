@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+import tarfile
 from typing import Dict, List, Optional
 from zipfile import ZipFile
 
@@ -68,7 +69,7 @@ class ZipDownloadManager:
             return
         print(f"Extracting {len(self.files)} files to '{self.path}' ...")
         for filename in self.files.keys():
-            self._extract_zip(self.path / filename, self.path)
+            self._extract_archive(self.path / filename, self.path)
 
     def _check_exist(self, check_exist: Optional[List[str]] = None) -> bool:
         return check_exist and all(
@@ -96,8 +97,16 @@ class ZipDownloadManager:
                 size = file.write(data)
                 pbar.update(size)
 
-    def _extract_zip(self, zip_path: Path, extract_to: Path) -> None:
-        if not zip_path.suffix == ".zip":
-            return
-        with ZipFile(zip_path, "r") as z:
-            z.extractall(extract_to)
+    def _extract_archive(self, archive_path: Path, extract_to: Path) -> None:
+        """Extract zip or tar.gz archive.
+
+        Args:
+            archive_path: Path to archive file
+            extract_to: Path to extract to
+        """
+        if archive_path.suffix == ".zip":
+            with ZipFile(archive_path, "r") as z:
+                z.extractall(extract_to)
+        elif archive_path.name.endswith(".tar.gz"):
+            with tarfile.open(archive_path, "r:gz") as t:
+                t.extractall(extract_to)

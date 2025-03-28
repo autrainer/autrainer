@@ -2,6 +2,7 @@ from .abstract_model import AbstractModel
 from .ast_model import ASTModel
 from .cnn_10 import Cnn10
 from .cnn_14 import Cnn14
+from .crnn import CRNN
 from .end2you import AudioRNNModel
 from .ffnn import FFNN
 from .leaf import LEAFNet
@@ -19,6 +20,7 @@ __all__ = [
     "AudioRNNModel",
     "Cnn10",
     "Cnn14",
+    "CRNN",
     "FFNN",
     "LEAFNet",
     "SeqFFNN",
