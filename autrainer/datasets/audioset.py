@@ -439,15 +439,13 @@ class AudioSet(BaseMLClassificationDataset):
     def download(path: str) -> None:  # pragma: no cover
         """Download AudioSet.
 
-        The audio files must be downloaded manually from
+        The data must be downloaded manually from
         https://research.google.com/audioset/download.html.
         We do not implement
-        the download of the audio files
-        as this is a very time consuming process.
-        Instead,
-        we download only the metadata files
-        and rely on the user
-        to download the audio themselves.
+        an automatic download
+        as this is a very costly process
+        that the user should handle
+        outside of `autrainer`.
 
         Args:
             path: Path to the directory to download the dataset to.
