@@ -134,6 +134,16 @@ class AudioSet(BaseMLClassificationDataset):
                 Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
             threshold: Threshold for classification. Defaults to 0.5.
+            use_unbalanced: Flag to allow the use of unbalanced set
+                during training.
+            include: List of categories to include. If set,
+                only instances tagged with at least one
+                category from the list will be included
+                in the final dataset.
+            exclude: List of categories to include. If set,
+                all instances tagged with at least one
+                category from the list will be excluded
+                from the final dataset.
         """
         self.use_unbalanced = use_unbalanced
         self.include = include
@@ -210,14 +220,14 @@ class AudioSet(BaseMLClassificationDataset):
             )
         return super()._assert_target_column(allowed_columns)
 
-    def _filename_and_ids(self, df):
+    def _filename_and_ids(self, df: pd.DataFrame) -> pd.DataFrame:
         r"""Return data frame with filenames and IDs.
 
         Args:
-            df (pandas.DataFrame): data frame as read in from the CSV file
+            df: data frame as read in from the CSV file.
 
         Results:
-            pandas.DataFrame: data frame with columns `filename` and `ids`
+            data frame with columns `filename` and `ids`.
 
         """
         df = df.rename(columns={"positive_labels": "ids"})
@@ -227,14 +237,14 @@ class AudioSet(BaseMLClassificationDataset):
         df["filename"] = df["# YTID"] + ".wav"
         return df[["filename", "ids"]]
 
-    def _add_parent_ids(self, child_ids):
+    def _add_parent_ids(self, child_ids: List[str]) -> List[str]:
         r"""Add all parent IDs to the list of given child IDs.
 
         Args:
-            child_ids (list of str): child IDs
+            child_ids: child IDs.
 
         Return:
-            list of str: list of child and parent IDs
+            list of child and parent IDs.
 
         """
         ids = child_ids
@@ -243,14 +253,14 @@ class AudioSet(BaseMLClassificationDataset):
         # Remove duplicates
         return list(set(ids))
 
-    def _convert_ids_to_categories(self, ids):
+    def _convert_ids_to_categories(self, ids: List[str]) -> List[str]:
         r"""Convert list of ids to sorted list of categories.
 
         Args:
-            ids (list of str): list of IDs
+            ids: list of IDs.
 
         Returns:
-            list of str: list of sorted categories
+            list of sorted categories.
 
         """
         # Convert IDs to categories
@@ -274,21 +284,21 @@ class AudioSet(BaseMLClassificationDataset):
 
     def _filter_by_categories(
         self,
-        df,
-        categories,
-        exclude_mode=False,
-    ):
+        df: pd.DataFrame,
+        categories: List[str],
+        exclude_mode: bool = False,
+    ) -> pd.DataFrame:
         r"""Return data frame containing only specified categories.
 
         Args:
-            df (pandas.DataFrame): data frame containing the columns `ids`
-            categories (list of str): list of categories to include or exclude
-            exclude_mode (bool, optional): if `False` the specified categories
+            df: data frame containing the columns `ids`.
+            categories: list of categories to include or exclude.
+            exclude_mode: if `False` the specified categories
                 should be included in the data frame, otherwise excluded.
-                Default: `False`
+                Default: `False`.
 
         Returns:
-            pandas.DataFrame: data frame containing only the desired categories
+            data frame containing only the desired categories.
 
         """
         ids = self._ids_for_categories(categories)
@@ -311,14 +321,14 @@ class AudioSet(BaseMLClassificationDataset):
         df = df.reset_index(drop=True)
         return df
 
-    def _ids_for_categories(self, categories):
+    def _ids_for_categories(self, categories: List[str]) -> List[str]:
         r"""All IDs and child IDs for a given set of categories.
 
         Args:
-            categories (list of str): list of categories
+            categories: list of categories.
 
         Returns:
-            list: list of IDs
+            list of IDs.
 
         """
         ids = []
@@ -330,14 +340,14 @@ class AudioSet(BaseMLClassificationDataset):
         # Remove duplicates
         return list(set(ids))
 
-    def _subcategory_ids(self, parent_id):
+    def _subcategory_ids(self, parent_id: str) -> List[str]:
         r"""Recursively identify all IDs of a given category.
 
         Args:
-            parent_id (unicode str): ID of parent category
+            parent_id: ID of parent category
 
         Returns:
-            list: list of all children IDs and the parent ID
+            list of all children IDs and the parent ID
 
         """
         id_list = [parent_id]
@@ -351,6 +361,21 @@ class AudioSet(BaseMLClassificationDataset):
         return id_list
 
     def map_to_classes(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Map dataframe as loaded to `autrainer` compatible.
+
+        Assigns all AudioSet IDs to category names.
+        Recursively assigns parent nodes
+        to every instance where a child is present.
+        Optionally filters dataframes
+        to include/exclude instances.
+        Creates columns with final labels.
+
+        Args:
+            df: dataframe loaded from CSV.
+
+        Returns:
+            Adapted dataframe.
+        """
         df = self._filename_and_ids(df)
         if self.include is not None:
             df = self._filter_by_categories(df, self.include)
@@ -375,6 +400,7 @@ class AudioSet(BaseMLClassificationDataset):
 
     @cached_property
     def ontology(self) -> Dict:
+        """Reads AudioSet ontology."""
         with open(os.path.join(self.path, "ontology.json"), "r") as fp:
             return json.load(fp)
 
