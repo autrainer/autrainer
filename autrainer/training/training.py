@@ -858,7 +858,7 @@ class ModularTaskTrainer:
                     batch_idx=batch_idx,
                     loss=reduced_loss,
                 )
-            losses /= len(loader) + 1
+            losses /= len(loader)
         tracker.save(iteration_folder, reset=False)
         results = {
             "loss": losses,
