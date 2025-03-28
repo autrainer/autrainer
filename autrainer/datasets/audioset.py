@@ -180,7 +180,34 @@ class AudioSet(BaseMLClassificationDataset):
         they appear at all in the data or not.
         """
         if self.target_column is None:
-            self.target_column = sorted([x["name"] for x in self.ontology])
+            unique_categories = set([x["name"] for x in self.ontology])
+            train_categories = set(
+                [
+                    x
+                    for y in self.df_train["categories"].values.tolist()
+                    for x in y
+                ]
+            )
+            dev_categories = set(
+                [
+                    x
+                    for y in self.df_dev["categories"].values.tolist()
+                    for x in y
+                ]
+            )
+            self.target_column = list(
+                (
+                    train_categories.intersection(dev_categories).intersection(
+                        unique_categories
+                    )
+                )
+            )
+            self._log.info(
+                (
+                    f"Training on {len(self.target_column)} classes:\n"
+                    f"{self.target_column}"
+                )
+            )
             if self.include is not None or self.exclude is not None:
                 self._log.warning(
                     '"include" or "exclude" filter activated '
@@ -378,7 +405,7 @@ class AudioSet(BaseMLClassificationDataset):
                     os.path.join(
                         self.features_path,
                         self.features_subdir,
-                        x.replace(".wav", f".{self.file_type}")
+                        x.replace(".wav", f".{self.file_type}"),
                     )
                 )
             )
@@ -389,7 +416,6 @@ class AudioSet(BaseMLClassificationDataset):
                 f"Found only {avail_len} "
                 f"from the {orig_len} original samples "
                 f"included in the {relative_path} set of Audioset. "
-                "Please verify if some files are misplaced."
             )
         return df
 
@@ -434,12 +460,18 @@ if __name__ == "__main__":
         path="/nas/databases/UAU/AudioSet2021/",
         metrics=["autrainer.metrics.MLF1Weighted"],
         tracking_metric="autrainer.metrics.MLF1Weighted",
-        file_handler="autrainer.datasets.utils.AudioFileHandler",
+        file_handler={
+            "autrainer.datasets.utils.AudioFileHandler": {
+                "target_sample_rate": 32000
+            }
+        },
         file_type="wav",
         features_subdir="",
         seed=0,
         index_column="filename",
+        include=["Human sounds"],
     )
+    print(data.target_column)
     loader = data.create_train_loader(1)
     batch = next(iter(loader))
     print(batch)
