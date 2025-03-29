@@ -1,5 +1,8 @@
 from typing import Any, Tuple, Type
 
+import audmetric
+import numpy as np
+import numpy.testing
 import pandas as pd
 import pytest
 import torch
@@ -8,6 +11,7 @@ from autrainer.criterions import (
     BalancedBCEWithLogitsLoss,
     BalancedCrossEntropyLoss,
     BCEWithLogitsLoss,
+    CCCLoss,
     CrossEntropyLoss,
     MSELoss,
     WeightedBCEWithLogitsLoss,
@@ -293,6 +297,78 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
         y = torch.rand(10, 5)
         loss = criterion(x, y)
         assert isinstance(loss, torch.Tensor), "Should return a torch.Tensor"
+
+
+class TestCCCLoss:
+    @pytest.mark.parametrize(
+        "x,y",
+        [
+            (
+                torch.Tensor([0.3, 0.4, 0.5, 0.6]),
+                torch.Tensor([0.3, 0.4, 0.5, 0.6]),
+            ),
+            (
+                torch.Tensor([0.3, 0.4, 0.5, 0.6]),
+                torch.Tensor([-2, 3, 1.8, -1.5]),
+            ),
+            (
+                torch.Tensor([[0.3, 0.4, 0.5, 0.6], [0.7, 0.9, 0.3, 0.7]]),
+                torch.Tensor([[0.3, 0.4, 0.5, 0.6], [0.7, 0.9, 0.3, 0.7]]),
+            ),
+            (
+                torch.Tensor(
+                    [
+                        [0.3, 0.4, 0.2],
+                        [0.7, 0.1, 0.5],
+                        [0.5, 0.6, -0.1],
+                        [0.7, 0.9, -0.3],
+                    ]
+                ),
+                torch.Tensor(
+                    [
+                        [0.1, 0.7, 0.4],
+                        [0.7, 0.1, 0.5],
+                        [0.4, 0.5, -0.2],
+                        [0.2, 0.7, -0.1],
+                    ]
+                ),
+            ),
+            pytest.param(
+                torch.Tensor(
+                    [0.3, 0.3, 0.3],
+                ),
+                torch.Tensor(
+                    [0.3, 0.3, 0.3],
+                ),
+                marks=pytest.mark.xfail(raises=AssertionError),
+            ),
+        ],
+    )
+    def test_forward_dtype(self, x, y) -> None:
+        criterion = CCCLoss()
+        loss = float(criterion(x, y).numpy())
+        if len(x.shape) == 1:
+            ccc = audmetric.concordance_cc(x, y)
+            assert ccc == ccc
+            result = 1 - audmetric.concordance_cc(x, y)
+        else:
+            dims = x.shape[-1]
+            result = 0
+            for dim in range(dims):
+                ccc = audmetric.concordance_cc(x[:, dim], y[:, dim])
+                np.testing.assert_almost_equal(
+                    float(criterion(x[:, dim], y[:, dim]).numpy()),
+                    1 - ccc,
+                    5,
+                    err_msg=(
+                        f"Failed for {x[:, dim]} vs {y[:, dim]}. "
+                        f"Result: {float(criterion(x[:, dim], y[:, dim]).numpy())}. "
+                        f"Expected: {1-ccc}."
+                    ),
+                )
+                result += 1 - ccc
+            result /= dims
+        np.testing.assert_almost_equal(loss, result, 5)
 
 
 class TestLossForward:
