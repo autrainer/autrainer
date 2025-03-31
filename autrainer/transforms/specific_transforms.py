@@ -397,9 +397,7 @@ class Standardizer(AbstractTransform):
         dataset_wrapper = getattr(data, f"{self.subset}_dataset")
         original_transform = dataset_wrapper.transform
         dataset_wrapper.transform = None
-        data = torch.stack([x.features for x in dataset_wrapper]).to(
-            torch.float32
-        )
+        data = torch.stack([x for x, *_ in dataset_wrapper]).to(torch.float32)
         dataset_wrapper.transform = original_transform
         return data
 
@@ -722,3 +720,41 @@ class OpenSMILE(AbstractTransform):
     def __call__(self, data: torch.Tensor) -> torch.Tensor:
         data = self.smile.process_signal(data.numpy(), self.sample_rate)
         return torch.from_numpy(self.smile.to_numpy(data)).squeeze()
+
+
+class PadCollate(AbstractTransform):
+    def __init__(
+        self,
+        target_length: int,
+        pad_dim: int = 1,
+        pad_value: float = 0.0,
+        order: int = -90,
+    ) -> None:
+        """Transform that pads or truncates sequences to a target length.
+
+        Args:
+            target_length: The target length to pad/truncate to.
+            pad_dim: The dimension to pad along. Defaults to 1.
+            pad_value: The value to pad with. Defaults to 0.0.
+            order: The order of the transform in the pipeline. Defaults to -90.
+        """
+        super().__init__(order=order)
+        self.target_length = target_length
+        self.pad_dim = pad_dim
+        self.pad_value = pad_value
+
+    def __call__(self, data: torch.Tensor) -> torch.Tensor:
+        if data.shape[self.pad_dim] > self.target_length:
+            data = data[:, : self.target_length, :]
+        else:
+            pad_size = list(data.shape)
+            pad_size[self.pad_dim] = (
+                self.target_length - data.shape[self.pad_dim]
+            )
+            padding = [0, 0] * len(data.shape)
+            padding[2 * self.pad_dim + 1] = pad_size[self.pad_dim]
+            if pad_size[self.pad_dim] > 0:
+                data = torch.nn.functional.pad(
+                    data, tuple(padding[::-1]), value=self.pad_value
+                )
+        return data

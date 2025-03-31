@@ -14,12 +14,7 @@ from .utils import SEDEncoder, ZipDownloadManager
 
 
 FILES = {
-    # Development dataset - Synthetic data ~1 GB
     "Synthetic_dataset.zip": "https://zenodo.org/records/2583796/files/Synthetic_dataset.zip?download=1",
-    # TODO: Development set - Weak data, unlabel_in_domain_dev_path -requires youtube-dl package
-    # https://github.com/turpaultn/DESED/blob/master/desed/desed/download.py
-    # https://github.com/turpaultn/DCASE2019_task4/blob/public/baseline/download_data.py
-    # Evaluation dataset - Public evaluation set ~1 GB
     "DESED_public_eval.tar.gz": "https://zenodo.org/records/3588172/files/DESEDpublic_eval.tar.gz?download=1",
 }
 
@@ -37,9 +32,11 @@ EVENTS = [
 ]
 
 DURATIONS = {
-    "min_dur_event": 0.25,
-    "min_dur_inter": 0.15,
-    "length_sec": 10,
+    "frame_rate": 0.08,
+    "duration": 10,
+    "threshold": 0.3,
+    "min_event_length": 0.3,
+    "pause_length": 0.5,
 }
 
 
@@ -60,7 +57,6 @@ class DCASE2019Task4(BaseSEDDataset):
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
-        frame_rate: float = 0.08,
     ) -> None:
         """DCASE 2019 Task 4 dataset.
 
@@ -79,13 +75,11 @@ class DCASE2019Task4(BaseSEDDataset):
         """
         self.onset_column = "onset"
         self.offset_column = "offset"
-        # FIXME: make more modular
-        self.duration = 10  # duration fixed @ 10s
-        self.frame_rate = frame_rate
-        assert self.frame_rate is not None
-        assert self.frame_rate > 0
-        # FIXME: Maybe np.ceil?
-        self.num_frames = int(self.duration / self.frame_rate)
+        assert DURATIONS["frame_rate"] > 0
+        self.frame_rate = DURATIONS["frame_rate"]
+        self.num_frames = int(
+            np.ceil(DURATIONS["duration"] / DURATIONS["frame_rate"])
+        )
         super().__init__(
             path=path,
             features_subdir=features_subdir,
@@ -105,7 +99,7 @@ class DCASE2019Task4(BaseSEDDataset):
 
     @cached_property
     def target_transform(self) -> SEDEncoder:
-        return SEDEncoder(EVENTS)
+        return SEDEncoder(EVENTS, **DURATIONS)
 
     def _framewise_representation(self, df):
         """Transform data to framewise representations.
