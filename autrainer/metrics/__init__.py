@@ -11,7 +11,7 @@ from .multi_label_classification import (
     MLF1Weighted,
 )
 from .regression import CCC, MAE, MSE, PCC
-from .sed_metrics import SegmentBasedF1
+from .sed_metrics import EventBasedF1, SegmentBasedErrorRate, SegmentBasedF1
 
 
 __all__ = [
@@ -30,4 +30,6 @@ __all__ = [
     "MSE",
     "PCC",
     "SegmentBasedF1",
+    "EventBasedF1",
+    "SegmentBasedErrorRate",
 ]

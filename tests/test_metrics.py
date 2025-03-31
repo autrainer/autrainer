@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 from sklearn.metrics import f1_score
 
+from autrainer.datasets.utils.target_transforms.sed_encoder import SEDEncoder
 from autrainer.metrics import (
     CCC,
     F1,
@@ -16,10 +17,13 @@ from autrainer.metrics import (
     UAR,
     AbstractMetric,
     Accuracy,
+    EventBasedF1,
     MLAccuracy,
     MLF1Macro,
     MLF1Micro,
     MLF1Weighted,
+    SegmentBasedErrorRate,
+    SegmentBasedF1,
 )
 from autrainer.training.utils import disaggregated_evaluation
 
@@ -229,3 +233,53 @@ class TestAllMetrics:
             stratify=stratify,
         )
         assert res == results
+
+    @pytest.mark.parametrize(
+        "cls,encoder,truth,pred,expected_score",
+        [
+            (
+                SegmentBasedF1,
+                SEDEncoder(labels=["speech", "music"], frame_rate=0.1),
+                np.array([[1, 0], [1, 0], [0, 1], [0, 1]]),
+                np.array([[1, 0], [1, 0], [0, 1], [0, 1]]),
+                1.0,
+            ),
+            (
+                EventBasedF1,
+                SEDEncoder(labels=["speech", "music"], frame_rate=0.1),
+                np.array([[1, 0], [1, 0], [0, 1], [0, 1]]),
+                np.array([[1, 0], [1, 0], [0, 1], [0, 1]]),
+                1.0,
+            ),
+            (
+                SegmentBasedErrorRate,
+                SEDEncoder(labels=["speech", "music"], frame_rate=0.1),
+                np.array([[1, 0], [1, 0], [0, 1], [0, 1]]),
+                np.array([[1, 0], [1, 0], [0, 1], [0, 1]]),
+                0.0,
+            ),
+        ],
+    )
+    def test_sed_metrics(
+        self,
+        cls: Type[AbstractMetric],
+        encoder: SEDEncoder,
+        truth: np.ndarray,
+        pred: np.ndarray,
+        expected_score: float,
+    ) -> None:
+        metric = cls(encoder)
+        self._test_starting_metric(metric)
+        self._test_comparisons(metric)
+        score = metric(truth, pred)
+        np.testing.assert_almost_equal(score, expected_score, decimal=2)
+        invalid_input = np.array([1, 2, 3])
+        score = metric(invalid_input, pred)
+        if isinstance(metric, (SegmentBasedF1, EventBasedF1)):
+            assert (
+                score == -1e32
+            ), "Invalid input should return fallback value for F1 metrics"
+        else:
+            assert (
+                score == 1e32
+            ), "Invalid input should return fallback value for error rate metric"
