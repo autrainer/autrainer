@@ -6,6 +6,7 @@ from .abstract_dataset import (
     BaseRegressionDataset,
 )
 from .aibo import AIBO
+from .audioset import AudioSet
 from .dcase_2016_t1 import DCASE2016Task1
 from .dcase_2018_t3 import DCASE2018Task3
 from .dcase_2020_t1a import DCASE2020Task1A
@@ -23,6 +24,7 @@ __all__ = [
     "BaseMTRegressionDataset",
     "BaseRegressionDataset",
     "AIBO",
+    "AudioSet",
     "DCASE2016Task1",
     "DCASE2018Task3",
     "DCASE2020Task1A",

@@ -143,6 +143,15 @@ We provide a number of different audio-specific datasets.
       .. configurations::
          :subdir: dataset
          :configs: AIBO
+
+.. autoclass:: autrainer.datasets.AudioSet
+   :members:
+   
+   .. dropdown:: Default Configurations
+  
+      .. configurations::
+         :subdir: dataset
+         :configs: AudioSet
   
 .. autoclass:: autrainer.datasets.DCASE2016Task1
    :members:
