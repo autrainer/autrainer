@@ -4,6 +4,7 @@ from .abstract_dataset import (
     BaseMLClassificationDataset,
     BaseMTRegressionDataset,
     BaseRegressionDataset,
+    BaseSSLDataset,
 )
 from .aibo import AIBO
 from .dcase_2016_t1 import DCASE2016Task1
@@ -13,6 +14,7 @@ from .edansa2019 import EDANSA2019
 from .emo_db import EmoDB
 from .msppodcast import MSPPodcast
 from .speech_commands import SpeechCommands
+from .ssl_wrapper import SSLWrapper
 from .toy_dataset import ToyDataset
 
 
@@ -22,6 +24,7 @@ __all__ = [
     "BaseMLClassificationDataset",
     "BaseMTRegressionDataset",
     "BaseRegressionDataset",
+    "BaseSSLDataset",
     "AIBO",
     "DCASE2016Task1",
     "DCASE2018Task3",
@@ -30,5 +33,6 @@ __all__ = [
     "EmoDB",
     "MSPPodcast",
     "SpeechCommands",
+    "SSLWrapper",
     "ToyDataset",
 ]

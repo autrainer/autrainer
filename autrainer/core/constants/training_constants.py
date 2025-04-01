@@ -12,6 +12,7 @@ class TrainingConstants(AbstractConstants):
         "ml-classification",
         "regression",
         "mt-regression",
+        "self-supervised-learning",
     ]
 
     @property

@@ -23,6 +23,7 @@ from .utils import (
     MinMaxScaler,
     MultiLabelEncoder,
     MultiTargetMinMaxScaler,
+    SSLDatasetWrapper,
 )
 
 
@@ -697,3 +698,112 @@ class BaseMTRegressionDataset(AbstractDataset):
             minimum=self.df_train[self.target_column].min().to_list(),
             maximum=self.df_train[self.target_column].max().to_list(),
         )
+
+
+class BaseSSLDataset(AbstractDataset):
+    def __init__(
+        self,
+        path: str,
+        features_subdir: str,
+        seed: int,
+        metrics: List[Union[str, DictConfig, Dict]],
+        tracking_metric: Union[str, DictConfig, Dict],
+        index_column: str,
+        file_type: str,
+        file_handler: Union[str, DictConfig, Dict],
+        features_path: Optional[str] = None,
+        train_transform: Optional[SmartCompose] = None,
+        dev_transform: Optional[SmartCompose] = None,
+        test_transform: Optional[SmartCompose] = None,
+        target_transform: Optional[SmartCompose] = None,
+        stratify: Optional[List[str]] = None,
+    ) -> None:
+        """Base self-supervised learning dataset.
+
+        Args:
+            path: Root path to the dataset.
+            features_subdir: Subdirectory containing the features.
+                If `None`, defaults to audio subdirectory,
+                which is `default` for the standard format,
+                but can be overridden in the dataset specification.
+            seed: Seed for reproducibility.
+            metrics: List of metrics to calculate.
+            tracking_metric: Metric to track.
+            index_column: Index column of the dataframe.
+            target_column: Target column of the dataframe.
+            file_type: File type of the features.
+            file_handler: File handler to load the data.
+            features_path: Root path to features. Useful
+                when features need to be extracted and stored
+                in a different folder than the root of the dataset.
+                If `None`, will be set to `path`. Defaults to `None`.
+            train_transform: Transform to apply to the training set.
+                Defaults to None.
+            dev_transform: Transform to apply to the development set.
+                Defaults to None.
+            test_transform: Transform to apply to the test set.
+                Defaults to None.
+            stratify: Columns to stratify the dataset on. Defaults to None.
+        """
+        super().__init__(
+            path=path,
+            features_subdir=features_subdir,
+            seed=seed,
+            task="self-supervised-learning",
+            metrics=metrics,
+            tracking_metric=tracking_metric,
+            index_column=index_column,
+            target_column=None,
+            file_type=file_type,
+            file_handler=file_handler,
+            features_path=features_path,
+            train_transform=train_transform,
+            dev_transform=dev_transform,
+            test_transform=test_transform,
+            stratify=stratify,
+        )
+        self.target_transform = target_transform
+
+    @cached_property
+    def output_dim(self) -> int:
+        """Mocks the output dimension of the dataset.
+
+        The output dimension
+        is determined by the input dimension.
+        We set it to `None`
+        as SSL-compatible models
+        should ignore it.
+
+        Returns:
+            Output dimension.
+        """
+        return None
+
+    def _init_dataset(
+        self,
+        df: pd.DataFrame,
+        transform: SmartCompose,
+    ) -> SSLDatasetWrapper:
+        """Initialize a wrapper around torch.utils.data.Dataset.
+
+        Args:
+            df: Dataframe to use.
+            transform: Transform to apply to the features.
+
+        Returns:
+            Initialized dataset.
+        """
+        return SSLDatasetWrapper(
+            path=self.features_path,
+            features_subdir=self.features_subdir,
+            index_column=self.index_column,
+            file_type=self.file_type,
+            file_handler=self.file_handler,
+            df=df,
+            transform=transform,
+            target_transform=self.target_transform,
+        )
+
+    @cached_property
+    def target_transform(self) -> SmartCompose:
+        return self.target_transform
