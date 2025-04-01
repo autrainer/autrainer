@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,14 +353,14 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.core.constants.naming_constants</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">.abstract_constants</span> <span class="kn">import</span> <span class="n">AbstractConstants</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractConstants</span>
 
 
 <div class="viewcode-block" id="NamingConstants">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.constants.NamingConstants">[docs]</a>
-<span class="k">class</span> <span class="nc">NamingConstants</span><span class="p">(</span><span class="n">AbstractConstants</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NamingConstants</span><span class="p">(</span><span class="n">AbstractConstants</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Singleton for managing the naming configurations of `autrainer`.&quot;&quot;&quot;</span>
 
     <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;NamingConstants&quot;</span>
@@ -391,7 +391,7 @@ document.write(`
     <span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">NAMING_CONVENTION</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">NAMING_CONVENTION</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the naming convention of runs.</span>
 <span class="sd">        Defaults to :attr:`[&quot;dataset&quot;, &quot;model&quot;, &quot;optimizer&quot;, &quot;learning_rate&quot;,</span>
 <span class="sd">        &quot;batch_size&quot;, &quot;training_type&quot;, &quot;iterations&quot;, &quot;scheduler&quot;,</span>
@@ -403,7 +403,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_naming_convention</span>
 
     <span class="nd">@NAMING_CONVENTION</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">NAMING_CONVENTION</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">naming_convention</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">NAMING_CONVENTION</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">naming_convention</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the naming convention of runs.</span>
 
 <span class="sd">        Args:</span>
@@ -423,7 +423,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_naming_convention</span> <span class="o">=</span> <span class="n">naming_convention</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">INVALID_AGGREGATIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">INVALID_AGGREGATIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the invalid aggregations for postprocessing.</span>
 <span class="sd">        Defaults to :attr:`[&quot;training_type&quot;]`.</span>
 
@@ -433,7 +433,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_invalid_aggregations</span>
 
     <span class="nd">@INVALID_AGGREGATIONS</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">INVALID_AGGREGATIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">invalid_aggregations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">INVALID_AGGREGATIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">invalid_aggregations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the invalid aggregations for postprocessing.</span>
 
 <span class="sd">        Args:</span>
@@ -453,7 +453,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_invalid_aggregations</span> <span class="o">=</span> <span class="n">invalid_aggregations</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">VALID_AGGREGATIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">VALID_AGGREGATIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the valid aggregations for postprocessing.</span>
 <span class="sd">        Defaults to :attr:`[&quot;dataset&quot;, &quot;model&quot;, &quot;optimizer&quot;, &quot;learning_rate&quot;,</span>
 <span class="sd">        &quot;batch_size&quot;, &quot;iterations&quot;, &quot;scheduler&quot;, &quot;augmentation&quot;, &quot;seed&quot;]`</span>
@@ -465,7 +465,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_aggregations</span>
 
     <span class="nd">@VALID_AGGREGATIONS</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">VALID_AGGREGATIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valid_aggregations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">VALID_AGGREGATIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valid_aggregations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the valid aggregations for postprocessing.</span>
 
 <span class="sd">        Args:</span>
@@ -485,7 +485,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_valid_aggregations</span> <span class="o">=</span> <span class="n">valid_aggregations</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">CONFIG_DIRS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">CONFIG_DIRS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the configuration directories for Hydra configurations.</span>
 <span class="sd">        Defaults to :attr:`[&quot;augmentation&quot;, &quot;dataset&quot;, &quot;model&quot;, &quot;optimizer&quot;,</span>
 <span class="sd">        &quot;plotting&quot;, &quot;preprocessing&quot;, &quot;scheduler&quot;]`.</span>
@@ -496,7 +496,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_dirs</span>
 
     <span class="nd">@CONFIG_DIRS</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">CONFIG_DIRS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">CONFIG_DIRS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the configuration directories for Hydra configurations.</span>
 
 <span class="sd">        Args:</span>
@@ -551,7 +551,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

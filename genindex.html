@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -379,6 +379,10 @@ document.write(`
 </li>
       <li><a href="modules/core.html#autrainer.core.constants.AbstractConstants">AbstractConstants (class in autrainer.core.constants)</a>
 </li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractDataBatch">AbstractDataBatch (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractDataItem">AbstractDataItem (class in autrainer.datasets.utils)</a>
+</li>
       <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset">AbstractDataset (class in autrainer.datasets)</a>
 </li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractFileHandler">AbstractFileHandler (class in autrainer.datasets.utils)</a>
@@ -403,8 +407,6 @@ document.write(`
 </li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.AlbumentationsAugmentation">AlbumentationsAugmentation (class in autrainer.augmentations)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/transforms.html#autrainer.transforms.AnyToTensor">AnyToTensor (class in autrainer.transforms)</a>
 </li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.AbstractAugmentation.apply">apply() (autrainer.augmentations.AbstractAugmentation method)</a>
@@ -415,15 +417,29 @@ document.write(`
         <li><a href="modules/augmentations.html#autrainer.augmentations.Sequential.apply">(autrainer.augmentations.Sequential method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/core.html#autrainer.core.constants.ExportConstants.ARTIFACTS">ARTIFACTS (autrainer.core.constants.ExportConstants property)</a>
 </li>
       <li><a href="modules/models.html#autrainer.models.ASTModel">ASTModel (class in autrainer.models)</a>
 </li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.audio_subdir">audio_subdir (autrainer.datasets.AbstractDataset property)</a>
+
+      <ul>
+        <li><a href="modules/datasets.html#autrainer.datasets.AIBO.audio_subdir">(autrainer.datasets.AIBO property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.AudioSet.audio_subdir">(autrainer.datasets.AudioSet property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.MSPPodcast.audio_subdir">(autrainer.datasets.MSPPodcast property)</a>
+</li>
+      </ul></li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AudioFileHandler">AudioFileHandler (class in autrainer.datasets.utils)</a>
 </li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.AudiomentationsAugmentation">AudiomentationsAugmentation (class in autrainer.augmentations)</a>
 </li>
       <li><a href="modules/models.html#autrainer.models.AudioRNNModel">AudioRNNModel (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AudioSet">AudioSet (class in autrainer.datasets)</a>
 </li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.AugmentationManager">AugmentationManager (class in autrainer.augmentations)</a>
 </li>
@@ -449,6 +465,8 @@ document.write(`
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/criterions.html#autrainer.criterions.BalancedBCEWithLogitsLoss">BalancedBCEWithLogitsLoss (class in autrainer.criterions)</a>
+</li>
       <li><a href="modules/criterions.html#autrainer.criterions.BalancedCrossEntropyLoss">BalancedCrossEntropyLoss (class in autrainer.criterions)</a>
 </li>
       <li><a href="modules/metrics.html#autrainer.metrics.BaseAscendingMetric">BaseAscendingMetric (class in autrainer.metrics)</a>
@@ -464,6 +482,8 @@ document.write(`
       <li><a href="modules/datasets.html#autrainer.datasets.BaseMTRegressionDataset">BaseMTRegressionDataset (class in autrainer.datasets)</a>
 </li>
       <li><a href="modules/datasets.html#autrainer.datasets.BaseRegressionDataset">BaseRegressionDataset (class in autrainer.datasets)</a>
+</li>
+      <li><a href="modules/criterions.html#autrainer.criterions.BCEWithLogitsLoss">BCEWithLogitsLoss (class in autrainer.criterions)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.utils.Bookkeeping">Bookkeeping (class in autrainer.core.utils)</a>
 </li>
@@ -509,13 +529,13 @@ document.write(`
 </li>
       <li><a href="modules/metrics.html#autrainer.metrics.CCC">CCC (class in autrainer.metrics)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.ModularTaskTrainer.cfg">cfg (autrainer.training.ModularTaskTrainer property)</a>
-</li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.Choice">Choice (class in autrainer.augmentations)</a>
 </li>
       <li><a href="modules/models.html#autrainer.models.Cnn10">Cnn10 (class in autrainer.models)</a>
 </li>
       <li><a href="modules/models.html#autrainer.models.Cnn14">Cnn14 (class in autrainer.models)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractDataBatch.collate">collate() (autrainer.datasets.utils.AbstractDataBatch class method)</a>
 </li>
       <li><a href="modules/metrics.html#autrainer.metrics.AbstractMetric.compare">compare() (autrainer.metrics.AbstractMetric static method)</a>
 </li>
@@ -537,6 +557,10 @@ document.write(`
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.DataBatch">DataBatch (class in autrainer.datasets.utils)</a>
+</li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.DataItem">DataItem (class in autrainer.datasets.utils)</a>
+</li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.DatasetWrapper">DatasetWrapper (class in autrainer.datasets.utils)</a>
 </li>
       <li><a href="modules/datasets.html#autrainer.datasets.DCASE2016Task1">DCASE2016Task1 (class in autrainer.datasets)</a>
@@ -557,14 +581,66 @@ document.write(`
       </ul></li>
       <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.dev_dataset">dev_dataset (autrainer.datasets.AbstractDataset property)</a>
 </li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.df_dev">df_dev (autrainer.datasets.AbstractDataset property)</a>
+
+      <ul>
+        <li><a href="modules/datasets.html#autrainer.datasets.AIBO.df_dev">(autrainer.datasets.AIBO property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.AudioSet.df_dev">(autrainer.datasets.AudioSet property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2016Task1.df_dev">(autrainer.datasets.DCASE2016Task1 property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2018Task3.df_dev">(autrainer.datasets.DCASE2018Task3 property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2020Task1A.df_dev">(autrainer.datasets.DCASE2020Task1A property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.EmoDB.df_dev">(autrainer.datasets.EmoDB property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.MSPPodcast.df_dev">(autrainer.datasets.MSPPodcast property)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.df_test">df_test (autrainer.datasets.AbstractDataset property)</a>
+
+      <ul>
+        <li><a href="modules/datasets.html#autrainer.datasets.AIBO.df_test">(autrainer.datasets.AIBO property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.AudioSet.df_test">(autrainer.datasets.AudioSet property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2016Task1.df_test">(autrainer.datasets.DCASE2016Task1 property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2020Task1A.df_test">(autrainer.datasets.DCASE2020Task1A property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.EmoDB.df_test">(autrainer.datasets.EmoDB property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.MSPPodcast.df_test">(autrainer.datasets.MSPPodcast property)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.dev_loader">dev_loader (autrainer.datasets.AbstractDataset property)</a>
+      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.df_train">df_train (autrainer.datasets.AbstractDataset property)</a>
+
+      <ul>
+        <li><a href="modules/datasets.html#autrainer.datasets.AIBO.df_train">(autrainer.datasets.AIBO property)</a>
 </li>
+        <li><a href="modules/datasets.html#autrainer.datasets.AudioSet.df_train">(autrainer.datasets.AudioSet property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2016Task1.df_train">(autrainer.datasets.DCASE2016Task1 property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2018Task3.df_train">(autrainer.datasets.DCASE2018Task3 property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2020Task1A.df_train">(autrainer.datasets.DCASE2020Task1A property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.EmoDB.df_train">(autrainer.datasets.EmoDB property)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.MSPPodcast.df_train">(autrainer.datasets.MSPPodcast property)</a>
+</li>
+      </ul></li>
       <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.download">download() (autrainer.datasets.AbstractDataset static method)</a>
 
       <ul>
         <li><a href="modules/datasets.html#autrainer.datasets.AIBO.download">(autrainer.datasets.AIBO static method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.AudioSet.download">(autrainer.datasets.AudioSet static method)</a>
 </li>
         <li><a href="modules/datasets.html#autrainer.datasets.DCASE2016Task1.download">(autrainer.datasets.DCASE2016Task1 static method)</a>
 </li>
@@ -575,6 +651,8 @@ document.write(`
         <li><a href="modules/datasets.html#autrainer.datasets.EDANSA2019.download">(autrainer.datasets.EDANSA2019 static method)</a>
 </li>
         <li><a href="modules/datasets.html#autrainer.datasets.EmoDB.download">(autrainer.datasets.EmoDB static method)</a>
+</li>
+        <li><a href="modules/datasets.html#autrainer.datasets.MSPPodcast.download">(autrainer.datasets.MSPPodcast static method)</a>
 </li>
         <li><a href="modules/datasets.html#autrainer.datasets.SpeechCommands.download">(autrainer.datasets.SpeechCommands static method)</a>
 </li>
@@ -611,8 +689,6 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.end_run">end_run() (autrainer.loggers.AbstractLogger method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.ModularTaskTrainer.evaluate">evaluate() (autrainer.training.ModularTaskTrainer method)</a>
-</li>
       <li><a href="modules/transforms.html#autrainer.transforms.Expand">Expand (class in autrainer.transforms)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.constants.ExportConstants">ExportConstants (class in autrainer.core.constants)</a>
@@ -633,18 +709,24 @@ document.write(`
 </li>
       <li><a href="usage/cli_wrapper.html#autrainer.cli.fetch">fetch() (in module autrainer.cli)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/models.html#autrainer.models.FFNN">FFNN (class in autrainer.models)</a>
 </li>
-      <li><a href="modules/criterions.html#autrainer.criterions.CrossEntropyLoss.forward">forward() (autrainer.criterions.CrossEntropyLoss method)</a>
+      <li><a href="modules/criterions.html#autrainer.criterions.BalancedBCEWithLogitsLoss.forward">forward() (autrainer.criterions.BalancedBCEWithLogitsLoss method)</a>
 
       <ul>
+        <li><a href="modules/criterions.html#autrainer.criterions.BCEWithLogitsLoss.forward">(autrainer.criterions.BCEWithLogitsLoss method)</a>
+</li>
+        <li><a href="modules/criterions.html#autrainer.criterions.CrossEntropyLoss.forward">(autrainer.criterions.CrossEntropyLoss method)</a>
+</li>
         <li><a href="modules/criterions.html#autrainer.criterions.MSELoss.forward">(autrainer.criterions.MSELoss method)</a>
+</li>
+        <li><a href="modules/criterions.html#autrainer.criterions.WeightedMSELoss.forward">(autrainer.criterions.WeightedMSELoss method)</a>
 </li>
         <li><a href="modules/models.html#autrainer.models.AbstractModel.forward">(autrainer.models.AbstractModel method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/augmentations.html#autrainer.augmentations.FrequencyMask">FrequencyMask (class in autrainer.augmentations)</a>
 </li>
   </ul></td>
@@ -663,14 +745,12 @@ document.write(`
 </li>
       <li><a href="modules/transforms.html#autrainer.transforms.SmartCompose.get_collate_fn">get_collate_fn() (autrainer.transforms.SmartCompose method)</a>
 </li>
-      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.get_evaluation_data">get_evaluation_data() (autrainer.datasets.AbstractDataset method)</a>
-</li>
       <li><a href="modules/core.html#autrainer.core.utils.get_hardware_info">get_hardware_info() (in module autrainer.core.utils)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.utils.Timer.get_mean_seconds">get_mean_seconds() (autrainer.core.utils.Timer method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/core.html#autrainer.core.utils.Timer.get_mean_seconds">get_mean_seconds() (autrainer.core.utils.Timer method)</a>
-</li>
       <li><a href="modules/core.html#autrainer.core.utils.Timer.get_time_log">get_time_log() (autrainer.core.utils.Timer method)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.utils.Timer.get_total_seconds">get_total_seconds() (autrainer.core.utils.Timer method)</a>
@@ -697,11 +777,15 @@ document.write(`
 </li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ImageFileHandler">ImageFileHandler (class in autrainer.datasets.utils)</a>
 </li>
+      <li><a href="modules/transforms.html#autrainer.transforms.ImageToFloat">ImageToFloat (class in autrainer.transforms)</a>
+</li>
       <li><a href="modules/serving.html#autrainer.serving.Inference">Inference (class in autrainer.serving)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="usage/cli_wrapper.html#autrainer.cli.inference">inference() (in module autrainer.cli)</a>
+</li>
+      <li><a href="modules/models.html#autrainer.models.AbstractModel.inputs">inputs (autrainer.models.AbstractModel property)</a>
 </li>
       <li><a href="modules/core.html#autrainer.instantiate">instantiate() (in module autrainer)</a>
 </li>
@@ -731,20 +815,6 @@ document.write(`
         <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.ImageFileHandler.load">(autrainer.datasets.utils.ImageFileHandler method)</a>
 </li>
         <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.NumpyFileHandler.load">(autrainer.datasets.utils.NumpyFileHandler method)</a>
-</li>
-      </ul></li>
-      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.load_dataframes">load_dataframes() (autrainer.datasets.AbstractDataset method)</a>
-
-      <ul>
-        <li><a href="modules/datasets.html#autrainer.datasets.AIBO.load_dataframes">(autrainer.datasets.AIBO method)</a>
-</li>
-        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2016Task1.load_dataframes">(autrainer.datasets.DCASE2016Task1 method)</a>
-</li>
-        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2018Task3.load_dataframes">(autrainer.datasets.DCASE2018Task3 method)</a>
-</li>
-        <li><a href="modules/datasets.html#autrainer.datasets.DCASE2020Task1A.load_dataframes">(autrainer.datasets.DCASE2020Task1A method)</a>
-</li>
-        <li><a href="modules/datasets.html#autrainer.datasets.EmoDB.load_dataframes">(autrainer.datasets.EmoDB method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -787,6 +857,8 @@ document.write(`
         <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder.majority_vote">(autrainer.datasets.utils.MultiLabelEncoder method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/datasets.html#autrainer.datasets.AudioSet.map_to_classes">map_to_classes() (autrainer.datasets.AudioSet method)</a>
+</li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MinMaxScaler">MinMaxScaler (class in autrainer.datasets.utils)</a>
 </li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.MixUp">MixUp (class in autrainer.augmentations)</a>
@@ -801,7 +873,7 @@ document.write(`
 </li>
       <li><a href="modules/metrics.html#autrainer.metrics.MLF1Weighted">MLF1Weighted (class in autrainer.metrics)</a>
 </li>
-      <li><a href="modules/loggers.html#autrainer.loggers.MLFlowLogger">MLFlowLogger (in module autrainer.loggers)</a>
+      <li><a href="modules/loggers.html#autrainer.loggers.MLFlowLogger">MLFlowLogger (class in autrainer.loggers)</a>
 </li>
       <li><a href="modules/training.html#autrainer.training.ModularTaskTrainer">ModularTaskTrainer (class in autrainer.training)</a>
 </li>
@@ -817,6 +889,8 @@ document.write(`
       <li><a href="modules/metrics.html#autrainer.metrics.MSE">MSE (class in autrainer.metrics)</a>
 </li>
       <li><a href="modules/criterions.html#autrainer.criterions.MSELoss">MSELoss (class in autrainer.criterions)</a>
+</li>
+      <li><a href="modules/datasets.html#autrainer.datasets.MSPPodcast">MSPPodcast (class in autrainer.datasets)</a>
 </li>
       <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.MultiLabelEncoder">MultiLabelEncoder (class in autrainer.datasets.utils)</a>
 </li>
@@ -844,10 +918,18 @@ document.write(`
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/transforms.html#autrainer.transforms.OpenSMILE">OpenSMILE (class in autrainer.transforms)</a>
+      <li><a href="modules/augmentations.html#autrainer.augmentations.AbstractAugmentation.offset_generator_seed">offset_generator_seed() (autrainer.augmentations.AbstractAugmentation method)</a>
+
+      <ul>
+        <li><a href="modules/transforms.html#autrainer.transforms.SmartCompose.offset_generator_seed">(autrainer.transforms.SmartCompose method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/datasets.html#autrainer.datasets.AudioSet.ontology">ontology (autrainer.datasets.AudioSet property)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.OpenSMILE">OpenSMILE (class in autrainer.transforms)</a>
+</li>
       <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.output_dim">output_dim (autrainer.datasets.AbstractDataset property)</a>
 </li>
   </ul></td>
@@ -1004,18 +1086,26 @@ document.write(`
 </li>
       <li><a href="modules/models.html#autrainer.models.SeqFFNN">SeqFFNN (class in autrainer.models)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/augmentations.html#autrainer.augmentations.Sequential">Sequential (class in autrainer.augmentations)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.utils.set_seed">set_seed() (in module autrainer.core.utils)</a>
 </li>
-      <li><a href="modules/criterions.html#autrainer.criterions.BalancedCrossEntropyLoss.setup">setup() (autrainer.criterions.BalancedCrossEntropyLoss method)</a>
+      <li><a href="modules/criterions.html#autrainer.criterions.BalancedBCEWithLogitsLoss.setup">setup() (autrainer.criterions.BalancedBCEWithLogitsLoss method)</a>
 
       <ul>
+        <li><a href="modules/criterions.html#autrainer.criterions.BalancedCrossEntropyLoss.setup">(autrainer.criterions.BalancedCrossEntropyLoss method)</a>
+</li>
+        <li><a href="modules/criterions.html#autrainer.criterions.WeightedBCEWithLogitsLoss.setup">(autrainer.criterions.WeightedBCEWithLogitsLoss method)</a>
+</li>
+        <li><a href="modules/criterions.html#autrainer.criterions.WeightedCrossEntropyLoss.setup">(autrainer.criterions.WeightedCrossEntropyLoss method)</a>
+</li>
+        <li><a href="modules/criterions.html#autrainer.criterions.WeightedMSELoss.setup">(autrainer.criterions.WeightedMSELoss method)</a>
+</li>
         <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.setup">(autrainer.loggers.AbstractLogger method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="usage/cli_wrapper.html#autrainer.cli.show">show() (in module autrainer.cli)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.utils.silence">silence() (in module autrainer.core.utils)</a>
@@ -1029,6 +1119,8 @@ document.write(`
       <li><a href="modules/datasets.html#autrainer.datasets.SpeechCommands">SpeechCommands (class in autrainer.datasets)</a>
 </li>
       <li><a href="modules/transforms.html#autrainer.transforms.SquarePadCrop">SquarePadCrop (class in autrainer.transforms)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.Standardizer">Standardizer (class in autrainer.transforms)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.utils.Timer.start">start() (autrainer.core.utils.Timer method)</a>
 </li>
@@ -1077,16 +1169,16 @@ document.write(`
 </li>
         <li><a href="modules/datasets.html#autrainer.datasets.BaseRegressionDataset.target_transform">(autrainer.datasets.BaseRegressionDataset property)</a>
 </li>
+        <li><a href="modules/datasets.html#autrainer.datasets.MSPPodcast.target_transform">(autrainer.datasets.MSPPodcast property)</a>
+</li>
       </ul></li>
       <li><a href="modules/core.html#autrainer.core.constants.TrainingConstants.TASKS">TASKS (autrainer.core.constants.TrainingConstants property)</a>
 </li>
       <li><a href="modules/models.html#autrainer.models.TDNNFFNN">TDNNFFNN (class in autrainer.models)</a>
 </li>
-      <li><a href="modules/loggers.html#autrainer.loggers.TensorBoardLogger">TensorBoardLogger (in module autrainer.loggers)</a>
+      <li><a href="modules/loggers.html#autrainer.loggers.TensorBoardLogger">TensorBoardLogger (class in autrainer.loggers)</a>
 </li>
       <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.test_dataset">test_dataset (autrainer.datasets.AbstractDataset property)</a>
-</li>
-      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.test_loader">test_loader (autrainer.datasets.AbstractDataset property)</a>
 </li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.TimeMask">TimeMask (class in autrainer.augmentations)</a>
 </li>
@@ -1100,6 +1192,12 @@ document.write(`
 </li>
       <li><a href="modules/models.html#autrainer.models.TimmModel">TimmModel (class in autrainer.models)</a>
 </li>
+      <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.AbstractDataBatch.to">to() (autrainer.datasets.utils.AbstractDataBatch method)</a>
+
+      <ul>
+        <li><a href="modules/dataset_utils.html#autrainer.datasets.utils.DataBatch.to">(autrainer.datasets.utils.DataBatch method)</a>
+</li>
+      </ul></li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.TorchaudioAugmentation">TorchaudioAugmentation (class in autrainer.augmentations)</a>
 </li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.TorchAudiomentationsAugmentation">TorchAudiomentationsAugmentation (class in autrainer.augmentations)</a>
@@ -1117,8 +1215,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.train_dataset">train_dataset (autrainer.datasets.AbstractDataset property)</a>
-</li>
-      <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.train_loader">train_loader (autrainer.datasets.AbstractDataset property)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.constants.TrainingConstants">TrainingConstants (class in autrainer.core.constants)</a>
 </li>
@@ -1152,8 +1248,14 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/models.html#autrainer.models.W2V2FFNN">W2V2FFNN (class in autrainer.models)</a>
 </li>
+      <li><a href="modules/criterions.html#autrainer.criterions.WeightedBCEWithLogitsLoss">WeightedBCEWithLogitsLoss (class in autrainer.criterions)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/criterions.html#autrainer.criterions.WeightedCrossEntropyLoss">WeightedCrossEntropyLoss (class in autrainer.criterions)</a>
+</li>
+      <li><a href="modules/criterions.html#autrainer.criterions.WeightedMSELoss">WeightedMSELoss (class in autrainer.criterions)</a>
+</li>
       <li><a href="modules/models.html#autrainer.models.WhisperFFNN">WhisperFFNN (class in autrainer.models)</a>
 </li>
   </ul></td>
@@ -1202,7 +1304,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

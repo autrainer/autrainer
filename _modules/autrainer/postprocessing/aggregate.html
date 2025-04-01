@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,35 +353,36 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.postprocessing.aggregate</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">import</span> <span class="nn">autrainer</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">NamingConstants</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.plotting</span> <span class="kn">import</span> <span class="n">PlotMetrics</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.utils</span> <span class="kn">import</span> <span class="n">Timer</span>
-<span class="kn">from</span> <span class="nn">autrainer.loggers</span> <span class="kn">import</span> <span class="n">AbstractLogger</span>
-<span class="kn">from</span> <span class="nn">autrainer.metrics</span> <span class="kn">import</span> <span class="n">AbstractMetric</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autrainer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamingConstants</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotMetrics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
 
-<span class="kn">from</span> <span class="nn">.postprocessing_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.postprocessing_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_plotting_params</span><span class="p">,</span>
     <span class="n">get_run_names</span><span class="p">,</span>
     <span class="n">get_training_type</span><span class="p">,</span>
     <span class="n">load_yaml</span><span class="p">,</span>
     <span class="n">save_yaml</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.summarize</span> <span class="kn">import</span> <span class="n">SummarizeGrid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.summarize</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummarizeGrid</span>
 
 
 <div class="viewcode-block" id="AggregateGrid">
 <a class="viewcode-back" href="../../../modules/postprocessing.html#autrainer.postprocessing.AggregateGrid">[docs]</a>
-<span class="k">class</span> <span class="nc">AggregateGrid</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AggregateGrid</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">results_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">experiment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -445,7 +446,7 @@ document.write(`
 
 <div class="viewcode-block" id="AggregateGrid.aggregate">
 <a class="viewcode-back" href="../../../modules/postprocessing.html#autrainer.postprocessing.AggregateGrid.aggregate">[docs]</a>
-    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Aggregate the runs based on the specified parameters.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregated_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">aggregated_runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregated_dict</span>
@@ -465,7 +466,7 @@ document.write(`
 
 <div class="viewcode-block" id="AggregateGrid.summarize">
 <a class="viewcode-back" href="../../../modules/postprocessing.html#autrainer.postprocessing.AggregateGrid.summarize">[docs]</a>
-    <span class="k">def</span> <span class="nf">summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Summarize the aggregated results.&quot;&quot;&quot;</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="n">SummarizeGrid</span><span class="p">(</span>
             <span class="n">results_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span>
@@ -481,12 +482,12 @@ document.write(`
         <span class="n">sg</span><span class="o">.</span><span class="n">plot_metrics</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_check_if_valid_aggregation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">over</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_if_valid_aggregation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">over</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">over</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">o</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NamingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">VALID_AGGREGATIONS</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid aggregation: </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_aggregate_run_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">over</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_aggregate_run_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">over</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_valid_aggregation</span><span class="p">(</span><span class="n">over</span><span class="p">)</span>
         <span class="n">param_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">p</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">NamingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">NAMING_CONVENTION</span><span class="p">)</span>
@@ -501,7 +502,7 @@ document.write(`
             <span class="n">aggregated</span><span class="p">[</span><span class="n">agg_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">run_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">aggregated</span>
 
-    <span class="k">def</span> <span class="nf">_aggregate_best</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_aggregate_best</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span>
             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">),</span>
             <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -512,7 +513,7 @@ document.write(`
             <span class="n">metrics</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_aggregate_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_aggregate_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">,</span> <span class="s2">&quot;_test&quot;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate_yaml</span><span class="p">(</span>
@@ -520,7 +521,7 @@ document.write(`
         <span class="p">)</span>
         <span class="n">save_yaml</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;test_holistic.yaml&quot;</span><span class="p">),</span> <span class="n">metrics</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_aggregate_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">yaml_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_aggregate_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">yaml_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">yaml_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;dev&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span>
         <span class="n">loss_type</span> <span class="o">=</span> <span class="s2">&quot;dev_loss&quot;</span> <span class="k">if</span> <span class="n">yaml_type</span> <span class="o">==</span> <span class="s2">&quot;dev&quot;</span> <span class="k">else</span> <span class="s2">&quot;loss&quot;</span>
         <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -544,7 +545,7 @@ document.write(`
             <span class="p">}</span>
         <span class="k">return</span> <span class="n">metrics</span>
 
-    <span class="k">def</span> <span class="nf">_aggregate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_aggregate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">,</span> <span class="s2">&quot;.hydra&quot;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">runs</span> <span class="o">=</span> <span class="p">[</span>
@@ -563,7 +564,7 @@ document.write(`
             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;config.yaml&quot;</span><span class="p">),</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_replace_differing_values</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_replace_differing_values</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
         <span class="n">runs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DictConfig</span><span class="p">],</span>
@@ -587,7 +588,7 @@ document.write(`
 
         <span class="k">return</span> <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_aggregate_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_aggregate_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">mean_timer</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mean_seconds&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;total_seconds&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
             <span class="s2">&quot;dev&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mean_seconds&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;total_seconds&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
@@ -610,7 +611,7 @@ document.write(`
             <span class="n">mean_timer</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_aggregate_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_aggregate_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">run_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">run_list</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
@@ -677,7 +678,7 @@ document.write(`
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="n">loggers</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_params</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_params</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cfg</span><span class="p">))</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_timers</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="s2">&quot;time.train.mean&quot;</span><span class="p">:</span> <span class="n">timers</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">][</span><span class="s2">&quot;mean&quot;</span><span class="p">],</span>
@@ -738,7 +739,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,30 +353,26 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.core.utils.bookkeeping</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">audobject</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
-<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">audobject</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchinfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">summary</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 
-<span class="kn">from</span> <span class="nn">autrainer.metrics</span> <span class="kn">import</span> <span class="n">AbstractMetric</span>
-
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">autrainer.datasets</span> <span class="kn">import</span> <span class="n">AbstractDataset</span>  <span class="c1"># pragma: no cover</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
 
 
 <div class="viewcode-block" id="Bookkeeping">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping">[docs]</a>
-<span class="k">class</span> <span class="nc">Bookkeeping</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Bookkeeping</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">file_handler_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -403,7 +399,7 @@ document.write(`
                     <span class="p">)</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">())</span>
@@ -418,7 +414,7 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.log">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.log">[docs]</a>
-    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log a message.</span>
 
 <span class="sd">        Args:</span>
@@ -430,7 +426,7 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.log_to_file">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.log_to_file">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log a message to the file handler.</span>
 
 <span class="sd">        Args:</span>
@@ -454,7 +450,7 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.create_folder">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.create_folder">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new folder in the output directory.</span>
 
 <span class="sd">        Args:</span>
@@ -469,39 +465,29 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.save_model_summary">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.save_model_summary">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_model_summary</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_model_summary</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-        <span class="n">dataset</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">,</span>
+        <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save a model summary to a file.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            model: Model to summarize.</span>
-<span class="sd">            dataset: Dataset to get the input size from.</span>
+<span class="sd">            shape: Shape of the input to the model.</span>
 <span class="sd">            filename: Name of the file to save the summary to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span>
-            <span class="s2">&quot;w&quot;</span><span class="p">,</span>
-            <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
-        <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">f</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="n">summary</span><span class="p">(</span>
-                <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-                <span class="n">input_size</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
-                <span class="n">col_names</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s2">&quot;input_size&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;output_size&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_params&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;trainable&quot;</span><span class="p">,</span>
-                <span class="p">],</span>
-                <span class="n">col_width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-                <span class="n">row_settings</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;var_names&quot;</span><span class="p">],</span>
-            <span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_stdout</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">summary</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">input_size</span><span class="o">=</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
+            <span class="n">col_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;input_size&quot;</span><span class="p">,</span> <span class="s2">&quot;output_size&quot;</span><span class="p">,</span> <span class="s2">&quot;num_params&quot;</span><span class="p">,</span> <span class="s2">&quot;trainable&quot;</span><span class="p">],</span>
+            <span class="n">row_settings</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;var_names&quot;</span><span class="p">],</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="n">model_summary</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;total_mult_adds&quot;</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">total_mult_adds</span><span class="p">,</span>
             <span class="s2">&quot;total_output_bytes&quot;</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">total_output_bytes</span><span class="p">,</span>
@@ -509,23 +495,25 @@ document.write(`
             <span class="s2">&quot;trainable_params&quot;</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">trainable_params</span><span class="p">,</span>
             <span class="s2">&quot;total_param_bytes&quot;</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">total_param_bytes</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="s2">&quot;w&quot;</span><span class="p">,</span>
-        <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+        <span class="n">out_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model_summary</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Bookkeeping.save_state">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.save_state">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_state</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_state</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">,</span>
+        <span class="n">obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">,</span>
+            <span class="p">]</span>
         <span class="p">],</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -533,13 +521,15 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the state of an object.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            obj: Object to save the state of.</span>
+<span class="sd">            obj: Object to save the state of. If None, do nothing.</span>
 <span class="sd">            filename: Name of the file to save the state to.</span>
 <span class="sd">            path: Subdirectory to save the state to. Defaults to &quot;&quot;.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            TypeError: If the object type is not supported.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="n">_i</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
@@ -557,7 +547,7 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.load_state">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.load_state">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_state</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
@@ -599,7 +589,7 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.save_audobject">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.save_audobject">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_audobject</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_audobject</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">obj</span><span class="p">:</span> <span class="n">audobject</span><span class="o">.</span><span class="n">Object</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -625,7 +615,7 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.save_results_dict">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.save_results_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_results_dict</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_results_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">results_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -649,7 +639,7 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.save_results_df">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.save_results_df">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_results_df</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_results_df</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">results_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save a results DataFrame to disk.</span>
@@ -667,7 +657,7 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.save_results_np">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.save_results_np">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_results_np</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_results_np</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">results_np</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save a results numpy array to disk.</span>
@@ -685,7 +675,7 @@ document.write(`
 
 <div class="viewcode-block" id="Bookkeeping.save_best_results">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.Bookkeeping.save_best_results">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_best_results</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_best_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -758,7 +748,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

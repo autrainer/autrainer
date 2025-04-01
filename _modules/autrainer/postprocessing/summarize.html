@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,20 +353,20 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.postprocessing.summarize</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">import</span> <span class="nn">autrainer</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">NamingConstants</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.plotting</span> <span class="kn">import</span> <span class="n">PlotMetrics</span>
-<span class="kn">from</span> <span class="nn">autrainer.loggers</span> <span class="kn">import</span> <span class="n">get_params_to_export</span>
-<span class="kn">from</span> <span class="nn">autrainer.metrics</span> <span class="kn">import</span> <span class="n">AbstractMetric</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autrainer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamingConstants</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotMetrics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_params_to_export</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
 
-<span class="kn">from</span> <span class="nn">.postprocessing_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.postprocessing_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_plotting_params</span><span class="p">,</span>
     <span class="n">get_run_names</span><span class="p">,</span>
     <span class="n">get_training_type</span><span class="p">,</span>
@@ -377,8 +377,8 @@ document.write(`
 
 <div class="viewcode-block" id="SummarizeGrid">
 <a class="viewcode-back" href="../../../modules/postprocessing.html#autrainer.postprocessing.SummarizeGrid">[docs]</a>
-<span class="k">class</span> <span class="nc">SummarizeGrid</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SummarizeGrid</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">results_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">experiment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -435,14 +435,14 @@ document.write(`
 
 <div class="viewcode-block" id="SummarizeGrid.summarize">
 <a class="viewcode-back" href="../../../modules/postprocessing.html#autrainer.postprocessing.SummarizeGrid.summarize">[docs]</a>
-    <span class="k">def</span> <span class="nf">summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Summarize the results of the grid search.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_summarize_metrics</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_summarize_config</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_summarize_best_runs</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_summarize_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_names</span><span class="p">:</span>
             <span class="n">metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_metrics</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
@@ -452,7 +452,7 @@ document.write(`
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;metrics.csv&quot;</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_summarize_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_names</span><span class="p">:</span>
             <span class="n">run_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">training_directory</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
@@ -465,7 +465,7 @@ document.write(`
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;config.csv&quot;</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_summarize_best_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_best_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">summary_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;metrics.csv&quot;</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">summary_path</span><span class="p">)</span>
         <span class="n">metric_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.std&quot;</span><span class="p">)]</span>
@@ -488,7 +488,7 @@ document.write(`
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;best_runs.yaml&quot;</span><span class="p">)</span>
         <span class="n">save_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">best_runs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_find_metrics_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_metrics_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">summary_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;metrics.csv&quot;</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">summary_path</span><span class="p">)</span>
         <span class="n">plot_metrics</span> <span class="o">=</span> <span class="p">[</span>
@@ -501,7 +501,7 @@ document.write(`
 
 <div class="viewcode-block" id="SummarizeGrid.plot_metrics">
 <a class="viewcode-back" href="../../../modules/postprocessing.html#autrainer.postprocessing.SummarizeGrid.plot_metrics">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the metrics of the grid search.&quot;&quot;&quot;</span>
         <span class="n">plotter</span> <span class="o">=</span> <span class="n">PlotMetrics</span><span class="p">(</span>
             <span class="n">output_directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span>
@@ -541,7 +541,7 @@ document.write(`
 
 <div class="viewcode-block" id="SummarizeGrid.plot_aggregated_bars">
 <a class="viewcode-back" href="../../../modules/postprocessing.html#autrainer.postprocessing.SummarizeGrid.plot_aggregated_bars">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_aggregated_bars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_aggregated_bars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot additional aggregated bars for the grid search.&quot;&quot;&quot;</span>
         <span class="n">metrics_to_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_metrics_to_plot</span><span class="p">()</span>
         <span class="n">plotter</span> <span class="o">=</span> <span class="n">PlotMetrics</span><span class="p">(</span>
@@ -567,7 +567,7 @@ document.write(`
             <span class="n">plotter</span><span class="o">.</span><span class="n">plot_aggregated_bars</span><span class="p">(</span><span class="n">metrics_df</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_read_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">metrics_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">training_directory</span><span class="p">,</span> <span class="n">run_name</span><span class="p">,</span> <span class="s2">&quot;metrics.csv&quot;</span>
         <span class="p">)</span>
@@ -586,7 +586,7 @@ document.write(`
         <span class="n">metrics_dict</span><span class="p">[</span><span class="s2">&quot;best_iteration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_iteration</span>
         <span class="k">return</span> <span class="n">metrics_dict</span>
 
-    <span class="k">def</span> <span class="nf">_read_test_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;test_&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_test_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;test_&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">training_directory</span><span class="p">,</span> <span class="n">run_name</span><span class="p">,</span> <span class="s2">&quot;_test&quot;</span><span class="p">,</span> <span class="s2">&quot;test_holistic.yaml&quot;</span>
         <span class="p">)</span>
@@ -594,7 +594,7 @@ document.write(`
         <span class="n">test_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">test_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">return</span> <span class="n">test_dict</span>
 
-    <span class="k">def</span> <span class="nf">_read_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">training_directory</span><span class="p">,</span> <span class="n">run_name</span><span class="p">,</span> <span class="s2">&quot;timer.yaml&quot;</span><span class="p">)</span>
         <span class="n">time_dict</span> <span class="o">=</span> <span class="n">load_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -603,7 +603,7 @@ document.write(`
             <span class="s2">&quot;time_test_mean&quot;</span><span class="p">:</span> <span class="n">time_dict</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">][</span><span class="s2">&quot;mean&quot;</span><span class="p">],</span>
         <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">_update_metric_fns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric_cfg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_metric_fns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric_cfg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">instance_of</span><span class="o">=</span><span class="n">AbstractMetric</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">metric_cfg</span>
@@ -648,7 +648,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

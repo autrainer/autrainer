@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,22 +353,22 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.loggers.abstract_logger</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
 
-<span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">ExportConstants</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.utils</span> <span class="kn">import</span> <span class="n">Timer</span>
-<span class="kn">from</span> <span class="nn">autrainer.metrics</span> <span class="kn">import</span> <span class="n">AbstractMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExportConstants</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">autrainer.training</span> <span class="kn">import</span> <span class="n">ModularTaskTrainer</span>  <span class="c1"># pragma: no cover</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.training</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModularTaskTrainer</span>  <span class="c1"># pragma: no cover</span>
 
 
-<span class="k">def</span> <span class="nf">get_params_to_export</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_params_to_export</span><span class="p">(</span>
     <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get parameters to export as a flattened dictionary filtered by</span>
@@ -416,8 +416,8 @@ document.write(`
 
 <div class="viewcode-block" id="AbstractLogger">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger">[docs]</a>
-<span class="k">class</span> <span class="nc">AbstractLogger</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AbstractLogger</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">exp_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -456,7 +456,7 @@ document.write(`
 
 <div class="viewcode-block" id="AbstractLogger.log_and_update_metrics">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.log_and_update_metrics">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_and_update_metrics</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_and_update_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log all metrics in the metrics dictionary for the given iteration.</span>
@@ -475,7 +475,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">log_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_update_best_metrics</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_best_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
         <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -502,7 +502,7 @@ document.write(`
 
 <div class="viewcode-block" id="AbstractLogger.setup">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional setup method called at the beginning of the run</span>
 <span class="sd">        (`cb_on_train_begin`).</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
@@ -511,7 +511,7 @@ document.write(`
 <div class="viewcode-block" id="AbstractLogger.log_params">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.log_params">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">log_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log the parameters of the configuration.</span>
 
 <span class="sd">        Args:</span>
@@ -522,7 +522,7 @@ document.write(`
 <div class="viewcode-block" id="AbstractLogger.log_metrics">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.log_metrics">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">log_metrics</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
         <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -541,7 +541,7 @@ document.write(`
 <div class="viewcode-block" id="AbstractLogger.log_timers">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.log_timers">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">log_timers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_timers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log all timers (e.g., mean times for train, dev, and test).</span>
 
 <span class="sd">        Args:</span>
@@ -553,7 +553,7 @@ document.write(`
 <div class="viewcode-block" id="AbstractLogger.log_artifact">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.log_artifact">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">log_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log an artifact (e.g., a file).</span>
 
 <span class="sd">        Args:</span>
@@ -565,27 +565,27 @@ document.write(`
 
 <div class="viewcode-block" id="AbstractLogger.end_run">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.end_run">[docs]</a>
-    <span class="k">def</span> <span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional end run method called at the end of the run</span>
 <span class="sd">        (`cb_on_train_end`).</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 
-    <span class="k">def</span> <span class="nf">cb_on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_params</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">cb_on_iteration_end</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_iteration_end</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_and_update_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">cb_on_test_end</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_test_end</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">,</span> <span class="n">test_results</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_and_update_metrics</span><span class="p">(</span><span class="n">test_results</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">cb_on_train_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_train_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_timers</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;time.&quot;</span> <span class="o">+</span> <span class="n">t</span><span class="o">.</span><span class="n">timer_type</span> <span class="o">+</span> <span class="s2">&quot;.mean&quot;</span><span class="p">:</span> <span class="n">Timer</span><span class="o">.</span><span class="n">pretty_time</span><span class="p">(</span>
@@ -644,7 +644,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>autrainer.criterions.criterion_wrappers &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+    <title>autrainer.criterions.regression &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
   
   
   
@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=93fba4f5" />
@@ -39,13 +39,13 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/criterions/criterion_wrappers';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/criterions/regression';</script>
     <script src="../../../_static/external_links.js?v=919ee35f"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
@@ -352,72 +352,25 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for autrainer.criterions.criterion_wrappers</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+  <h1>Source code for autrainer.criterions.regression</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">autrainer.datasets</span> <span class="kn">import</span> <span class="n">AbstractDataset</span>  <span class="c1"># pragma: no cover</span>
-
-
-<div class="viewcode-block" id="CrossEntropyLoss">
-<a class="viewcode-back" href="../../../modules/criterions.html#autrainer.criterions.CrossEntropyLoss">[docs]</a>
-<span class="k">class</span> <span class="nc">CrossEntropyLoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">):</span>
-<div class="viewcode-block" id="CrossEntropyLoss.forward">
-<a class="viewcode-back" href="../../../modules/criterions.html#autrainer.criterions.CrossEntropyLoss.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper for `torch.nn.CrossEntropyLoss.forward`.</span>
-
-<span class="sd">        Converts the targets to `long` if it is a 1D tensor.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            x: Batched model outputs.</span>
-<span class="sd">            y: Targets.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Loss.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
-</div>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_nonzero_frequency</span>
 
 
-
-<div class="viewcode-block" id="BalancedCrossEntropyLoss">
-<a class="viewcode-back" href="../../../modules/criterions.html#autrainer.criterions.BalancedCrossEntropyLoss">[docs]</a>
-<span class="k">class</span> <span class="nc">BalancedCrossEntropyLoss</span><span class="p">(</span><span class="n">CrossEntropyLoss</span><span class="p">):</span>
-<div class="viewcode-block" id="BalancedCrossEntropyLoss.setup">
-<a class="viewcode-back" href="../../../modules/criterions.html#autrainer.criterions.BalancedCrossEntropyLoss.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate balanced weights for the dataset based on the target</span>
-<span class="sd">        frequency in the training set.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            data: Instance of the dataset.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">frequency</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span>
-            <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">target_transform</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
-            <span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
-            <span class="o">.</span><span class="n">values</span>
-        <span class="p">)</span>
-        <span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-        <span class="n">weight</span> <span class="o">/=</span> <span class="n">weight</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span></div>
-</div>
-
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataset</span>
 
 
 <div class="viewcode-block" id="MSELoss">
 <a class="viewcode-back" href="../../../modules/criterions.html#autrainer.criterions.MSELoss">[docs]</a>
-<span class="k">class</span> <span class="nc">MSELoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSELoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">):</span>
 <div class="viewcode-block" id="MSELoss.forward">
 <a class="viewcode-back" href="../../../modules/criterions.html#autrainer.criterions.MSELoss.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper for `torch.nn.MSELoss.forward`.</span>
 
 <span class="sd">        Squeezes the model outputs along the last dimension to match the shape</span>
@@ -433,6 +386,73 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: is there a more elegant way to handle broadcasting</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">y</span><span class="o">.</span><span class="n">float</span><span class="p">())</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="WeightedMSELoss">
+<a class="viewcode-back" href="../../../modules/criterions.html#autrainer.criterions.WeightedMSELoss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeightedMSELoss</span><span class="p">(</span><span class="n">MSELoss</span><span class="p">):</span>
+    <span class="n">weights_buffer</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_weights</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper for `torch.nn.MSELoss` with manual target weights intended</span>
+<span class="sd">        for multi-target regression tasks.</span>
+
+<span class="sd">        The target weights are automatically normalized to sum up to the number</span>
+<span class="sd">        of targets.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            target_weights: Dictionary with target weights corresponding to the</span>
+<span class="sd">                target labels and their respective weights.</span>
+<span class="sd">            **kwargs: Additional keyword arguments passed to</span>
+<span class="sd">                `torch.nn.MSELoss`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_weights</span> <span class="o">=</span> <span class="n">target_weights</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WeightedMSELoss.setup">
+<a class="viewcode-back" href="../../../modules/criterions.html#autrainer.criterions.WeightedMSELoss.setup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the target weights based on the provided dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: Instance of the dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">task</span> <span class="o">!=</span> <span class="s2">&quot;mt-regression&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`WeightedMSELoss` is only supported for &quot;</span>
+                <span class="s2">&quot;multi-target regression tasks.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">target_transform</span><span class="o">.</span><span class="n">target</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_weights</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Missing target weight for target &#39;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_weights</span><span class="p">[</span><span class="n">target</span><span class="p">])</span>
+
+        <span class="n">assert_nonzero_frequency</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">target_transform</span><span class="p">))</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span> <span class="o">/</span> <span class="n">weight</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;weights_buffer&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WeightedMSELoss.forward">
+<a class="viewcode-back" href="../../../modules/criterions.html#autrainer.criterions.WeightedMSELoss.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper for `torch.nn.MSELoss.forward` with manual target weights.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x: Batched model outputs.</span>
+<span class="sd">            y: Targets.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Loss.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_buffer</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -470,7 +490,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

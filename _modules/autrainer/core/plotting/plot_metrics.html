@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,23 +353,23 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.core.plotting.plot_metrics</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
 
-<span class="kn">from</span> <span class="nn">autrainer.metrics</span> <span class="kn">import</span> <span class="n">AbstractMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
 
-<span class="kn">from</span> <span class="nn">.plot_base</span> <span class="kn">import</span> <span class="n">PlotBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.plot_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotBase</span>
 
 
 <div class="viewcode-block" id="PlotMetrics">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.plotting.PlotMetrics">[docs]</a>
-<span class="k">class</span> <span class="nc">PlotMetrics</span><span class="p">(</span><span class="n">PlotBase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PlotMetrics</span><span class="p">(</span><span class="n">PlotBase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">training_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -425,7 +425,7 @@ document.write(`
 
 <div class="viewcode-block" id="PlotMetrics.plot_run">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.plotting.PlotMetrics.plot_run">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">std_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">std_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the metrics of a single run.</span>
 
 <span class="sd">        Args:</span>
@@ -469,7 +469,7 @@ document.write(`
 
 <div class="viewcode-block" id="PlotMetrics.plot_metric">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.plotting.PlotMetrics.plot_metric">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_metric</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_metric</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -515,7 +515,7 @@ document.write(`
 
 <div class="viewcode-block" id="PlotMetrics.plot_aggregated_bars">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.plotting.PlotMetrics.plot_aggregated_bars">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_aggregated_bars</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_aggregated_bars</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metrics_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -627,7 +627,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">save_plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_select_top_runs</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_top_runs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -695,7 +695,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

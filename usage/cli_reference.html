@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -366,7 +366,7 @@ and <a class="reference internal" href="#cli-postprocessing"><span class="std st
 and postprocessing programmatically with the same functionality as the CLI.</p>
 <section id="autrainer">
 <span id="cli-autrainer"></span><h2>autrainer<a class="headerlink" href="#autrainer" title="Link to this heading">#</a></h2>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> [<span class="o">-h</span>] [<span class="o">-v</span>] &lt;command&gt; ...
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> [-h] [-v] &lt;command&gt; ...
 </pre></div>
 </div>
 <p><p>A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</p>
@@ -403,7 +403,7 @@ the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span clas
 </div>
 <section id="autrainer-create">
 <span id="cli-autrainer-create"></span><h3>autrainer create<a class="headerlink" href="#autrainer-create" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">create</span> [<span class="o">-h</span>] [<span class="o">-e</span>] [<span class="o">-a</span>] [<span class="o">-f</span>] [directories ...]
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">create</span> [-h] [-e] [-a] [-f] [directories ...]
 </pre></div>
 </div>
 <p><p>Create a new project with default configurations.</p>
@@ -447,7 +447,7 @@ the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span clas
 </section>
 <section id="autrainer-list">
 <span id="cli-autrainer-list"></span><h3>autrainer list<a class="headerlink" href="#autrainer-list" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">list</span> [<span class="o">-h</span>] [<span class="o">-l</span>] [<span class="o">-g</span>] [<span class="o">-p</span> P] directory
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">list</span> [-h] [-l] [-g] [-p P] directory
 </pre></div>
 </div>
 <p><p>List local and global configurations.</p>
@@ -491,7 +491,7 @@ the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span clas
 </section>
 <section id="autrainer-show">
 <span id="cli-autrainer-show"></span><h3>autrainer show<a class="headerlink" href="#autrainer-show" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">show</span> [<span class="o">-h</span>] [<span class="o">-s</span>] [<span class="o">-f</span>] directory config
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">show</span> [-h] [-s] [-f] directory config
 </pre></div>
 </div>
 <p><p>Show and save a global configuration.</p>
@@ -539,12 +539,12 @@ the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span clas
 <p>To avoid race conditions when using <a class="reference internal" href="hydra_configurations.html#hydra-launcher-plugins"><span class="std std-ref">Launcher Plugins</span></a> that may run multiple training jobs in parallel,
 <a class="reference internal" href="#cli-autrainer-fetch"><span class="std std-ref">autrainer fetch</span></a> and <a class="reference internal" href="#cli-autrainer-preprocess"><span class="std std-ref">autrainer preprocess</span></a> allow for
 downloading and <a class="reference internal" href="../modules/transforms.html#preprocessing-transforms"><span class="std std-ref">preprocessing</span></a> of <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">Datasets</span></a> (and pretrained model states) before training.</p>
-<p>Both commands are based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>),
+<p>Both commands are based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g., <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>),
 such that the specified models and datasets are fetched and preprocessed accordingly.
 If a model or dataset is already fetched or preprocessed, it will be skipped.</p>
 <section id="autrainer-fetch">
 <span id="cli-autrainer-fetch"></span><h3>autrainer fetch<a class="headerlink" href="#autrainer-fetch" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">fetch</span> [<span class="o">-h</span>] [<span class="o">-b</span>]
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">fetch</span> [-h] [-b]
 </pre></div>
 </div>
 <p><p>Fetch the datasets and models specified in a training configuration (Hydra).
@@ -565,7 +565,7 @@ For more information on Hydra’s command line line flags, see:
 </section>
 <section id="autrainer-preprocess">
 <span id="cli-autrainer-preprocess"></span><h3>autrainer preprocess<a class="headerlink" href="#autrainer-preprocess" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">preprocess</span> [<span class="o">-h</span>] [<span class="o">-b</span>] [<span class="o">-n</span> N] [<span class="o">-p</span> P] [<span class="o">-s</span>]
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">preprocess</span> [-h] [-b] [-n N] [-p P] [-s]
 </pre></div>
 </div>
 <p><p>Launch a data preprocessing configuration (Hydra).
@@ -582,10 +582,10 @@ For more information on Hydra’s command line line flags, see:
 <dd><p>Use the launcher specified in the configuration instead of the Hydra basic launcher. Defaults to False.</p>
 </dd>
 <dt><kbd>-n, --num-workers</kbd></dt>
-<dd><p>Number of workers (threads) to use for preprocessing. Defaults to 1.</p>
+<dd><p>Number of workers (subprocesses) to use for preprocessing. Defaults to 0.</p>
 </dd>
 <dt><kbd>-u, --update-frequency</kbd></dt>
-<dd><p>Frequency of progress bar updates for each worker (thread). If 0, the progress bar will be disabled. Defaults to 1.</p>
+<dd><p>Frequency of progress bar updates for each worker (subprocess). If 0, the progress bar will be disabled. Defaults to 1.</p>
 </dd>
 </dl>
 </section>
@@ -594,10 +594,10 @@ For more information on Hydra’s command line line flags, see:
 <section id="training">
 <span id="cli-training"></span><h2>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h2>
 <p>Training is managed by <a class="reference internal" href="#cli-autrainer-train"><span class="std std-ref">autrainer train</span></a>, which starts the training process
-based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>).</p>
+based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g., <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>).</p>
 <section id="autrainer-train">
 <span id="cli-autrainer-train"></span><h3>autrainer train<a class="headerlink" href="#autrainer-train" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">train</span> [<span class="o">-h</span>]
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">train</span> [-h]
 </pre></div>
 </div>
 <p><p>Launch a training configuration (Hydra).
@@ -619,13 +619,13 @@ This syntax consists of the following components:</p>
 <ul class="simple">
 <li><p><code class="code docutils literal notranslate"><span class="pre">hf</span></code>: The Hugging Face Hub prefix indicating that the model is fetched from the Hugging Face Hub.</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">repo_id</span></code>: The repository ID of the model consisting of the user name and the model card name separated by a slash
-(e.g. <code class="code docutils literal notranslate"><span class="pre">autrainer/example</span></code>).</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">revision</span></code> (<cite>optional</cite>): The revision as a commit hash, branch name, or tag name (e.g. <code class="code docutils literal notranslate"><span class="pre">main</span></code>).
+(e.g., <code class="code docutils literal notranslate"><span class="pre">autrainer/example</span></code>).</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">revision</span></code> (<cite>optional</cite>): The revision as a commit hash, branch name, or tag name (e.g., <code class="code docutils literal notranslate"><span class="pre">main</span></code>).
 If not specified, the latest revision is used.</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">subdir</span></code> (<cite>optional</cite>): The subdirectory of the repository containing the model directory (e.g. <code class="code docutils literal notranslate"><span class="pre">AudioModel</span></code>).
+<li><p><code class="code docutils literal notranslate"><span class="pre">subdir</span></code> (<cite>optional</cite>): The subdirectory of the repository containing the model directory (e.g., <code class="code docutils literal notranslate"><span class="pre">AudioModel</span></code>).
 If not specified, the model directory is automatically inferred.
 If multiple models are present in the <code class="code docutils literal notranslate"><span class="pre">repo_id</span></code>, <code class="code docutils literal notranslate"><span class="pre">subdir</span></code> must be specified, as the correct model cannot be automatically inferred.</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">local_dir</span></code> (<cite>optional</cite>): The local directory to which the model is downloaded to (e.g. <code class="code docutils literal notranslate"><span class="pre">.hf_local</span></code>).
+<li><p><code class="code docutils literal notranslate"><span class="pre">local_dir</span></code> (<cite>optional</cite>): The local directory to which the model is downloaded to (e.g., <code class="code docutils literal notranslate"><span class="pre">.hf_local</span></code>).
 If not specified, the model is placed in the
 <a class="reference external" href="https://pytorch.org/docs/stable/hub.html#where-are-my-downloaded-models-saved">torch hub cache directory</a>.</p></li>
 </ul>
@@ -639,7 +639,7 @@ the following <a class="reference internal" href="#cli-autrainer-inference"><spa
 <p class="admonition-title">Tip</p>
 <p>To access private repositories, the environment variable <code class="code docutils literal notranslate"><span class="pre">HF_HOME</span></code> should point to the
 <a class="reference external" href="https://huggingface.co/docs/hub/security-tokens">Hugging Face User Access Token</a>.</p>
-<p>To use a custom endpoint (e.g. for a <a class="reference external" href="https://huggingface.co/enterprise">self-hosted hub</a>),
+<p>To use a custom endpoint (e.g., for a <a class="reference external" href="https://huggingface.co/enterprise">self-hosted hub</a>),
 the environment variable <code class="code docutils literal notranslate"><span class="pre">HF_ENDPOINT</span></code> should point to the desired endpoint URL.</p>
 </div>
 <p>To use a local model path, the following <a class="reference internal" href="#cli-autrainer-inference"><span class="std std-ref">autrainer inference</span></a> CLI command can be used:</p>
@@ -648,13 +648,13 @@ the environment variable <code class="code docutils literal notranslate"><span c
 </div>
 <section id="autrainer-inference">
 <span id="cli-autrainer-inference"></span><h3>autrainer inference<a class="headerlink" href="#autrainer-inference" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">inference</span> [<span class="o">-h</span>] [<span class="o">-c</span> C] [<span class="o">-d</span> D] [<span class="o">-e</span> E] [<span class="o">-r</span>] [<span class="o">-emb</span>] [<span class="o">-p</span> P] [<span class="o">-w</span> W] [<span class="o">-s</span> S] [<span class="o">-m</span> M] [<span class="o">-sr</span> SR] model input output
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">inference</span> [-h] [-c C] [-d D] [-e E] [-r] [-emb] [-p P] [-w W] [-s S] [-m M] [-sr SR] model input output
 </pre></div>
 </div>
 <p><p>Perform inference on a trained model.</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">autrainer</span> <span class="n">inference</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">emb</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">u</span> <span class="n">F</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span>
-                           <span class="p">[</span><span class="o">-</span><span class="n">w</span> <span class="n">W</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">M</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">sr</span> <span class="n">SR</span><span class="p">]</span>
+                           <span class="p">[</span><span class="o">-</span><span class="n">w</span> <span class="n">W</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">M</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">sr</span> <span class="n">SR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span><span class="p">]</span>
                            <span class="n">model</span> <span class="nb">input</span> <span class="n">output</span>
 </pre></div>
 </div>
@@ -708,6 +708,9 @@ the environment variable <code class="code docutils literal notranslate"><span c
 <dt><kbd>-sr, --sample-rate</kbd></dt>
 <dd><p>Sample rate of audio files in Hz. Has to be specified for sliding window inference. Defaults to None.</p>
 </dd>
+<dt><kbd>-t, --trust-remote</kbd></dt>
+<dd><p>Whether to trust and execute custom Python code from Hugging Face models. Warning: This can be dangerous as it may run arbitrary code on your machine! Defaults to False.</p>
+</dd>
 </dl>
 </section>
 </section>
@@ -719,7 +722,7 @@ Several cleanup utilities are provided by <a class="reference internal" href="#c
 Manual grouping of the training results can be done using <a class="reference internal" href="#cli-autrainer-group"><span class="std std-ref">autrainer group</span></a>.</p>
 <section id="autrainer-postprocess">
 <span id="cli-autrainer-postprocess"></span><h3>autrainer postprocess<a class="headerlink" href="#autrainer-postprocess" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">postprocess</span> [<span class="o">-h</span>] [<span class="o">-m</span> N] [<span class="o">-a</span> A [A ...]] results_dir experiment_id
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">postprocess</span> [-h] [-m N] [-a A [A ...]] results_dir experiment_id
 </pre></div>
 </div>
 <p><p>Postprocess grid search results.</p>
@@ -766,7 +769,7 @@ Manual grouping of the training results can be done using <a class="reference in
 </section>
 <section id="autrainer-rm-failed">
 <span id="cli-autrainer-rm-failed"></span><h3>autrainer rm-failed<a class="headerlink" href="#autrainer-rm-failed" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">rm-failed</span> [<span class="o">-h</span>] [<span class="o">-f</span>] results_dir experiment_id
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">rm-failed</span> [-h] [-f] results_dir experiment_id
 </pre></div>
 </div>
 <p><p>Delete failed runs from an experiment.</p>
@@ -796,7 +799,7 @@ Manual grouping of the training results can be done using <a class="reference in
 </section>
 <section id="autrainer-rm-states">
 <span id="cli-autrainer-rm-states"></span><h3>autrainer rm-states<a class="headerlink" href="#autrainer-rm-states" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">rm-states</span> [<span class="o">-h</span>] [<span class="o">-b</span>] [<span class="o">-r</span> R [R ...]] [<span class="o">-i</span> I [I ...]] results_dir experiment_id
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">rm-states</span> [-h] [-b] [-r R [R ...]] [-i I [I ...]] results_dir experiment_id
 </pre></div>
 </div>
 <p><p>Delete states (.pt files) from an experiment.</p>
@@ -833,7 +836,7 @@ Manual grouping of the training results can be done using <a class="reference in
 </section>
 <section id="autrainer-group">
 <span id="cli-autrainer-group"></span><h3>autrainer group<a class="headerlink" href="#autrainer-group" title="Link to this heading">#</a></h3>
-<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">group</span> [<span class="o">-h</span>]
+<div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">group</span> [-h]
 </pre></div>
 </div>
 <p><p>Launch a manual grouping of multiple grid search results (Hydra).
@@ -962,7 +965,7 @@ For more information on Hydra’s command line line flags, see:
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

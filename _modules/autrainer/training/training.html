@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,37 +353,44 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.training.training</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">hydra</span>
-<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hydra</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">import</span> <span class="nn">autrainer</span>
-<span class="kn">from</span> <span class="nn">autrainer.augmentations</span> <span class="kn">import</span> <span class="n">AugmentationManager</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.plotting</span> <span class="kn">import</span> <span class="n">PlotMetrics</span>
-<span class="kn">from</span> <span class="nn">autrainer.core.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autrainer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.augmentations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AugmentationManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotMetrics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Bookkeeping</span><span class="p">,</span>
+    <span class="n">ThreadManager</span><span class="p">,</span>
     <span class="n">Timer</span><span class="p">,</span>
     <span class="n">save_hardware_info</span><span class="p">,</span>
+    <span class="n">save_requirements</span><span class="p">,</span>
     <span class="n">set_device</span><span class="p">,</span>
     <span class="n">set_seed</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">autrainer.datasets</span> <span class="kn">import</span> <span class="n">AbstractDataset</span>
-<span class="kn">from</span> <span class="nn">autrainer.datasets.utils</span> <span class="kn">import</span> <span class="n">AbstractFileHandler</span>
-<span class="kn">from</span> <span class="nn">autrainer.loggers</span> <span class="kn">import</span> <span class="n">AbstractLogger</span>
-<span class="kn">from</span> <span class="nn">autrainer.models</span> <span class="kn">import</span> <span class="n">AbstractModel</span>
-<span class="kn">from</span> <span class="nn">autrainer.transforms</span> <span class="kn">import</span> <span class="n">SmartCompose</span><span class="p">,</span> <span class="n">TransformManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AbstractDataBatch</span><span class="p">,</span>
+    <span class="n">AbstractFileHandler</span><span class="p">,</span>
+    <span class="n">AudioFileHandler</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_model_inputs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartCompose</span><span class="p">,</span> <span class="n">TransformManager</span>
 
-<span class="kn">from</span> <span class="nn">.callback_manager</span> <span class="kn">import</span> <span class="n">CallbackManager</span>
-<span class="kn">from</span> <span class="nn">.continue_training</span> <span class="kn">import</span> <span class="n">ContinueTraining</span>
-<span class="kn">from</span> <span class="nn">.outputs_tracker</span> <span class="kn">import</span> <span class="n">init_trackers</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.callback_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallbackManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.continue_training</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContinueTraining</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.outputs_tracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputsTracker</span><span class="p">,</span> <span class="n">init_trackers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">disaggregated_evaluation</span><span class="p">,</span>
     <span class="n">format_results</span><span class="p">,</span>
     <span class="n">load_pretrained_model_state</span><span class="p">,</span>
@@ -393,15 +400,15 @@ document.write(`
 
 <div class="viewcode-block" id="ModularTaskTrainer">
 <a class="viewcode-back" href="../../../modules/training.html#autrainer.training.ModularTaskTrainer">[docs]</a>
-<span class="k">class</span> <span class="nc">ModularTaskTrainer</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModularTaskTrainer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cfg</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
         <span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">experiment_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modular Task Trainer.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Trainer managing the training of a model given a configuration.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cfg: Run configuration.</span>
@@ -412,6 +419,7 @@ document.write(`
 <span class="sd">            run_name: Run name for the run. If None, the name is automatically</span>
 <span class="sd">                set based on the output directory. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_manager</span> <span class="o">=</span> <span class="n">ThreadManager</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span> <span class="o">=</span> <span class="n">cfg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;criterion&quot;</span><span class="p">)</span>
 
@@ -426,13 +434,19 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">initial_iteration</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="c1"># ? Save current requirements.txt</span>
-        <span class="n">reqs_output</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;requirements.txt&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">reqs_output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;pip freeze&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_manager</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">save_requirements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">)</span>
 
         <span class="c1"># ? Load Model and Dataset Transforms and Augmentations</span>
         <span class="n">model_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span>
         <span class="n">dataset_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataset</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loader_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">}:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">_loader_kwargs&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loader_kwargs</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+                <span class="n">key</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="p">)</span>
 
         <span class="n">augmentation_manager</span> <span class="o">=</span> <span class="n">AugmentationManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">augmentation</span><span class="p">)</span>
         <span class="n">train_aug</span><span class="p">,</span> <span class="n">dev_aug</span><span class="p">,</span> <span class="n">test_aug</span> <span class="o">=</span> <span class="n">augmentation_manager</span><span class="o">.</span><span class="n">get_augmentations</span><span class="p">()</span>
@@ -449,7 +463,6 @@ document.write(`
         <span class="n">train_transform</span><span class="p">,</span> <span class="n">dev_transform</span><span class="p">,</span> <span class="n">test_transform</span> <span class="o">=</span> <span class="n">transforms</span>
 
         <span class="c1"># ? Load Dataset</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span>
             <span class="n">config</span><span class="o">=</span><span class="n">dataset_config</span><span class="p">,</span>
             <span class="n">instance_of</span><span class="o">=</span><span class="n">AbstractDataset</span><span class="p">,</span>
@@ -457,8 +470,6 @@ document.write(`
             <span class="n">dev_transform</span><span class="o">=</span><span class="n">dev_transform</span><span class="p">,</span>
             <span class="n">test_transform</span><span class="o">=</span><span class="n">test_transform</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="n">dataset_seed</span><span class="p">,</span>
-            <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
-            <span class="n">inference_batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">inference_batch_size</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># ? Create Bookkeeping</span>
@@ -467,21 +478,13 @@ document.write(`
             <span class="n">file_handler_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;training.log&quot;</span><span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="c1"># ? Datasets and Evaluation Data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">train_dataset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dev_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dev_dataset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">test_dataset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_dev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stratify</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_evaluation_data</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">task</span>
-
         <span class="c1"># ? Misc Training Parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_progress_bar</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;progress_bar&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span>
             <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
             <span class="n">instance_of</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">_Loss</span><span class="p">,</span>
+            <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span> <span class="s2">&quot;setup&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
@@ -500,6 +503,7 @@ document.write(`
             <span class="n">instance_of</span><span class="o">=</span><span class="n">AbstractModel</span><span class="p">,</span>
             <span class="n">output_dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dim</span><span class="p">,</span>
         <span class="p">)</span>
+
         <span class="k">if</span> <span class="n">model_checkpoint</span><span class="p">:</span>
             <span class="n">state_dict</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
                 <span class="n">model_checkpoint</span><span class="p">,</span>
@@ -511,8 +515,13 @@ document.write(`
                 <span class="n">state_dict</span><span class="p">,</span>
                 <span class="n">skip_last_layer</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_model_summary</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">,</span> <span class="s2">&quot;model_summary.txt&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_manager</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_model_summary</span><span class="p">,</span>
+            <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">,</span>
+            <span class="s2">&quot;model_summary.txt&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># ? Load Optimizer</span>
@@ -535,32 +544,44 @@ document.write(`
             <span class="p">)</span>
 
         <span class="c1"># ? Load Scheduler</span>
-        <span class="n">_scheduler_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">scheduler</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">=</span> <span class="n">_scheduler_cfg</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
-            <span class="s2">&quot;step_frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;batch&quot;</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Scheduler frequency </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span><span class="si">}</span><span class="s2"> not supported&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+            <span class="n">_scheduler_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">scheduler</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">=</span> <span class="n">_scheduler_cfg</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+                <span class="s2">&quot;step_frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="n">_scheduler_cfg</span><span class="p">,</span>
-            <span class="n">instance_of</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">,</span>
-            <span class="n">optimizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">scheduler_checkpoint</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-                    <span class="n">scheduler_checkpoint</span><span class="p">,</span>
-                    <span class="n">map_location</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
-                    <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;batch&quot;</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Scheduler frequency </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span><span class="si">}</span><span class="s2"> not supported&quot;</span>
                 <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">_scheduler_cfg</span><span class="p">,</span>
+                <span class="n">instance_of</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">,</span>
+                <span class="n">optimizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">scheduler_checkpoint</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+                        <span class="n">scheduler_checkpoint</span><span class="p">,</span>
+                        <span class="n">map_location</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+                        <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># ? Create Dataloaders</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">train_loader</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dev_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dev_loader</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">test_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">test_loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">create_train_loader</span><span class="p">(</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_loader_kwargs</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dev_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">create_dev_loader</span><span class="p">(</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">inference_batch_size</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_loader_kwargs</span><span class="p">[</span><span class="s2">&quot;dev&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">create_test_loader</span><span class="p">(</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">inference_batch_size</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_loader_kwargs</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
 
         <span class="c1"># ? Take metrics from dataset and add train/dev loss</span>
         <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
@@ -571,39 +592,26 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">max_dev_metric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tracking_metric</span><span class="o">.</span><span class="n">starting_metric</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span> <span class="o">=</span> <span class="mi">1</span>
 
-        <span class="c1"># ? Save initial (and best) Model, Optimizer and Encoder State</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">create_folder</span><span class="p">(</span><span class="s2">&quot;_initial&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_initial&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;optimizer.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_initial&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="s2">&quot;scheduler.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_initial&quot;</span>
-            <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">create_folder</span><span class="p">(</span><span class="s2">&quot;_best&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;optimizer.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="s2">&quot;scheduler.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span>
-            <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span><span class="p">,</span> <span class="s2">&quot;target_transform.yaml&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.yaml&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">test_transform</span><span class="p">,</span> <span class="s2">&quot;inference_transform.yaml&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">file_handler</span><span class="p">,</span> <span class="s2">&quot;file_handler.yaml&quot;</span>
-        <span class="p">)</span>
+        <span class="c1"># ? Save initial (and best) Model, Optimizer and Scheduler states</span>
+        <span class="n">save_tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_initial&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;optimizer.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_initial&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="s2">&quot;scheduler.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_initial&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;optimizer.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="s2">&quot;scheduler.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">save_tasks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_thread_manager</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">,</span> <span class="o">*</span><span class="n">task</span><span class="p">)</span>
 
         <span class="c1"># ? Load and Save Preprocessing Pipeline if specified</span>
         <span class="n">_preprocess_pipe</span> <span class="o">=</span> <span class="n">SmartCompose</span><span class="p">([])</span>
         <span class="n">_file_handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">file_handler</span>
         <span class="n">_features_subdir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;features_subdir&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">_features_subdir</span> <span class="o">!=</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">file_handler</span><span class="p">,</span> <span class="n">AudioFileHandler</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">_features_subdir</span> <span class="o">!=</span> <span class="s2">&quot;default&quot;</span>
+        <span class="p">):</span>
             <span class="n">_preprocess</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span>
                 <span class="n">hydra</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;preprocessing/</span><span class="si">{</span><span class="n">_features_subdir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="p">)[</span><span class="s2">&quot;preprocessing&quot;</span><span class="p">]</span>
@@ -618,12 +626,16 @@ document.write(`
                 <span class="p">]</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">(</span>
-            <span class="n">_preprocess_pipe</span><span class="p">,</span> <span class="s2">&quot;preprocess_pipeline.yaml&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">(</span>
-            <span class="n">_file_handler</span><span class="p">,</span> <span class="s2">&quot;preprocess_file_handler.yaml&quot;</span>
-        <span class="p">)</span>
+        <span class="n">save_tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_transform</span><span class="p">,</span> <span class="s2">&quot;target_transform.yaml&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.yaml&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">test_transform</span><span class="p">,</span> <span class="s2">&quot;inference_transform.yaml&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">file_handler</span><span class="p">,</span> <span class="s2">&quot;file_handler.yaml&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">_preprocess_pipe</span><span class="p">,</span> <span class="s2">&quot;preprocess_pipeline.yaml&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">_file_handler</span><span class="p">,</span> <span class="s2">&quot;preprocess_file_handler.yaml&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">save_tasks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_thread_manager</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_audobject</span><span class="p">,</span> <span class="o">*</span><span class="n">task</span><span class="p">)</span>
 
         <span class="c1"># ? Create Timers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span><span class="p">)</span>
@@ -675,9 +687,9 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span><span class="p">,</span>
                 <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">,</span>
                 <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span><span class="p">,</span>  <span class="c1"># has to be last as it might overwrite other callbacks</span>
             <span class="p">]</span>
         <span class="p">)</span>
 
@@ -690,23 +702,25 @@ document.write(`
         <span class="p">)</span>
 
         <span class="c1"># ? Create Outputs Tracker</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dev_tracker</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_tracker</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">init_trackers</span><span class="p">(</span>
-                <span class="n">exports</span><span class="o">=</span><span class="p">[</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">save_train_outputs</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">save_dev_outputs</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">save_test_outputs</span><span class="p">,</span>
-                <span class="p">],</span>
-                <span class="n">prefixes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dev_tracker</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_tracker</span> <span class="o">=</span> <span class="n">init_trackers</span><span class="p">(</span>
+            <span class="n">exports</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">save_dev_outputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">save_test_outputs</span><span class="p">],</span>
+            <span class="n">prefixes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dev&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">],</span>
+            <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">bookkeeping</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">save_train_outputs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span> <span class="o">=</span> <span class="n">OutputsTracker</span><span class="p">(</span>
+                <span class="n">export</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-                <span class="n">criterion</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
                 <span class="n">bookkeeping</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ModularTaskTrainer.train">
 <a class="viewcode-back" href="../../../modules/training.html#autrainer.training.ModularTaskTrainer.train">[docs]</a>
-    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model.</span>
 
 <span class="sd">        Raises:</span>
@@ -723,6 +737,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">custom_step</span> <span class="k">if</span> <span class="n">custom_step</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_step</span>
         <span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_manager</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
             <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_train_begin&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span>
         <span class="p">)</span>
@@ -739,7 +754,7 @@ document.write(`
         <span class="c1"># ? Score best model on test set</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;optimizer.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">create_folder</span><span class="p">(</span><span class="s2">&quot;_test&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -747,7 +762,7 @@ document.write(`
             <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
             <span class="s2">&quot;_test&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">test_loader</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_test</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">df_test</span><span class="p">,</span>
             <span class="n">dev_evaluation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">save_to</span><span class="o">=</span><span class="s2">&quot;test_holistic&quot;</span><span class="p">,</span>
             <span class="n">tracker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_tracker</span><span class="p">,</span>
@@ -792,17 +807,22 @@ document.write(`
         <span class="c1"># ? Plot Metrics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_metrics</span><span class="o">.</span><span class="n">plot_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_results_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="s2">&quot;metrics.csv&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
             <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_train_end&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_results_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="s2">&quot;metrics.csv&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span><span class="p">][</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tracking_metric</span><span class="o">.</span><span class="n">name</span>
         <span class="p">]</span></div>
 
 
-    <span class="k">def</span> <span class="nf">train_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model for a fixed number of epochs.&quot;&quot;&quot;</span>
         <span class="n">train_loss</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pm</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loader_kwargs</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pin_memory&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_iteration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
@@ -812,43 +832,49 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">create_folder</span><span class="p">(</span><span class="n">epoch_folder</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sample_idx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+            <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
                 <span class="n">tqdm</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span><span class="p">,</span>
                     <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Train&quot;</span><span class="p">,</span>
                     <span class="n">disable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">disable_progress_bar</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">):</span>
-                <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">),</span> <span class="n">target</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">pm</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                     <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_begin&quot;</span><span class="p">,</span>
                     <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                     <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
                     <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">l</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_step_fn</span><span class="p">(</span>
+                <span class="n">loss</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_step_fn</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
                     <span class="n">data</span><span class="p">,</span>
-                    <span class="n">target</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_transform</span><span class="o">.</span><span class="n">probabilities_training</span><span class="p">,</span>
                 <span class="p">)</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+                <span class="n">reduced_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;batch&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sample_idx</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span>
+                    <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                     <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_end&quot;</span><span class="p">,</span>
                     <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                     <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
                     <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span><span class="p">,</span>
-                    <span class="n">loss</span><span class="o">=</span><span class="n">l</span><span class="p">,</span>
+                    <span class="n">loss</span><span class="o">=</span><span class="n">reduced_loss</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">train_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                <span class="n">train_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reduced_loss</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">epoch_folder</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">epoch_folder</span><span class="p">)</span>
                 <span class="n">train_loss</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">train_loss</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loss</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">epoch</span><span class="p">,</span> <span class="s2">&quot;train_loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_loss</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dev_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -856,7 +882,7 @@ document.write(`
                     <span class="n">epoch</span><span class="p">,</span>
                     <span class="n">epoch_folder</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">dev_loader</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df_dev</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">df_dev</span><span class="p">,</span>
                     <span class="n">tracker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_tracker</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dev_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
@@ -881,7 +907,8 @@ document.write(`
                 <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">train_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model for a fixed number of steps.&quot;&quot;&quot;</span>
         <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
             <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span><span class="p">,</span>
             <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Train&quot;</span><span class="p">,</span>
@@ -893,6 +920,10 @@ document.write(`
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span><span class="p">)</span>
         <span class="n">train_loss</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pm</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loader_kwargs</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pin_memory&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">iterations</span><span class="p">:</span>
             <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -900,7 +931,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sample_idx</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                     <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_loader_exhausted&quot;</span><span class="p">,</span>
@@ -908,39 +939,45 @@ document.write(`
                     <span class="n">iteration</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span><span class="p">)</span>
-                <span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sample_idx</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span><span class="p">)</span>
-            <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">),</span> <span class="n">target</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">pm</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                 <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_begin&quot;</span><span class="p">,</span>
                 <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">iteration</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
                 <span class="n">batch_idx</span><span class="o">=</span><span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">l</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_step_fn</span><span class="p">(</span>
+            <span class="n">loss</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_step_fn</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
                 <span class="n">data</span><span class="p">,</span>
-                <span class="n">target</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_transform</span><span class="o">.</span><span class="n">probabilities_training</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+            <span class="n">reduced_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;batch&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sample_idx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span>
+                <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                 <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_end&quot;</span><span class="p">,</span>
                 <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">iteration</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
                 <span class="n">batch_idx</span><span class="o">=</span><span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span><span class="p">,</span>
-                <span class="n">loss</span><span class="o">=</span><span class="n">l</span><span class="p">,</span>
+                <span class="n">loss</span><span class="o">=</span><span class="n">reduced_loss</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">train_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+            <span class="n">train_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reduced_loss</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
                 <span class="n">step_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;step_</span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">create_folder</span><span class="p">(</span><span class="n">step_folder</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">step_folder</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">step_folder</span><span class="p">)</span>
                 <span class="n">train_loss</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">train_loss</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loss</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="s2">&quot;train_loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_loss</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dev_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -948,7 +985,7 @@ document.write(`
                     <span class="n">step</span><span class="p">,</span>
                     <span class="n">step_folder</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">dev_loader</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">df_dev</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">df_dev</span><span class="p">,</span>
                     <span class="n">tracker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_tracker</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dev_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
@@ -974,32 +1011,41 @@ document.write(`
                         <span class="n">iteration</span><span class="o">=</span><span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_train_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_train_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-        <span class="n">target</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">AbstractModel</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">AbstractDataBatch</span><span class="p">,</span>
         <span class="n">criterion</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
         <span class="n">probabilities_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
-        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model for a single step.</span>
 
-<div class="viewcode-block" id="ModularTaskTrainer.evaluate">
-<a class="viewcode-back" href="../../../modules/training.html#autrainer.training.ModularTaskTrainer.evaluate">[docs]</a>
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="sd">        Args:</span>
+<span class="sd">            model: Model to train.</span>
+<span class="sd">            data: Data to train on.</span>
+<span class="sd">            criterion: Criterion to optimize.</span>
+<span class="sd">            probabilities_fn: Function to convert model output to</span>
+<span class="sd">                probabilities.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple containing the non-reduced loss and model outputs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">create_model_inputs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">output</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">iteration_folder</span><span class="p">,</span>
-        <span class="n">loader</span><span class="p">,</span>
-        <span class="n">df</span><span class="p">,</span>
-        <span class="n">dev_evaluation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">save_to</span><span class="o">=</span><span class="s2">&quot;dev&quot;</span><span class="p">,</span>
-        <span class="n">tracker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">iteration_folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">loader</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">dev_evaluation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">save_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span>
+        <span class="n">tracker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OutputsTracker</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the model on the dev or test set.</span>
 
@@ -1024,11 +1070,13 @@ document.write(`
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">lk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loader_kwargs</span><span class="p">[</span><span class="s2">&quot;dev&quot;</span> <span class="k">if</span> <span class="n">dev_evaluation</span> <span class="k">else</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span>
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
             <span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">,</span>
             <span class="n">tracker</span><span class="o">=</span><span class="n">tracker</span><span class="p">,</span>
             <span class="n">iteration_folder</span><span class="o">=</span><span class="n">iteration_folder</span><span class="p">,</span>
+            <span class="n">loader_kwargs</span><span class="o">=</span><span class="n">lk</span><span class="p">,</span>
             <span class="n">cb_type</span><span class="o">=</span><span class="n">cb_type</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
@@ -1053,16 +1101,22 @@ document.write(`
                     <span class="n">iteration</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-
-        <span class="n">logging_results</span> <span class="o">=</span> <span class="n">disaggregated_evaluation</span><span class="p">(</span>
-            <span class="n">targets</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">targets</span><span class="p">,</span>
-            <span class="n">predictions</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span>
-            <span class="n">indices</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span>
-            <span class="n">groundtruth</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
-            <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
-            <span class="n">target_column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
-            <span class="n">stratify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stratify</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">stratify</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">logging_results</span> <span class="o">=</span> <span class="n">disaggregated_evaluation</span><span class="p">(</span>
+                <span class="n">targets</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">targets</span><span class="p">,</span>
+                <span class="n">predictions</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span>
+                <span class="n">indices</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span>
+                <span class="n">groundtruth</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+                <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
+                <span class="n">target_column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
+                <span class="n">stratify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">stratify</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_results</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
         <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
             <span class="n">logging_results</span><span class="p">[</span><span class="s2">&quot;dev_loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;dev_loss&quot;</span><span class="p">]}</span>
             <span class="n">logging_results</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iteration</span>
@@ -1110,15 +1164,34 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="s2">&quot;scheduler.pt&quot;</span><span class="p">,</span> <span class="n">iteration_folder</span>
                 <span class="p">)</span>
-        <span class="n">tracker</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+        <span class="n">tracker</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">loader</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
+        <span class="n">tracker</span><span class="p">:</span> <span class="n">OutputsTracker</span><span class="p">,</span>
+        <span class="n">iteration_folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">loader_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">cb_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the model on the dev or test set.</span>
 
-    <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">iteration_folder</span><span class="p">,</span> <span class="n">cb_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;val&quot;</span>
-    <span class="p">):</span>
+<span class="sd">        Args:</span>
+<span class="sd">            loader: Dataloader to evaluate on.</span>
+<span class="sd">            tracker: Tracker to save the outputs.</span>
+<span class="sd">            iteration_folder: Iteration folder to save the results to.</span>
+<span class="sd">            cb_type: Callback type. Defaults to &quot;val&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary containing the results on the dev or test set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pm</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">loader_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pin_memory&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span>
+        <span class="p">)</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-            <span class="n">loss</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sample_idx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+            <span class="n">losses</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
                 <span class="n">tqdm</span><span class="p">(</span>
                     <span class="n">loader</span><span class="p">,</span>
                     <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Evaluate&quot;</span> <span class="k">if</span> <span class="n">cb_type</span> <span class="o">==</span> <span class="s2">&quot;val&quot;</span> <span class="k">else</span> <span class="s2">&quot;Test&quot;</span><span class="p">,</span>
@@ -1130,36 +1203,32 @@ document.write(`
                     <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                     <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">))</span>
-                <span class="n">probabilities_fn</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_transform</span><span class="o">.</span><span class="n">probabilities_training</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">pm</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">create_model_inputs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">target_transform</span><span class="o">.</span><span class="n">probabilities_training</span><span class="p">(</span><span class="n">output</span><span class="p">),</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">loss</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span>
-                        <span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span>
-                        <span class="n">target</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">),</span>
-                    <span class="p">)</span>
-                    <span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
-                    <span class="o">.</span><span class="n">item</span><span class="p">()</span>
-                <span class="p">)</span>
-                <span class="n">tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sample_idx</span><span class="p">)</span>
+                <span class="n">reduced_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="n">losses</span> <span class="o">+=</span> <span class="n">reduced_loss</span>
+                <span class="n">tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                     <span class="n">position</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cb_on_</span><span class="si">{</span><span class="n">cb_type</span><span class="si">}</span><span class="s2">_step_end&quot;</span><span class="p">,</span>
                     <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                     <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span><span class="p">,</span>
-                    <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span>
+                    <span class="n">loss</span><span class="o">=</span><span class="n">reduced_loss</span><span class="p">,</span>
                 <span class="p">)</span>
-            <span class="n">loss</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loader</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">losses</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loader</span><span class="p">)</span>
         <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">iteration_folder</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
+            <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">losses</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
             <span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric</span><span class="p">(</span><span class="n">tracker</span><span class="o">.</span><span class="n">targets</span><span class="p">,</span> <span class="n">tracker</span><span class="o">.</span><span class="n">predictions</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">results</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DictConfig</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DictConfig</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the configuration of the trainer.</span>
 
 <span class="sd">        Returns:</span>
@@ -1202,7 +1271,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

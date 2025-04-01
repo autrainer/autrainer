@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>autrainer.datasets.edansa2019 &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+    <title>autrainer.datasets.msppodcast &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
   
   
   
@@ -45,7 +45,7 @@
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/datasets/edansa2019';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/datasets/msppodcast';</script>
     <script src="../../../_static/external_links.js?v=919ee35f"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
@@ -352,65 +352,79 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for autrainer.datasets.edansa2019</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+  <h1>Source code for autrainer.datasets.msppodcast</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.abstract_dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AbstractTargetTransform</span><span class="p">,</span>
+    <span class="n">LabelEncoder</span><span class="p">,</span>
+    <span class="n">MinMaxScaler</span><span class="p">,</span>
+    <span class="n">MultiTargetMinMaxScaler</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartCompose</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseMLClassificationDataset</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZipDownloadManager</span>
 
-
-<span class="n">FILES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;EDANSA-2019.zip&quot;</span><span class="p">:</span> <span class="s2">&quot;https://zenodo.org/records/6824272/files/EDANSA-2019.zip?download=1&quot;</span>
-<span class="p">}</span>
-
-
-<div class="viewcode-block" id="EDANSA2019">
-<a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.EDANSA2019">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">EDANSA2019</span><span class="p">(</span><span class="n">BaseMLClassificationDataset</span><span class="p">):</span>
+<div class="viewcode-block" id="MSPPodcast">
+<a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.MSPPodcast">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSPPodcast</span><span class="p">(</span><span class="n">AbstractDataset</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">features_subdir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
-        <span class="n">tracking_metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
-        <span class="n">index_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">target_column</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">tracking_metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">target_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">file_handler</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
-        <span class="n">features_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">index_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FileName&quot;</span><span class="p">,</span>
+        <span class="n">features_subdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">train_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dev_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">test_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">stratify</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">categories</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;EDANSA 2019 dataset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;MSP-Podcast dataset.</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            There are multiple versions available for this dataset.</span>
+<span class="sd">            We recommend always using the latest one</span>
+<span class="sd">            (v1.11 at the time of writing)</span>
+<span class="sd">            but our code is set up to work with all versions</span>
+<span class="sd">            (at least up to v1.11).</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Note that after v1.7, the dataset features two test sets.</span>
+<span class="sd">            We only use ``Test1``, as ``Test2`` was found to be biased</span>
+<span class="sd">            with respect to gender.</span>
+<span class="sd">            See https://doi.org/10.21437/Interspeech.2019-1708.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Unlike other datasets which only support classification</span>
+<span class="sd">            or regression, MSP-Podcast supports both. This is determined</span>
+<span class="sd">            by picking the appropriate target column.</span>
+<span class="sd">            ``EmoClass`` corresponds to categorical emotion classification,</span>
+<span class="sd">            whereas ``EmoAct``, ``EmoVal``, and ``EmoDom`` to dimensional</span>
+<span class="sd">            emotion regression for activation (arousal), valence, and dominance,</span>
+<span class="sd">            respectively.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            path: Root path to the dataset.</span>
 <span class="sd">            features_subdir: Subdirectory containing the features.</span>
-<span class="sd">                If `None`, defaults to audio subdirectory,</span>
-<span class="sd">                which is `default` for the standard format,</span>
-<span class="sd">                but can be overridden in the dataset specification.</span>
 <span class="sd">            seed: Seed for reproducibility.</span>
 <span class="sd">            metrics: List of metrics to calculate.</span>
 <span class="sd">            tracking_metric: Metric to track.</span>
-<span class="sd">            index_column: Index column of the dataframe.</span>
 <span class="sd">            target_column: Target column of the dataframe.</span>
 <span class="sd">            file_type: File type of the features.</span>
 <span class="sd">            file_handler: File handler to load the data.</span>
-<span class="sd">            features_path: Root path to features. Useful</span>
-<span class="sd">                when features need to be extracted and stored</span>
-<span class="sd">                in a different folder than the root of the dataset.</span>
-<span class="sd">                If `None`, will be set to `path`. Defaults to `None`.</span>
+<span class="sd">            index_column: Index column of the dataframe.</span>
+<span class="sd">                Defaults to `FileName`, as in the original data.</span>
 <span class="sd">            train_transform: Transform to apply to the training set.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            dev_transform: Transform to apply to the development set.</span>
@@ -418,9 +432,17 @@ document.write(`
 <span class="sd">            test_transform: Transform to apply to the test set.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            stratify: Columns to stratify the dataset on. Defaults to None.</span>
-<span class="sd">            threshold: Threshold for classification. Defaults to 0.5.</span>
+<span class="sd">            categories: used to filter out specific emotional categories.</span>
+<span class="sd">                Useful for training on subset of data/classes, such as the classic</span>
+<span class="sd">                [&quot;A&quot;, &quot;H&quot;, &quot;N&quot;, &quot;S&quot;] 4-class problem found in literature.</span>
+<span class="sd">                Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;classification&quot;</span> <span class="k">if</span> <span class="n">target_column</span> <span class="o">==</span> <span class="s2">&quot;EmoClass&quot;</span> <span class="k">else</span> <span class="s2">&quot;regression&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">categories</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
             <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
             <span class="n">features_subdir</span><span class="o">=</span><span class="n">features_subdir</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
@@ -430,59 +452,106 @@ document.write(`
             <span class="n">target_column</span><span class="o">=</span><span class="n">target_column</span><span class="p">,</span>
             <span class="n">file_type</span><span class="o">=</span><span class="n">file_type</span><span class="p">,</span>
             <span class="n">file_handler</span><span class="o">=</span><span class="n">file_handler</span><span class="p">,</span>
-            <span class="n">features_path</span><span class="o">=</span><span class="n">features_path</span><span class="p">,</span>
             <span class="n">train_transform</span><span class="o">=</span><span class="n">train_transform</span><span class="p">,</span>
             <span class="n">dev_transform</span><span class="o">=</span><span class="n">dev_transform</span><span class="p">,</span>
             <span class="n">test_transform</span><span class="o">=</span><span class="n">test_transform</span><span class="p">,</span>
             <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">,</span>
-            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_target_column</span><span class="p">(</span><span class="n">allowed_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">9</span><span class="p">:])</span>
 
-<div class="viewcode-block" id="EDANSA2019.download">
-<a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.EDANSA2019.download">[docs]</a>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">audio_subdir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Subfolder containing audio data.</span>
+
+<span class="sd">        Defaults to `Audios` for MSP-Podcast.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Audios&quot;</span>
+
+<div class="viewcode-block" id="MSPPodcast.download">
+<a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.MSPPodcast.download">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the EDANSA 2019 dataset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download the MSP-Podcast dataset.</span>
 
-<span class="sd">        For more information on the dataset, see:</span>
-<span class="sd">        https://zenodo.org/doi/10.5281/zenodo.6824271</span>
+<span class="sd">        As this dataset is not publicly-available, please download it manually</span>
+<span class="sd">        by contacting Prof. Carlos Busso:</span>
+<span class="sd">        https://ecs.utdallas.edu/research/researchlabs/msp-lab/MSP-Podcast.html</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            path: Path to the directory to download the dataset to.</span>
+<span class="sd">        This function will not do anything.</span>
+
+<span class="sd">        For more information on the data, see:</span>
+<span class="sd">        https://doi.org/10.1109/TAFFC.2017.2736999</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">out_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">out_path</span><span class="p">):</span>
-            <span class="k">return</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
-        <span class="c1"># download and extract files</span>
-        <span class="n">dl_manager</span> <span class="o">=</span> <span class="n">ZipDownloadManager</span><span class="p">(</span><span class="n">FILES</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-        <span class="n">dl_manager</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;EDANSA-2019&quot;</span><span class="p">])</span>
-        <span class="n">dl_manager</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;EDANSA-2019&quot;</span><span class="p">])</span>
 
-        <span class="c1"># move audio files</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;EDANSA-2019&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">)):</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;EDANSA-2019&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">item</span><span class="p">),</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">item</span><span class="p">),</span>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_df</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the dataframes.</span>
+
+<span class="sd">        Overrides base class so there is no need</span>
+<span class="sd">        to create separate train/dev/test files.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dataframes for training, development, and testing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;Labels&quot;</span><span class="p">,</span> <span class="s2">&quot;labels_consensus.csv&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;EmoClass&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">[</span><span class="s2">&quot;Split_Set&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span>
+            <span class="n">drop</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_dev</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">[</span><span class="s2">&quot;Split_Set&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Development&quot;</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">[</span><span class="s2">&quot;Split_Set&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Test1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span>
+            <span class="n">drop</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractTargetTransform</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the target transform.</span>
+
+<span class="sd">        Determined automatically based on the type of task.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Target transform.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">LabelEncoder</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="p">)</span>
-
-        <span class="c1"># process dataframes</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;EDANSA-2019&quot;</span><span class="p">,</span> <span class="s2">&quot;labels.csv&quot;</span><span class="p">))</span>
-        <span class="n">target_columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span>
-        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">target_columns</span><span class="p">:</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-        <span class="n">df_train</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;set&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">]</span>
-        <span class="n">df_dev</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;set&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;valid&quot;</span><span class="p">]</span>
-        <span class="n">df_test</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;set&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span>
-        <span class="n">df_train</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;train.csv&quot;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">df_dev</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;dev.csv&quot;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">df_test</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;test.csv&quot;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-        <span class="c1"># remove unnecessary files</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;EDANSA-2019&quot;</span><span class="p">))</span></div>
-</div>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;regression&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">MultiTargetMinMaxScaler</span><span class="p">(</span>
+                    <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
+                    <span class="n">minimum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+                    <span class="n">maximum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">MinMaxScaler</span><span class="p">(</span>
+                    <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
+                    <span class="n">minimum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+                    <span class="n">maximum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2"> not supported for MSPPodcast&quot;</span>
+            <span class="p">)</span></div>
 
 </pre></div>
 

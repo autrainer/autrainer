@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -361,7 +361,8 @@ document.write(`
 <p class="admonition-title">Tip</p>
 <p>To create custom loggers, refer to the <a class="reference internal" href="../usage/tutorials.html#tut-loggers"><span class="std std-ref">custom loggers tutorial</span></a>.</p>
 </div>
-<p>For example, to add a <code class="xref py py-class docutils literal notranslate"><span class="pre">MLFlowLogger</span></code>, specify it in the <a class="reference internal" href="../usage/hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> by adding a list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">loggers</span></code>:</p>
+<p>For example, to add a <a class="reference internal" href="#autrainer.loggers.MLFlowLogger" title="autrainer.loggers.MLFlowLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">MLFlowLogger</span></code></a>,
+specify it in the <a class="reference internal" href="../usage/hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> by adding a list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">loggers</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
@@ -374,7 +375,7 @@ document.write(`
 </div>
 <section id="abstract-logger">
 <h2>Abstract Logger<a class="headerlink" href="#abstract-logger" title="Link to this heading">#</a></h2>
-<p>All loggers inherit from the <code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractLogger</span></code> class.</p>
+<p>All loggers inherit from the <a class="reference internal" href="#autrainer.loggers.AbstractLogger" title="autrainer.loggers.AbstractLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractLogger</span></code></a> class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.loggers.AbstractLogger">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.loggers.</span></span><span class="sig-name descname"><span class="pre">AbstractLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['model_summary.txt',</span> <span class="pre">'metrics.csv',</span> <span class="pre">{'config.yaml':</span> <span class="pre">'.hydra'}]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/loggers/abstract_logger.html#AbstractLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.loggers.AbstractLogger" title="Link to this definition">#</a></dt>
@@ -508,7 +509,7 @@ directory to the artifact. Defaults to “”.</p></li>
 </section>
 <section id="optional-loggers">
 <h2>Optional Loggers<a class="headerlink" href="#optional-loggers" title="Link to this heading">#</a></h2>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">MLFlowLogger</span></code> logs data to MLFlow, while the <code class="xref py py-class docutils literal notranslate"><span class="pre">TensorBoardLogger</span></code> logs data to TensorBoard.
+<p>The <a class="reference internal" href="#autrainer.loggers.MLFlowLogger" title="autrainer.loggers.MLFlowLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">MLFlowLogger</span></code></a> logs data to MLFlow, while the <a class="reference internal" href="#autrainer.loggers.TensorBoardLogger" title="autrainer.loggers.TensorBoardLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorBoardLogger</span></code></a> logs data to TensorBoard.
 Both loggers require additional dependencies, which are not installed by default.
 To install all necessary dependencies, refer to the <a class="reference internal" href="../index.html#installation"><span class="std std-ref">Installation</span></a> section.</p>
 <p>To start the MLflow or TensorBoard server, run the following commands:</p>
@@ -517,24 +518,48 @@ To install all necessary dependencies, refer to the <a class="reference internal
 </pre></div>
 </div>
 <p>In both cases, the path should be the same as the <code class="code docutils literal notranslate"><span class="pre">output_dir</span></code> specified in the configuration.</p>
-<dl class="py attribute">
+<dl class="py class">
 <dt class="sig sig-object py" id="autrainer.loggers.MLFlowLogger">
-<span class="sig-prename descclassname"><span class="pre">autrainer.loggers.</span></span><span class="sig-name descname"><span class="pre">MLFlowLogger</span></span><a class="reference internal" href="../_modules/autrainer/loggers/mlflow_logger.html#MLFlowLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.loggers.MLFlowLogger" title="Link to this definition">#</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">~autrainer.loggers.mlflow_logger.</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.loggers.</span></span><span class="sig-name descname"><span class="pre">MLFlowLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['model_summary.txt',</span> <span class="pre">'metrics.csv',</span> <span class="pre">{'config.yaml':</span> <span class="pre">'.hydra'}]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mlruns'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/loggers/mlflow_logger.html#MLFlowLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.loggers.MLFlowLogger" title="Link to this definition">#</a></dt>
+<dd><p>Base class for loggers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exp_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The name of the experiment.</p></li>
+<li><p><strong>run_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The name of the run.</p></li>
+<li><p><strong>metrics</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="metrics.html#autrainer.metrics.AbstractMetric" title="autrainer.metrics.abstract_metric.AbstractMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMetric</span></code></a>]</span>) – The metrics to log.</p></li>
+<li><p><strong>tracking_metric</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="metrics.html#autrainer.metrics.AbstractMetric" title="autrainer.metrics.abstract_metric.AbstractMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMetric</span></code></a></span>) – The metric to determine the best results.</p></li>
+<li><p><strong>artifacts</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]]</span>) – The artifacts to log. Defaults to
+<a class="reference internal" href="core.html#autrainer.core.constants.ExportConstants.ARTIFACTS" title="autrainer.core.constants.ExportConstants.ARTIFACTS"><code class="xref py py-const docutils literal notranslate"><span class="pre">ARTIFACTS</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="py class">
 <dt class="sig sig-object py" id="autrainer.loggers.TensorBoardLogger">
-<span class="sig-prename descclassname"><span class="pre">autrainer.loggers.</span></span><span class="sig-name descname"><span class="pre">TensorBoardLogger</span></span><a class="reference internal" href="../_modules/autrainer/loggers/tensorboard_logger.html#TensorBoardLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.loggers.TensorBoardLogger" title="Link to this definition">#</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">~autrainer.loggers.tensorboard_logger.</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.loggers.</span></span><span class="sig-name descname"><span class="pre">TensorBoardLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['model_summary.txt',</span> <span class="pre">'metrics.csv',</span> <span class="pre">{'config.yaml':</span> <span class="pre">'.hydra'}]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/loggers/tensorboard_logger.html#TensorBoardLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.loggers.TensorBoardLogger" title="Link to this definition">#</a></dt>
+<dd><p>Base class for loggers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exp_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The name of the experiment.</p></li>
+<li><p><strong>run_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The name of the run.</p></li>
+<li><p><strong>metrics</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="metrics.html#autrainer.metrics.AbstractMetric" title="autrainer.metrics.abstract_metric.AbstractMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMetric</span></code></a>]</span>) – The metrics to log.</p></li>
+<li><p><strong>tracking_metric</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="metrics.html#autrainer.metrics.AbstractMetric" title="autrainer.metrics.abstract_metric.AbstractMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMetric</span></code></a></span>) – The metric to determine the best results.</p></li>
+<li><p><strong>artifacts</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]]</span>) – The artifacts to log. Defaults to
+<a class="reference internal" href="core.html#autrainer.core.constants.ExportConstants.ARTIFACTS" title="autrainer.core.constants.ExportConstants.ARTIFACTS"><code class="xref py py-const docutils literal notranslate"><span class="pre">ARTIFACTS</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
 <section id="fallback-logger">
 <h2>Fallback Logger<a class="headerlink" href="#fallback-logger" title="Link to this heading">#</a></h2>
-<p>If a logger such as <code class="xref py py-class docutils literal notranslate"><span class="pre">MLFlowLogger</span></code> is specified in the configuration,
+<p>If a logger such as <a class="reference internal" href="#autrainer.loggers.MLFlowLogger" title="autrainer.loggers.MLFlowLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">MLFlowLogger</span></code></a> is specified in the configuration,
 but the required dependencies are not installed,
-the <code class="xref py py-class docutils literal notranslate"><span class="pre">FallbackLogger</span></code> will be used instead.
+the <a class="reference internal" href="#autrainer.loggers.FallbackLogger" title="autrainer.loggers.FallbackLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">FallbackLogger</span></code></a> will be used instead.
 This logger will log a warning message and will not log any data.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.loggers.FallbackLogger">
@@ -628,7 +653,7 @@ The logger serves as a no-op.</p>
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -389,8 +389,8 @@ This file defines the configuration of the training experiments over which a gri
 <li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">experiment_id</span></code>: The ID of the experiment.</p></li>
 <li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">hydra/sweeper/params</span></code>: The parameters of the sweep.</p>
 <ul>
-<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">&lt;attr&gt;</span></code>: An attribute to sweep over from the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a> (with comma-separated values, e.g. a list of models).</p></li>
-<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">+&lt;attr&gt;</span></code>: An attribute to sweep over that is not in the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a> (with comma-separated values, e.g. a list of batch sizes).</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">&lt;attr&gt;</span></code>: An attribute to sweep over from the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a> (with comma-separated values, e.g., a list of models).</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">+&lt;attr&gt;</span></code>: An attribute to sweep over that is not in the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a> (with comma-separated values, e.g., a list of batch sizes).</p></li>
 </ul>
 </li>
 <li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">hydra/sweeper/filters</span></code>: A list of filters to filter out unwanted hyperparameter combinations (see <a class="reference internal" href="#hydra-sweeper-plugins"><span class="std std-ref">Sweeper Plugins</span></a>).</p></li>
@@ -416,7 +416,7 @@ use the <cite>-cn/–config-name</cite> argument for the <a class="reference int
 <section id="configuration-directories">
 <span id="id3"></span><h2>Configuration Directories<a class="headerlink" href="#configuration-directories" title="Link to this heading">#</a></h2>
 <p>Configuration files imported through the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a> are stored in the <code class="file docutils literal notranslate"><span class="pre">conf/</span></code> directory.
-The configuration files are organized in subdirectories (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/dataset/</span></code>, <code class="file docutils literal notranslate"><span class="pre">conf/model/</span></code>, <code class="file docutils literal notranslate"><span class="pre">conf/optimizer/</span></code>, etc.).
+The configuration files are organized in subdirectories (e.g., <code class="file docutils literal notranslate"><span class="pre">conf/dataset/</span></code>, <code class="file docutils literal notranslate"><span class="pre">conf/model/</span></code>, <code class="file docutils literal notranslate"><span class="pre">conf/optimizer/</span></code>, etc.).
 This directory structure tells Hydra where to look for the configuration files.
 The following configuration subdirectories are available:</p>
 <ul class="simple">
@@ -433,9 +433,9 @@ The following configuration subdirectories are available:</p>
 <span id="id4"></span><h2>Creating Configurations<a class="headerlink" href="#creating-configurations" title="Link to this heading">#</a></h2>
 <p><cite>autrainer</cite> provides a number of default configurations for models, datasets, optimizers, etc.
 that can be used out of the box without creating custom configurations.
-To use a default configuration e.g. a <cite>MobileNetV3-Large-T</cite> model, add it to the <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code> file:</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
+To use a default configuration e.g., a <cite>MobileNetV3-Large-T</cite> model, add it to the <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code> file:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
 <span class="linenos">2</span><span class="l l-Scalar l-Scalar-Plain">hydra</span>
 <span class="linenos">3</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">sweeper</span><span class="p p-Indicator">:</span>
@@ -450,7 +450,7 @@ To use a default configuration e.g. a <cite>MobileNetV3-Large-T</cite> model, ad
 <p>To discover configurations that are available by default, use the <a class="reference internal" href="cli_reference.html#cli-autrainer-list"><span class="std std-ref">autrainer list</span></a> CLI command
 or the <a class="reference internal" href="cli_wrapper.html#autrainer.cli.list" title="autrainer.cli.list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list()</span></code></a> CLI wrapper function.
 For example, to discover all available <cite>MobileNet</cite> configurations, use the following command with a glob pattern:</p>
-<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">list</span> model <span class="o">--pattern</span>=&quot;MobileNet*&quot;
+<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">list</span> model <span class="o">--pattern</span><span class="l">=&quot;MobileNet*&quot;</span>
 </pre></div>
 </div>
 <p>Alternatively, use the <a class="reference internal" href="cli_wrapper.html#autrainer.cli.list" title="autrainer.cli.list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list()</span></code></a> CLI wrapper function with the <code class="xref py py-attr docutils literal notranslate"><span class="pre">pattern</span></code> parameter:</p>
@@ -482,7 +482,7 @@ Every configuration file should have:</p>
 <p>To modify an existing configuration provided by <cite>autrainer</cite>, create a new YAML file with the name in the subdirectory.
 The new configuration will override the existing configuration.</p>
 <p>To easily override a configuration, save a local copy of it using the <a class="reference internal" href="cli_reference.html#cli-autrainer-show"><span class="std std-ref">autrainer show</span></a> command:</p>
-<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">show</span> model &quot;MobileNetV3<span class="o">-Large-T</span>&quot; <span class="o">--save</span>
+<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">show</span> model &quot;MobileNetV3-Large-T&quot; <span class="o">--save</span>
 </pre></div>
 </div>
 <p>Alternatively, use the <a class="reference internal" href="cli_wrapper.html#autrainer.cli.show" title="autrainer.cli.show"><code class="xref py py-meth docutils literal notranslate"><span class="pre">show()</span></code></a> CLI wrapper function with the <code class="xref py py-attr docutils literal notranslate"><span class="pre">save</span></code> parameter:</p>
@@ -493,7 +493,7 @@ The new configuration will override the existing configuration.</p>
 </section>
 <section id="shorthand-syntax">
 <span id="id5"></span><h2>Shorthand Syntax<a class="headerlink" href="#shorthand-syntax" title="Link to this heading">#</a></h2>
-<p>For configurations that are not primitive types (e.g. numbers or strings) and are not included in the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a>,
+<p>For configurations that are not primitive types (e.g., numbers or strings) and are not included in the <a class="reference internal" href="#defaults-list"><span class="std std-ref">Defaults List</span></a>,
 shorthand syntax is used to reduce the number of configuration files required.
 Instead of a configuration file, shorthand syntax configurations can be either a string or a dictionary.</p>
 <ul class="simple">
@@ -502,8 +502,8 @@ Instead of a configuration file, shorthand syntax configurations can be either a
 and its values are passed as keyword arguments to the class constructor.</p></li>
 </ul>
 <p>For example, in a dataset configuration, the <code class="xref py py-attr docutils literal notranslate"><span class="pre">tracking_metric</span></code> and the list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">metrics</span></code> are specified with shorthand syntax:</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">conf/dataset/ExampleDataset.yaml</span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">conf/dataset/ExampleDataset.yaml</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExampleDataset</span>
 <span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example_dataset.ExampleDataset</span>
 <span class="linenos"> 3</span><span class="nn">...</span>
@@ -528,8 +528,8 @@ and the model as well as <a class="reference internal" href="../modules/transfor
 variable interpolation to reference attributes from anywhere in the configuration.</p>
 <p>For example, the <a class="reference internal" href="tutorials.html#tut-loggers"><span class="std std-ref">custom loggers tutorial</span></a> uses the OmegaConf interpolation syntax to reference the <code class="xref py py-attr docutils literal notranslate"><span class="pre">results_dir</span></code>
 from the <a class="reference internal" href="#main-configuration"><span class="std std-ref">main configuration</span></a> file to set the output directory of the <code class="xref py py-class docutils literal notranslate"><span class="pre">WandBLogger</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
 <span class="linenos">2</span><span class="nt">loggers</span><span class="p">:</span>
 <span class="linenos">3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">wandb_logger.WandBLogger</span><span class="p">:</span>
@@ -547,8 +547,8 @@ from the <a class="reference internal" href="#main-configuration"><span class="s
 For more information on the defaults list, see <a class="reference external" href="https://hydra.cc/docs/advanced/defaults_list/">Hydra’s defaults list documentation</a>.</p>
 <p>For brevity, the defaults list is outsourced to <a class="reference internal" href="#autrainer-defaults"><span class="std std-ref">_autrainer_.yaml defaults</span></a>
 file with the following imports:</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">_autrainer_.yaml</span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">_autrainer_.yaml</span><a class="headerlink" href="#id13" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">defaults</span><span class="p">:</span>
 <span class="linenos">2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
 <span class="linenos">3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span><span class="w"> </span><span class="c1"># placeholder</span>
@@ -565,7 +565,7 @@ file with the following imports:</p>
 <span id="optional-defaults-list"></span><h2>Optional Defaults and Overrides<a class="headerlink" href="#optional-defaults-and-overrides" title="Link to this heading">#</a></h2>
 <p>Optional defaults like <code class="xref py py-attr docutils literal notranslate"><span class="pre">scheduler</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">augmentation</span></code> are set to <code class="xref py py-attr docutils literal notranslate"><span class="pre">None</span></code>
 by default and not required to be defined in the main configuration.
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">None</span></code> is a special value that tells Hydra to ignore the default and e.g. not use a <a class="reference internal" href="../modules/schedulers.html#schedulers"><span class="std std-ref">scheduler</span></a>
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">None</span></code> is a special value that tells Hydra to ignore the default and e.g., not use a <a class="reference internal" href="../modules/schedulers.html#schedulers"><span class="std std-ref">scheduler</span></a>
 or <a class="reference internal" href="../modules/augmentations.html#augmentations"><span class="std std-ref">augmentation</span></a> for training.</p>
 <p>Optional defaults which are not overridden in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">hydra/sweeper/params</span></code> configuration, can be overridden using the <code class="xref py py-attr docutils literal notranslate"><span class="pre">override</span></code>
 keyword in the defaults list of the <a class="reference internal" href="#main-configuration"><span class="std std-ref">main configuration</span></a> file.
@@ -631,8 +631,8 @@ and setting the output directory and experiment name according to the current co
 </pre></div>
 </div>
 </div></section>
-<section id="hydra-plugings">
-<span id="hydra-plugins"></span><h2>Hydra Plugings<a class="headerlink" href="#hydra-plugings" title="Link to this heading">#</a></h2>
+<section id="hydra-plugins">
+<span id="id9"></span><h2>Hydra Plugins<a class="headerlink" href="#hydra-plugins" title="Link to this heading">#</a></h2>
 <p>Any Hydra <a class="reference internal" href="#hydra-sweeper-plugins"><span class="std std-ref">sweeper</span></a> or <a class="reference internal" href="#hydra-launcher-plugins"><span class="std std-ref">launcher</span></a> plugin can be used to customize
 the hyperparameter search or parallelize the training jobs.</p>
 <div class="admonition tip">
@@ -662,8 +662,8 @@ can be used to perform hyperparameter optimization using <a class="reference ext
 </pre></div>
 </div>
 <p>The following configuration uses the Optuna Sweeper plugin to perform 10 trials with different learning rates:</p>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id13" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id14" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">defaults</span><span class="p">:</span>
 <span class="linenos"> 2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_autrainer_</span>
 <span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
@@ -706,8 +706,8 @@ can be used to parallelize the training jobs using <a class="reference external"
 </pre></div>
 </div>
 <p>The following configuration uses the Submitit Launcher plugin to parallelize the training jobs:</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id14" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id15" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">defaults</span><span class="p">:</span>
 <span class="linenos"> 2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_autrainer_</span>
 <span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
@@ -763,7 +763,7 @@ can be used to parallelize the training jobs using <a class="reference external"
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defaults-list">Defaults List</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-defaults-and-overrides">Optional Defaults and Overrides</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer-defaults">autrainer Defaults</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hydra-plugings">Hydra Plugings</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hydra-plugins">Hydra Plugins</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sweeper-plugins">Sweeper Plugins</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#launcher-plugins">Launcher Plugins</a></li>
 </ul>
@@ -796,7 +796,7 @@ can be used to parallelize the training jobs using <a class="reference external"
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -360,7 +360,8 @@ document.write(`
 <ul class="simple">
 <li><p><a class="reference internal" href="#tut-models"><span class="std std-ref">models</span></a></p></li>
 <li><p><a class="reference internal" href="#tut-datasets"><span class="std std-ref">datasets</span></a> (including <a class="reference internal" href="#tut-metrics"><span class="std std-ref">metrics</span></a>, <a class="reference internal" href="#tut-criterions"><span class="std std-ref">criterions</span></a>,
-<a class="reference internal" href="#tut-file-handlers"><span class="std std-ref">file handlers</span></a>, and <a class="reference internal" href="#tut-target-transforms"><span class="std std-ref">target transforms</span></a>)</p></li>
+<a class="reference internal" href="#tut-file-handlers"><span class="std std-ref">file handlers</span></a>, <a class="reference internal" href="#tut-target-transforms"><span class="std std-ref">target transforms</span></a>,
+and <a class="reference internal" href="#tut-advanced"><span class="std std-ref">advanced data pipelines</span></a>)</p></li>
 <li><p><a class="reference internal" href="#tut-optimizers"><span class="std std-ref">optimizers</span></a></p></li>
 <li><p><a class="reference internal" href="#tut-schedulers"><span class="std std-ref">schedulers</span></a></p></li>
 <li><p><a class="reference internal" href="#tut-transforms"><span class="std std-ref">transforms</span></a> (including <a class="reference internal" href="#tut-preprocessing-transforms"><span class="std std-ref">preprocessing transforms</span></a>
@@ -381,15 +382,15 @@ inherits from <a class="reference external" href="https://audeering.github.io/au
 a different number of filters each:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">spectrogram_cnn.py</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">autrainer.models</span> <span class="kn">import</span> <span class="n">AbstractModel</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractModel</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">SpectrogramCNN</span><span class="p">(</span><span class="n">AbstractModel</span><span class="p">):</span>
-<span class="linenos"> 9</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_dims</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">SpectrogramCNN</span><span class="p">(</span><span class="n">AbstractModel</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_dims</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">10</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Spectrogram CNN model with a variable number of hidden CNN layers.</span>
 <span class="linenos">11</span>
 <span class="linenos">12</span><span class="sd">        Args:</span>
@@ -418,10 +419,10 @@ a different number of filters each:</p>
 <span class="linenos">35</span>        <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
 <span class="linenos">36</span>        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_dims</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">output_dim</span><span class="p">)</span>
 <span class="linenos">37</span>
-<span class="linenos">38</span>    <span class="k">def</span> <span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="linenos">39</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="linenos">40</span>
-<span class="linenos">41</span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">41</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="linenos">42</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -460,9 +461,10 @@ and implement the <a class="reference internal" href="../modules/datasets.html#a
 and <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.output_dim" title="autrainer.datasets.AbstractDataset.output_dim"><code class="xref py py-attr docutils literal notranslate"><span class="pre">output_dim</span></code></a> properties.</p>
 <p>The train, dev, and test datasets as well as loaders are automatically created by the abstract class.
 However, this requires that the dataset structure follows the standard format outlined in the <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">dataset documentation</span></a>.
-If the dataset structure is different or does not rely on dataframes, the <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.load_dataframes" title="autrainer.datasets.AbstractDataset.load_dataframes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_dataframes()</span></code></a>,
-<a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.train_dataset" title="autrainer.datasets.AbstractDataset.train_dataset"><code class="xref py py-attr docutils literal notranslate"><span class="pre">train_dataset</span></code></a>, <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.train_loader" title="autrainer.datasets.AbstractDataset.train_loader"><code class="xref py py-attr docutils literal notranslate"><span class="pre">train_loader</span></code></a> etc.
-methods and properties can be overridden.</p>
+If the dataset structure is different or does not rely on dataframes, the
+<a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.df_train" title="autrainer.datasets.AbstractDataset.df_train"><code class="xref py py-attr docutils literal notranslate"><span class="pre">df_train</span></code></a>, <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.df_dev" title="autrainer.datasets.AbstractDataset.df_dev"><code class="xref py py-attr docutils literal notranslate"><span class="pre">df_dev</span></code></a>,
+and <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.df_test" title="autrainer.datasets.AbstractDataset.df_test"><code class="xref py py-attr docutils literal notranslate"><span class="pre">df_test</span></code></a>, <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.train_dataset" title="autrainer.datasets.AbstractDataset.train_dataset"><code class="xref py py-attr docutils literal notranslate"><span class="pre">train_dataset</span></code></a>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">train_loader</span></code> etc. properties can be overridden.</p>
 <p><cite>autrainer</cite> provides base datasets for classification (<a class="reference internal" href="../modules/datasets.html#autrainer.datasets.BaseClassificationDataset" title="autrainer.datasets.BaseClassificationDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseClassificationDataset</span></code></a>),
 regression (<a class="reference internal" href="../modules/datasets.html#autrainer.datasets.BaseRegressionDataset" title="autrainer.datasets.BaseRegressionDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRegressionDataset</span></code></a>),
 and multi-label classification (<a class="reference internal" href="../modules/datasets.html#autrainer.datasets.BaseMLClassificationDataset" title="autrainer.datasets.BaseMLClassificationDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMLClassificationDataset</span></code></a>) tasks.
@@ -477,66 +479,77 @@ The <code class="xref py py-attr docutils literal notranslate"><span class="pre"
 <p>For example, the <a class="reference external" href="https://github.com/karolpiczak/ESC-50">ESC-50</a> dataset is an audio classification dataset and can be implemented as follows:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">esc_50.py</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">os</span>
-<span class="linenos"> 2</span><span class="kn">import</span> <span class="nn">shutil</span>
-<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">autrainer.datasets</span> <span class="kn">import</span> <span class="n">BaseClassificationDataset</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">autrainer.datasets.utils</span> <span class="kn">import</span> <span class="n">ZipDownloadManager</span>
-<span class="linenos"> 9</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseClassificationDataset</span>
+<span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZipDownloadManager</span>
 <span class="linenos">10</span>
-<span class="linenos">11</span><span class="n">FILES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ESC-50.zip&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/karoldvl/ESC-50/archive/master.zip&quot;</span><span class="p">}</span>
-<span class="linenos">12</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="n">FILES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ESC-50.zip&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/karoldvl/ESC-50/archive/master.zip&quot;</span><span class="p">}</span>
 <span class="linenos">13</span>
-<span class="linenos">14</span><span class="k">class</span> <span class="nc">ESC50</span><span class="p">(</span><span class="n">BaseClassificationDataset</span><span class="p">):</span>
-<span class="linenos">15</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-<span class="linenos">16</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">17</span>        <span class="n">train_folds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-<span class="linenos">18</span>        <span class="n">dev_folds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-<span class="linenos">19</span>        <span class="n">test_folds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-<span class="linenos">20</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>  <span class="c1"># kwargs only for simplicity in the tutorial</span>
-<span class="linenos">21</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">22</span>        <span class="bp">self</span><span class="o">.</span><span class="n">train_folds</span> <span class="o">=</span> <span class="n">train_folds</span>
-<span class="linenos">23</span>        <span class="bp">self</span><span class="o">.</span><span class="n">dev_folds</span> <span class="o">=</span> <span class="n">dev_folds</span>
-<span class="linenos">24</span>        <span class="bp">self</span><span class="o">.</span><span class="n">test_folds</span> <span class="o">=</span> <span class="n">test_folds</span>
-<span class="linenos">25</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="linenos">26</span>
-<span class="linenos">27</span>    <span class="k">def</span> <span class="nf">load_dataframes</span><span class="p">(</span>
-<span class="linenos">28</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">29</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="linenos">30</span>        <span class="n">meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;esc50.csv&quot;</span><span class="p">))</span>
-<span class="linenos">31</span>        <span class="k">return</span> <span class="p">(</span>
-<span class="linenos">32</span>            <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_folds</span><span class="p">)],</span>
-<span class="linenos">33</span>            <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_folds</span><span class="p">)],</span>
-<span class="linenos">34</span>            <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_folds</span><span class="p">)],</span>
-<span class="linenos">35</span>        <span class="p">)</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="k">class</span><span class="w"> </span><span class="nc">ESC50</span><span class="p">(</span><span class="n">BaseClassificationDataset</span><span class="p">):</span>
+<span class="linenos">16</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos">17</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">18</span>        <span class="n">train_folds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="linenos">19</span>        <span class="n">dev_folds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="linenos">20</span>        <span class="n">test_folds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="linenos">21</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>  <span class="c1"># kwargs only for simplicity in the tutorial</span>
+<span class="linenos">22</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">23</span>        <span class="bp">self</span><span class="o">.</span><span class="n">train_folds</span> <span class="o">=</span> <span class="n">train_folds</span>
+<span class="linenos">24</span>        <span class="bp">self</span><span class="o">.</span><span class="n">dev_folds</span> <span class="o">=</span> <span class="n">dev_folds</span>
+<span class="linenos">25</span>        <span class="bp">self</span><span class="o">.</span><span class="n">test_folds</span> <span class="o">=</span> <span class="n">test_folds</span>
+<span class="linenos">26</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span>    <span class="nd">@cached_property</span>
+<span class="linenos">29</span>    <span class="k">def</span><span class="w"> </span><span class="nf">_load_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="linenos">30</span>        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;esc50.csv&quot;</span><span class="p">))</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span>    <span class="nd">@cached_property</span>
+<span class="linenos">33</span>    <span class="k">def</span><span class="w"> </span><span class="nf">df_train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="linenos">34</span>        <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_metadata</span>
+<span class="linenos">35</span>        <span class="k">return</span> <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_folds</span><span class="p">)]</span>
 <span class="linenos">36</span>
-<span class="linenos">37</span>    <span class="nd">@staticmethod</span>
-<span class="linenos">38</span>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">39</span>        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)):</span>
-<span class="linenos">40</span>            <span class="k">return</span>
+<span class="linenos">37</span>    <span class="nd">@cached_property</span>
+<span class="linenos">38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">df_dev</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="linenos">39</span>        <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_metadata</span>
+<span class="linenos">40</span>        <span class="k">return</span> <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_folds</span><span class="p">)]</span>
 <span class="linenos">41</span>
-<span class="linenos">42</span>        <span class="n">dl_manager</span> <span class="o">=</span> <span class="n">ZipDownloadManager</span><span class="p">(</span><span class="n">FILES</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-<span class="linenos">43</span>        <span class="n">dl_manager</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ESC-50.zip&quot;</span><span class="p">])</span>
-<span class="linenos">44</span>        <span class="n">dl_manager</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ESC-50-master&quot;</span><span class="p">])</span>
-<span class="linenos">45</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
-<span class="linenos">46</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">,</span> <span class="s2">&quot;audio&quot;</span><span class="p">),</span>
-<span class="linenos">47</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">),</span>
-<span class="linenos">48</span>        <span class="p">)</span>
-<span class="linenos">49</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
-<span class="linenos">50</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;esc50.csv&quot;</span><span class="p">),</span>
-<span class="linenos">51</span>            <span class="n">path</span><span class="p">,</span>
-<span class="linenos">52</span>        <span class="p">)</span>
-<span class="linenos">53</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">))</span>
+<span class="linenos">42</span>    <span class="nd">@cached_property</span>
+<span class="linenos">43</span>    <span class="k">def</span><span class="w"> </span><span class="nf">df_test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="linenos">44</span>        <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_metadata</span>
+<span class="linenos">45</span>        <span class="k">return</span> <span class="n">meta</span><span class="p">[</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_folds</span><span class="p">)]</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span>    <span class="nd">@staticmethod</span>
+<span class="linenos">48</span>    <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">49</span>        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)):</span>
+<span class="linenos">50</span>            <span class="k">return</span>
+<span class="linenos">51</span>
+<span class="linenos">52</span>        <span class="n">dl_manager</span> <span class="o">=</span> <span class="n">ZipDownloadManager</span><span class="p">(</span><span class="n">FILES</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+<span class="linenos">53</span>        <span class="n">dl_manager</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ESC-50.zip&quot;</span><span class="p">])</span>
+<span class="linenos">54</span>        <span class="n">dl_manager</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">check_exist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ESC-50-master&quot;</span><span class="p">])</span>
+<span class="linenos">55</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
+<span class="linenos">56</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">,</span> <span class="s2">&quot;audio&quot;</span><span class="p">),</span>
+<span class="linenos">57</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">),</span>
+<span class="linenos">58</span>        <span class="p">)</span>
+<span class="linenos">59</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
+<span class="linenos">60</span>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;esc50.csv&quot;</span><span class="p">),</span>
+<span class="linenos">61</span>            <span class="n">path</span><span class="p">,</span>
+<span class="linenos">62</span>        <span class="p">)</span>
+<span class="linenos">63</span>        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ESC-50-master&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <p>The dataset provides audio files by default (which are moved to the <code class="file docutils literal notranslate"><span class="pre">default/</span></code> directory in the
 <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.download" title="autrainer.datasets.AbstractDataset.download"><code class="xref py py-meth docutils literal notranslate"><span class="pre">download()</span></code></a> method) and the corresponding metadata of the dataset is stored in the <code class="file docutils literal notranslate"><span class="pre">esc50.csv</span></code> file.</p>
-<p>To allow the the specification of custom folds, the <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.load_dataframes" title="autrainer.datasets.AbstractDataset.load_dataframes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_dataframes()</span></code></a>
-method is overridden to split the <code class="file docutils literal notranslate"><span class="pre">esc50.csv</span></code> file into the respective train, dev, and test dataframes.
+<p>To allow the the specification of custom folds, the <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.df_train" title="autrainer.datasets.AbstractDataset.df_train"><code class="xref py py-attr docutils literal notranslate"><span class="pre">df_train</span></code></a>,
+<a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.df_dev" title="autrainer.datasets.AbstractDataset.df_dev"><code class="xref py py-attr docutils literal notranslate"><span class="pre">df_dev</span></code></a>, and <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.df_test" title="autrainer.datasets.AbstractDataset.df_test"><code class="xref py py-attr docutils literal notranslate"><span class="pre">df_test</span></code></a> properties are overridden
+to split the <code class="file docutils literal notranslate"><span class="pre">esc50.csv</span></code> metadata file into the respective train, dev, and test dataframes.
 This also allows for cross-validation by creating multiple configurations with different folds.</p>
 <p>To extract log-Mel spectrograms from the audio files, a <a class="reference internal" href="../modules/transforms.html#preprocessing-transforms"><span class="std std-ref">preprocessing transform</span></a>
 can be applied to the data before training.
@@ -626,13 +639,13 @@ and <a class="reference internal" href="../modules/metrics.html#autrainer.metric
 score with either linear or quadratic weights:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">cohens_kappa_metric.py</span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">sklearn.metrics</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">sklearn.metrics</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">autrainer.metrics</span> <span class="kn">import</span> <span class="n">BaseAscendingMetric</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseAscendingMetric</span>
 <span class="linenos"> 4</span>
 <span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="k">class</span> <span class="nc">CohensKappa</span><span class="p">(</span><span class="n">BaseAscendingMetric</span><span class="p">):</span>
-<span class="linenos"> 7</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 6</span><span class="k">class</span><span class="w"> </span><span class="nc">CohensKappa</span><span class="p">(</span><span class="n">BaseAscendingMetric</span><span class="p">):</span>
+<span class="linenos"> 7</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos"> 8</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Coehn&#39;s Kappa metric using `sklearn.metrics.cohen_kappa_score`.</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="sd">        Args:</span>
@@ -666,15 +679,20 @@ the following relative import path can be used to reference it as the <code clas
 <p>To create a custom <a class="reference internal" href="../modules/criterions.html#criterions"><span class="std std-ref">criterion</span></a>, inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.loss._Loss</span></code> and implement the <code class="xref py py-meth docutils literal notranslate"><span class="pre">forward()</span></code> method.
 If the criterion relies on the dataset, an optional <a class="reference internal" href="../modules/criterions.html#criterion-setup"><span class="std std-ref">criterion setup method</span></a>
 can be defined which is called after the dataset is initialized.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">reduction</span></code> attribute of each criterion is automatically set to <code class="xref py py-attr docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> during instantiation and
+the <code class="xref py py-meth docutils literal notranslate"><span class="pre">forward()</span></code> method should return the per-example loss.</p>
+</div>
 <p>For example, the following criterion implements <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html">CrossEntropyLoss</a>
 with an additional scaling factor:</p>
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text">scaled_ce_loss.py</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">torch</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="k">class</span> <span class="nc">ScaledCrossEntropyLoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">):</span>
-<span class="linenos"> 5</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="linenos"> 4</span><span class="k">class</span><span class="w"> </span><span class="nc">ScaledCrossEntropyLoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">):</span>
+<span class="linenos"> 5</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="linenos"> 6</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Cross entropy loss with a scaling factor.</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="sd">        Args:</span>
@@ -685,7 +703,7 @@ with an additional scaling factor:</p>
 <span class="linenos">13</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 <span class="linenos">14</span>        <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">scaling_factor</span>
 <span class="linenos">15</span>
-<span class="linenos">16</span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">16</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="linenos">17</span>        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
 <span class="linenos">18</span>            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
 <span class="linenos">19</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span> <span class="o">*</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -721,16 +739,16 @@ and implement the <a class="reference internal" href="../modules/dataset_utils.h
 <p>For example, the following file handler loads and saves PyTorch tensors:</p>
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text">torch_file_handler.py</span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">torch</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">autrainer.datasets.utils</span> <span class="kn">import</span> <span class="n">AbstractFileHandler</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractFileHandler</span>
 <span class="linenos"> 4</span>
 <span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="k">class</span> <span class="nc">TorchFileHandler</span><span class="p">(</span><span class="n">AbstractFileHandler</span><span class="p">):</span>
-<span class="linenos"> 7</span>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos"> 6</span><span class="k">class</span><span class="w"> </span><span class="nc">TorchFileHandler</span><span class="p">(</span><span class="n">AbstractFileHandler</span><span class="p">):</span>
+<span class="linenos"> 7</span>    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="linenos"> 8</span>        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 <span class="linenos"> 9</span>
-<span class="linenos">10</span>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">10</span>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">11</span>        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -756,16 +774,16 @@ and <a class="reference internal" href="../modules/dataset_utils.html#autrainer.
 <p>For example, the following target transform logarithmically encodes and decodes the targets for regression tasks:</p>
 <div class="literal-block-wrapper docutils container" id="id14">
 <div class="code-block-caption"><span class="caption-text">log_target_transform.py</span><a class="headerlink" href="#id14" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">math</span>
-<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="linenos"> 4</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">autrainer.datasets.utils</span> <span class="kn">import</span> <span class="n">AbstractTargetTransform</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractTargetTransform</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span>
-<span class="linenos"> 9</span><span class="k">class</span> <span class="nc">LogTargetTransform</span><span class="p">(</span><span class="n">AbstractTargetTransform</span><span class="p">):</span>
-<span class="linenos">10</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">LogTargetTransform</span><span class="p">(</span><span class="n">AbstractTargetTransform</span><span class="p">):</span>
+<span class="linenos">10</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">11</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Logarithmic target transform for regression tasks.</span>
 <span class="linenos">12</span>
 <span class="linenos">13</span><span class="sd">        Args:</span>
@@ -778,28 +796,188 @@ and <a class="reference internal" href="../modules/dataset_utils.html#autrainer.
 <span class="linenos">20</span>        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
 <span class="linenos">21</span>        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
 <span class="linenos">22</span>
-<span class="linenos">23</span>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="linenos">23</span>    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="linenos">24</span>        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span>
 <span class="linenos">25</span>
-<span class="linenos">26</span>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="linenos">26</span>    <span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="linenos">27</span>        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span>
 <span class="linenos">28</span>
-<span class="linenos">29</span>    <span class="k">def</span> <span class="nf">probabilities_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">29</span>    <span class="k">def</span><span class="w"> </span><span class="nf">probabilities_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="linenos">30</span>        <span class="k">return</span> <span class="n">x</span>
 <span class="linenos">31</span>
-<span class="linenos">32</span>    <span class="k">def</span> <span class="nf">predict_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="linenos">32</span>    <span class="k">def</span><span class="w"> </span><span class="nf">predict_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="linenos">33</span>        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="linenos">34</span>
-<span class="linenos">35</span>    <span class="k">def</span> <span class="nf">majority_vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="linenos">35</span>    <span class="k">def</span><span class="w"> </span><span class="nf">majority_vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="linenos">36</span>        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="linenos">37</span>
-<span class="linenos">38</span>    <span class="k">def</span> <span class="nf">probabilities_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="linenos">38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">probabilities_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="linenos">39</span>        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()}</span>
 </pre></div>
 </div>
 </div>
 <p>The <a class="reference internal" href="../modules/dataset_utils.html#dataset-target-transforms"><span class="std std-ref">target transforms</span></a> are specified in the <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset.target_transform" title="autrainer.datasets.AbstractDataset.target_transform"><code class="xref py py-attr docutils literal notranslate"><span class="pre">target_transform</span></code></a> property
 of a <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">dataset</span></a> implementation.</p>
+</section>
+<section id="advanced-data-pipelines">
+<span id="tut-advanced"></span><h3>Advanced Data Pipelines<a class="headerlink" href="#advanced-data-pipelines" title="Link to this heading">#</a></h3>
+<p>To create data and model pipelines that go beyond the standard <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.DataItem" title="autrainer.datasets.utils.DataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataItem</span></code></a> convention of using
+only <code class="xref py py-attr docutils literal notranslate"><span class="pre">DataItem.features</span></code> as input to the model, first create a new <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.DataItem" title="autrainer.datasets.utils.DataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataItem</span></code></a> struct
+decorated with <code class="xref py py-class docutils literal notranslate"><span class="pre">dataclasses.dataclass</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">multi_branch_data.py</span><a class="headerlink" href="#id15" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataItemMultiBranch</span><span class="p">(</span><span class="n">AbstractDataItem</span><span class="p">):</span>
+    <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="n">target</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
+</pre></div>
+</div>
+</div>
+<p>and override <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.AbstractDataBatch" title="autrainer.datasets.utils.AbstractDataBatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataBatch</span></code></a>:</p>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">multi_branch_data.py</span><a class="headerlink" href="#id16" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataBatchMulti</span><span class="p">(</span><span class="n">AbstractDataBatch</span><span class="p">[</span><span class="n">DataItemMultiBranch</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data batch class for a batch of data samples.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        features: Tensor of input features.</span>
+<span class="sd">        meta: Tensor of input support features.</span>
+<span class="sd">        target: Tensor of target values for the input features.</span>
+<span class="sd">        index: Tensor of indices for the data samples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="n">index</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Following that, inherit from <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.DatasetWrapper" title="autrainer.datasets.utils.DatasetWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetWrapper</span></code></a>
+to create a <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code>
+that iterates over your data
+and returns your custom <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.AbstractDataBatch" title="autrainer.datasets.utils.AbstractDataBatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataBatch</span></code></a>
+(here we simply replicate <code class="xref py py-attr docutils literal notranslate"><span class="pre">features</span></code>
+as our auxiliary features):</p>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">multi_branch_data.py</span><a class="headerlink" href="#id17" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ToyDatasetMultiBranch</span><span class="p">(</span><span class="n">ToyDatasetWrapper</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataItemMultiBranch</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">DataItemMultiBranch</span><span class="p">(</span>
+            <span class="n">features</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="n">meta</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Subsequently, inherit from <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a>
+to create a dataset
+that instantiates your <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.DatasetWrapper" title="autrainer.datasets.utils.DatasetWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetWrapper</span></code></a>:</p>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">multi_branch_data.py</span><a class="headerlink" href="#id18" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ToyMultiBranchData</span><span class="p">(</span><span class="n">ToyDataset</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">transform</span><span class="p">:</span> <span class="n">SmartCompose</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ToyDatasetMultiBranch</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ToyDatasetMultiBranch</span><span class="p">(</span>
+            <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+            <span class="n">target_column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
+            <span class="n">feature_shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_generator</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
+            <span class="n">target_transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default_collate_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DataBatchMulti</span><span class="o">.</span><span class="n">collate</span>
+</pre></div>
+</div>
+</div>
+<p>Next, create a <code class="xref py py-attr docutils literal notranslate"><span class="pre">ToyMultiBranch-C.yaml</span></code> configuration file for the dataset in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">conf/dataset/</span></code> directory:</p>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">conf/data/ToyMultiBranch-C.yaml</span><a class="headerlink" href="#id19" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyMultiBranch-C</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">multi_branch_data.ToyMultiBranchData</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="nt">task</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classification</span>
+<span class="linenos"> 5</span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="linenos"> 6</span><span class="nt">num_targets</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="linenos"> 7</span><span class="nt">feature_shape</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
+<span class="linenos"> 8</span><span class="nt">dev_split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="linenos"> 9</span><span class="nt">test_split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nt">criterion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.criterions.BalancedCrossEntropyLoss</span>
+<span class="linenos">12</span><span class="nt">metrics</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
+<span class="linenos">14</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.UAR</span>
+<span class="linenos">15</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.F1</span>
+<span class="linenos">16</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">19</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+</pre></div>
+</div>
+</div>
+<p>Finally, you must inherit from <a class="reference internal" href="../modules/models.html#autrainer.models.AbstractModel" title="autrainer.models.AbstractModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractModel</span></code></a>
+and create a model <strong>with a matching signature</strong>,
+in its forward pass to access the <code class="xref py py-attr docutils literal notranslate"><span class="pre">meta</span></code> parameter:</p>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">multi_branch_model.py</span><a class="headerlink" href="#id20" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ToyMultiBranchModel</span><span class="p">(</span><span class="n">AbstractModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">output_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_dim</span> <span class="o">=</span> <span class="n">input_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dim</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">linear1</span><span class="p">(</span><span class="n">features</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span><span class="p">(</span><span class="n">meta</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>Next, create a
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">ToyMultiBranchModel.yaml</span></code>
+configuration file
+for the model in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">conf/model/</span></code> directory:</p>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">conf/data/ToyMultiBranchModel.yaml</span><a class="headerlink" href="#id21" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyMultiBranchModel</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">multi_branch_model.ToyMultiBranchModel</span>
+<span class="linenos">3</span><span class="nt">input_dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
+<span class="linenos">4</span><span class="nt">hidden_dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
+<span class="linenos">5</span>
+<span class="linenos">6</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">7</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tabular</span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 <section id="custom-optimizers">
@@ -808,62 +986,65 @@ of a <a class="reference internal" href="../modules/datasets.html#datasets"><spa
 <a class="reference external" href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer">torch.optim.Optimizer</a> and implement the <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> method.</p>
 <p>For example, the following optimizer implements the <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.SGD.html">SGD optimizer</a>
 with an additional randomly scaled learning rate using a <a class="reference internal" href="../modules/optimizers.html#optimizer-custom-step"><span class="std std-ref">custom step function</span></a>:</p>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">random_scaled_sgd.py</span><a class="headerlink" href="#id15" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text">random_scaled_sgd.py</span><a class="headerlink" href="#id22" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="k">class</span> <span class="nc">RandomScaledSGD</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
-<span class="linenos"> 7</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-<span class="linenos"> 8</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos"> 9</span>        <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
-<span class="linenos">10</span>        <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-<span class="linenos">11</span>        <span class="n">generator_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="linenos">12</span>        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-<span class="linenos">13</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="linenos">14</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">15</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Randomized Scaled SGD optimizer. Randomly scales the learning rate.</span>
-<span class="linenos">16</span>
-<span class="linenos">17</span><span class="sd">        Args:</span>
-<span class="linenos">18</span><span class="sd">            scaling_factor: Learning rate scaling factor. Defaults to 1.0.</span>
-<span class="linenos">19</span><span class="sd">            p: Probability of scaling the learning rate. Defaults to 1.0.</span>
-<span class="linenos">20</span><span class="sd">            generator_seed: Seed for the random number generator.</span>
-<span class="linenos">21</span><span class="sd">                Defaults to None.</span>
-<span class="linenos">22</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">23</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="linenos">24</span>        <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">scaling_factor</span>
-<span class="linenos">25</span>        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
-<span class="linenos">26</span>        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span>
-<span class="linenos">27</span>        <span class="bp">self</span><span class="o">.</span><span class="n">base_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
-<span class="linenos">28</span>        <span class="k">if</span> <span class="n">generator_seed</span><span class="p">:</span>
-<span class="linenos">29</span>            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">generator_seed</span><span class="p">)</span>
-<span class="linenos">30</span>
-<span class="linenos">31</span>    <span class="k">def</span> <span class="nf">custom_step</span><span class="p">(</span>
-<span class="linenos">32</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">33</span>        <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>  <span class="c1"># model</span>
-<span class="linenos">34</span>        <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>  <span class="c1"># batched input data</span>
-<span class="linenos">35</span>        <span class="n">target</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>  <span class="c1"># batched target data</span>
-<span class="linenos">36</span>        <span class="n">criterion</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>  <span class="c1"># loss function</span>
-<span class="linenos">37</span>        <span class="n">probabilities_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>  <span class="c1"># function to get probabilities from model outputs</span>
-<span class="linenos">38</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
-<span class="linenos">39</span>        <span class="bp">self</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-<span class="linenos">40</span>        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="linenos">41</span>        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
-<span class="linenos">42</span>        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-<span class="linenos">43</span>        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
-<span class="linenos">44</span>            <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span>
-<span class="linenos">45</span>        <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-<span class="linenos">46</span>        <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_lr</span>
-<span class="linenos">47</span>        <span class="k">return</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataBatch</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractModel</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.training.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_model_inputs</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">RandomScaledSGD</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
+<span class="linenos">11</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos">12</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">13</span>        <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+<span class="linenos">14</span>        <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="linenos">15</span>        <span class="n">generator_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="linenos">16</span>        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+<span class="linenos">17</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="linenos">18</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">19</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Randomized Scaled SGD optimizer. Randomly scales the learning rate.</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="sd">        Args:</span>
+<span class="linenos">22</span><span class="sd">            scaling_factor: Learning rate scaling factor. Defaults to 1.0.</span>
+<span class="linenos">23</span><span class="sd">            p: Probability of scaling the learning rate. Defaults to 1.0.</span>
+<span class="linenos">24</span><span class="sd">            generator_seed: Seed for the random number generator.</span>
+<span class="linenos">25</span><span class="sd">                Defaults to None.</span>
+<span class="linenos">26</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">27</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="linenos">28</span>        <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">scaling_factor</span>
+<span class="linenos">29</span>        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+<span class="linenos">30</span>        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span>
+<span class="linenos">31</span>        <span class="bp">self</span><span class="o">.</span><span class="n">base_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
+<span class="linenos">32</span>        <span class="k">if</span> <span class="n">generator_seed</span><span class="p">:</span>
+<span class="linenos">33</span>            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">generator_seed</span><span class="p">)</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span>    <span class="k">def</span><span class="w"> </span><span class="nf">custom_step</span><span class="p">(</span>
+<span class="linenos">36</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">37</span>        <span class="n">model</span><span class="p">:</span> <span class="n">AbstractModel</span><span class="p">,</span>  <span class="c1"># model</span>
+<span class="linenos">38</span>        <span class="n">data</span><span class="p">:</span> <span class="n">AbstractDataBatch</span><span class="p">,</span>  <span class="c1"># batched input data</span>
+<span class="linenos">39</span>        <span class="n">criterion</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>  <span class="c1"># loss function</span>
+<span class="linenos">40</span>        <span class="n">probabilities_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>  <span class="c1"># function to get probabilities from model outputs</span>
+<span class="linenos">41</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="linenos">42</span>        <span class="bp">self</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="linenos">43</span>        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">create_model_inputs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+<span class="linenos">44</span>        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+<span class="linenos">45</span>        <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="linenos">46</span>        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
+<span class="linenos">47</span>            <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span>
+<span class="linenos">48</span>        <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+<span class="linenos">49</span>        <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_lr</span>
+<span class="linenos">50</span>        <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">output</span>
 </pre></div>
 </div>
 </div>
 <p>The following configuration creates a new <code class="file docutils literal notranslate"><span class="pre">RandomScaledSGD.yaml</span></code> optimizer in the <code class="file docutils literal notranslate"><span class="pre">conf/optimizer/</span></code> directory and uses the global
 seed of the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> as the <code class="xref py py-attr docutils literal notranslate"><span class="pre">generator_seed</span></code> attribute:</p>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">conf/optimizer/RandomScaledSGD.yaml</span><a class="headerlink" href="#id16" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text">conf/optimizer/RandomScaledSGD.yaml</span><a class="headerlink" href="#id23" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RandomScaledSGD</span>
 <span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">random_scaled_sgd.RandomScaledSGD</span>
 <span class="linenos">3</span>
@@ -885,16 +1066,16 @@ and determined at runtime.</p>
 <a class="reference external" href="https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate">torch.optim.lr_scheduler.LRScheduler</a>
 and implement the <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_lr()</span></code> method.</p>
 <p>For example, the following scheduler implements a simple linear warm-up scheduler:</p>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">linear_warm_up_lr.py</span><a class="headerlink" href="#id17" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">linear_warm_up_lr.py</span><a class="headerlink" href="#id24" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">torch.optim.lr_scheduler</span> <span class="kn">import</span> <span class="n">LRScheduler</span>
+<span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.optim.lr_scheduler</span><span class="w"> </span><span class="kn">import</span> <span class="n">LRScheduler</span>
 <span class="linenos"> 5</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="k">class</span> <span class="nc">LinearWarmUpLR</span><span class="p">(</span><span class="n">LRScheduler</span><span class="p">):</span>
-<span class="linenos"> 8</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos"> 7</span><span class="k">class</span><span class="w"> </span><span class="nc">LinearWarmUpLR</span><span class="p">(</span><span class="n">LRScheduler</span><span class="p">):</span>
+<span class="linenos"> 8</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <span class="linenos"> 9</span>        <span class="bp">self</span><span class="p">,</span>
 <span class="linenos">10</span>        <span class="n">optimizer</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
 <span class="linenos">11</span>        <span class="n">warmup_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -910,7 +1091,7 @@ and implement the <code class="xref py py-meth docutils literal notranslate"><sp
 <span class="linenos">21</span>        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span> <span class="o">=</span> <span class="n">warmup_steps</span>
 <span class="linenos">22</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">last_epoch</span><span class="p">)</span>
 <span class="linenos">23</span>
-<span class="linenos">24</span>    <span class="k">def</span> <span class="nf">get_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="linenos">24</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="linenos">25</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_epoch</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">:</span>
 <span class="linenos">26</span>            <span class="k">return</span> <span class="p">[</span>
 <span class="linenos">27</span>                <span class="n">base_lr</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span>
@@ -922,8 +1103,8 @@ and implement the <code class="xref py py-meth docutils literal notranslate"><sp
 </div>
 <p>The following configuration creates a new <code class="file docutils literal notranslate"><span class="pre">LinearWarmUpLR.yaml</span></code> scheduler with a linear warm-up period of 10
 <a class="reference internal" href="../modules/training.html#training"><span class="std std-ref">training iterations</span></a> in the <code class="file docutils literal notranslate"><span class="pre">conf/scheduler/</span></code> directory:</p>
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">conf/scheduler/LinearWarmUpLR.yaml</span><a class="headerlink" href="#id18" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text">conf/scheduler/LinearWarmUpLR.yaml</span><a class="headerlink" href="#id25" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LinearWarmUpLR</span>
 <span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linear_warm_up_lr.LinearWarmUpLR</span>
 <span class="linenos">3</span>
@@ -944,16 +1125,16 @@ and implement the <code class="xref py py-meth docutils literal notranslate"><sp
 and implement the <a class="reference internal" href="../modules/transforms.html#autrainer.transforms.AbstractTransform.__call__" title="autrainer.transforms.AbstractTransform.__call__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__call__()</span></code></a> method.</p>
 <p>For example, the following transform denoises a spectrogram by applying a
 <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.median_filter.html">median filter</a>:</p>
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">spect_median_filter.py</span><a class="headerlink" href="#id19" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">scipy.ndimage</span>
-<span class="linenos"> 2</span><span class="kn">import</span> <span class="nn">torch</span>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text">spect_median_filter.py</span><a class="headerlink" href="#id26" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span>
+<span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">autrainer.transforms</span> <span class="kn">import</span> <span class="n">AbstractTransform</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractTransform</span>
 <span class="linenos"> 5</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="k">class</span> <span class="nc">SpectMedianFilter</span><span class="p">(</span><span class="n">AbstractTransform</span><span class="p">):</span>
-<span class="linenos"> 8</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 7</span><span class="k">class</span><span class="w"> </span><span class="nc">SpectMedianFilter</span><span class="p">(</span><span class="n">AbstractTransform</span><span class="p">):</span>
+<span class="linenos"> 8</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos"> 9</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Spectrogram median filter to remove noise.</span>
 <span class="linenos">10</span>
 <span class="linenos">11</span><span class="sd">        Args:</span>
@@ -967,7 +1148,7 @@ and implement the <a class="reference internal" href="../modules/transforms.html
 <span class="linenos">19</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 <span class="linenos">20</span>        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
 <span class="linenos">21</span>
-<span class="linenos">22</span>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">22</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="linenos">23</span>        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
 <span class="linenos">24</span>            <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span>
 <span class="linenos">25</span>                <span class="n">x</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
@@ -984,8 +1165,8 @@ and implement the <a class="reference internal" href="../modules/transforms.html
 <p>To create a custom <a class="reference internal" href="../modules/transforms.html#preprocessing-transforms"><span class="std std-ref">preprocessing transform</span></a>, create a new file in the <code class="file docutils literal notranslate"><span class="pre">conf/preprocessing/</span></code> directory.</p>
 <p>For example, the following preprocessing transform extracts log-Mel spectrograms from audio data at a sampling rate of 32 kHz and
 applies the <a class="reference internal" href="#tut-transforms"><span class="std std-ref">custom denoising transform</span></a> to the data:</p>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text">conf/scheduler/denoised_log_mel_32k.yaml</span><a class="headerlink" href="#id20" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text">conf/scheduler/denoised_log_mel_32k.yaml</span><a class="headerlink" href="#id27" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">file_handler</span><span class="p">:</span>
 <span class="linenos"> 2</span><span class="w">  </span><span class="nt">autrainer.datasets.utils.AudioFileHandler</span><span class="p">:</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nt">target_sample_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32000</span>
@@ -1008,8 +1189,8 @@ applies the <a class="reference internal" href="#tut-transforms"><span class="st
 </div>
 <p>Any audio <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">dataset</span></a> can utilize this preprocessing transform by specifying the <code class="xref py py-attr docutils literal notranslate"><span class="pre">features_subdir</span></code>
 attribute in the dataset configuration and adjusting the <code class="xref py py-attr docutils literal notranslate"><span class="pre">file_type</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">file_handler</span></code>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">transform</span></code> attributes:</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text">conf/dataset/ExampleDataset.yaml</span><a class="headerlink" href="#id21" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">conf/dataset/ExampleDataset.yaml</span><a class="headerlink" href="#id28" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
 <span class="linenos">2</span><span class="nt">features_subdir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">denoised_log_mel_32k</span>
 <span class="linenos">3</span><span class="nt">file_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">npy</span>
@@ -1033,8 +1214,8 @@ during training and inference.</p>
 <p>To create a custom <a class="reference internal" href="../modules/transforms.html#online-transforms"><span class="std std-ref">online transform</span></a>, no configuration file is necessary as the transform is applied at runtime
 and specified in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">transform</span></code> attribute of the model and dataset configurations using <a class="reference internal" href="hydra_configurations.html#shorthand-syntax"><span class="std std-ref">shorthand syntax</span></a>.</p>
 <p>For example, the following configuration applies the <a class="reference internal" href="#tut-transforms"><span class="std std-ref">custom denoising transform</span></a> to the data at runtime:</p>
-<div class="literal-block-wrapper docutils container" id="id22">
-<div class="code-block-caption"><span class="caption-text">conf/dataset/ExampleDataset.yaml</span><a class="headerlink" href="#id22" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">conf/dataset/ExampleDataset.yaml</span><a class="headerlink" href="#id29" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
 <span class="linenos">2</span><span class="nt">transform</span><span class="p">:</span>
 <span class="linenos">3</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grayscale</span>
@@ -1048,8 +1229,8 @@ and specified in the <code class="xref py py-attr docutils literal notranslate">
 the <a class="reference internal" href="#tut-transforms"><span class="std std-ref">custom denoising transform</span></a> is applied to the train, dev, and test datasets.</p>
 <p>It may be desirable to only apply a transform to a specific subset of the data.
 The following configuration applies the <a class="reference internal" href="#tut-transforms"><span class="std std-ref">custom denoising transform</span></a> only to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">train</span></code> subset of the data:</p>
-<div class="literal-block-wrapper docutils container" id="id23">
-<div class="code-block-caption"><span class="caption-text">conf/dataset/ExampleDataset.yaml</span><a class="headerlink" href="#id23" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id30">
+<div class="code-block-caption"><span class="caption-text">conf/dataset/ExampleDataset.yaml</span><a class="headerlink" href="#id30" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
 <span class="linenos">2</span><span class="nt">transform</span><span class="p">:</span>
 <span class="linenos">3</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grayscale</span>
@@ -1066,17 +1247,17 @@ The following configuration applies the <a class="reference internal" href="#tut
 <p>To create a custom <a class="reference internal" href="../modules/augmentations.html#augmentations"><span class="std std-ref">augmentation</span></a>, inherit from <a class="reference internal" href="../modules/augmentations.html#autrainer.augmentations.AbstractAugmentation" title="autrainer.augmentations.AbstractAugmentation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAugmentation</span></code></a>
 and implement the <a class="reference internal" href="../modules/augmentations.html#autrainer.augmentations.AbstractAugmentation.apply" title="autrainer.augmentations.AbstractAugmentation.apply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply()</span></code></a> method.</p>
 <p>For example, the following augmentation scales the amplitude of a spectrogram by a random factor in a given range:</p>
-<div class="literal-block-wrapper docutils container" id="id24">
-<div class="code-block-caption"><span class="caption-text">amplitude_scale_augmentation.py</span><a class="headerlink" href="#id24" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<div class="literal-block-wrapper docutils container" id="id31">
+<div class="code-block-caption"><span class="caption-text">amplitude_scale_augmentation.py</span><a class="headerlink" href="#id31" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">autrainer.augmentations</span> <span class="kn">import</span> <span class="n">AbstractAugmentation</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.augmentations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAugmentation</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">AmplitudeScale</span><span class="p">(</span><span class="n">AbstractAugmentation</span><span class="p">):</span>
-<span class="linenos"> 9</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">AmplitudeScale</span><span class="p">(</span><span class="n">AbstractAugmentation</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <span class="linenos">10</span>        <span class="bp">self</span><span class="p">,</span>
 <span class="linenos">11</span>        <span class="n">scale_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
 <span class="linenos">12</span>        <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -1104,7 +1285,7 @@ and implement the <a class="reference internal" href="../modules/augmentations.h
 <span class="linenos">34</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span><span class="p">:</span>
 <span class="linenos">35</span>            <span class="bp">self</span><span class="o">.</span><span class="n">scale_g</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span><span class="p">)</span>
 <span class="linenos">36</span>
-<span class="linenos">37</span>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">37</span>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="linenos">38</span>        <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_range</span>
 <span class="linenos">39</span>        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scale_g</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">s1</span> <span class="o">-</span> <span class="n">s0</span><span class="p">)</span> <span class="o">+</span> <span class="n">s0</span><span class="p">)</span>
 </pre></div>
@@ -1112,8 +1293,8 @@ and implement the <a class="reference internal" href="../modules/augmentations.h
 </div>
 <p>The following configuration creates a new <code class="file docutils literal notranslate"><span class="pre">AmplitudeScale.yaml</span></code> augmentation in the <code class="file docutils literal notranslate"><span class="pre">conf/augmentation/</span></code> directory,
 scaling the amplitude of the spectrogram by a random factor between 0.8 and 1.2 with a probability <code class="xref py py-attr docutils literal notranslate"><span class="pre">p</span></code> of 0.5:</p>
-<div class="literal-block-wrapper docutils container" id="id25">
-<div class="code-block-caption"><span class="caption-text">conf/augmentation/AmplitudeScale.yaml</span><a class="headerlink" href="#id25" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id32">
+<div class="code-block-caption"><span class="caption-text">conf/augmentation/AmplitudeScale.yaml</span><a class="headerlink" href="#id32" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AmplitudeScale</span>
 <span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.augmentations.AugmentationPipeline</span>
 <span class="linenos">3</span>
@@ -1133,8 +1314,8 @@ the global <code class="xref py py-attr docutils literal notranslate"><span clas
 <p>For example, the following configuration creates a new <code class="file docutils literal notranslate"><span class="pre">AmplitudeScaleOrTimeFreqMask.yaml</span></code> augmentation in the
 <code class="file docutils literal notranslate"><span class="pre">conf/augmentation/</span></code> directory, either applying the <a class="reference internal" href="#tut-augmentations"><span class="std std-ref">custom amplitude scale augmentation</span></a> or a sequence of the
 <a class="reference internal" href="../modules/augmentations.html#autrainer.augmentations.TimeMask" title="autrainer.augmentations.TimeMask"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeMask</span></code></a> and <a class="reference internal" href="../modules/augmentations.html#autrainer.augmentations.FrequencyMask" title="autrainer.augmentations.FrequencyMask"><code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencyMask</span></code></a> augmentations:</p>
-<div class="literal-block-wrapper docutils container" id="id26">
-<div class="code-block-caption"><span class="caption-text">conf/augmentation/AmplitudeScaleOrTimeFreqMask.yaml</span><a class="headerlink" href="#id26" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id33">
+<div class="code-block-caption"><span class="caption-text">conf/augmentation/AmplitudeScaleOrTimeFreqMask.yaml</span><a class="headerlink" href="#id33" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AmplitudeScaleOrTimeFreqMask</span>
 <span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.augmentations.AugmentationPipeline</span>
 <span class="linenos"> 3</span>
@@ -1167,23 +1348,23 @@ and implement the optional <code class="xref py py-meth docutils literal notrans
 In case the collate function modifies the shape of the input or labels, this may need to be accounted for if the augmentation is not applied.</p>
 <p>For example, the following augmentation randomly applies <a class="reference internal" href="../modules/augmentations.html#autrainer.augmentations.CutMix" title="autrainer.augmentations.CutMix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CutMix</span></code></a> or <a class="reference internal" href="../modules/augmentations.html#autrainer.augmentations.MixUp" title="autrainer.augmentations.MixUp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MixUp</span></code></a> augmentations
 on the batch level:</p>
-<div class="literal-block-wrapper docutils container" id="id27">
-<div class="code-block-caption"><span class="caption-text">cut_mix_up.py</span><a class="headerlink" href="#id27" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<div class="literal-block-wrapper docutils container" id="id34">
+<div class="code-block-caption"><span class="caption-text">cut_mix_up.py</span><a class="headerlink" href="#id34" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">default_collate</span>
-<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">torchvision.transforms</span> <span class="kn">import</span> <span class="n">v2</span>
+<span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_collate</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">v2</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">autrainer.augmentations</span> <span class="kn">import</span> <span class="n">AbstractAugmentation</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.augmentations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAugmentation</span>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-<span class="linenos">11</span>    <span class="kn">from</span> <span class="nn">autrainer.datasets</span> <span class="kn">import</span> <span class="n">AbstractDataset</span>
+<span class="linenos">11</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataset</span>
 <span class="linenos">12</span>
 <span class="linenos">13</span>
-<span class="linenos">14</span><span class="k">class</span> <span class="nc">CutMixUp</span><span class="p">(</span><span class="n">AbstractAugmentation</span><span class="p">):</span>
-<span class="linenos">15</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos">14</span><span class="k">class</span><span class="w"> </span><span class="nc">CutMixUp</span><span class="p">(</span><span class="n">AbstractAugmentation</span><span class="p">):</span>
+<span class="linenos">15</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <span class="linenos">16</span>        <span class="bp">self</span><span class="p">,</span>
 <span class="linenos">17</span>        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
 <span class="linenos">18</span>        <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -1208,11 +1389,11 @@ on the batch level:</p>
 <span class="linenos">37</span>        <span class="k">if</span> <span class="n">generator_seed</span><span class="p">:</span>
 <span class="linenos">38</span>            <span class="bp">self</span><span class="o">.</span><span class="n">cut_mix_up_g</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">generator_seed</span><span class="p">)</span>
 <span class="linenos">39</span>
-<span class="linenos">40</span>    <span class="k">def</span> <span class="nf">get_collate_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="linenos">40</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_collate_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="linenos">41</span>        <span class="bp">self</span><span class="o">.</span><span class="n">cutmix</span> <span class="o">=</span> <span class="n">v2</span><span class="o">.</span><span class="n">CutMix</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
 <span class="linenos">42</span>        <span class="bp">self</span><span class="o">.</span><span class="n">mixup</span> <span class="o">=</span> <span class="n">v2</span><span class="o">.</span><span class="n">MixUp</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
 <span class="linenos">43</span>
-<span class="linenos">44</span>        <span class="k">def</span> <span class="nf">_collate_fn</span><span class="p">(</span>
+<span class="linenos">44</span>        <span class="k">def</span><span class="w"> </span><span class="nf">_collate_fn</span><span class="p">(</span>
 <span class="linenos">45</span>            <span class="n">batch</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
 <span class="linenos">46</span>        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
 <span class="linenos">47</span>            <span class="n">probability</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
@@ -1231,7 +1412,7 @@ on the batch level:</p>
 <span class="linenos">60</span>
 <span class="linenos">61</span>        <span class="k">return</span> <span class="n">_collate_fn</span>
 <span class="linenos">62</span>
-<span class="linenos">63</span>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">63</span>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="linenos">64</span>        <span class="c1"># no-op as the augmentation is applied in the collate function</span>
 <span class="linenos">65</span>        <span class="k">return</span> <span class="n">x</span>
 </pre></div>
@@ -1249,24 +1430,24 @@ and <a class="reference internal" href="../modules/loggers.html#autrainer.logger
 <a class="reference internal" href="../modules/loggers.html#autrainer.loggers.AbstractLogger.setup" title="autrainer.loggers.AbstractLogger.setup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setup()</span></code></a>, and <a class="reference internal" href="../modules/loggers.html#autrainer.loggers.AbstractLogger.end_run" title="autrainer.loggers.AbstractLogger.end_run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">end_run()</span></code></a> methods.</p>
 <p>All methods are automatically called a the appropriate time during training and inference.</p>
 <p>For example, the following logger logs to <a class="reference external" href="https://wandb.ai/">Weights &amp; Biases</a>:</p>
-<div class="literal-block-wrapper docutils container" id="id28">
-<div class="code-block-caption"><span class="caption-text">wandb_logger.py</span><a class="headerlink" href="#id28" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">os</span>
-<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<div class="literal-block-wrapper docutils container" id="id35">
+<div class="code-block-caption"><span class="caption-text">wandb_logger.py</span><a class="headerlink" href="#id35" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span>
-<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">wandb</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
+<span class="linenos"> 5</span><span class="kn">import</span><span class="w"> </span><span class="nn">wandb</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">autrainer.core.constants</span> <span class="kn">import</span> <span class="n">ExportConstants</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">autrainer.loggers</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExportConstants</span>
+<span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 <span class="linenos"> 9</span>    <span class="n">AbstractLogger</span><span class="p">,</span>
 <span class="linenos">10</span>    <span class="n">get_params_to_export</span><span class="p">,</span>
 <span class="linenos">11</span><span class="p">)</span>
-<span class="linenos">12</span><span class="kn">from</span> <span class="nn">autrainer.metrics</span> <span class="kn">import</span> <span class="n">AbstractMetric</span>
+<span class="linenos">12</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
 <span class="linenos">13</span>
 <span class="linenos">14</span>
-<span class="linenos">15</span><span class="k">class</span> <span class="nc">WandBLogger</span><span class="p">(</span><span class="n">AbstractLogger</span><span class="p">):</span>
-<span class="linenos">16</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos">15</span><span class="k">class</span><span class="w"> </span><span class="nc">WandBLogger</span><span class="p">(</span><span class="n">AbstractLogger</span><span class="p">):</span>
+<span class="linenos">16</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <span class="linenos">17</span>        <span class="bp">self</span><span class="p">,</span>
 <span class="linenos">18</span>        <span class="n">exp_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="linenos">19</span>        <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1285,7 +1466,7 @@ and <a class="reference internal" href="../modules/loggers.html#autrainer.logger
 <span class="linenos">32</span>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="linenos">33</span>        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
 <span class="linenos">34</span>
-<span class="linenos">35</span>    <span class="k">def</span> <span class="nf">log_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">35</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">36</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
 <span class="linenos">37</span>            <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span><span class="p">,</span>
 <span class="linenos">38</span>            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_name</span><span class="p">,</span>
@@ -1293,22 +1474,22 @@ and <a class="reference internal" href="../modules/loggers.html#autrainer.logger
 <span class="linenos">40</span>            <span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
 <span class="linenos">41</span>        <span class="p">)</span>
 <span class="linenos">42</span>
-<span class="linenos">43</span>    <span class="k">def</span> <span class="nf">log_metrics</span><span class="p">(</span>
+<span class="linenos">43</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
 <span class="linenos">44</span>        <span class="bp">self</span><span class="p">,</span>
 <span class="linenos">45</span>        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
 <span class="linenos">46</span>        <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="linenos">47</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">48</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">iteration</span><span class="p">)</span>
 <span class="linenos">49</span>
-<span class="linenos">50</span>    <span class="k">def</span> <span class="nf">log_timers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">50</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_timers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">51</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">timers</span><span class="p">)</span>
 <span class="linenos">52</span>
-<span class="linenos">53</span>    <span class="k">def</span> <span class="nf">log_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">53</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">54</span>        <span class="n">artifact</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">Artifact</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>
 <span class="linenos">55</span>        <span class="n">artifact</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
 <span class="linenos">56</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
 <span class="linenos">57</span>
-<span class="linenos">58</span>    <span class="k">def</span> <span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">58</span>    <span class="k">def</span><span class="w"> </span><span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">59</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1316,8 +1497,8 @@ and <a class="reference internal" href="../modules/loggers.html#autrainer.logger
 <p>Note that the <code class="xref py py-class docutils literal notranslate"><span class="pre">WandBLogger</span></code> assumes that <a class="reference external" href="https://wandb.ai/">wandb</a> is installed, the API key is set,
 and a project with the same name as the <code class="xref py py-attr docutils literal notranslate"><span class="pre">experiment_id</span></code> of the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> exists.</p>
 <p>To add the <code class="xref py py-class docutils literal notranslate"><span class="pre">WandBLogger</span></code>, specify it in the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> by adding a list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">loggers</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id29">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id29" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id36">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id36" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
 <span class="linenos">2</span><span class="nt">loggers</span><span class="p">:</span>
 <span class="linenos">3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">wandb_logger.WandBLogger</span><span class="p">:</span>
@@ -1332,20 +1513,20 @@ and a project with the same name as the <code class="xref py py-attr docutils li
 <p>To create a custom <a class="reference internal" href="../modules/training.html#callbacks"><span class="std std-ref">callback</span></a>, implement a class that specifies any of the callback functions defined in
 <a class="reference internal" href="../modules/training.html#autrainer.training.CallbackSignature" title="autrainer.training.CallbackSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallbackSignature</span></code></a>.</p>
 <p>For example, the following callback tracks learning rate changes at the beginning of each iteration:</p>
-<div class="literal-block-wrapper docutils container" id="id30">
-<div class="code-block-caption"><span class="caption-text">lr_tracker_callback.py</span><a class="headerlink" href="#id30" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<div class="literal-block-wrapper docutils container" id="id37">
+<div class="code-block-caption"><span class="caption-text">lr_tracker_callback.py</span><a class="headerlink" href="#id37" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-<span class="linenos"> 5</span>    <span class="kn">from</span> <span class="nn">autrainer.training</span> <span class="kn">import</span> <span class="n">ModularTaskTrainer</span>
+<span class="linenos"> 5</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.training</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModularTaskTrainer</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">LRTrackerCallback</span><span class="p">:</span>
-<span class="linenos"> 9</span>    <span class="k">def</span> <span class="nf">cb_on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">LRTrackerCallback</span><span class="p">:</span>
+<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">10</span>        <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
 <span class="linenos">11</span>
-<span class="linenos">12</span>    <span class="k">def</span> <span class="nf">cb_on_iteration_begin</span><span class="p">(</span>
+<span class="linenos">12</span>    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_iteration_begin</span><span class="p">(</span>
 <span class="linenos">13</span>        <span class="bp">self</span><span class="p">,</span>
 <span class="linenos">14</span>        <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">,</span>
 <span class="linenos">15</span>        <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -1361,8 +1542,8 @@ and a project with the same name as the <code class="xref py py-attr docutils li
 </div>
 </div>
 <p>To add the <code class="xref py py-class docutils literal notranslate"><span class="pre">LRTrackerCallback</span></code>, specify it in the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> by adding a list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">callbacks</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id31">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id31" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id38">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id38" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nn">...</span>
 <span class="linenos">2</span><span class="nt">callbacks</span><span class="p">:</span>
 <span class="linenos">3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lr_tracker_callback.LRTrackerCallback</span>
@@ -1375,10 +1556,10 @@ and a project with the same name as the <code class="xref py py-attr docutils li
 <span id="tut-plotting"></span><h2>Custom Plotting<a class="headerlink" href="#custom-plotting" title="Link to this heading">#</a></h2>
 <p>To create a custom <a class="reference internal" href="../modules/core.html#core-plotting"><span class="std std-ref">plotting</span></a> configuration, create a new file in the <code class="file docutils literal notranslate"><span class="pre">conf/plotting/</span></code> directory.</p>
 <p>For example, the following configuration uses the <a class="reference external" href="https://matplotlib.org/stable/users/explain/text/usetex.html">LaTeX</a> backend,
-the Palatino font with a font size of 9, replaces <code class="xref py py-attr docutils literal notranslate"><span class="pre">None</span></code> values in the run name with <code class="xref py py-attr docutils literal notranslate"></code> for better readability,
+the Palatino font with a font size of 9, replaces <code class="xref py py-attr docutils literal notranslate"><span class="pre">None</span></code> values in the run name with <code class="xref py py-attr docutils literal notranslate"><span class="pre">~</span></code> for better readability,
 and adds labels as well as titles to the plot.</p>
-<div class="literal-block-wrapper docutils container" id="id32">
-<div class="code-block-caption"><span class="caption-text">conf/plotting/LaTeX.yaml</span><a class="headerlink" href="#id32" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id39">
+<div class="code-block-caption"><span class="caption-text">conf/plotting/LaTeX.yaml</span><a class="headerlink" href="#id39" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">figsize</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">10</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">5</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># figure size in inches</span>
 <span class="linenos"> 2</span><span class="nt">latex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># use LaTeX for text rendering</span>
 <span class="linenos"> 3</span><span class="nt">filetypes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">png</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pdf</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># save figures in these formats</span>
@@ -1399,8 +1580,8 @@ and adds labels as well as titles to the plot.</p>
 </div>
 <p>To add the <code class="file docutils literal notranslate"><span class="pre">LaTeX.yaml</span></code> plotting configuration, specify it in the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a>
 by overriding the <code class="xref py py-attr docutils literal notranslate"><span class="pre">plotting</span></code> attribute:</p>
-<div class="literal-block-wrapper docutils container" id="id33">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id33" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id40">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id40" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">defaults</span><span class="p">:</span>
 <span class="linenos">2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
 <span class="linenos">3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">override plotting</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LaTeX</span>
@@ -1439,6 +1620,7 @@ by overriding the <code class="xref py py-attr docutils literal notranslate"><sp
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-criterions">Custom Criterions</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-file-handlers">Custom File Handlers</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-target-transforms">Custom Target Transforms</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-data-pipelines">Advanced Data Pipelines</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-optimizers">Custom Optimizers</a></li>
@@ -1484,7 +1666,7 @@ by overriding the <code class="xref py py-attr docutils literal notranslate"><sp
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

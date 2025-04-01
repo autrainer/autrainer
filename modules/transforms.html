@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -373,7 +373,8 @@ both can be used in conjunction for maximum flexibility.</p>
 <section id="preprocessing-transforms">
 <span id="id2"></span><h2>Preprocessing Transforms<a class="headerlink" href="#preprocessing-transforms" title="Link to this heading">#</a></h2>
 <p>Preprocessing transforms are specified in the dataset configuration aligning the <code class="xref py py-attr docutils literal notranslate"><span class="pre">features_subdir</span></code> with the name of the preprocessing file.
-This way, the processed data is stored in a subdirectory of the dataset directory with the same name as the preprocessing file.
+This way, the processed data is stored in a subdirectory of the dataset directory with the same name as the preprocessing file,
+or in a different path altogether by specifying the <code class="xref py py-attr docutils literal notranslate"><span class="pre">features_path</span></code> attribute in the configuration file.
 To save the processed data, the <code class="xref py py-attr docutils literal notranslate"><span class="pre">file_handler</span></code> specified in the dataset configuration is used.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -398,6 +399,15 @@ the following <a class="reference internal" href="../usage/cli_reference.html#cl
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">autrainer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">preprocess</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Following <cite>v0.6.0</cite>, <cite>autrainer</cite> iterates over all files in all datasets
+and extracts the respective features without replacement.
+It is possible that features have been extracted for a subset of the dataset.
+This may happen when different dataset subsets are supported.
+Therefore, it is recommended that <cite>autrainer preprocess</cite> is always called before training.
+Features have to be manually deleted to overwrite.</p>
 </div>
 <p><cite>autrainer</cite> offers default configurations for log-Mel spectrogram extraction and openSMILE feature extraction.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
@@ -529,23 +539,28 @@ For installation, refer to the <a class="reference internal" href="../index.html
 <p>Online transforms can be specified with the <code class="xref py py-attr docutils literal notranslate"><span class="pre">transform</span></code> attribute in both the model and dataset,
 applied to the input data before it is passed to the model.
 Each pipeline is specified as a list of transforms using <a class="reference internal" href="../usage/hydra_configurations.html#shorthand-syntax"><span class="std std-ref">Shorthand Syntax</span></a>.</p>
+<p>Model and dataset configurations specify the transforms to be applied to the input data.
+If <a class="reference internal" href="augmentations.html#augmentations"><span class="std std-ref">augmentations</span></a> are used, they are merged with the online transforms to create a single pipeline.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>To create custom online transforms, refer to the <a class="reference internal" href="../usage/tutorials.html#tut-online-transforms"><span class="std std-ref">custom online transforms tutorial</span></a>.</p>
 </div>
-<p>If <a class="reference internal" href="augmentations.html#augmentations"><span class="std std-ref">augmentations</span></a> are used, they are merged with the online transforms to create a single pipeline.</p>
-<p>Model and dataset configurations specify the transforms to be applied to the input data.
-Each <code class="xref py py-attr docutils literal notranslate"><span class="pre">transform</span></code> configuration includes a <code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code> attribute, specifying the type of data the model expects or the dataset provides:</p>
+<section id="types">
+<h3>Types<a class="headerlink" href="#types" title="Link to this heading">#</a></h3>
+<p>Each <code class="xref py py-attr docutils literal notranslate"><span class="pre">transform</span></code> configuration includes a <code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code> attribute, specifying the type of data the model expects or the dataset provides:</p>
 <ul class="simple">
 <li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">image</span></code>: RGB images</p></li>
-<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">grayscale</span></code>: Grayscale images (e.g. spectrograms or other single-channel images)</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">grayscale</span></code>: Grayscale images (e.g., spectrograms or other single-channel images)</p></li>
 <li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">raw</span></code>: Raw audio waveforms</p></li>
-<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">tabular</span></code>: Tabular data (e.g. openSMILE features)</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">tabular</span></code>: Tabular data (e.g., openSMILE features)</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The conversion between RGB and grayscale images is handled automatically by the pipeline to ensure compatibility between models and datasets.</p>
 </div>
+</section>
+<section id="pipelines">
+<h3>Pipelines<a class="headerlink" href="#pipelines" title="Link to this heading">#</a></h3>
 <p>Different transforms can be specified for <code class="xref py py-attr docutils literal notranslate"><span class="pre">train</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">dev</span></code>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">test</span></code> pipelines.
 In addition, <code class="xref py py-attr docutils literal notranslate"><span class="pre">base</span></code> provides a common set of transforms to include in all pipelines.</p>
 <p>For example, the following configuration applies different <a class="reference internal" href="#autrainer.transforms.RandomCrop" title="autrainer.transforms.RandomCrop"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomCrop</span></code></a>
@@ -567,6 +582,9 @@ transforms for the <code class="xref py py-attr docutils literal notranslate"><s
 </pre></div>
 </div>
 </div>
+</section>
+<section id="removing-and-overriding">
+<h3>Removing and Overriding<a class="headerlink" href="#removing-and-overriding" title="Link to this heading">#</a></h3>
 <p>Models and datasets can remove any existing transform if it exists to ensure compatibility between datasets and models.
 Removal is done by setting the transform to <code class="xref py py-attr docutils literal notranslate"><span class="pre">null</span></code> in the configuration.
 If a transform is set to <code class="xref py py-attr docutils literal notranslate"><span class="pre">null</span></code> but is not present in the pipeline, it is ignored.</p>
@@ -582,12 +600,45 @@ to remove it from the pipeline as it is not needed for spectrograms:</p>
 </pre></div>
 </div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
 <p>Model <a class="reference internal" href="#online-transforms"><span class="std std-ref">online transforms</span></a> outweigh dataset <a class="reference internal" href="#online-transforms"><span class="std std-ref">online transforms</span></a>.
 If a model specifies a transform that is also specified in the dataset,
 the model transform is used, overriding the dataset transform.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Removing and overriding transforms is useful for ensuring compatibility between models and datasets, however,
+both are bound to the same pipeline (e.g. <code class="xref py py-attr docutils literal notranslate"><span class="pre">base</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">train</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">dev</span></code>, or <code class="xref py py-attr docutils literal notranslate"><span class="pre">test</span></code>).</p>
+<p>If multiple transforms of the same type are specified in a pipeline, overriding or removing a transform affects all transforms
+of that type in the pipeline.</p>
 </div>
+</section>
+<section id="tags">
+<h3>Tags<a class="headerlink" href="#tags" title="Link to this heading">#</a></h3>
+<p>In case multiple transforms of the same type are specified in the pipeline, they can be tagged with a unique identifier
+using an <code class="xref py py-attr docutils literal notranslate"><span class="pre">&#64;</span></code> symbol followed by the tag name.</p>
+<p>For example, the following configuration applies two <a class="reference internal" href="#autrainer.transforms.Normalize" title="autrainer.transforms.Normalize"><code class="xref py py-class docutils literal notranslate"><span class="pre">Normalize</span></code></a> transforms to the pipeline,
+each with a different tag:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">conf/model/SpectrogramModel.yaml</span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nn">...</span>
+<span class="linenos"> 2</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grayscale</span>
+<span class="linenos"> 4</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.Normalize@first</span><span class="p">:</span>
+<span class="linenos"> 6</span><span class="w">        </span><span class="nt">mean</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 7</span><span class="w">        </span><span class="nt">std</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.Normalize@second</span><span class="p">:</span>
+<span class="linenos"> 9</span><span class="w">        </span><span class="nt">mean</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123</span>
+<span class="linenos">10</span><span class="w">        </span><span class="nt">std</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">456</span>
+</pre></div>
+</div>
+</div>
+<p>Transforms with tags can be removed or overridden analogously to transforms without tags, by appending the tag name to the transform name.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a transform with a tag is removed or overridden, only the transform with the specified tag (if it exists) is affected,
+allowing for the removal or overriding of specific transforms in the pipeline.</p>
+</div>
+</section>
 </section>
 <section id="transform-manager">
 <h2>Transform Manager<a class="headerlink" href="#transform-manager" title="Link to this heading">#</a></h2>
@@ -684,17 +735,35 @@ automatically sorted by their order attribute if present.</p>
 <dt class="sig sig-object py" id="autrainer.transforms.SmartCompose.get_collate_fn">
 <span class="sig-name descname"><span class="pre">get_collate_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/smart_compose.html#SmartCompose.get_collate_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.SmartCompose.get_collate_fn" title="Link to this definition">#</a></dt>
 <dd><p>Get the collate function. If no collate function is present in
-the transforms, None is returned.
+the transforms, the dataset default is returned.
 If multiple collate functions are present, the last one is used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.abstract_dataset.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a></span>) – Dataset to get the collate function for.</p>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.abstract_dataset.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a></span>) – Dataset to get the collate function for.
+Includes a <code class="docutils literal notranslate"><span class="pre">default_collate_fn</span></code>.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Collate function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.transforms.SmartCompose.offset_generator_seed">
+<span class="sig-name descname"><span class="pre">offset_generator_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/smart_compose.html#SmartCompose.offset_generator_seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.SmartCompose.offset_generator_seed" title="Link to this definition">#</a></dt>
+<dd><p>Offset the generator seed for transforms that use random
+number generators. Useful for ensuring reproducibility and
+randomness of augmentations when using multiple workers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>offset</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Offset to add to the generator seed. Usually the
+worker index.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -837,6 +906,18 @@ values. Defaults to None.</p></li>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="autrainer.transforms.ImageToFloat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">ImageToFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#ImageToFloat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.ImageToFloat" title="Link to this definition">#</a></dt>
+<dd><p>Transform a uint8 image in the range [0, 255] to a float32 image in
+the range [0.0, 1.0].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the transform in the pipeline. Defaults to 90.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="autrainer.transforms.Normalize">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">Normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#Normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.Normalize" title="Link to this definition">#</a></dt>
 <dd><p>Normalize a tensor with a mean and standard deviation.</p>
@@ -970,23 +1051,6 @@ as the size. Defaults to 64.</p></li>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="autrainer.transforms.RGBAToRGB">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">RGBAToRGB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#RGBAToRGB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.RGBAToRGB" title="Link to this definition">#</a></dt>
-<dd><p>Abstract class for a transform.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the transform in the pipeline. Larger means
-later in the pipeline. If multiple transforms have the same
-order, they are applied in the order they were added to the
-pipeline. Defaults to 0.</p></li>
-<li><p><strong>kwargs</strong> – Additional keyword arguments to store in the object.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="autrainer.transforms.RGBAToGrayscale">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">RGBAToGrayscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#RGBAToGrayscale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.RGBAToGrayscale" title="Link to this definition">#</a></dt>
 <dd><p>Convert an RGBA image to grayscale by dropping the alpha channel
@@ -1003,14 +1067,17 @@ Y = 0.2989 * R + 0.587 * G + 0.114 * B.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="autrainer.transforms.ScaleRange">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">ScaleRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#ScaleRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.ScaleRange" title="Link to this definition">#</a></dt>
-<dd><p>Scale a tensor to a specific target range.</p>
+<dt class="sig sig-object py" id="autrainer.transforms.RGBAToRGB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">RGBAToRGB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#RGBAToRGB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.RGBAToRGB" title="Link to this definition">#</a></dt>
+<dd><p>Abstract class for a transform.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>range</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – The range to scale the tensor to. Defaults to [0.0, 1.0].</p></li>
-<li><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the transform in the pipeline. Defaults to 90.</p></li>
+<li><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the transform in the pipeline. Larger means
+later in the pipeline. If multiple transforms have the same
+order, they are applied in the order they were added to the
+pipeline. Defaults to 0.</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to store in the object.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1032,9 +1099,27 @@ Y = 0.2989 * R + 0.587 * G + 0.114 * B.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="autrainer.transforms.ScaleRange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">ScaleRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#ScaleRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.ScaleRange" title="Link to this definition">#</a></dt>
+<dd><p>Scale a tensor to a specific target range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>range</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – The range to scale the tensor to. Defaults to [0.0, 1.0].</p></li>
+<li><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the transform in the pipeline. Defaults to 90.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="autrainer.transforms.SpectToImage">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">SpectToImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'magma'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-90</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#SpectToImage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.SpectToImage" title="Link to this definition">#</a></dt>
-<dd><p>Convert a spectrogram to a 3-channel image based on a colormap.</p>
+<dd><p>Convert a spectrogram in the range [0, 1] to a 3-channel uint8 image
+in the range [0, 255] using a specific colormap.</p>
+<p>Note: The transform should be used in combination with
+<cite>~autrainer.transforms.ImageToFloat</cite> to convert the image back to the
+range [0, 1] for training.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1078,6 +1163,33 @@ first dimension.</p>
 </dl>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.transforms.Standardizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">Standardizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-99</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#Standardizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.Standardizer" title="Link to this definition">#</a></dt>
+<dd><p>Standardize a dataset by calculating the mean and standard deviation
+of the data and applying the normalization.</p>
+<p>The mean and standard deviation are automatically calculated from the
+data in the specified subset.</p>
+<p>Note: The transform is applied at the specified order in the pipeline
+such that any preceding transforms are applied before the mean and
+standard deviation are calculated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]</span>) – The mean to use for normalization. If None, the mean will be
+calculated from the data. Defaults to None.</p></li>
+<li><p><strong>std</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]</span>) – The standard deviation to use for normalization. If None, the
+standard deviation will be calculated from the data. Defaults
+to None.</p></li>
+<li><p><strong>subset</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The subset to use for calculating the mean and standard
+deviation. Must be one of [“train”, “dev”, “test”]. Defaults to
+“train”.</p></li>
+<li><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the transform in the pipeline. Defaults to -99.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -1104,7 +1216,13 @@ first dimension.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocessing-transforms">Preprocessing Transforms</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#online-transforms">Online Transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#online-transforms">Online Transforms</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelines">Pipelines</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-and-overriding">Removing and Overriding</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tags">Tags</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transform-manager">Transform Manager</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.TransformManager"><code class="docutils literal notranslate"><span class="pre">TransformManager</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.TransformManager.get_transforms"><code class="docutils literal notranslate"><span class="pre">TransformManager.get_transforms()</span></code></a></li>
@@ -1116,6 +1234,7 @@ first dimension.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.SmartCompose"><code class="docutils literal notranslate"><span class="pre">SmartCompose</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.SmartCompose.__add__"><code class="docutils literal notranslate"><span class="pre">SmartCompose.__add__()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.SmartCompose.get_collate_fn"><code class="docutils literal notranslate"><span class="pre">SmartCompose.get_collate_fn()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.SmartCompose.offset_generator_seed"><code class="docutils literal notranslate"><span class="pre">SmartCompose.offset_generator_seed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.SmartCompose.__call__"><code class="docutils literal notranslate"><span class="pre">SmartCompose.__call__()</span></code></a></li>
 </ul>
 </li>
@@ -1133,6 +1252,7 @@ first dimension.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.Expand"><code class="docutils literal notranslate"><span class="pre">Expand</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.FeatureExtractor"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.GrayscaleToRGB"><code class="docutils literal notranslate"><span class="pre">GrayscaleToRGB</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.ImageToFloat"><code class="docutils literal notranslate"><span class="pre">ImageToFloat</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.Normalize"><code class="docutils literal notranslate"><span class="pre">Normalize</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.NumpyToTensor"><code class="docutils literal notranslate"><span class="pre">NumpyToTensor</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.OpenSMILE"><code class="docutils literal notranslate"><span class="pre">OpenSMILE</span></code></a></li>
@@ -1140,13 +1260,14 @@ first dimension.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.RandomCrop"><code class="docutils literal notranslate"><span class="pre">RandomCrop</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.Resample"><code class="docutils literal notranslate"><span class="pre">Resample</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.Resize"><code class="docutils literal notranslate"><span class="pre">Resize</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.RGBAToRGB"><code class="docutils literal notranslate"><span class="pre">RGBAToRGB</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.RGBAToGrayscale"><code class="docutils literal notranslate"><span class="pre">RGBAToGrayscale</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.ScaleRange"><code class="docutils literal notranslate"><span class="pre">ScaleRange</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.RGBAToRGB"><code class="docutils literal notranslate"><span class="pre">RGBAToRGB</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.RGBToGrayscale"><code class="docutils literal notranslate"><span class="pre">RGBToGrayscale</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.ScaleRange"><code class="docutils literal notranslate"><span class="pre">ScaleRange</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.SpectToImage"><code class="docutils literal notranslate"><span class="pre">SpectToImage</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.SquarePadCrop"><code class="docutils literal notranslate"><span class="pre">SquarePadCrop</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.StereoToMono"><code class="docutils literal notranslate"><span class="pre">StereoToMono</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.Standardizer"><code class="docutils literal notranslate"><span class="pre">Standardizer</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1177,7 +1298,7 @@ first dimension.</p>
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,17 +353,20 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.optimizers.sam</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">import</span> <span class="nn">autrainer</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autrainer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataBatch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_model_inputs</span>
 
 
 <div class="viewcode-block" id="SAM">
 <a class="viewcode-back" href="../../../modules/optimizers.html#autrainer.optimizers.SAM">[docs]</a>
-<span class="k">class</span> <span class="nc">SAM</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SAM</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
         <span class="n">base_optimizer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -407,7 +410,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_optimizer</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span>
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">first_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">first_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">grad_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grad_norm</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">:</span>
             <span class="n">scale</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;rho&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">grad_norm</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
@@ -440,7 +443,7 @@ document.write(`
     <span class="c1">#     if zero_grad: self.zero_grad()</span>
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">second_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">second_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -454,7 +457,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">closure</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">closure</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">closure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">),</span> <span class="s2">&quot;Sharpness Aware Minimization requires closure, but it was not provided&quot;</span>
@@ -465,7 +468,7 @@ document.write(`
         <span class="n">closure</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">second_step</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_grad_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grad_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># put everything on the same device, in case of model parallelism</span>
         <span class="n">shared_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span>
@@ -483,45 +486,47 @@ document.write(`
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">norm</span>
 
-    <span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_optimizer</span><span class="o">.</span><span class="n">param_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span>
 
     <span class="c1"># ? Training Tips functions from the Github repo ref: https://github.com/davda54/sam</span>
     <span class="c1"># TODO: Check if Batch Norm Tip needs to be applied</span>
-    <span class="k">def</span> <span class="nf">custom_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-        <span class="n">target</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">AbstractModel</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">AbstractDataBatch</span><span class="p">,</span>
         <span class="n">criterion</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
         <span class="n">probabilities_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sharpness Aware Minimization requires two forward-backward passes</span>
 <span class="sd">        over the batch to simultaneously minimize the loss value and the loss</span>
 <span class="sd">        sharpness.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            model: Model to be optimized.</span>
-<span class="sd">            data: Batched input data.</span>
-<span class="sd">            target: Batched target data.</span>
+<span class="sd">            model: The model to train.</span>
+<span class="sd">            data: The data batch containing features, target, and potentially</span>
+<span class="sd">                additional fields. The data batch is expected to be on the same</span>
+<span class="sd">                device as the model. Additional fields are passed to the model</span>
+<span class="sd">                as keyword arguments if they are present in the model&#39;s forward</span>
+<span class="sd">                method.</span>
 <span class="sd">            criterion: Loss function.</span>
-<span class="sd">            probabilities_fn: Function to get probabilities from model outputs.</span>
+<span class="sd">            probabilities_fn: Function to convert model outputs to</span>
+<span class="sd">                probabilities.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Reduced loss over the batch and detached model outputs.</span>
+<span class="sd">            Tuple containing the non-reduced loss and model outputs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
-        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">create_model_inputs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">first_step</span><span class="p">(</span><span class="n">zero_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
-        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">create_model_inputs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">probabilities_fn</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">second_step</span><span class="p">(</span><span class="n">zero_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">_loss</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">output</span></div>
 
 </pre></div>
 
@@ -558,7 +563,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

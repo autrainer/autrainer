@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -476,7 +476,7 @@ with save=True. Defaults to False.</p></li>
 <p>To avoid race conditions when using <a class="reference internal" href="hydra_configurations.html#hydra-launcher-plugins"><span class="std std-ref">Launcher Plugins</span></a> that may run multiple training jobs in parallel,
 <a class="reference internal" href="#autrainer.cli.fetch" title="autrainer.cli.fetch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fetch()</span></code></a> and <a class="reference internal" href="#autrainer.cli.preprocess" title="autrainer.cli.preprocess"><code class="xref py py-meth docutils literal notranslate"><span class="pre">preprocess()</span></code></a> allow for
 downloading and <a class="reference internal" href="../modules/transforms.html#preprocessing-transforms"><span class="std std-ref">preprocessing</span></a> of <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">Datasets</span></a> (and pretrained model states) before training.</p>
-<p>Both commands are based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>),
+<p>Both commands are based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g., <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>),
 such that the specified models and datasets are fetched and preprocessed accordingly.
 If a model or dataset is already fetched or preprocessed, it will be skipped.</p>
 <dl class="py function" id="cli-wrapper-autrainer-fetch">
@@ -505,17 +505,17 @@ search path. Defaults to None.</p></li>
 
 <dl class="py function" id="cli-wrapper-autrainer-preprocess">
 <dt class="sig sig-object py" id="autrainer.cli.preprocess">
-<span class="sig-prename descclassname"><span class="pre">autrainer.cli.</span></span><span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">override_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg_launcher</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/scripts/preprocess_script.html#preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.cli.preprocess" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">autrainer.cli.</span></span><span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">override_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg_launcher</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/scripts/preprocess_script.html#preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.cli.preprocess" title="Link to this definition">#</a></dt>
 <dd><p>Launch a data preprocessing configuration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>override_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span>) – Additional Hydra override arguments to pass to the
 train script.</p></li>
-<li><p><strong>num_workers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of workers (threads) to use for preprocessing.
-Defaults to 1.</p></li>
-<li><p><strong>update_frequency</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Frequency of progress bar updates for each worker
-(thread). If 0, the progress bar will be disabled. Defaults to 1.</p></li>
+<li><p><strong>num_workers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of workers (subprocess) to use for preprocessing.
+Defaults to 0.</p></li>
+<li><p><strong>update_frequency</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Frequency of progress bar updates.
+If 0, the progress bar will be disabled. Defaults to 1.</p></li>
 <li><p><strong>cfg_launcher</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Use the launcher specified in the configuration instead
 of the Hydra basic launcher. Defaults to False.</p></li>
 <li><p><strong>config_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The name of the config (usually the file name without the
@@ -535,7 +535,7 @@ search path. Defaults to None.</p></li>
 <section id="training">
 <span id="cli-wrapper-training"></span><h2>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h2>
 <p>Training is managed by <a class="reference internal" href="#autrainer.cli.train" title="autrainer.cli.train"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train()</span></code></a>, which starts the training process
-based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g. <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>).</p>
+based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g., <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>).</p>
 <dl class="py function" id="cli-wrapper-autrainer-train">
 <dt class="sig sig-object py" id="autrainer.cli.train">
 <span class="sig-prename descclassname"><span class="pre">autrainer.cli.</span></span><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">override_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/scripts/train_script.html#train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.cli.train" title="Link to this definition">#</a></dt>
@@ -569,20 +569,20 @@ This syntax consists of the following components:</p>
 <ul class="simple">
 <li><p><code class="code docutils literal notranslate"><span class="pre">hf</span></code>: The Hugging Face Hub prefix indicating that the model is fetched from the Hugging Face Hub.</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">repo_id</span></code>: The repository ID of the model consisting of the user name and the model card name separated by a slash
-(e.g. <code class="code docutils literal notranslate"><span class="pre">autrainer/example</span></code>).</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">revision</span></code> (<cite>optional</cite>): The revision as a commit hash, branch name, or tag name (e.g. <code class="code docutils literal notranslate"><span class="pre">main</span></code>).
+(e.g., <code class="code docutils literal notranslate"><span class="pre">autrainer/example</span></code>).</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">revision</span></code> (<cite>optional</cite>): The revision as a commit hash, branch name, or tag name (e.g., <code class="code docutils literal notranslate"><span class="pre">main</span></code>).
 If not specified, the latest revision is used.</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">subdir</span></code> (<cite>optional</cite>): The subdirectory of the repository containing the model directory (e.g. <code class="code docutils literal notranslate"><span class="pre">AudioModel</span></code>).
+<li><p><code class="code docutils literal notranslate"><span class="pre">subdir</span></code> (<cite>optional</cite>): The subdirectory of the repository containing the model directory (e.g., <code class="code docutils literal notranslate"><span class="pre">AudioModel</span></code>).
 If not specified, the model directory is automatically inferred.
 If multiple models are present in the <code class="code docutils literal notranslate"><span class="pre">repo_id</span></code>, <code class="code docutils literal notranslate"><span class="pre">subdir</span></code> must be specified, as the correct model cannot be automatically inferred.</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">local_dir</span></code> (<cite>optional</cite>): The local directory to which the model is downloaded to (e.g. <code class="code docutils literal notranslate"><span class="pre">.hf_local</span></code>).
+<li><p><code class="code docutils literal notranslate"><span class="pre">local_dir</span></code> (<cite>optional</cite>): The local directory to which the model is downloaded to (e.g., <code class="code docutils literal notranslate"><span class="pre">.hf_local</span></code>).
 If not specified, the model is placed in the
 <a class="reference external" href="https://pytorch.org/docs/stable/hub.html#where-are-my-downloaded-models-saved">torch hub cache directory</a>.</p></li>
 </ul>
 <p>For example, to download the model from the repository <code class="code docutils literal notranslate"><span class="pre">autrainer/example</span></code>
 at the revision <code class="code docutils literal notranslate"><span class="pre">main</span></code> from the subdirectory <code class="code docutils literal notranslate"><span class="pre">AudioModel</span></code> and save it to the local directory <code class="code docutils literal notranslate"><span class="pre">.hf_local</span></code>,
 the following <a class="reference internal" href="#autrainer.cli.inference" title="autrainer.cli.inference"><code class="xref py py-meth docutils literal notranslate"><span class="pre">inference()</span></code></a> CLI wrapper function can be used:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">autrainer.cli</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">autrainer.cli</span>
 
 <span class="n">autrainer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span>
     <span class="n">model</span><span class="o">=</span><span class="s2">&quot;hf:autrainer/example@main:AudioModel#.hf_local&quot;</span><span class="p">,</span>
@@ -596,11 +596,11 @@ the following <a class="reference internal" href="#autrainer.cli.inference" titl
 <p class="admonition-title">Tip</p>
 <p>To access private repositories, the environment variable <code class="code docutils literal notranslate"><span class="pre">HF_HOME</span></code> should point to the
 <a class="reference external" href="https://huggingface.co/docs/hub/security-tokens">Hugging Face User Access Token</a>.</p>
-<p>To use a custom endpoint (e.g. for a <a class="reference external" href="https://huggingface.co/enterprise">self-hosted hub</a>),
+<p>To use a custom endpoint (e.g., for a <a class="reference external" href="https://huggingface.co/enterprise">self-hosted hub</a>),
 the environment variable <code class="code docutils literal notranslate"><span class="pre">HF_ENDPOINT</span></code> should point to the desired endpoint URL.</p>
 </div>
 <p>To use a local model path, the following <a class="reference internal" href="#autrainer.cli.inference" title="autrainer.cli.inference"><code class="xref py py-meth docutils literal notranslate"><span class="pre">inference()</span></code></a> CLI wrapper function can be used:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">autrainer.cli</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">autrainer.cli</span>
 
 <span class="n">autrainer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span>
     <span class="n">model</span><span class="o">=</span><span class="s2">&quot;/path/to/AudioModel&quot;</span><span class="p">,</span>
@@ -612,7 +612,7 @@ the environment variable <code class="code docutils literal notranslate"><span c
 </div>
 <dl class="py function" id="cli-wrapper-autrainer-inference">
 <dt class="sig sig-object py" id="autrainer.cli.inference">
-<span class="sig-prename descclassname"><span class="pre">autrainer.cli.</span></span><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_best'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_cfg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/scripts/inference_script.html#inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.cli.inference" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">autrainer.cli.</span></span><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_best'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_cfg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_remote</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/scripts/inference_script.html#inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.cli.inference" title="Link to this definition">#</a></dt>
 <dd><p>Perform inference on a trained model.</p>
 <p>If called in a notebook, the function will not raise an error and print
 the error message instead.</p>
@@ -657,6 +657,9 @@ Sample rate has to be specified for padding. If None, no minimum
 length is enforced. Defaults to None.</p></li>
 <li><p><strong>sample_rate</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – Sample rate of audio files in Hz. Has to be specified for
 sliding window inference. Defaults to None.</p></li>
+<li><p><strong>trust_remote</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to trust and execute custom Python code from
+Hugging Face models. Warning: This can be dangerous as it may run
+arbitrary code on your machine! Defaults to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -851,7 +854,7 @@ search path. Defaults to None.</p></li>
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

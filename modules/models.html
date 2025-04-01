@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -391,7 +391,23 @@ If the last layer is not the final layer in the module order, it may not be corr
 </div>
 <section id="abstract-model">
 <h2>Abstract Model<a class="headerlink" href="#abstract-model" title="Link to this heading">#</a></h2>
-<p>All models inherit from the <code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractModel</span></code> class and implement the <code class="xref py py-meth docutils literal notranslate"><span class="pre">forward()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">embeddings()</span></code> methods.</p>
+<p>All models inherit from the <code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractModel</span></code> class and implement the <code class="xref py py-meth docutils literal notranslate"><span class="pre">forward()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">embeddings()</span></code> methods.
+These models must adhere
+a specific signature
+for their <code class="xref py py-meth docutils literal notranslate"><span class="pre">forward()</span></code> method
+as <cite>autrainer</cite> uses
+argument names
+for its internal data flow.
+For this reason,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">features</span></code>
+must always be the name
+of the first argument.
+All subsequent arguments
+can be named differently
+but they must be present
+as attributes
+in the corresponding
+<a class="reference internal" href="dataset_utils.html#autrainer.datasets.utils.AbstractDataItem" title="autrainer.datasets.utils.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.AbstractModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">AbstractModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/abstract_model.html#AbstractModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.AbstractModel" title="Link to this definition">#</a></dt>
@@ -402,35 +418,46 @@ If the last layer is not the final layer in the module order, it may not be corr
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="autrainer.models.AbstractModel.forward">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/abstract_model.html#AbstractModel.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.AbstractModel.forward" title="Link to this definition">#</a></dt>
-<dd><p>Forward pass of the model.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Input tensor.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Output tensor.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="autrainer.models.AbstractModel.embeddings">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/abstract_model.html#AbstractModel.embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.AbstractModel.embeddings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/abstract_model.html#AbstractModel.embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.AbstractModel.embeddings" title="Link to this definition">#</a></dt>
 <dd><p>Get embeddings from the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Input tensor.</p>
+<dd class="field-odd"><p><strong>features</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Input tensor.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Embeddings.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.models.AbstractModel.inputs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.models.AbstractModel.inputs" title="Link to this definition">#</a></dt>
+<dd><p>Get the inputs to the model’s forward method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Model inputs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.models.AbstractModel.forward">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/abstract_model.html#AbstractModel.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.AbstractModel.forward" title="Link to this definition">#</a></dt>
+<dd><p>Get model output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>features</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Input tensor.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Model output.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2588,8 +2615,9 @@ For more information, see:
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#abstract-model">Abstract Model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel"><code class="docutils literal notranslate"><span class="pre">AbstractModel</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel.forward"><code class="docutils literal notranslate"><span class="pre">AbstractModel.forward()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel.embeddings"><code class="docutils literal notranslate"><span class="pre">AbstractModel.embeddings()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel.inputs"><code class="docutils literal notranslate"><span class="pre">AbstractModel.inputs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel.forward"><code class="docutils literal notranslate"><span class="pre">AbstractModel.forward()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2640,7 +2668,7 @@ For more information, see:
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

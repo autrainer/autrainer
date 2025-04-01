@@ -7,7 +7,8 @@ Tutorials
 
 * :ref:`models <tut_models>`
 * :ref:`datasets <tut_datasets>` (including :ref:`metrics <tut_metrics>`, :ref:`criterions <tut_criterions>`,
-  :ref:`file handlers <tut_file_handlers>`, and :ref:`target transforms <tut_target_transforms>`)
+  :ref:`file handlers <tut_file_handlers>`, :ref:`target transforms <tut_target_transforms>`, 
+  and :ref:`advanced data pipelines <tut_advanced>`)
 * :ref:`optimizers <tut_optimizers>`
 * :ref:`schedulers <tut_schedulers>`
 * :ref:`transforms <tut_transforms>` (including :ref:`preprocessing transforms <tut_preprocessing_transforms>`
@@ -71,9 +72,10 @@ and :attr:`~autrainer.datasets.AbstractDataset.output_dim` properties.
 
 The train, dev, and test datasets as well as loaders are automatically created by the abstract class.
 However, this requires that the dataset structure follows the standard format outlined in the :ref:`dataset documentation <datasets>`.
-If the dataset structure is different or does not rely on dataframes, the :meth:`~autrainer.datasets.AbstractDataset.load_dataframes`,
-:attr:`~autrainer.datasets.AbstractDataset.train_dataset`, :attr:`~autrainer.datasets.AbstractDataset.train_loader` etc.
-methods and properties can be overridden.
+If the dataset structure is different or does not rely on dataframes, the 
+:attr:`~autrainer.datasets.AbstractDataset.df_train`, :attr:`~autrainer.datasets.AbstractDataset.df_dev`,
+and :attr:`~autrainer.datasets.AbstractDataset.df_test`, :attr:`~autrainer.datasets.AbstractDataset.train_dataset`,
+:attr:`~autrainer.datasets.AbstractDataset.train_loader` etc. properties can be overridden.
 
 `autrainer` provides base datasets for classification (:class:`~autrainer.datasets.BaseClassificationDataset`),
 regression (:class:`~autrainer.datasets.BaseRegressionDataset`),
@@ -99,8 +101,9 @@ For example, the `ESC-50 <https://github.com/karolpiczak/ESC-50>`_ dataset is an
 The dataset provides audio files by default (which are moved to the :file:`default/` directory in the
 :meth:`~autrainer.datasets.AbstractDataset.download` method) and the corresponding metadata of the dataset is stored in the :file:`esc50.csv` file.
 
-To allow the the specification of custom folds, the :meth:`~autrainer.datasets.AbstractDataset.load_dataframes`
-method is overridden to split the :file:`esc50.csv` file into the respective train, dev, and test dataframes.
+To allow the the specification of custom folds, the :attr:`~autrainer.datasets.AbstractDataset.df_train`,
+:attr:`~autrainer.datasets.AbstractDataset.df_dev`, and :attr:`~autrainer.datasets.AbstractDataset.df_test` properties are overridden
+to split the :file:`esc50.csv` metadata file into the respective train, dev, and test dataframes.
 This also allows for cross-validation by creating multiple configurations with different folds.
 
 To extract log-Mel spectrograms from the audio files, a :ref:`preprocessing transform <preprocessing_transforms>`
@@ -192,6 +195,11 @@ To create a custom :ref:`criterion <criterions>`, inherit from :class:`torch.nn.
 If the criterion relies on the dataset, an optional :ref:`criterion setup method <criterion_setup>`
 can be defined which is called after the dataset is initialized.
 
+.. note::
+
+   The :attr:`reduction` attribute of each criterion is automatically set to :attr:`"none"` during instantiation and
+   the :meth:`forward` method should return the per-example loss.
+
 For example, the following criterion implements `CrossEntropyLoss <https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html>`_
 with an additional scaling factor:
 
@@ -270,6 +278,77 @@ For example, the following target transform logarithmically encodes and decodes 
 
 The :ref:`target transforms <dataset_target_transforms>` are specified in the :attr:`~autrainer.datasets.AbstractDataset.target_transform` property
 of a :ref:`dataset <datasets>` implementation.
+
+.. _tut_advanced:
+
+Advanced Data Pipelines
+~~~~~~~~~~~~~~~~~~~~~~~
+
+To create data and model pipelines that go beyond the standard :class:`~autrainer.datasets.utils.DataItem` convention of using
+only :attr:`DataItem.features` as input to the model, first create a new :class:`~autrainer.datasets.utils.DataItem` struct
+decorated with :class:`dataclasses.dataclass`:
+
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
+   :language: python
+   :caption: multi_branch_data.py
+   :lines: 14-19
+
+and override :class:`~autrainer.datasets.utils.AbstractDataBatch`:
+
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
+   :language: python
+   :caption: multi_branch_data.py
+   :lines: 22-41
+
+Following that, inherit from :class:`~autrainer.datasets.utils.DatasetWrapper`
+to create a :class:`torch.utils.data.Dataset`
+that iterates over your data 
+and returns your custom :class:`~autrainer.datasets.utils.AbstractDataBatch`
+(here we simply replicate :attr:`features`
+as our auxiliary features):
+
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
+   :language: python
+   :caption: multi_branch_data.py
+   :lines: 44-52
+
+Subsequently, inherit from :class:`~autrainer.datasets.AbstractDataset`
+to create a dataset
+that instantiates your :class:`~autrainer.datasets.utils.DatasetWrapper`:
+
+
+.. literalinclude:: ../examples/tutorials/multi_branch_data.py
+   :language: python
+   :caption: multi_branch_data.py
+   :lines: 55-73
+
+Next, create a :attr:`ToyMultiBranch-C.yaml` configuration file for the dataset in the :attr:`conf/dataset/` directory:
+
+.. literalinclude:: ../examples/tutorials/MultiBranchData-C.yaml
+   :language: yaml
+   :caption: conf/data/ToyMultiBranch-C.yaml
+   :linenos:
+
+Finally, you must inherit from :class:`~autrainer.models.AbstractModel` 
+and create a model **with a matching signature**,
+in its forward pass to access the :attr:`meta` parameter:
+
+.. literalinclude:: ../examples/tutorials/multi_branch_model.py
+   :language: python
+   :caption: multi_branch_model.py
+   :lines: 6-26
+
+
+Next, create a 
+:attr:`ToyMultiBranchModel.yaml` 
+configuration file 
+for the model in the :attr:`conf/model/` directory:
+
+
+.. literalinclude:: ../examples/tutorials/MultiBranchModel.yaml
+   :language: yaml
+   :caption: conf/data/ToyMultiBranchModel.yaml
+   :linenos:
 
 
 .. _tut_optimizers:
@@ -564,7 +643,7 @@ Custom Plotting
 To create a custom :ref:`plotting <core_plotting>` configuration, create a new file in the :file:`conf/plotting/` directory.
 
 For example, the following configuration uses the `LaTeX <https://matplotlib.org/stable/users/explain/text/usetex.html>`_ backend,
-the Palatino font with a font size of 9, replaces :attr:`None` values in the run name with :attr:`~` for better readability,
+the Palatino font with a font size of 9, replaces :attr:`None` values in the run name with :attr:`~~` for better readability,
 and adds labels as well as titles to the plot.
 
 .. literalinclude:: ../examples/tutorials/LaTeX.yaml

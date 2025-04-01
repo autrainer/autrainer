@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -368,7 +368,7 @@ document.write(`
 </pre></div>
 </div>
 <p>Alternatively, use the following <a class="reference internal" href="cli_wrapper.html#cli-wrapper-configuration-management"><span class="std std-ref">configuration management</span></a> CLI wrapper function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">autrainer.cli</span> <span class="c1"># the import is omitted in the following examples for brevity</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">autrainer.cli</span> <span class="c1"># the import is omitted in the following examples for brevity</span>
 
 <span class="n">autrainer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">empty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -466,7 +466,7 @@ create a new configuration file in the <code class="file docutils literal notran
 </section>
 <section id="grid-search-configuration">
 <span id="quick-grid-search"></span><h2>Grid Search Configuration<a class="headerlink" href="#grid-search-configuration" title="Link to this heading">#</a></h2>
-<p>To perform a grid search over multiple multiple configurations defined in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">params</span></code>, update the
+<p>To perform a grid search over multiple configurations defined in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">params</span></code>, update the
 <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> (<code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>) to include multiple values separated by a comma.</p>
 <p>The following configuration performs a grid search over the default <a class="reference internal" href="../modules/models.html#autrainer.models.FFNN" title="autrainer.models.FFNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">FFNN</span></code></a> model with 2 and 3 hidden layers
 as well as 3 different seeds:</p>
@@ -543,6 +543,15 @@ update the <a class="reference internal" href="hydra_configurations.html#main-co
 </pre></div>
 </div>
 </div>
+<p>The following <a class="reference internal" href="cli_reference.html#cli-configuration-management"><span class="std std-ref">configuration management</span></a> command is used to discover all available
+default configurations for the <a class="reference internal" href="../modules/models.html#autrainer.models.Cnn10" title="autrainer.models.Cnn10"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cnn10</span></code></a> model:</p>
+<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">list</span> model <span class="o">--pattern</span><span class="l">=Cnn10*</span>
+</pre></div>
+</div>
+<p>Alternatively, use the following <a class="reference internal" href="cli_wrapper.html#cli-wrapper-configuration-management"><span class="std std-ref">configuration management</span></a> CLI wrapper function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">autrainer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;Cnn10*&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>For the <a class="reference internal" href="../modules/models.html#autrainer.models.Cnn10" title="autrainer.models.Cnn10"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cnn10</span></code></a> model, the following configuration is used:</p>
 <div class="literal-block-wrapper docutils container" id="default-cnn10-32k-t">
 <div class='code-block-caption'><span class='caption-text'>conf/model/Cnn10-32k-T.yaml</span><a class='headerlink' href='#default-cnn10-32k-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Cnn10-32k-T</span>
@@ -555,10 +564,10 @@ update the <a class="reference internal" href="hydra_configurations.html#main-co
 <span class="linenos">8</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.Normalize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </pre></div>
 </div>
-</div><p>The ending <code class="xref py py-attr docutils literal notranslate"><span class="pre">32k-T</span></code> indicates that the model using transfer learning and has been pretrained with a sample rate of 32 kHz.</p>
+</div><p>The ending <code class="xref py py-attr docutils literal notranslate"><span class="pre">32k-T</span></code> indicates that the model uses transfer learning and has been pretrained with a sample rate of 32 kHz.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>To discover all available default configurations for e.g. different models,
+<p>To discover all available default configurations for e.g., different models,
 the <a class="reference internal" href="cli_reference.html#cli-configuration-management"><span class="std std-ref">configuration management CLI</span></a>,
 the <a class="reference internal" href="cli_wrapper.html#cli-wrapper-configuration-management"><span class="std std-ref">configuration management CLI wrapper</span></a>,
 and the <a class="reference internal" href="../modules/models.html#models"><span class="std std-ref">models documentation</span></a> can be used.</p>
@@ -612,6 +621,48 @@ the following <a class="reference internal" href="cli_reference.html#cli-preproc
 </pre></div>
 </div>
 </section>
+<section id="overriding-configurations">
+<span id="quick-overriding-configurations"></span><h2>Overriding Configurations<a class="headerlink" href="#overriding-configurations" title="Link to this heading">#</a></h2>
+<p>All <cite>autrainer</cite> default configurations can be easily overridden by creating a new configuration file in the corresponding
+directory with the same name as the default configuration.
+The new configuration file will be used instead of the default configuration.</p>
+<p>To override the default <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code> the <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.DCASE2016Task1" title="autrainer.datasets.DCASE2016Task1"><code class="xref py py-class docutils literal notranslate"><span class="pre">DCASE2016Task1</span></code></a> dataset stores files in, the following
+<a class="reference internal" href="cli_reference.html#cli-configuration-management"><span class="std std-ref">configuration management</span></a> command is used to locally save the default configuration:</p>
+<div class="highlight-autrainer notranslate"><div class="highlight"><pre><span></span><span class="nb">autrainer</span> <span class="k">show</span> dataset DCASE2016Task1-32k <span class="o">--save</span>
+</pre></div>
+</div>
+<p>Alternatively, use the following <a class="reference internal" href="cli_wrapper.html#cli-wrapper-configuration-management"><span class="std std-ref">configuration management</span></a> CLI wrapper function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">autrainer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;DCASE2016Task1-32k&quot;</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will save the default configuration to the <code class="file docutils literal notranslate"><span class="pre">conf/dataset/DCASE2016Task1-32k.yaml</span></code> file, which can be edited to override the <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">conf/dataset/DCASE2016Task1-32k.yaml</span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DCASE2016Task1-32k</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.datasets.DCASE2016Task1</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="nt">fold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/some/custom/path</span><span class="w"> </span><span class="c1"># modify the default save path</span>
+<span class="linenos"> 7</span><span class="nt">features_subdir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">log_mel_32k</span>
+<span class="linenos"> 8</span><span class="nt">index_column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filename</span>
+<span class="linenos"> 9</span><span class="nt">target_column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scene_label</span>
+<span class="linenos">10</span><span class="nt">file_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">npy</span>
+<span class="linenos">11</span><span class="nt">file_handler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.datasets.utils.NumpyFileHandler</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="nt">criterion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.criterions.BalancedCrossEntropyLoss</span>
+<span class="linenos">14</span><span class="nt">metrics</span><span class="p">:</span>
+<span class="linenos">15</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
+<span class="linenos">16</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.UAR</span>
+<span class="linenos">17</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.F1</span>
+<span class="linenos">18</span><span class="nt">tracking_metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.metrics.Accuracy</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">21</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grayscale</span>
+</pre></div>
+</div>
+</div>
+</section>
 <section id="training-duration-step-based-training">
 <span id="quick-training-configurations"></span><h2>Training Duration &amp; Step-based Training<a class="headerlink" href="#training-duration-step-based-training" title="Link to this heading">#</a></h2>
 <p>By default, <cite>autrainer</cite> uses epoch-based <a class="reference internal" href="../modules/training.html#training"><span class="std std-ref">training</span></a>, where the <code class="xref py py-attr docutils literal notranslate"><span class="pre">iterations</span></code> correspond to the number of epochs.
@@ -621,8 +672,8 @@ increase the number of <code class="xref py py-attr docutils literal notranslate
 <p>The following configuration trains the <a class="reference internal" href="#quick-audio-classification"><span class="std std-ref">spectrogram classification model</span></a>
 for a total of 1000 steps with step-based training, evaluating every 100 steps,
 saving the states every 200 steps, and without displaying a progress bar:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">defaults</span><span class="p">:</span>
 <span class="linenos"> 2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_autrainer_</span>
 <span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
@@ -658,8 +709,8 @@ saving the states every 200 steps, and without displaying a progress bar:</p>
 <p>By default, <cite>autrainer</cite> filters out any configurations that have already been trained
 and exist in the same experiment using the <a class="reference external" href="https://github.com/autrainer/hydra-filter-sweeper/">hydra-filter-sweeper</a> plugin
 with the following <code class="xref py py-attr docutils literal notranslate"><span class="pre">filters</span></code> that are implicitly set in the <a class="reference internal" href="hydra_configurations.html#autrainer-defaults"><span class="std std-ref">_autrainer_.yaml defaults</span></a> file:</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="nt">filters</span><span class="p">:</span>
 <span class="linenos">2</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exists</span>
 <span class="linenos">3</span><span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metrics.csv</span>
@@ -672,8 +723,8 @@ the <a class="reference external" href="https://github.com/autrainer/hydra-filte
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">hydra-filter-sweeper</span></code> allows to specify a list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">filters</span></code> to exclude configurations based on their attributes.</p>
 <p>The following configuration expands the <a class="reference internal" href="#quick-grid-search"><span class="std std-ref">grid search</span></a> configuration
 and adds a filter that excludes any seed greater than 2 for the <code class="xref py py-class docutils literal notranslate"><span class="pre">Three-Layer-FFNN</span></code> model:</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">defaults</span><span class="p">:</span>
 <span class="linenos"> 2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_autrainer_</span>
 <span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
@@ -704,8 +755,8 @@ and adds a filter that excludes any seed greater than 2 for the <code class="xre
 <p>If the <code class="xref py py-attr docutils literal notranslate"><span class="pre">filters</span></code> attribute is overridden in the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> (<code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>) file,
 then the default filters are not applied.
 To still filter out configurations that have already been trained, the following default filter should still be included:</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">conf/config.yaml</span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="nt">filters</span><span class="p">:</span>
 <span class="linenos">2</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exists</span>
 <span class="linenos">3</span><span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metrics.csv</span>
@@ -752,6 +803,7 @@ as well as the <a class="reference external" href="https://hydra.cc/">Hydra</a> 
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-model-configuration">Custom Model Configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-search-configuration">Grid Search Configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spectrogram-classification">Spectrogram Classification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overriding-configurations">Overriding Configurations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-duration-step-based-training">Training Duration &amp; Step-based Training</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-configurations">Filtering Configurations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
@@ -783,7 +835,7 @@ as well as the <a class="reference external" href="https://hydra.cc/">Hydra</a> 
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

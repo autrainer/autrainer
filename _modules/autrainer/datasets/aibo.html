@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,40 +353,22 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.datasets.aibo</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">autrainer.transforms</span> <span class="kn">import</span> <span class="n">AbstractTransform</span><span class="p">,</span> <span class="n">SmartCompose</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartCompose</span>
 
-<span class="kn">from</span> <span class="nn">.abstract_dataset</span> <span class="kn">import</span> <span class="n">BaseClassificationDataset</span>
-
-
-<span class="k">class</span> <span class="nc">Standardizer</span><span class="p">(</span><span class="n">AbstractTransform</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">std</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">order</span><span class="o">=-</span><span class="mi">100</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="o">=</span> <span class="n">std</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">std</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseClassificationDataset</span>
 
 
 <div class="viewcode-block" id="AIBO">
 <a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.AIBO">[docs]</a>
-<span class="k">class</span> <span class="nc">AIBO</span><span class="p">(</span><span class="n">BaseClassificationDataset</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AIBO</span><span class="p">(</span><span class="n">BaseClassificationDataset</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">features_subdir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -397,13 +379,11 @@ document.write(`
         <span class="n">target_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">file_handler</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
-        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">inference_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">features_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">train_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dev_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">test_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">stratify</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">standardize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">aibo_task</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;2cl&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;FAU AIBO dataset.</span>
@@ -411,6 +391,9 @@ document.write(`
 <span class="sd">        Args:</span>
 <span class="sd">            path: Root path to the dataset.</span>
 <span class="sd">            features_subdir: Subdirectory containing the features.</span>
+<span class="sd">                If `None`, defaults to audio subdirectory,</span>
+<span class="sd">                which is `default` for the standard format,</span>
+<span class="sd">                but can be overridden in the dataset specification.</span>
 <span class="sd">            seed: Seed for reproducibility.</span>
 <span class="sd">            metrics: List of metrics to calculate.</span>
 <span class="sd">            tracking_metric: Metric to track.</span>
@@ -418,9 +401,10 @@ document.write(`
 <span class="sd">            target_column: Target column of the dataframe.</span>
 <span class="sd">            file_type: File type of the features.</span>
 <span class="sd">            file_handler: File handler to load the data.</span>
-<span class="sd">            batch_size: Batch size.</span>
-<span class="sd">            inference_batch_size: Inference batch size. If None, defaults to</span>
-<span class="sd">                batch_size. Defaults to None.</span>
+<span class="sd">            features_path: Root path to features. Useful</span>
+<span class="sd">                when features need to be extracted and stored</span>
+<span class="sd">                in a different folder than the root of the dataset.</span>
+<span class="sd">                If `None`, will be set to `path`. Defaults to `None`.</span>
 <span class="sd">            train_transform: Transform to apply to the training set.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            dev_transform: Transform to apply to the development set.</span>
@@ -428,7 +412,6 @@ document.write(`
 <span class="sd">            test_transform: Transform to apply to the test set.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            stratify: Columns to stratify the dataset on. Defaults to None.</span>
-<span class="sd">            standardize: Whether to standardize the data. Defaults to False.</span>
 <span class="sd">            aibo_task: Task to load in [&quot;2cl&quot;, &quot;5cl&quot;]. Defaults to &quot;2cl&quot;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_choice</span><span class="p">(</span><span class="n">aibo_task</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;2cl&quot;</span><span class="p">,</span> <span class="s2">&quot;5cl&quot;</span><span class="p">],</span> <span class="s2">&quot;aibo_task&quot;</span><span class="p">)</span>
@@ -443,48 +426,61 @@ document.write(`
             <span class="n">target_column</span><span class="o">=</span><span class="n">target_column</span><span class="p">,</span>
             <span class="n">file_type</span><span class="o">=</span><span class="n">file_type</span><span class="p">,</span>
             <span class="n">file_handler</span><span class="o">=</span><span class="n">file_handler</span><span class="p">,</span>
-            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-            <span class="n">inference_batch_size</span><span class="o">=</span><span class="n">inference_batch_size</span><span class="p">,</span>
+            <span class="n">features_path</span><span class="o">=</span><span class="n">features_path</span><span class="p">,</span>
             <span class="n">train_transform</span><span class="o">=</span><span class="n">train_transform</span><span class="p">,</span>
             <span class="n">dev_transform</span><span class="o">=</span><span class="n">dev_transform</span><span class="p">,</span>
             <span class="n">test_transform</span><span class="o">=</span><span class="n">test_transform</span><span class="p">,</span>
             <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">standardize</span> <span class="o">=</span> <span class="n">standardize</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">standardize</span><span class="p">:</span>
-            <span class="n">train_data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">])</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">train_data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">train_data</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-            <span class="n">standardizer</span> <span class="o">=</span> <span class="n">Standardizer</span><span class="p">(</span>
-                <span class="n">mean</span><span class="o">=</span><span class="n">train_data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-                <span class="n">std</span><span class="o">=</span><span class="n">train_data</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-            <span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">train_transform</span> <span class="o">+=</span> <span class="n">standardizer</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dev_transform</span> <span class="o">+=</span> <span class="n">standardizer</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">test_transform</span> <span class="o">+=</span> <span class="n">standardizer</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">audio_subdir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Subfolder containing audio data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;wav&quot;</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_dataset</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_transform</span>
-            <span class="p">)</span>
-
-<div class="viewcode-block" id="AIBO.load_dataframes">
-<a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.AIBO.load_dataframes">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_dataframes</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;train_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aibo_task</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;chunk_labels_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aibo_task</span><span class="si">}</span><span class="s2">_corpus.txt&quot;</span>
             <span class="p">),</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dev_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aibo_task</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)),</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;test_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aibo_task</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)),</span>
-        <span class="p">)</span></div>
+            <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;conf&quot;</span><span class="p">})</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;.wav&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;school&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;speaker&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">df</span>
 
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_df</span>
+        <span class="n">df_train_dev</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;school&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Ohm&quot;</span><span class="p">]</span>
+        <span class="n">speakers</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df_train_dev</span><span class="p">[</span><span class="s2">&quot;speaker&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+        <span class="n">df_train</span> <span class="o">=</span> <span class="n">df_train_dev</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">df_train_dev</span><span class="p">[</span><span class="s2">&quot;speaker&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">speakers</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">df_train</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_dev</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_df</span>
+        <span class="n">df_train_dev</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;school&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Ohm&quot;</span><span class="p">]</span>
+        <span class="n">speakers</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df_train_dev</span><span class="p">[</span><span class="s2">&quot;speaker&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+        <span class="n">df_dev</span> <span class="o">=</span> <span class="n">df_train_dev</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_train_dev</span><span class="p">[</span><span class="s2">&quot;speaker&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">speakers</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])]</span>
+        <span class="k">return</span> <span class="n">df_dev</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_df</span>
+        <span class="n">df_test</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;school&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Mont&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">df_test</span>
 
 <div class="viewcode-block" id="AIBO.download">
 <a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.AIBO.download">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Download the FAU AIBO dataset.</span>
 
@@ -500,27 +496,12 @@ document.write(`
 <span class="sd">        - `chunk_labels_5cl_corpus.txt`: File containing the file names and</span>
 <span class="sd">          corresponding labels for the 5-class classification task.</span>
 
-<span class="sd">        Produces the following splits for both tasks (2cl and 5cl):</span>
-
-<span class="sd">        - `train_{task}.csv`: Training split of all speakers of the</span>
-<span class="sd">          Ohm-Gymnasium with the exception of the last two speakers.</span>
-<span class="sd">        - `dev_{task}.csv`: Development split of the last two speakers of the</span>
-<span class="sd">          Ohm-Gymnasium.</span>
-<span class="sd">        - `test_{task}.csv`: Test split of all speakers of the</span>
-<span class="sd">          Montessori-Schule.</span>
-
 <span class="sd">        For more information on the dataset and dataset split, see:</span>
 <span class="sd">        https://doi.org/10.1109/ICME51207.2021.9428217</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            path: Path to the directory to download the dataset to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;train_2cl.csv&quot;</span><span class="p">)):</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Directory &#39;default&#39; does not exist in &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
-            <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span>
             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;chunk_labels_2cl_corpus.txt&quot;</span><span class="p">)</span>
             <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span>
@@ -530,32 +511,7 @@ document.write(`
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;File &#39;chunk_labels_2cl_corpus.txt&#39; or &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;&#39;chunk_labels_5cl_corpus.txt&#39; does not exist in &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;2cl&quot;</span><span class="p">,</span> <span class="s2">&quot;5cl&quot;</span><span class="p">]:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;chunk_labels_</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">_corpus.txt&quot;</span><span class="p">),</span>
-                <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;conf&quot;</span><span class="p">})</span>
-            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;.wav&quot;</span><span class="p">)</span>
-            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;school&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;speaker&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;file&quot;</span><span class="p">)</span>
-            <span class="n">df_test</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;school&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Mont&quot;</span><span class="p">]</span>
-            <span class="n">df_train_dev</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;school&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Ohm&quot;</span><span class="p">]</span>
-            <span class="n">speakers</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df_train_dev</span><span class="p">[</span><span class="s2">&quot;speaker&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
-            <span class="n">df_train</span> <span class="o">=</span> <span class="n">df_train_dev</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                <span class="n">df_train_dev</span><span class="p">[</span><span class="s2">&quot;speaker&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">speakers</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-            <span class="p">]</span>
-            <span class="n">df_dev</span> <span class="o">=</span> <span class="n">df_train_dev</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                <span class="n">df_train_dev</span><span class="p">[</span><span class="s2">&quot;speaker&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">speakers</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span>
-            <span class="p">]</span>
-
-            <span class="n">df_train</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;train_</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">))</span>
-            <span class="n">df_dev</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dev_</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">))</span>
-            <span class="n">df_test</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;test_</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">))</span></div>
+            <span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -593,7 +549,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

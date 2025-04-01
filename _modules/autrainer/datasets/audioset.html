@@ -1,0 +1,886 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>autrainer.datasets.audioset &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=93fba4f5" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/datasets/audioset';</script>
+    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/logo_light.webp" class="logo__image only-light" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>
+    <script>document.write(`<img src="../../../_static/logo_dark.webp" class="logo__image only-dark" alt="autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."/>`);</script>
+  
+  
+    <p class="title logo__title">autrainer</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/autrainer/autrainer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/cli_reference.html">CLI Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/cli_wrapper.html">CLI Wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/hydra_configurations.html">Hydra Configurations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/augmentations.html">Augmentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/criterions.html">Criterions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/dataset_utils.html">Dataset Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optimizers.html">Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/schedulers.html">Schedulers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/serving.html">Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/training.html">Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/transforms.html">Transforms</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../development/reproducibility_guide.html">Reproducibility Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development/citing.html">Citing <cite>autrainer</cite></a></li>
+</ul>
+</div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">autrainer.da...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for autrainer.datasets.audioset</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Code for AudioSet dataset.</span>
+<span class="sd">Utility functions to filter data</span>
+<span class="sd">adapted from: https://github.com/audeering/audtorch/blob/master/audtorch/datasets/audio_set.py</span>
+<span class="sd">Originally written by https://github.com/hagenw</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">audeer</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatten_list</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.abstract_dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseMLClassificationDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartCompose</span>
+
+
+<div class="viewcode-block" id="AudioSet">
+<a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.AudioSet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AudioSet</span><span class="p">(</span><span class="n">BaseMLClassificationDataset</span><span class="p">):</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Human sounds&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Human voice&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Whistling&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Respiratory sounds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Human locomotion&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Digestive&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Hands&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Heart sounds, heartbeat&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Otoacoustic emission&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Human group actions&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;Source-ambiguous sounds&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Generic impact sounds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Surface contact&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Deformable shell&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Onomatopoeia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Silence&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Other sourceless&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;Animal&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Domestic animals, pets&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Livestock, farm animals, working animals&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Wild animals&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;Sounds of things&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Vehicle&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Engine&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Domestic sounds, home sounds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Bell&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Alarm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Mechanisms&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Tools&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Explosion&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Wood&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Glass&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Liquid&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Miscellaneous sources&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Specific impact sounds&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;Music&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Musical instrument&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Music genre&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Musical concepts&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Music role&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Music mood&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;Natural sounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Wind&quot;</span><span class="p">,</span> <span class="s2">&quot;Thunderstorm&quot;</span><span class="p">,</span> <span class="s2">&quot;Water&quot;</span><span class="p">,</span> <span class="s2">&quot;Fire&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;Channel, environment and background&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Acoustic environment&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Noise&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Sound reproduction&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">features_subdir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
+        <span class="n">tracking_metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+        <span class="n">index_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">file_handler</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+        <span class="n">target_column</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">features_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">train_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dev_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">test_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">stratify</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">use_unbalanced</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;AudioSet dataset.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            AudioSet changes constantly</span>
+<span class="sd">            as videos are removed from</span>
+<span class="sd">            YouTube over time.</span>
+<span class="sd">            Results are not reproducible</span>
+<span class="sd">            across different snapshots</span>
+<span class="sd">            of the data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path: Root path to the dataset.</span>
+<span class="sd">            features_subdir: Subdirectory containing the features.</span>
+<span class="sd">                If `None`, defaults to audio subdirectory,</span>
+<span class="sd">                which is `default` for the standard format,</span>
+<span class="sd">                but can be overridden in the dataset specification.</span>
+<span class="sd">            seed: Seed for reproducibility.</span>
+<span class="sd">            metrics: List of metrics to calculate.</span>
+<span class="sd">            tracking_metric: Metric to track.</span>
+<span class="sd">            index_column: Index column of the dataframe.</span>
+<span class="sd">            target_column: Target column of the dataframe.</span>
+<span class="sd">                If None, defaults to the least common subset</span>
+<span class="sd">                available in the data. Defaults to None.</span>
+<span class="sd">            file_type: File type of the features.</span>
+<span class="sd">            file_handler: File handler to load the data.</span>
+<span class="sd">            batch_size: Batch size.</span>
+<span class="sd">            inference_batch_size: Inference batch size. If None, defaults to</span>
+<span class="sd">                batch_size. Defaults to None.</span>
+<span class="sd">            features_path: Root path to features. Useful</span>
+<span class="sd">                when features need to be extracted and stored</span>
+<span class="sd">                in a different folder than the root of the dataset.</span>
+<span class="sd">                If `None`, will be set to `path`. Defaults to `None`.</span>
+<span class="sd">            train_transform: Transform to apply to the training set.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">            dev_transform: Transform to apply to the development set.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">            test_transform: Transform to apply to the test set.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">            stratify: Columns to stratify the dataset on. Defaults to None.</span>
+<span class="sd">            threshold: Threshold for classification. Defaults to 0.5.</span>
+<span class="sd">            use_unbalanced: Flag to allow the use of unbalanced set</span>
+<span class="sd">                during training.</span>
+<span class="sd">            include: List of categories to include. If set,</span>
+<span class="sd">                only instances tagged with at least one</span>
+<span class="sd">                category from the list will be included</span>
+<span class="sd">                in the final dataset.</span>
+<span class="sd">            exclude: List of categories to include. If set,</span>
+<span class="sd">                all instances tagged with at least one</span>
+<span class="sd">                category from the list will be excluded</span>
+<span class="sd">                from the final dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_unbalanced</span> <span class="o">=</span> <span class="n">use_unbalanced</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include</span> <span class="o">=</span> <span class="n">include</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+            <span class="n">features_subdir</span><span class="o">=</span><span class="n">features_subdir</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+            <span class="n">tracking_metric</span><span class="o">=</span><span class="n">tracking_metric</span><span class="p">,</span>
+            <span class="n">index_column</span><span class="o">=</span><span class="n">index_column</span><span class="p">,</span>
+            <span class="n">target_column</span><span class="o">=</span><span class="n">target_column</span><span class="p">,</span>
+            <span class="n">file_type</span><span class="o">=</span><span class="n">file_type</span><span class="p">,</span>
+            <span class="n">file_handler</span><span class="o">=</span><span class="n">file_handler</span><span class="p">,</span>
+            <span class="n">features_path</span><span class="o">=</span><span class="n">features_path</span><span class="p">,</span>
+            <span class="n">train_transform</span><span class="o">=</span><span class="n">train_transform</span><span class="p">,</span>
+            <span class="n">dev_transform</span><span class="o">=</span><span class="n">dev_transform</span><span class="p">,</span>
+            <span class="n">test_transform</span><span class="o">=</span><span class="n">test_transform</span><span class="p">,</span>
+            <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">audio_subdir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Subfolder containing audio data.</span>
+
+<span class="sd">        Data assumed to be in root folder</span>
+<span class="sd">        under the name of the respective partition</span>
+<span class="sd">        which is prepended once the CSV file is loaded.</span>
+<span class="sd">        Available partitions are (with original number of instances):</span>
+<span class="sd">        - balanced_train_segments (n=22,160)</span>
+<span class="sd">        - unbalanced_train_segments (n=2,041,789)</span>
+<span class="sd">        - eval_segments (n=20,371)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_assert_target_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allowed_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override target column check.</span>
+
+<span class="sd">        Allow `None` as a valid input.</span>
+<span class="sd">        Override it to support all available tags</span>
+<span class="sd">        in ontology, irrespective of whether</span>
+<span class="sd">        they appear at all in the data or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">unique_categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">])</span>
+            <span class="n">train_categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">x</span>
+                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">dev_categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">x</span>
+                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_dev</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">train_categories</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">dev_categories</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span>
+                        <span class="n">unique_categories</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Training on </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">)</span><span class="si">}</span><span class="s2"> classes:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_assert_target_column</span><span class="p">(</span><span class="n">allowed_columns</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_filename_and_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return data frame with filenames and IDs.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df: data frame as read in from the CSV file.</span>
+
+<span class="sd">        Results:</span>
+<span class="sd">            data frame with columns `filename` and `ids`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;positive_labels&quot;</span><span class="p">:</span> <span class="s2">&quot;ids&quot;</span><span class="p">})</span>
+        <span class="c1"># Translate labels from &quot;label1,label2&quot; to [label1, label2]</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]]</span>
+        <span class="c1"># Insert filename</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;# YTID&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.wav&quot;</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="s2">&quot;ids&quot;</span><span class="p">]]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_parent_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Add all parent IDs to the list of given child IDs.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            child_ids: child IDs.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            list of child and parent IDs.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">child_ids</span>
+        <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">child_ids</span><span class="p">:</span>
+            <span class="n">ids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;child_ids&quot;</span><span class="p">]]</span>
+        <span class="c1"># Remove duplicates</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_ids_to_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert list of ids to sorted list of categories.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ids: list of IDs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of sorted categories.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert IDs to categories</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="n">categories</span> <span class="o">+=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">]</span>
+        <span class="c1"># Order categories after the first two top ontologies</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">first_hierarchy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">second_hierarchy</span> <span class="o">=</span> <span class="n">flatten_list</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">first_hierarchy</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">second_hierarchy</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c1"># Sort list `categories` by the list `order`</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">cat</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">cat</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">categories</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">categories</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_filter_by_categories</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">categories</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">exclude_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return data frame containing only specified categories.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df: data frame containing the columns `ids`.</span>
+<span class="sd">            categories: list of categories to include or exclude.</span>
+<span class="sd">            exclude_mode: if `False` the specified categories</span>
+<span class="sd">                should be included in the data frame, otherwise excluded.</span>
+<span class="sd">                Default: `False`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data frame containing only the desired categories.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ids_for_categories</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exclude_mode</span><span class="p">:</span>
+            <span class="c1"># Remove rows that have an intersection of actual and desired IDs</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="k">else</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Include rows that have an intersection of actual and desired IDs</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ids_for_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">categories</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;All IDs and child IDs for a given set of categories.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            categories: list of categories.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of IDs.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">category_ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">x</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">categories</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">category_id</span> <span class="ow">in</span> <span class="n">category_ids</span><span class="p">:</span>
+            <span class="n">ids</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_ids</span><span class="p">(</span><span class="n">category_id</span><span class="p">)</span>
+        <span class="c1"># Remove duplicates</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_subcategory_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Recursively identify all IDs of a given category.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parent_id: ID of parent category</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of all children IDs and the parent ID</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">parent_id</span><span class="p">]</span>
+        <span class="n">child_ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">x</span><span class="p">[</span><span class="s2">&quot;child_ids&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">parent_id</span>
+        <span class="p">]</span>
+        <span class="n">child_ids</span> <span class="o">=</span> <span class="n">flatten_list</span><span class="p">(</span><span class="n">child_ids</span><span class="p">)</span>
+        <span class="c1"># Add all subcategories</span>
+        <span class="k">for</span> <span class="n">child_id</span> <span class="ow">in</span> <span class="n">child_ids</span><span class="p">:</span>
+            <span class="n">id_list</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_ids</span><span class="p">(</span><span class="n">child_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">id_list</span>
+
+<div class="viewcode-block" id="AudioSet.map_to_classes">
+<a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.AudioSet.map_to_classes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_to_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Map dataframe as loaded to `autrainer` compatible.</span>
+
+<span class="sd">        Assigns all AudioSet IDs to category names.</span>
+<span class="sd">        Recursively assigns parent nodes</span>
+<span class="sd">        to every instance where a child is present.</span>
+<span class="sd">        Optionally filters dataframes</span>
+<span class="sd">        to include/exclude instances.</span>
+<span class="sd">        Creates columns with final labels.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df: dataframe loaded from CSV.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Adapted dataframe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename_and_ids</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_by_categories</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">include</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_parent_ids</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_by_categories</span><span class="p">(</span>
+                <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span> <span class="n">exclude_mode</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_ids_to_categories</span><span class="p">)</span>
+        <span class="n">unique_categories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">unique_categories</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">df</span><span class="p">,</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span>
+                    <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">c</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ontology</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reads AudioSet ontology.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ontology.json&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relative_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">relative_path</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">),</span>
+            <span class="n">skiprows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="p">,</span>
+            <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_to_classes</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">relative_path</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">orig_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">features_path</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">features_subdir</span><span class="p">,</span>
+                        <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.wav&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">file_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">avail_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">avail_len</span> <span class="o">!=</span> <span class="n">orig_len</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Found only </span><span class="si">{</span><span class="n">avail_len</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;from the </span><span class="si">{</span><span class="n">orig_len</span><span class="si">}</span><span class="s2"> original samples &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;included in the </span><span class="si">{</span><span class="n">relative_path</span><span class="si">}</span><span class="s2"> set of Audioset. &quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_df</span><span class="p">(</span><span class="s2">&quot;balanced_train_segments&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_unbalanced</span><span class="p">:</span>
+            <span class="n">u_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_df</span><span class="p">(</span><span class="s2">&quot;unbalanced_train_segments&quot;</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">df</span><span class="p">,</span> <span class="n">u_df</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_dev</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_df</span><span class="p">(</span><span class="s2">&quot;eval_segments&quot;</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_dev</span>
+
+<div class="viewcode-block" id="AudioSet.download">
+<a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.AudioSet.download">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download AudioSet.</span>
+
+<span class="sd">        The data must be downloaded manually from</span>
+<span class="sd">        https://research.google.com/audioset/download.html.</span>
+<span class="sd">        We do not implement</span>
+<span class="sd">        an automatic download</span>
+<span class="sd">        as this is a very costly process</span>
+<span class="sd">        that the user should handle</span>
+<span class="sd">        outside of `autrainer`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path: Path to the directory to download the dataset to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

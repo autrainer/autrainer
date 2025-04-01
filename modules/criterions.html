@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -361,6 +361,12 @@ document.write(`
 <p class="admonition-title">Tip</p>
 <p>To create custom criterions, refer to the <a class="reference internal" href="../usage/tutorials.html#tut-criterions"><span class="std std-ref">custom criterions tutorial</span></a>.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">reduction</span></code> attribute of each criterion is automatically set to <code class="xref py py-attr docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> during training, validation, and testing.
+This allows the per-example loss to be reported directly, without the need for re-calculating the loss for logging purposes.</p>
+<p>This is handled automatically during the instantiation of the criterion.</p>
+</div>
 <section id="criterion-wrappers">
 <h2>Criterion Wrappers<a class="headerlink" href="#criterion-wrappers" title="Link to this heading">#</a></h2>
 <p>As the DataLoader may automatically cast to the wrong type,
@@ -369,11 +375,11 @@ For more information see <a class="reference external" href="https://discuss.pyt
 <p><cite>autrainer</cite> provides the following wrappers:</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.criterions.CrossEntropyLoss">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">CrossEntropyLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_smoothing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/criterion_wrappers.html#CrossEntropyLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.CrossEntropyLoss" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">CrossEntropyLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_smoothing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#CrossEntropyLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.CrossEntropyLoss" title="Link to this definition">#</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.criterions.CrossEntropyLoss.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/criterion_wrappers.html#CrossEntropyLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.CrossEntropyLoss.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#CrossEntropyLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.CrossEntropyLoss.forward" title="Link to this definition">#</a></dt>
 <dd><p>Wrapper for <cite>torch.nn.CrossEntropyLoss.forward</cite>.</p>
 <p>Converts the targets to <cite>long</cite> if it is a 1D tensor.</p>
 <dl class="field-list simple">
@@ -395,20 +401,25 @@ For more information see <a class="reference external" href="https://discuss.pyt
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="autrainer.criterions.BalancedCrossEntropyLoss">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">BalancedCrossEntropyLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_smoothing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/criterion_wrappers.html#BalancedCrossEntropyLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.BalancedCrossEntropyLoss" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="autrainer.criterions.BCEWithLogitsLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">BCEWithLogitsLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#BCEWithLogitsLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.BCEWithLogitsLoss" title="Link to this definition">#</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="autrainer.criterions.BalancedCrossEntropyLoss.setup">
-<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/criterion_wrappers.html#BalancedCrossEntropyLoss.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.BalancedCrossEntropyLoss.setup" title="Link to this definition">#</a></dt>
-<dd><p>Calculate balanced weights for the dataset based on the target
-frequency in the training set.</p>
+<dt class="sig sig-object py" id="autrainer.criterions.BCEWithLogitsLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#BCEWithLogitsLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.BCEWithLogitsLoss.forward" title="Link to this definition">#</a></dt>
+<dd><p>Wrapper for <cite>torch.nn.BCEWithLogitsLoss.forward</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.abstract_dataset.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a></span>) – Instance of the dataset.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batched model outputs.</p></li>
+<li><p><strong>y</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Targets.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Loss.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -417,11 +428,11 @@ frequency in the training set.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.criterions.MSELoss">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">MSELoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/criterion_wrappers.html#MSELoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.MSELoss" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">MSELoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/regression.html#MSELoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.MSELoss" title="Link to this definition">#</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.criterions.MSELoss.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/criterion_wrappers.html#MSELoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.MSELoss.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/regression.html#MSELoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.MSELoss.forward" title="Link to this definition">#</a></dt>
 <dd><p>Wrapper for <cite>torch.nn.MSELoss.forward</cite>.</p>
 <p>Squeezes the model outputs along the last dimension to match the shape
 of the targets.
@@ -445,13 +456,212 @@ Converts the targets to <cite>float</cite>.</p>
 </dd></dl>
 
 </section>
+<section id="balanced-and-weighted-criterions">
+<h2>Balanced and Weighted Criterions<a class="headerlink" href="#balanced-and-weighted-criterions" title="Link to this heading">#</a></h2>
+<p>For imbalanced datasets, it is often beneficial to use a balanced or weighted loss function.
+Balanced loss functions automatically adjust the loss for each class or target
+based on their frequency using a <a class="reference internal" href="#criterion-setup"><span class="std std-ref">setup</span></a> function.
+Weighted loss functions allow for the manual specification of weights for each class or target.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.criterions.BalancedCrossEntropyLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">BalancedCrossEntropyLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_smoothing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#BalancedCrossEntropyLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.BalancedCrossEntropyLoss" title="Link to this definition">#</a></dt>
+<dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.criterions.BalancedCrossEntropyLoss.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#BalancedCrossEntropyLoss.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.BalancedCrossEntropyLoss.setup" title="Link to this definition">#</a></dt>
+<dd><p>Calculate balanced weights for the dataset based on the target
+frequency in the training set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.abstract_dataset.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a></span>) – Instance of the dataset.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.criterions.WeightedCrossEntropyLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">WeightedCrossEntropyLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_weights</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#WeightedCrossEntropyLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.WeightedCrossEntropyLoss" title="Link to this definition">#</a></dt>
+<dd><p>Wrapper for <cite>torch.nn.CrossEntropyLoss</cite> with manual class weights.</p>
+<p>The class weights are automatically normalized to sum up to the number
+of classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_weights</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Dictionary with class weights corresponding to the
+target labels and their respective weights.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to
+<cite>torch.nn.CrossEntropyLoss</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.criterions.WeightedCrossEntropyLoss.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#WeightedCrossEntropyLoss.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.WeightedCrossEntropyLoss.setup" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the class weights based on the provided dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.abstract_dataset.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a></span>) – Instance of the dataset.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.criterions.BalancedBCEWithLogitsLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">BalancedBCEWithLogitsLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#BalancedBCEWithLogitsLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.BalancedBCEWithLogitsLoss" title="Link to this definition">#</a></dt>
+<dd><p>Balanced version of <cite>torch.nn.BCEWithLogitsLoss</cite>.</p>
+<p><cite>pos_weight</cite> is not supported, as the weights are calculated based on
+the target frequency in the training set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>weight</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]</span>) – A manual rescaling weight given to the positive class.
+Defaults to None.</p></li>
+<li><p><strong>reduction</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Specifies the reduction to apply to the output. Defaults
+to ‘mean’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.criterions.BalancedBCEWithLogitsLoss.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#BalancedBCEWithLogitsLoss.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.BalancedBCEWithLogitsLoss.setup" title="Link to this definition">#</a></dt>
+<dd><p>Calculate balanced weights for the dataset based on the target
+frequency in the training set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.abstract_dataset.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a></span>) – Instance of the dataset.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.criterions.BalancedBCEWithLogitsLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#BalancedBCEWithLogitsLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.BalancedBCEWithLogitsLoss.forward" title="Link to this definition">#</a></dt>
+<dd><p>Wrapper for <cite>torch.nn.BCEWithLogitsLoss.forward</cite> with balanced
+weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batched model outputs.</p></li>
+<li><p><strong>y</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Targets.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Loss.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.criterions.WeightedBCEWithLogitsLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">WeightedBCEWithLogitsLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_weights</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#WeightedBCEWithLogitsLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.WeightedBCEWithLogitsLoss" title="Link to this definition">#</a></dt>
+<dd><p>Wrapper for <cite>torch.nn.BCEWithLogitsLoss</cite> with manual class weights.</p>
+<p>The class weights are automatically normalized to sum up to the number
+of classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_weights</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Dictionary with class weights corresponding to the
+target labels and their respective weights.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to
+<cite>torch.nn.BCEWithLogitsLoss</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.criterions.WeightedBCEWithLogitsLoss.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/classification.html#WeightedBCEWithLogitsLoss.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.WeightedBCEWithLogitsLoss.setup" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the class weights based on the provided dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.abstract_dataset.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a></span>) – Instance of the dataset.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.criterions.WeightedMSELoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.criterions.</span></span><span class="sig-name descname"><span class="pre">WeightedMSELoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_weights</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/regression.html#WeightedMSELoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.WeightedMSELoss" title="Link to this definition">#</a></dt>
+<dd><p>Wrapper for <cite>torch.nn.MSELoss</cite> with manual target weights intended
+for multi-target regression tasks.</p>
+<p>The target weights are automatically normalized to sum up to the number
+of targets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_weights</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Dictionary with target weights corresponding to the
+target labels and their respective weights.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to
+<cite>torch.nn.MSELoss</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.criterions.WeightedMSELoss.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/regression.html#WeightedMSELoss.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.WeightedMSELoss.setup" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the target weights based on the provided dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.abstract_dataset.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a></span>) – Instance of the dataset.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.criterions.WeightedMSELoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/criterions/regression.html#WeightedMSELoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.criterions.WeightedMSELoss.forward" title="Link to this definition">#</a></dt>
+<dd><p>Wrapper for <cite>torch.nn.MSELoss.forward</cite> with manual target weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Batched model outputs.</p></li>
+<li><p><strong>y</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Targets.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Loss.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="torch-criterions">
 <h2>Torch Criterions<a class="headerlink" href="#torch-criterions" title="Link to this heading">#</a></h2>
-<p>Torch criterions, such as <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.BCEWithLogitsLoss</span></code> for multi-label classification tasks,
+<p>Other torch criterions, such as <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.HuberLoss</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.SmoothL1Loss</span></code>,
 can be specified using <a class="reference internal" href="../usage/hydra_configurations.html#shorthand-syntax"><span class="std std-ref">Shorthand Syntax</span></a> in the dataset configuration, analogous to the criterion wrappers.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It may be necessary to wrap the criterion similar to <a class="reference internal" href="#autrainer.criterions.CrossEntropyLoss" title="autrainer.criterions.CrossEntropyLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">autrainer.criterions.CrossEntropyLoss</span></code></a>
+<p>It may be necessary to wrap criterions similar to <a class="reference internal" href="#autrainer.criterions.CrossEntropyLoss" title="autrainer.criterions.CrossEntropyLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">autrainer.criterions.CrossEntropyLoss</span></code></a>
 or <a class="reference internal" href="#autrainer.criterions.MSELoss" title="autrainer.criterions.MSELoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">autrainer.criterions.MSELoss</span></code></a> to cast the model outputs and targets to the correct types.</p>
 </div>
 </section>
@@ -462,8 +672,8 @@ and takes the dataset instance as an argument.
 This can be used to set up additional parameters, such as class weights for imbalanced datasets.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">example_loss.ExampleLoss</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">class</span> <span class="nc">ExampleLoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">_Loss</span><span class="p">):</span>
-<span class="linenos">2</span>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">class</span><span class="w"> </span><span class="nc">ExampleLoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">_Loss</span><span class="p">):</span>
+<span class="linenos">2</span>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -497,12 +707,37 @@ This can be used to set up additional parameters, such as class weights for imba
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.CrossEntropyLoss.forward"><code class="docutils literal notranslate"><span class="pre">CrossEntropyLoss.forward()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.BalancedCrossEntropyLoss"><code class="docutils literal notranslate"><span class="pre">BalancedCrossEntropyLoss</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.BalancedCrossEntropyLoss.setup"><code class="docutils literal notranslate"><span class="pre">BalancedCrossEntropyLoss.setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.BCEWithLogitsLoss"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsLoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.BCEWithLogitsLoss.forward"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsLoss.forward()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.MSELoss"><code class="docutils literal notranslate"><span class="pre">MSELoss</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.MSELoss.forward"><code class="docutils literal notranslate"><span class="pre">MSELoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#balanced-and-weighted-criterions">Balanced and Weighted Criterions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.BalancedCrossEntropyLoss"><code class="docutils literal notranslate"><span class="pre">BalancedCrossEntropyLoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.BalancedCrossEntropyLoss.setup"><code class="docutils literal notranslate"><span class="pre">BalancedCrossEntropyLoss.setup()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.WeightedCrossEntropyLoss"><code class="docutils literal notranslate"><span class="pre">WeightedCrossEntropyLoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.WeightedCrossEntropyLoss.setup"><code class="docutils literal notranslate"><span class="pre">WeightedCrossEntropyLoss.setup()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.BalancedBCEWithLogitsLoss"><code class="docutils literal notranslate"><span class="pre">BalancedBCEWithLogitsLoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.BalancedBCEWithLogitsLoss.setup"><code class="docutils literal notranslate"><span class="pre">BalancedBCEWithLogitsLoss.setup()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.BalancedBCEWithLogitsLoss.forward"><code class="docutils literal notranslate"><span class="pre">BalancedBCEWithLogitsLoss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.WeightedBCEWithLogitsLoss"><code class="docutils literal notranslate"><span class="pre">WeightedBCEWithLogitsLoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.WeightedBCEWithLogitsLoss.setup"><code class="docutils literal notranslate"><span class="pre">WeightedBCEWithLogitsLoss.setup()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.WeightedMSELoss"><code class="docutils literal notranslate"><span class="pre">WeightedMSELoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.WeightedMSELoss.setup"><code class="docutils literal notranslate"><span class="pre">WeightedMSELoss.setup()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.criterions.WeightedMSELoss.forward"><code class="docutils literal notranslate"><span class="pre">WeightedMSELoss.forward()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -537,7 +772,7 @@ This can be used to set up additional parameters, such as class weights for imba
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

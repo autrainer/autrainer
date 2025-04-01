@@ -94,7 +94,7 @@ Now, run the following :ref:`training <cli_training>` command to train the model
 Grid Search Configuration
 -------------------------
 
-To perform a grid search over multiple multiple configurations defined in the :attr:`params`, update the
+To perform a grid search over multiple configurations defined in the :attr:`params`, update the
 :ref:`main configuration <main_configuration>` (:file:`conf/config.yaml`) to include multiple values separated by a comma.
 
 The following configuration performs a grid search over the default :class:`~autrainer.models.FFNN` model with 2 and 3 hidden layers
@@ -150,6 +150,20 @@ update the :ref:`main configuration <main_configuration>` (:file:`conf/config.ya
    :caption: conf/config.yaml
    :linenos:
 
+The following :ref:`configuration management <cli_configuration_management>` command is used to discover all available
+default configurations for the :class:`~autrainer.models.Cnn10` model:
+
+.. code-block:: autrainer
+
+    autrainer list model --pattern=Cnn10*
+
+Alternatively, use the following :ref:`configuration management <cli_wrapper_configuration_management>` CLI wrapper function:
+
+.. code-block:: python
+
+    autrainer.cli.list("model", pattern="Cnn10*")
+
+
 For the :class:`~autrainer.models.Cnn10` model, the following configuration is used:
 
 .. configurations::
@@ -157,11 +171,11 @@ For the :class:`~autrainer.models.Cnn10` model, the following configuration is u
    :configs: Cnn10-32k-T
    :exact:
 
-The ending :attr:`32k-T` indicates that the model using transfer learning and has been pretrained with a sample rate of 32 kHz.
+The ending :attr:`32k-T` indicates that the model uses transfer learning and has been pretrained with a sample rate of 32 kHz.
 
 .. tip::
    
-   To discover all available default configurations for e.g. different models,
+   To discover all available default configurations for e.g., different models,
    the :ref:`configuration management CLI <cli_configuration_management>`,
    the :ref:`configuration management CLI wrapper <cli_wrapper_configuration_management>`,
    and the :ref:`models documentation <models>` can be used.
@@ -206,6 +220,36 @@ Now, run the following :ref:`training <cli_training>` command to train the model
 .. code-block:: autrainer
 
     autrainer train
+
+
+.. _quick_overriding_configurations:
+
+Overriding Configurations
+-------------------------
+
+All `autrainer` default configurations can be easily overridden by creating a new configuration file in the corresponding
+directory with the same name as the default configuration.
+The new configuration file will be used instead of the default configuration.
+
+To override the default :attr:`path` the :class:`~autrainer.datasets.DCASE2016Task1` dataset stores files in, the following
+:ref:`configuration management <cli_configuration_management>` command is used to locally save the default configuration:
+
+.. code-block:: autrainer
+
+    autrainer show dataset DCASE2016Task1-32k --save
+
+Alternatively, use the following :ref:`configuration management <cli_wrapper_configuration_management>` CLI wrapper function:
+
+.. code-block:: python
+
+    autrainer.cli.show("dataset", "DCASE2016Task1-32k", save=True)
+
+This will save the default configuration to the :file:`conf/dataset/DCASE2016Task1-32k.yaml` file, which can be edited to override the :attr:`path`:
+
+.. literalinclude:: ../examples/quickstart/config_dataset_path.yaml
+   :language: yaml
+   :caption: conf/dataset/DCASE2016Task1-32k.yaml
+   :linenos:
 
 
 .. _quick_training_configurations:

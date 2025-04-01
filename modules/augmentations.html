@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -468,6 +468,23 @@ not seeded. Defaults to None.</p></li>
 <dd class="field-even"><p><strong>ValueError</strong> – If p is not in the range [0, 1].</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.augmentations.AbstractAugmentation.offset_generator_seed">
+<span class="sig-name descname"><span class="pre">offset_generator_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/abstract_augmentation.html#AbstractAugmentation.offset_generator_seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AbstractAugmentation.offset_generator_seed" title="Link to this definition">#</a></dt>
+<dd><p>Offset the generator seed used to draw the probability of applying
+the augmentation. Useful for ensuring reproducibility and
+randomness of augmentations when using multiple workers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>offset</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Offset to add to the generator seed. Usually the
+worker index.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.augmentations.AbstractAugmentation.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/abstract_augmentation.html#AbstractAugmentation.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AbstractAugmentation.__call__" title="Link to this definition">#</a></dt>
@@ -1174,12 +1191,15 @@ This method is used to retrieve the collate function from the augmentation if it
 <p class="admonition-title">Tip</p>
 <p>To create custom augmentations with collate functions, refer to the <a class="reference internal" href="../usage/tutorials.html#tut-augmentation-collate"><span class="std std-ref">custom augmentations tutorial</span></a>.</p>
 </div>
-<p>The signature of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">get_collate_fn</span></code> method should be as follows:</p>
+<p>The signature of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">get_collate_fn</span></code> method should be as follows and return a collate function taking in a list of
+<a class="reference internal" href="dataset_utils.html#autrainer.datasets.utils.AbstractDataItem" title="autrainer.datasets.utils.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a> objects and returning a single <a class="reference internal" href="dataset_utils.html#autrainer.datasets.utils.AbstractDataBatch" title="autrainer.datasets.utils.AbstractDataBatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataBatch</span></code></a> object.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">example_augmentation.ExampleCollateAugmentation</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">class</span> <span class="nc">ExampleCollateAugmentation</span><span class="p">(</span><span class="n">AbstractAugmentation</span><span class="p">):</span>
-<span class="linenos">2</span>    <span class="k">def</span> <span class="nf">get_collate_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-<span class="linenos">3</span>        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">default_collate</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">2</span>        <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">,</span>
+<span class="linenos">3</span>        <span class="n">default</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+<span class="linenos">4</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="linenos">5</span>        <span class="k">return</span> <span class="n">DataBatch</span><span class="o">.</span><span class="n">collate</span>
 </pre></div>
 </div>
 </div>
@@ -1344,6 +1364,7 @@ not seeded. Defaults to None.</p></li>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#abstract-augmentation">Abstract Augmentation</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.AbstractAugmentation"><code class="docutils literal notranslate"><span class="pre">AbstractAugmentation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.AbstractAugmentation.offset_generator_seed"><code class="docutils literal notranslate"><span class="pre">AbstractAugmentation.offset_generator_seed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.AbstractAugmentation.__call__"><code class="docutils literal notranslate"><span class="pre">AbstractAugmentation.__call__()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.AbstractAugmentation.apply"><code class="docutils literal notranslate"><span class="pre">AbstractAugmentation.apply()</span></code></a></li>
 </ul>
@@ -1415,7 +1436,7 @@ not seeded. Defaults to None.</p></li>
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

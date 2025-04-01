@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=93fba4f5" />
@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -375,15 +375,14 @@ Any additional attributes (except <code class="xref py py-attr docutils literal 
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 <span class="sd-summary-text">Default Configurations</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
-<p class="sd-card-text"><strong>Adam</strong></p>
-<div class="literal-block-wrapper docutils container" id="default-adam">
-<div class='code-block-caption'><span class='caption-text'>conf/optimizer/Adam.yaml</span><a class='headerlink' href='#default-adam' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adam</span>
-<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.Adam</span>
+<div class="literal-block-wrapper docutils container" id="default-sgd">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/SGD.yaml</span><a class='headerlink' href='#default-sgd' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SGD</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.SGD</span>
 </pre></div>
 </div>
-</div><div class="literal-block-wrapper docutils container" id="default-adamax">
-<div class='code-block-caption'><span class='caption-text'>conf/optimizer/Adamax.yaml</span><a class='headerlink' href='#default-adamax' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adamax</span>
-<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.Adamax</span>
+</div><div class="literal-block-wrapper docutils container" id="default-adam">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/Adam.yaml</span><a class='headerlink' href='#default-adam' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adam</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.Adam</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-adamw">
@@ -391,10 +390,54 @@ Any additional attributes (except <code class="xref py py-attr docutils literal 
 <span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.AdamW</span>
 </pre></div>
 </div>
-</div><p class="sd-card-text"><strong>SGD</strong></p>
-<div class="literal-block-wrapper docutils container" id="default-sgd">
-<div class='code-block-caption'><span class='caption-text'>conf/optimizer/SGD.yaml</span><a class='headerlink' href='#default-sgd' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SGD</span>
-<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.SGD</span>
+</div><div class="literal-block-wrapper docutils container" id="default-adadelta">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/Adadelta.yaml</span><a class='headerlink' href='#default-adadelta' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adadelta</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.Adadelta</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-adagrad">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/Adagrad.yaml</span><a class='headerlink' href='#default-adagrad' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adagrad</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.Adagrad</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-adamax">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/Adamax.yaml</span><a class='headerlink' href='#default-adamax' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adamax</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.Adamax</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-nadam">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/NAdam.yaml</span><a class='headerlink' href='#default-nadam' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NAdam</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.NAdam</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-radam">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/RAdam.yaml</span><a class='headerlink' href='#default-radam' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RAdam</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.RAdam</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-sparseadam">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/SparseAdam.yaml</span><a class='headerlink' href='#default-sparseadam' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SparseAdam</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.SparseAdam</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-rmsprop">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/RMSprop.yaml</span><a class='headerlink' href='#default-rmsprop' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RMSprop</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.RMSprop</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-rprop">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/Rprop.yaml</span><a class='headerlink' href='#default-rprop' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Rprop</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.Rprop</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-asgd">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/ASGD.yaml</span><a class='headerlink' href='#default-asgd' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ASGD</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.ASGD</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-lbfgs">
+<div class='code-block-caption'><span class='caption-text'>conf/optimizer/LBFGS.yaml</span><a class='headerlink' href='#default-lbfgs' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LBFGS</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch.optim.LBFGS</span>
 </pre></div>
 </div>
 </div></div>
@@ -442,27 +485,30 @@ element-wise Adaptive SAM. Defaults to False.</p></li>
 of the standard training step and should be defined as follows:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text"><cite>custom_step function of an optimizer</cite></span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">class</span> <span class="nc">SomeOptimizer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
-<span class="linenos"> 2</span>    <span class="k">def</span> <span class="nf">custom_step</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">class</span><span class="w"> </span><span class="nc">SomeOptimizer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
+<span class="linenos"> 2</span>    <span class="k">def</span><span class="w"> </span><span class="nf">custom_step</span><span class="p">(</span>
 <span class="linenos"> 3</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos"> 4</span>        <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-<span class="linenos"> 5</span>        <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-<span class="linenos"> 6</span>        <span class="n">target</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-<span class="linenos"> 7</span>        <span class="n">criterion</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-<span class="linenos"> 8</span>        <span class="n">probabilities_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-<span class="linenos"> 9</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
-<span class="linenos">10</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom step function for the optimizer.</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span><span class="sd">        Args:</span>
-<span class="linenos">13</span><span class="sd">            model: Model to be optimized.</span>
-<span class="linenos">14</span><span class="sd">            data: Batched input data.</span>
-<span class="linenos">15</span><span class="sd">            target: Batched target data.</span>
-<span class="linenos">16</span><span class="sd">            criterion: Loss function.</span>
-<span class="linenos">17</span><span class="sd">            probabilities_fn: Function to get probabilities from model outputs.</span>
-<span class="linenos">18</span>
-<span class="linenos">19</span><span class="sd">        Returns:</span>
-<span class="linenos">20</span><span class="sd">            Reduced loss over the batch and detached model outputs.</span>
-<span class="linenos">21</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 4</span>        <span class="n">model</span><span class="p">:</span> <span class="n">AbstractModel</span><span class="p">,</span>
+<span class="linenos"> 5</span>        <span class="n">data</span><span class="p">:</span> <span class="n">DataBatch</span><span class="p">,</span>
+<span class="linenos"> 6</span>        <span class="n">criterion</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+<span class="linenos"> 7</span>        <span class="n">probabilities_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+<span class="linenos"> 8</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="linenos"> 9</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom step function for the optimizer.</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="sd">        Args:</span>
+<span class="linenos">12</span><span class="sd">            model: The model to train.</span>
+<span class="linenos">13</span><span class="sd">            data: The data batch containing features, target, and potentially</span>
+<span class="linenos">14</span><span class="sd">                additional fields. The data batch is on the same</span>
+<span class="linenos">15</span><span class="sd">                device as the model. Additional fields are passed to the model</span>
+<span class="linenos">16</span><span class="sd">                as keyword arguments if they are present in the model&#39;s forward</span>
+<span class="linenos">17</span><span class="sd">                method.</span>
+<span class="linenos">18</span><span class="sd">            criterion: Loss function.</span>
+<span class="linenos">19</span><span class="sd">            probabilities_fn: Function to convert model outputs to</span>
+<span class="linenos">20</span><span class="sd">                probabilities.</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="sd">        Returns:</span>
+<span class="linenos">23</span><span class="sd">            Tuple containing the non-reduced loss and model outputs.</span>
+<span class="linenos">24</span><span class="sd">        &quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -529,7 +575,7 @@ of the standard training step and should be defined as follows:</p>
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>

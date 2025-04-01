@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=93fba4f5" />
@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,21 +353,21 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.transforms.transform_manager</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
 
-<span class="kn">import</span> <span class="nn">autrainer</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autrainer</span>
 
-<span class="kn">from</span> <span class="nn">.abstract_transform</span> <span class="kn">import</span> <span class="n">AbstractTransform</span>
-<span class="kn">from</span> <span class="nn">.smart_compose</span> <span class="kn">import</span> <span class="n">SmartCompose</span>
-<span class="kn">from</span> <span class="nn">.specific_transforms</span> <span class="kn">import</span> <span class="n">GrayscaleToRGB</span><span class="p">,</span> <span class="n">RGBToGrayscale</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractTransform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.smart_compose</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartCompose</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.specific_transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">GrayscaleToRGB</span><span class="p">,</span> <span class="n">RGBToGrayscale</span>
 
 
 <div class="viewcode-block" id="TransformManager">
 <a class="viewcode-back" href="../../../modules/transforms.html#autrainer.transforms.TransformManager">[docs]</a>
-<span class="k">class</span> <span class="nc">TransformManager</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransformManager</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_transform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
         <span class="n">dataset_transform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
@@ -402,7 +402,7 @@ document.write(`
 
 <div class="viewcode-block" id="TransformManager.get_transforms">
 <a class="viewcode-back" href="../../../modules/transforms.html#autrainer.transforms.TransformManager.get_transforms">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_transforms</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_transforms</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SmartCompose</span><span class="p">,</span> <span class="n">SmartCompose</span><span class="p">,</span> <span class="n">SmartCompose</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the composed transform pipelines for the train, dev, and test</span>
@@ -412,142 +412,65 @@ document.write(`
 <span class="sd">            The composed transform pipelines for the train, dev, and test</span>
 <span class="sd">                datasets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specific</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_model_dataset</span><span class="p">()</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_model_dataset</span><span class="p">()</span>
 
-        <span class="n">train</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specific</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_augmentation</span>
-        <span class="n">dev</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specific</span><span class="p">(</span><span class="s2">&quot;dev&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dev_augmentation</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specific</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_augmentation</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_augmentation</span>
+        <span class="n">dev</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">(</span><span class="s2">&quot;dev&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dev_augmentation</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_augmentation</span>
         <span class="k">return</span> <span class="n">train</span><span class="p">,</span> <span class="n">dev</span><span class="p">,</span> <span class="n">test</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_specific</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SmartCompose</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get and build the specific transforms for the model and dataset</span>
-<span class="sd">        specified in the transform configurations.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SmartCompose</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build and combine the model and dataset transforms into a single</span>
+<span class="sd">        transform. Model transforms override dataset transforms when they share</span>
+<span class="sd">        the same key (or key + tag).</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            subset: The transform subset to get. Must be one of &quot;train&quot;, &quot;dev&quot;,</span>
-<span class="sd">                &quot;test&quot;, or &quot;base&quot;.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the subset is not one of &quot;train&quot;, &quot;dev&quot;, &quot;test&quot;,</span>
-<span class="sd">                or &quot;base&quot;.</span>
+<span class="sd">            subset: The subset of the transforms to combine.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The composed transform pipeline.</span>
+<span class="sd">            The combined transform.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">subset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Transform subset must be one of &#39;train&#39;, &#39;dev&#39;, &#39;test&#39;, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;or &#39;base&#39;, got </span><span class="si">{</span><span class="n">subset</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">model_transforms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_transform</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="p">[])</span>
         <span class="n">dataset_transforms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_transform</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="p">[])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">model_transforms</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dataset_transforms</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">SmartCompose</span><span class="p">([])</span>
-        <span class="n">model_transforms</span><span class="p">,</span> <span class="n">dataset_transforms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_transforms</span><span class="p">(</span>
-            <span class="n">model_transforms</span><span class="p">,</span> <span class="n">dataset_transforms</span>
+
+        <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="n">model_transforms</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+            <span class="c1"># allow the model to remove a transform by setting it to None</span>
+            <span class="c1"># e.g. autrainer.transforms.Normalize: null</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">transform</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">combined</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+
+        <span class="n">combined</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">dataset_transforms</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span>
         <span class="p">)</span>
-        <span class="n">combined_transforms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_combine_transforms</span><span class="p">(</span>
-            <span class="n">model_transforms</span><span class="p">,</span>
-            <span class="n">dataset_transforms</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">transforms</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">instance_of</span><span class="o">=</span><span class="n">AbstractTransform</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">combined_transforms</span>
-        <span class="p">]</span>
-        <span class="k">return</span> <span class="n">SmartCompose</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_filter_transforms</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">model_transforms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
-        <span class="n">dataset_transforms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove None values from the model and dataset transforms.</span>
-<span class="sd">        None values are used to indicate that the transform was removed</span>
-<span class="sd">        from the config by either the model or dataset transform.</span>
-<span class="sd">        See `Automatic Transforms` for more details.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            model_transforms: List of model transforms.</span>
-<span class="sd">            dataset_transforms: List of dataset transforms.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            The filtered model and dataset transforms.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span> <span class="nf">_filter</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="n">l1</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="k">continue</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
-                <span class="k">if</span> <span class="n">transform</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">l1</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
-                    <span class="n">d_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_matching_transform</span><span class="p">(</span><span class="n">l2</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">d_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">l2</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">d_idx</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span>
-
-        <span class="n">model_transforms</span><span class="p">,</span> <span class="n">dataset_transforms</span> <span class="o">=</span> <span class="n">_filter</span><span class="p">(</span>
-            <span class="n">model_transforms</span><span class="p">,</span> <span class="n">dataset_transforms</span>
-        <span class="p">)</span>
-        <span class="n">dataset_transforms</span><span class="p">,</span> <span class="n">model_transforms</span> <span class="o">=</span> <span class="n">_filter</span><span class="p">(</span>
-            <span class="n">dataset_transforms</span><span class="p">,</span> <span class="n">model_transforms</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">model_transforms</span><span class="p">,</span> <span class="n">dataset_transforms</span>
-
-    <span class="k">def</span> <span class="nf">_combine_transforms</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">model_transforms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
-        <span class="n">dataset_transforms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Combine model and dataset transforms into a single list.</span>
-<span class="sd">        Model transforms outweigh dataset transforms, so if a transform</span>
-<span class="sd">        is present in both lists, the model transform will be used.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            model_transforms: List of model transforms.</span>
-<span class="sd">            dataset_transforms: List of dataset transforms.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            The combined list of transforms.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">combined</span> <span class="o">=</span> <span class="n">model_transforms</span>
-        <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="n">dataset_transforms</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">transform</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined</span><span class="p">:</span>
-                    <span class="n">combined</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_matching_transform</span><span class="p">(</span><span class="n">combined</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">combined</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">combined</span>
+        <span class="k">return</span> <span class="n">SmartCompose</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">combined</span><span class="p">])</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_find_matching_transform</span><span class="p">(</span>
-        <span class="n">l</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
-        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the index of a transform in a list of transforms.</span>
-<span class="sd">        If the transform is a dictionary, the key is used to find the</span>
-<span class="sd">        transform. If the transform is a string, the string itself is</span>
-<span class="sd">        used to find the transform.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_key</span><span class="p">(</span><span class="n">transform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">transform</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            l: List of transforms.</span>
-<span class="sd">            key: The key to search for.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            The index of the transform in the list. If the transform is not</span>
-<span class="sd">                found, None is returned.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">idx</span>
-            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">==</span> <span class="n">key</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_instantiate</span><span class="p">(</span><span class="n">transform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AbstractTransform</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">AbstractTransform</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">transform</span><span class="p">[</span><span class="n">key</span><span class="p">]},</span>
+            <span class="n">AbstractTransform</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_match_model_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SmartCompose</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_match_model_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SmartCompose</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Match the model input type with the dataset type by adding</span>
 <span class="sd">        the necessary transform.</span>
 
@@ -605,7 +528,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>
