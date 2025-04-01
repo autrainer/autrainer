@@ -117,6 +117,8 @@ class AudioSet(BaseMLClassificationDataset):
             tracking_metric: Metric to track.
             index_column: Index column of the dataframe.
             target_column: Target column of the dataframe.
+                If None, defaults to the least common subset
+                available in the data. Defaults to None.
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
