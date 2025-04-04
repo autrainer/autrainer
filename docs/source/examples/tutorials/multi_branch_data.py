@@ -3,11 +3,8 @@ from dataclasses import dataclass
 import pandas as pd
 import torch
 
+from autrainer.core.structs import AbstractDataBatch, AbstractDataItem
 from autrainer.datasets.toy_dataset import ToyDataset, ToyDatasetWrapper
-from autrainer.datasets.utils.data_struct import (
-    AbstractDataBatch,
-    AbstractDataItem,
-)
 from autrainer.transforms import SmartCompose
 
 
