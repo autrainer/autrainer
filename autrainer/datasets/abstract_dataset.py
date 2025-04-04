@@ -10,8 +10,8 @@ from torch.utils.data import DataLoader
 
 import autrainer
 from autrainer.core.constants import TrainingConstants
+from autrainer.core.structs import DataBatch
 from autrainer.core.utils import set_seed
-from autrainer.datasets.utils import DataBatch
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 

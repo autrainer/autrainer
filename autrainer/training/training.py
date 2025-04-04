@@ -12,6 +12,7 @@ from tqdm import tqdm
 import autrainer
 from autrainer.augmentations import AugmentationManager
 from autrainer.core.plotting import PlotMetrics
+from autrainer.core.structs import AbstractDataBatch
 from autrainer.core.utils import (
     Bookkeeping,
     ThreadManager,
@@ -22,11 +23,7 @@ from autrainer.core.utils import (
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
-from autrainer.datasets.utils import (
-    AbstractDataBatch,
-    AbstractFileHandler,
-    AudioFileHandler,
-)
+from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
 from autrainer.models.utils import create_model_inputs

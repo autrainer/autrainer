@@ -6,7 +6,7 @@ import requests
 import torch
 import torch.nn.functional as F
 
-from autrainer.datasets.utils import AbstractDataBatch, DataItem
+from autrainer.core.structs import AbstractDataBatch, DataItem
 from autrainer.models import AbstractModel
 
 
@@ -192,7 +192,9 @@ class ExtractLayerEmbeddings:
 
 def create_model_inputs(
     model: AbstractModel,
-    data: Union[AbstractDataBatch, DataItem],
+    data: Union[
+        AbstractDataBatch, DataItem
+    ],  # TODO: check if DataItem is allowed here
 ) -> Dict[str, torch.Tensor]:
     _forbidden = ["features", "target", "index"]
     model_inputs = {model.inputs[0]: data.features}

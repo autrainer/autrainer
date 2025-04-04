@@ -9,8 +9,8 @@ import torch
 from torchvision import transforms as T
 
 from autrainer.augmentations import AbstractAugmentation, CutMix
+from autrainer.core.structs import DataBatch
 from autrainer.datasets import AbstractDataset, ToyDataset
-from autrainer.datasets.utils import DataBatch
 from autrainer.transforms import (
     AbstractTransform,
     AnyToTensor,

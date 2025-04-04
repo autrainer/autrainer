@@ -5,7 +5,7 @@ from omegaconf import DictConfig, OmegaConf
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
-from autrainer.datasets.utils import DataBatch
+from autrainer.core.structs import DataBatch
 
 from .abstract_preprocess_script import (
     AbstractPreprocessScript,
