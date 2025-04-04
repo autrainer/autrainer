@@ -11,6 +11,14 @@ AbstractItemType = TypeVar("ItemType", bound="AbstractDataItem")
 
 @dataclass
 class AbstractDataItem(ABC):
+    """Abstract data item class for a single sample.
+
+    Args:
+        features: Tensor of input features.
+        target: Target value for the input features.
+        index: Index of the data sample.
+    """
+
     features: torch.Tensor
     target: Union[int, float, List[int], List[float], np.ndarray]
     index: int
@@ -18,6 +26,14 @@ class AbstractDataItem(ABC):
 
 @dataclass
 class AbstractDataBatch(ABC, Generic[AbstractItemType]):
+    """Abstract data batch class for a batch of samples.
+
+    Args:
+        features: Tensor of input features.
+        target: Tensor of target values for the input features.
+        index: Tensor of indices for the data samples.
+    """
+
     features: torch.Tensor
     target: torch.Tensor
     index: torch.Tensor
@@ -58,29 +74,3 @@ class AbstractDataBatch(ABC, Generic[AbstractItemType]):
                 batch[k] = torch.tensor([f[k] for f in items])
 
         return cls(**batch)
-
-
-@dataclass
-class DataItem(AbstractDataItem):
-    """Data item class for a single data sample.
-
-    Args:
-        features: Tensor of input features.
-        target: Target value for the input features.
-        index: Index of the data sample.
-    """
-
-
-@dataclass
-class DataBatch(AbstractDataBatch[DataItem]):
-    """Data batch class for a batch of data samples.
-
-    Args:
-        features: Tensor of input features.
-        target: Tensor of target values for the input features.
-        index: Tensor of indices for the data samples.
-    """
-
-    def to(self, device: torch.device, **kwargs: dict) -> None:
-        self.features = self.features.to(device, **kwargs)
-        self.target = self.target.to(device, **kwargs)
