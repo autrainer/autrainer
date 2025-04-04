@@ -80,6 +80,10 @@ are used to download the dataset and preprocess the data before training.
    :meth:`~autrainer.cli.fetch` and :meth:`~autrainer.cli.preprocess` CLI wrapper functions.
 
 
+All `autrainer` datasets and loaders return :ref:`DataItem and DataBatch structs <core_data_items>` which represent the data items
+and batches of data, respectively.
+
+
 Abstract Dataset
 ------------------
 
