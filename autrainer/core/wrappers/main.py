@@ -48,6 +48,10 @@ def main(
             search path. Defaults to None.
         version_base: Hydra version base. Defaults to None.
     """
+    if not any("jupyter" in arg or "ipykernel" in arg for arg in sys.argv):
+        import matplotlib
+
+        matplotlib.use("Agg")  # TkAgg is not thread-safe
 
     Plugins.instance().register(AutrainerPathPlugin)
     add_current_directory_to_path()
