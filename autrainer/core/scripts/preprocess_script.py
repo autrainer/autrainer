@@ -13,6 +13,7 @@ from .abstract_preprocess_script import (
 from .utils import (
     add_hydra_args_to_sys,
     catch_cli_errors,
+    check_invalid_config_path_arg,
     run_hydra_cmd,
     running_in_notebook,
 )
@@ -38,7 +39,7 @@ def preprocess_main(
 
     from autrainer.core.structs import DataBatch
     from autrainer.datasets import AbstractDataset
-    from autrainer.datasets.utils import AbstractFileHandler
+    from autrainer.datasets.utils import AbstractFileHandler, DataBatch
     from autrainer.transforms import SmartCompose
 
     print(f" - {name}")
@@ -185,6 +186,7 @@ class PreprocessScript(AbstractPreprocessScript):
                     pass
             self.preprocessing[cfg.dataset.id] = preprocessing_cfg
 
+        check_invalid_config_path_arg(self.parser)
         main()
         self._preprocess_datasets()
         self._clean_up()
