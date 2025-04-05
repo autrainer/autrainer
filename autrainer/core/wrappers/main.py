@@ -18,8 +18,12 @@ class AutrainerPathPlugin(SearchPathPlugin):
             os.path.dirname(autrainer.__path__[0]),
             "autrainer-configurations",
         )
-        snapshot = f"file://{ConfigDirSnapshot().create_snapshot_dir()}"
-        search_path.append(provider="autrainer-snapshot", path=snapshot)
+        snapshot = ConfigDirSnapshot().create_snapshot_dir()
+        if snapshot is not None:
+            search_path.append(
+                provider="autrainer-snapshot",
+                path=f"file://{snapshot}",
+            )
         search_path.append(
             provider="autrainer-configs",
             path=f"file://{lib_path}",
