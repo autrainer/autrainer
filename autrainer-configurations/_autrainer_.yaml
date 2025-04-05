@@ -1,8 +1,8 @@
 defaults:
   - _self_
-  - dataset: ???
-  - model: ???
-  - optimizer: ???
+  - dataset: ToyTabular-C
+  - model: ToyFFNN
+  - optimizer: Adam
   - scheduler: None
   - augmentation: None
   - plotting: Default

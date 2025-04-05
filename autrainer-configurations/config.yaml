@@ -9,7 +9,7 @@ iterations: 5
 hydra:
   sweeper:
     params:
-      +seed: 1
+      +seed: 1,2,3,4
       +batch_size: 32
       +learning_rate: 0.001
       dataset: ToyTabular-C
