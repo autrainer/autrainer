@@ -9,6 +9,8 @@ from hydra.plugins.search_path_plugin import SearchPathPlugin
 
 import autrainer
 
+from .config_dir_snapshot import ConfigDirSnapshot
+
 
 class AutrainerPathPlugin(SearchPathPlugin):
     def manipulate_search_path(self, search_path: ConfigSearchPath) -> None:
@@ -16,7 +18,8 @@ class AutrainerPathPlugin(SearchPathPlugin):
             os.path.dirname(autrainer.__path__[0]),
             "autrainer-configurations",
         )
-        search_path.append(provider="autrainer-current", path="file://conf")
+        snapshot = f"file://{ConfigDirSnapshot().create_snapshot_dir()}"
+        search_path.append(provider="autrainer-snapshot", path=snapshot)
         search_path.append(
             provider="autrainer-configs",
             path=f"file://{lib_path}",
