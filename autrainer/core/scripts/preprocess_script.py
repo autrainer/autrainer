@@ -5,7 +5,6 @@ from omegaconf import DictConfig, OmegaConf
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
-from autrainer.core.structs import DataBatch
 
 from .abstract_preprocess_script import (
     AbstractPreprocessScript,
@@ -37,6 +36,7 @@ def preprocess_main(
     import torch
     from tqdm import tqdm
 
+    from autrainer.core.structs import DataBatch
     from autrainer.datasets import AbstractDataset
     from autrainer.datasets.utils import AbstractFileHandler
     from autrainer.transforms import SmartCompose
