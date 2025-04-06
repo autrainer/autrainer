@@ -72,8 +72,10 @@ class FetchScript(AbstractPreprocessScript):
         print("Fetching models...")
         for name, model in self.models.items():
             print(f" - {name}")
+            model_checkpoint = model.pop("model_checkpoint", None)
+            if model_checkpoint:
+                continue  # no need to download if checkpoint is provided
             model.pop("transform", None)
-            model.pop("model_checkpoint", None)
             model.pop("optimizer_checkpoint", None)
             model.pop("scheduler_checkpoint", None)
             model.pop("skip_last_layer", None)
