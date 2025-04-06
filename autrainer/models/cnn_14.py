@@ -26,10 +26,9 @@ class Cnn14(AbstractModel):
             transfer: Link to the weights to transfer. If None, the weights
                 weights will be randomly initialized. Defaults to None.
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, transfer)
         self.segmentwise = segmentwise
         self.in_channels = in_channels
-        self.transfer = transfer
 
         self.bn0 = torch.nn.BatchNorm2d(64)
         self.conv_block1 = ConvBlock(in_channels=in_channels, out_channels=64)
@@ -43,7 +42,7 @@ class Cnn14(AbstractModel):
         self.out = torch.nn.Linear(2048, self.output_dim, bias=True)
 
         self.init_weight()
-        if self.transfer is not None:
+        if self.transfer:  # pragma: no cover
             import numpy as np
             from numpy.core.multiarray import _reconstruct
 

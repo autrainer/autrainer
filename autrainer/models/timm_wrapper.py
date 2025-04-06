@@ -12,7 +12,7 @@ class TimmModel(AbstractModel):
         self,
         output_dim: int,
         timm_name: str,
-        transfer=False,
+        transfer: bool = False,
         **kwargs,
     ) -> None:
         """Wrapper for timm models.
@@ -25,9 +25,8 @@ class TimmModel(AbstractModel):
                 output features. Defaults to False.
             kwargs: Additional arguments to pass to the model constructor.
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, transfer)
         self.timm_name = timm_name
-        self.transfer = transfer
         for key, value in kwargs.items():
             setattr(self, key, value)
 

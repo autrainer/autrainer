@@ -69,7 +69,7 @@ class LEAFNet(AbstractModel):
             ValueError: If efficientnet_type is not supported.
             ValueError: If mode is not supported.
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, transfer)
         # convert LEAF params from ms to samples
         self.mode = mode
         self.initialization = initialization
@@ -83,7 +83,6 @@ class LEAFNet(AbstractModel):
         self.window_stride = window_stride
         self.padding_kernel_size = padding_kernel_size
         self.efficientnet_type = efficientnet_type
-        self.transfer = transfer
         kernel_size_sample = int(sample_rate * kernel_size / 1000)
         kernel_size_sample += 1 - (kernel_size % 2)  # make odd
 

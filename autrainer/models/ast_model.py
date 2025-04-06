@@ -30,12 +30,11 @@ class ASTModel(AbstractModel):
                 For more information see:
                 https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, transfer)
         self.num_hidden_layers = num_hidden_layers
         self.hidden_size = hidden_size
         self.dropout = dropout
-        self.transfer = transfer
-        if self.transfer is not None:
+        if self.transfer:  # pragma: no cover
             self.model = ASTBaseModel.from_pretrained(
                 self.transfer,
                 num_hidden_layers=num_hidden_layers,

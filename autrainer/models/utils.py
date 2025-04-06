@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Dict, List, Union
+from typing import Callable, Dict, List, Optional, Union
 import warnings
 
 import requests
@@ -200,3 +200,15 @@ def create_model_inputs(
         if key not in _forbidden and key in model.inputs:
             model_inputs[key] = value
     return model_inputs
+
+
+def assert_no_transfer_weights(
+    model: AbstractModel,
+    transfer: Optional[Union[bool, str]] = None,
+) -> None:
+    if not transfer:
+        return
+    raise ValueError(
+        f"Model '{type(model).__name__}' does not support "
+        f"transfer='{transfer}'. Set transfer to 'False' or 'None'. "
+    )

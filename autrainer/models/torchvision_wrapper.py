@@ -12,7 +12,7 @@ class TorchvisionModel(AbstractModel):
         self,
         output_dim: int,
         torchvision_name: str,
-        transfer=False,
+        transfer: bool = False,
         **kwargs,
     ) -> None:
         """Wrapper for torchvision models.
@@ -27,13 +27,12 @@ class TorchvisionModel(AbstractModel):
                 output features. Defaults to False.
             kwargs: Additional arguments to pass to the model constructor.
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, transfer)
         self.torchvision_name = torchvision_name
-        self.transfer = transfer
         for key, value in kwargs.items():
             setattr(self, key, value)  # pragma: no cover
 
-        if transfer:
+        if transfer:  # pragma: no cover
             self.model = torchvision.models.get_model(
                 torchvision_name,
                 weights="DEFAULT",

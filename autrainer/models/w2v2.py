@@ -1,7 +1,7 @@
 import warnings
 
 import torch
-from transformers import Wav2Vec2Model
+from transformers import Wav2Vec2Config, Wav2Vec2Model
 
 from .abstract_model import AbstractModel
 from .ffnn import FFNN
@@ -13,14 +13,26 @@ class W2V2Backbone(AbstractModel):
         model_name,
         freeze_extractor: bool = True,
         time_pooling: bool = True,
+        transfer: bool = False,
     ) -> None:
         self.model_name = model_name
         self.freeze_extractor = freeze_extractor
         self.time_pooling = time_pooling
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            model = Wav2Vec2Model.from_pretrained(self.model_name)
-        super().__init__(output_dim=model.config.hidden_size)
+            if transfer:  # pragma: no cover
+                model = Wav2Vec2Model.from_pretrained(self.model_name)
+            else:
+                config = Wav2Vec2Config.from_pretrained(
+                    self.model_name,
+                    output_hidden_states=True,
+                    return_dict=True,
+                )
+                model = Wav2Vec2Model(config)
+        super().__init__(
+            output_dim=model.config.hidden_size,
+            transfer=transfer,
+        )
         self.model = model
         if self.freeze_extractor:
             self.model.freeze_feature_encoder()
@@ -44,6 +56,7 @@ class W2V2FFNN(AbstractModel):
         hidden_size: int,
         num_layers: int = 2,
         dropout: float = 0.5,
+        transfer: bool = False,
     ) -> None:
         """Wav2Vec2 model with FFNN frontend adapted for audio classification.
         For more information, see:
@@ -56,8 +69,10 @@ class W2V2FFNN(AbstractModel):
             hidden_size: Hidden size of the FFNN.
             num_layers: Number of layers of the FFNN. Defaults to 2.
             dropout: Dropout rate. Defaults to 0.5.
+            transfer: Whether to initialize the Wav2Vec2 backbone with
+                pretrained weights. Defaults to False.
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, transfer)
         self.model_name = model_name
         self.freeze_extractor = freeze_extractor
         self.hidden_size = hidden_size
@@ -67,6 +82,7 @@ class W2V2FFNN(AbstractModel):
             model_name=model_name,
             freeze_extractor=freeze_extractor,
             time_pooling=True,
+            transfer=transfer,
         )
         self.frontend = FFNN(
             input_size=self.backbone.output_dim,
