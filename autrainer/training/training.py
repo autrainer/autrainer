@@ -135,6 +135,8 @@ class ModularTaskTrainer:
 
         # ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints
         model_checkpoint = model_config.pop("model_checkpoint", None)
+        if model_checkpoint and model_config.get("transfer", None):
+            model_config.pop("transfer", None)  # skip transfer for checkpoints
         optimizer_checkpoint = model_config.pop("optimizer_checkpoint", None)
         scheduler_checkpoint = model_config.pop("scheduler_checkpoint", None)
         skip_last_layer = model_config.pop("skip_last_layer", True)
