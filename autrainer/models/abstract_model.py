@@ -1,21 +1,29 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
 from inspect import signature
-from typing import List
+from typing import List, Optional, Union
 
 import audobject
 import torch
 
 
 class AbstractModel(torch.nn.Module, audobject.Object, ABC):
-    def __init__(self, output_dim: int) -> None:
+    def __init__(
+        self,
+        output_dim: int,
+        transfer: Optional[Union[bool, str]] = None,
+    ) -> None:
         """Abstract model class.
 
         Args:
             output_dim: Output dimension of the model.
+            transfer: Whether to load the model with pretrained weights if
+                available. May be a boolean or a string representing a truthy
+                or falsy value. Defaults to None.
         """
         super().__init__()
         self.output_dim = output_dim
+        self.transfer = transfer
 
     @abstractmethod
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
@@ -58,4 +66,4 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         Returns:
             Model output.
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
