@@ -1,14 +1,13 @@
-id: Whisper-FFNN-Tiny-T
+id: Whisper-FFNN-Base
 _target_: autrainer.models.WhisperFFNN
-model_name: openai/whisper-tiny
+model_name: openai/whisper-base
 hidden_size: 512
 num_layers: 2
 dropout: 0.5
-transfer: true
 
 transform:
   type: raw
   base:
     - autrainer.transforms.FeatureExtractor:
         fe_type: Whisper
-        fe_transfer: openai/whisper-tiny
+        fe_transfer: openai/whisper-base
