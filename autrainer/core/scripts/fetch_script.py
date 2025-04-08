@@ -23,7 +23,7 @@ class FetchScript(AbstractPreprocessScript):
         super().__init__(
             "fetch",
             (
-                "Fetch the datasets and models specified in a "
+                "Fetch the datasets, models, and transforms specified in a "
                 "training configuration (Hydra)."
             ),
             extended_description=(
@@ -101,7 +101,8 @@ def fetch(
     config_name: str = "config",
     config_path: Optional[str] = None,
 ) -> None:
-    """Fetch the datasets and models specified in a training configuration.
+    """Fetch the datasets, models, and transforms specified in a training
+    configuration.
 
     Args:
         override_kwargs: Additional Hydra override arguments to pass to the
