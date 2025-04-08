@@ -67,17 +67,31 @@ class FetchScript(AbstractPreprocessScript):
                     "path": dataset["path"],
                 },
             )  # pragma: no cover
+            self._download_transform(dataset.get("transform", None))
 
     def _download_models(self) -> None:
         print("Fetching models...")
         for name, model in self.models.items():
             print(f" - {name}")
-            model.pop("transform", None)
+            self._download_transform(model.pop("transform", None))
             model.pop("model_checkpoint", None)
             model.pop("optimizer_checkpoint", None)
             model.pop("scheduler_checkpoint", None)
             model.pop("skip_last_layer", None)
             autrainer.instantiate(config=model, output_dim=10)
+
+    def _download_transform(self, transform: Optional[DictConfig]) -> None:
+        if not transform:
+            return
+        from autrainer.transforms import TransformManager
+
+        for subset in ["base", "train", "dev", "test"]:
+            if (transforms := transform.get(subset, None)) is None:
+                continue
+            for t in transforms:
+                if isinstance(t, dict) and next(iter(t.values())) is None:
+                    continue  # skip removed transforms
+                TransformManager._instantiate(t)
 
 
 @catch_cli_errors
