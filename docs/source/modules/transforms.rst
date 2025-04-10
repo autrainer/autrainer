@@ -22,6 +22,12 @@ or custom transforms inheriting from the :class:`AbstractTransform` class.
 While the choice to use offline or online transforms depends on the use case and is a tradeoff between storage and computational costs,
 both can be used in conjunction for maximum flexibility.
 
+.. note::
+
+   Some transforms (such as :class:`~autrainer.transforms.FeatureExtractor`) may require additional resources
+   (e.g., tokenizers), which can be automatically downloaded using the :ref:`autrainer fetch <cli_autrainer_fetch>` CLI command
+   or the :meth:`~autrainer.cli.fetch` CLI wrapper function after specifying the transform in the model or dataset configuration.
+
 
 .. _preprocessing_transforms:
 
