@@ -144,7 +144,8 @@ def check_invalid_config_path_arg(parser: argparse.ArgumentParser) -> None:
             "The `--config-path/-cp` Hydra CLI argument is not supported "
             " by autrainer.\nTo override the config directory and name, "
             "use the `--config-dir/-cd` and `--config-name/-cn` arguments "
-            "instead.\nFor more information, refer to the Hydra documentation: "
-            "https://hydra.cc/docs/advanced/hydra-command-line-flags/"
+            "instead.\nFor more information, refer to the Hydra documentation "
+            "(https://hydra.cc/docs/advanced/hydra-command-line-flags/) and "
+            "https://github.com/autrainer/autrainer/pull/132."
         ),
     )
