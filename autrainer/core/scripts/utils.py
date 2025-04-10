@@ -1,3 +1,4 @@
+import argparse
 from functools import wraps
 import sys
 from typing import Any, Callable, Dict, Optional, TypeVar
@@ -128,3 +129,23 @@ def add_hydra_args_to_sys(
             f"{k}={v}"
             for k, v in encode_override_kwargs(override_kwargs).items()
         )
+
+
+def check_invalid_config_path_arg(parser: argparse.ArgumentParser) -> None:
+    cp_parser = argparse.ArgumentParser()
+    cp_parser.add_argument("--config-path", "-cp")
+    args, remaining = cp_parser.parse_known_args()
+    sys.argv = [sys.argv[0]] + remaining
+    if args.config_path is None:
+        return
+    raise CommandLineError(
+        parser=parser,
+        message=(
+            "The `--config-path/-cp` Hydra CLI argument is not supported "
+            " by autrainer.\nTo override the config directory and name, "
+            "use the `--config-dir/-cd` and `--config-name/-cn` arguments "
+            "instead.\nFor more information, refer to the Hydra documentation "
+            "(https://hydra.cc/docs/advanced/hydra-command-line-flags/) and "
+            "https://github.com/autrainer/autrainer/pull/132."
+        ),
+    )

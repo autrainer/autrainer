@@ -13,6 +13,7 @@ from .abstract_preprocess_script import (
 from .utils import (
     add_hydra_args_to_sys,
     catch_cli_errors,
+    check_invalid_config_path_arg,
     run_hydra_cmd,
     running_in_notebook,
 )
@@ -50,6 +51,7 @@ class FetchScript(AbstractPreprocessScript):
             if not self._id_in_dict(self.models, cfg.model.id):
                 self.models[cfg.model.id] = OmegaConf.to_container(cfg.model)
 
+        check_invalid_config_path_arg(self.parser)
         main()
         self._download_datasets()
         self._download_models()

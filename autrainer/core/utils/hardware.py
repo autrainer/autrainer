@@ -4,7 +4,6 @@ import platform
 import threading
 from typing import Callable, Optional
 
-import matplotlib
 from omegaconf import OmegaConf
 import psutil
 import torch
@@ -22,7 +21,6 @@ class ThreadManager:
         return cls._instance
 
     def _initialize(self) -> None:
-        self._matplotlib_backend = matplotlib.get_backend()
         self._threads = []
         self._lock = threading.Lock()
 
@@ -34,7 +32,6 @@ class ThreadManager:
             args: Arguments to pass to the function.
         """
         with self._lock:
-            matplotlib.use("Agg")  # TkAgg is not thread-safe
             t = threading.Thread(target=target, args=args or ())
             t.start()
             self._threads.append(t)
@@ -51,7 +48,6 @@ class ThreadManager:
         with self._lock:
             if self._threads:
                 return
-            matplotlib.use(self._matplotlib_backend)
 
 
 def get_gpu_info(device: torch.device) -> Optional[dict]:

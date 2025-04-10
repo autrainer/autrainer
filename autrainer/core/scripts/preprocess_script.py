@@ -13,6 +13,7 @@ from .abstract_preprocess_script import (
 from .utils import (
     add_hydra_args_to_sys,
     catch_cli_errors,
+    check_invalid_config_path_arg,
     run_hydra_cmd,
     running_in_notebook,
 )
@@ -185,6 +186,7 @@ class PreprocessScript(AbstractPreprocessScript):
                     pass
             self.preprocessing[cfg.dataset.id] = preprocessing_cfg
 
+        check_invalid_config_path_arg(self.parser)
         main()
         self._preprocess_datasets()
         self._clean_up()
