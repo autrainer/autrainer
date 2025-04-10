@@ -67,7 +67,8 @@ class Inference:
         sys.path.append(os.getcwd())
 
         self.model: AbstractModel = audobject.from_yaml(
-            os.path.join(self._model_path, "model.yaml")
+            os.path.join(self._model_path, "model.yaml"),
+            override_args={"transfer": None},
         )
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", UserWarning)

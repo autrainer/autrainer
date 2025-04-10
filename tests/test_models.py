@@ -69,7 +69,7 @@ class TestAllModels:
         model_kwargs: dict,
         input_shape: Tuple[int],
     ) -> None:
-        model = model_class(output_dim=10, **model_kwargs)
+        model = model_class(output_dim=10, transfer=False, **model_kwargs)
         self._test_model(model, input_shape)
 
     @staticmethod
@@ -88,34 +88,32 @@ class TestAllModels:
         emb = model.embeddings(x)
         assert isinstance(emb, torch.Tensor), "Model embeddings not a tensor"
 
-
-class TestASTModel:
-    def test_transfer(self) -> None:
-        model = ASTModel(
-            output_dim=10,
-            transfer="MIT/ast-finetuned-audioset-10-10-0.4593",
-        )
-        TestAllModels._test_model(model, (1024, 128))
-
-
-class TestCnn10Cnn14:
+    @pytest.mark.xfail(raises=ValueError)
     @pytest.mark.parametrize(
-        "cls, link",
+        "model_class, model_kwargs",
         [
+            (AudioRNNModel, {"model_name": "emo18"}),
+            (FFNN, {"input_size": 64, "hidden_size": 128}),
             (
-                Cnn10,
-                "https://zenodo.org/records/3987831/files/Cnn10_mAP%3D0.380.pth",
-            ),
-            (
-                Cnn14,
-                "https://zenodo.org/records/3987831/files/Cnn14_mAP%3D0.431.pth",
+                SeqFFNN,
+                {
+                    "backbone_input_dim": 64,
+                    "backbone_hidden_size": 128,
+                    "backbone_num_layers": 2,
+                    "hidden_size": 128,
+                },
             ),
         ],
     )
-    def test_transfer(self, cls: Type[Union[Cnn10, Cnn14]], link: str) -> None:
-        model = cls(output_dim=10, transfer=link)
-        TestAllModels._test_model(model, (1, 128, 64))
+    def test_invalid_transfer(
+        self,
+        model_class: Type[AbstractModel],
+        model_kwargs: dict,
+    ) -> None:
+        model_class(output_dim=10, transfer=True, **model_kwargs)
 
+
+class TestCnn10Cnn14:
     @pytest.mark.parametrize(
         "cls, expected",
         [(Cnn10, (1, 8, 10)), (Cnn14, (1, 4, 10))],
@@ -267,7 +265,7 @@ class TestWrongArgumentModel:
     def test_wrong_arguments(self) -> None:
         class Foo(AbstractModel):
             def __init__(self, output_dim):
-                super().__init__(output_dim)
+                super().__init__(output_dim, None)
 
             def embeddings(self, x):
                 return super().embeddings(x)

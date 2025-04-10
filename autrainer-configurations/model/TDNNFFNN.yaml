@@ -1,7 +1,6 @@
-id: TDNNFFNN-T
+id: TDNNFFNN
 _target_: autrainer.models.TDNNFFNN
 hidden_size: 32
-transfer: true
 
 transform:
   type: raw

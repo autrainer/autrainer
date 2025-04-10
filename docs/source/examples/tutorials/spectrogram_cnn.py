@@ -13,7 +13,7 @@ class SpectrogramCNN(AbstractModel):
             output_dim: Output dimension of the model.
             hidden_dims: List of hidden dimensions for the CNN layers.
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, None)  # no transfer learning
         self.hidden_dims = hidden_dims
         layers = []
         input_dim = 1

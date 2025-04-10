@@ -1,7 +1,10 @@
+from typing import Optional, Union
+
 import torch
 
 from .abstract_model import AbstractModel
 from .ffnn import FFNN
+from .utils import assert_no_transfer_weights
 
 
 class Sequential(AbstractModel):
@@ -14,9 +17,12 @@ class Sequential(AbstractModel):
         cell: str = "LSTM",
         time_pooling: bool = True,
         bidirectional: bool = False,
+        transfer: Optional[Union[bool, str]] = None,
     ):
+        assert_no_transfer_weights(self, transfer)
         super().__init__(
-            output_dim=2 * hidden_size if bidirectional else hidden_size
+            output_dim=2 * hidden_size if bidirectional else hidden_size,
+            transfer=None,  # no transfer learning weights
         )
         self.input_dim = input_dim
         self.hidden_size = hidden_size
@@ -61,6 +67,7 @@ class SeqFFNN(AbstractModel):
         backbone_cell: str = "LSTM",
         backbone_time_pooling: bool = True,
         backbone_bidirectional: bool = False,
+        transfer: Optional[Union[bool, str]] = None,
     ):
         """Sequential model with FFNN frontend.
 
@@ -79,8 +86,11 @@ class SeqFFNN(AbstractModel):
                 backbone. Defaults to True.
             backbone_bidirectional: Whether to use a bidirectional backbone.
                 Defaults to False.
+            transfer: Not available for this model. If set, raises an error.
+                Defaults to None.
         """
-        super().__init__(output_dim)
+        assert_no_transfer_weights(self, transfer)
+        super().__init__(output_dim, None)  # no transfer learning weights
         self.backbone_input_dim = backbone_input_dim
         self.backbone_hidden_size = backbone_hidden_size
         self.backbone_num_layers = backbone_num_layers

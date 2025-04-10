@@ -1,7 +1,9 @@
+from typing import Optional, Union
+
 import torch
 
 from .abstract_model import AbstractModel
-from .utils import ExtractLayerEmbeddings
+from .utils import ExtractLayerEmbeddings, assert_no_transfer_weights
 
 
 class FFNN(AbstractModel):
@@ -12,6 +14,7 @@ class FFNN(AbstractModel):
         hidden_size: int,
         num_layers: int = 2,
         dropout: float = 0.5,
+        transfer: Optional[Union[bool, str]] = None,
     ) -> None:
         """Feedforward neural network.
 
@@ -21,8 +24,11 @@ class FFNN(AbstractModel):
             hidden_size: Hidden size.
             num_layers: Number of layers.
             dropout: Dropout rate.
+            transfer: Not available for this model. If set, raises an error.
+                Defaults to None.
         """
-        super().__init__(output_dim)
+        assert_no_transfer_weights(self, transfer)
+        super().__init__(output_dim, None)  # no transfer learning weights
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.num_layers = num_layers
