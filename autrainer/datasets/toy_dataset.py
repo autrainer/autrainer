@@ -7,7 +7,7 @@ import pandas as pd
 import torch
 
 from autrainer.core.constants import TrainingConstants
-from autrainer.datasets.utils import DataItem
+from autrainer.core.structs import DataItem
 from autrainer.transforms import SmartCompose
 
 from .abstract_dataset import AbstractDataset

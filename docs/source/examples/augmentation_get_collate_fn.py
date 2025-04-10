@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, Callable
 
 from autrainer.augmentations.abstract_augmentation import AbstractAugmentation
+from autrainer.core.structs import DataBatch
 
 
 if TYPE_CHECKING:
     from autrainer.datasets import AbstractDataset
-    from autrainer.datasets.utils import DataBatch
 
 
 class ExampleCollateAugmentation(AbstractAugmentation):

@@ -5,14 +5,13 @@ import pandas as pd
 import torch
 from torchvision.transforms import v2
 
-from autrainer.datasets.utils import AbstractDataBatch
+from autrainer.core.structs import AbstractDataBatch, AbstractDataItem
 
 from .abstract_augmentation import AbstractAugmentation
 
 
 if TYPE_CHECKING:  # pragma: no cover
     from autrainer.datasets import AbstractDataset
-    from autrainer.datasets.utils import AbstractDataItem
 
 
 class BaseMixUpCutMix(AbstractAugmentation):
@@ -52,7 +51,7 @@ class BaseMixUpCutMix(AbstractAugmentation):
             num_classes=data.output_dim, alpha=self.alpha
         )
 
-        def _collate_fn(batch: List["AbstractDataItem"]) -> AbstractDataBatch:
+        def _collate_fn(batch: List[AbstractDataItem]) -> AbstractDataBatch:
             probability = torch.rand(1, generator=self.g).item()
             batched: AbstractDataBatch = default(batch)
             if probability < self.p:

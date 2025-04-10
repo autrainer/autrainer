@@ -3,8 +3,8 @@ from copy import deepcopy
 import pytest
 import torch
 
+from autrainer.core.structs import DataBatch
 from autrainer.criterions import CrossEntropyLoss
-from autrainer.datasets.utils import DataBatch
 from autrainer.models import FFNN
 from autrainer.optimizers import SAM
 

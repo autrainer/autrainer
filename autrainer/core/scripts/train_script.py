@@ -8,6 +8,7 @@ from .abstract_script import AbstractScript, MockParser
 from .utils import (
     add_hydra_args_to_sys,
     catch_cli_errors,
+    check_invalid_config_path_arg,
     run_hydra_cmd,
     running_in_notebook,
 )
@@ -72,6 +73,7 @@ class TrainScript(AbstractScript):
             )
             return trainer.train()
 
+        check_invalid_config_path_arg(self.parser)
         main()
 
 

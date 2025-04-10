@@ -59,7 +59,7 @@ can be named differently
 but they must be present
 as attributes
 in the corresponding
-:class:`~autrainer.datasets.utils.AbstractDataItem`.
+:class:`~autrainer.core.structs.AbstractDataItem`.
 
 .. autoclass:: autrainer.models.AbstractModel
    :members:
