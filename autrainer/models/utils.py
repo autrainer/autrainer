@@ -1,12 +1,12 @@
 import os
-from typing import Callable, Dict, List, Union
+from typing import Callable, Dict, List
 import warnings
 
 import requests
 import torch
 import torch.nn.functional as F
 
-from autrainer.datasets.utils import AbstractDataBatch, DataItem
+from autrainer.core.structs import AbstractDataBatch
 from autrainer.models import AbstractModel
 
 
@@ -192,7 +192,7 @@ class ExtractLayerEmbeddings:
 
 def create_model_inputs(
     model: AbstractModel,
-    data: Union[AbstractDataBatch, DataItem],
+    data: AbstractDataBatch,
 ) -> Dict[str, torch.Tensor]:
     _forbidden = ["features", "target", "index"]
     model_inputs = {model.inputs[0]: data.features}

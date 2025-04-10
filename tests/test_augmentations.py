@@ -28,7 +28,7 @@ from autrainer.augmentations import (
     TorchvisionAugmentation,
 )
 from autrainer.augmentations.image_augmentations import BaseMixUpCutMix
-from autrainer.datasets.utils import DataBatch, DataItem
+from autrainer.core.structs import DataBatch, DataItem
 from autrainer.transforms import SmartCompose
 
 

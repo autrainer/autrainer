@@ -2,9 +2,9 @@ from typing import Callable, Tuple
 
 import torch
 
-from autrainer.datasets.utils import AbstractDataBatch
+from autrainer.core.structs import AbstractDataBatch
 from autrainer.models import AbstractModel
-from autrainer.training.utils import create_model_inputs
+from autrainer.models.utils import create_model_inputs
 
 
 class RandomScaledSGD(torch.optim.Optimizer):

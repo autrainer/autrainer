@@ -4,9 +4,9 @@ from typing import List, Optional, Union
 import pandas as pd
 import torch
 
+from autrainer.core.structs import DataItem
 from autrainer.transforms import SmartCompose
 
-from .data_struct import DataItem
 from .file_handlers import AbstractFileHandler
 from .target_transforms import AbstractTargetTransform
 
