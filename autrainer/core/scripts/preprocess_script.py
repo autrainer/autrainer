@@ -39,7 +39,7 @@ def preprocess_main(
 
     from autrainer.core.structs import DataBatch
     from autrainer.datasets import AbstractDataset
-    from autrainer.datasets.utils import AbstractFileHandler, DataBatch
+    from autrainer.datasets.utils import AbstractFileHandler
     from autrainer.transforms import SmartCompose
 
     print(f" - {name}")
