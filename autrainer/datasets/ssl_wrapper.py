@@ -1,7 +1,8 @@
 from functools import cached_property
-from typing import Dict, List, Optional, Union
+import os
+from typing import Dict, Optional, Union
 
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 import pandas as pd
 
 import autrainer
@@ -14,16 +15,29 @@ from autrainer.transforms import SmartCompose
 class SSLWrapper(AbstractDataset):
     def __init__(
         self,
-        cfg: List[Union[str, DictConfig, Dict]],
+        cfg: str,
+        metrics,
+        tracking_metric,
         target_transform: Optional[SmartCompose] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
+        seed: Optional[int] = 0,
     ):
+        cfg = OmegaConf.load(
+            os.path.join(
+                os.path.dirname(autrainer.__path__[0]),
+                "autrainer-configurations",
+                "dataset",
+                f"{cfg}.yaml",
+            )
+        )
+        cfg.pop("criterion")
+        cfg.pop("transform")
         self.data = autrainer.instantiate_shorthand(
             config=cfg,
             instance_of=AbstractDataset,
-            seed=0,
+            seed=seed,
             train_transform=train_transform,
             dev_transform=dev_transform,
             test_transform=test_transform,
@@ -37,6 +51,10 @@ class SSLWrapper(AbstractDataset):
         self.index_column = self.data.index_column
         self.file_type = self.data.file_type
         self.file_handler = self.data.file_handler
+        self._generator = self.data._generator
+        self.seed = self.data.seed
+        self.metrics = [self._init_metric(m) for m in metrics]
+        self.tracking_metric = self._init_metric(tracking_metric)
 
     @cached_property
     def output_dim(self) -> int:
@@ -51,7 +69,7 @@ class SSLWrapper(AbstractDataset):
         Returns:
             Output dimension.
         """
-        return None
+        return 1
 
     def _init_dataset(
         self,
