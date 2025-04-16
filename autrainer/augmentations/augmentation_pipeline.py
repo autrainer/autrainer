@@ -11,6 +11,7 @@ class AugmentationPipeline:
         self,
         pipeline: List[Union[str, Dict[str, Any]]],
         generator_seed: int = 0,
+        increment: bool = True,
     ) -> None:
         """Initialize an augmentation pipeline.
 
@@ -19,20 +20,21 @@ class AugmentationPipeline:
             generator_seed: Seed to pass to each augmentation for
                 reproducibility if the augmentation does not have a seed.
                 Defaults to 0.
+            increment: Whether to increment the generator seed for each
+                augmentation that does not define its own seed.
+                Defaults to True.
         """
         self.generator_seed = generator_seed
-
         self.pipeline = []
         for aug in pipeline:
             if isinstance(aug, str):
-                self.pipeline.append(
-                    {aug: {"generator_seed": self.generator_seed}}
-                )
-            else:
-                aug_name = next(iter(aug.keys()))
-                if aug[aug_name].get("generator_seed") is None:
-                    aug[aug_name]["generator_seed"] = self.generator_seed
-                self.pipeline.append(aug)
+                aug = {aug: {}}  # convert to shorthand syntax
+            aug_name = next(iter(aug.keys()))
+            if aug[aug_name].get("generator_seed") is None:
+                aug[aug_name]["generator_seed"] = generator_seed
+                if increment:
+                    generator_seed += 1
+            self.pipeline.append(aug)
 
         self.pipeline: List[AbstractAugmentation] = [
             autrainer.instantiate_shorthand(
