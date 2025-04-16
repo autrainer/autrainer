@@ -1,6 +1,7 @@
+from copy import deepcopy
 import os
 import tempfile
-from typing import Any, Callable, Dict, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Tuple, Type, Union
 
 from omegaconf import DictConfig, ListConfig
 import pandas as pd
@@ -12,6 +13,7 @@ from autrainer.augmentations import (
     AlbumentationsAugmentation,
     AudiomentationsAugmentation,
     AugmentationManager,
+    AugmentationPipeline,
     Choice,
     CutMix,
     FrequencyMask,
@@ -435,3 +437,81 @@ class TestTimeWarp:
         x = torch.randn(1, 101, 64)
         y = TimeWarp(W=3, axis=axis)(x)
         assert x.shape == y.shape, "Should have same shape"
+
+
+PIPELINE_FIXTURES = [
+    [
+        "autrainer.augmentations.GaussianNoise",
+        {"autrainer.augmentations.CutMix": {"p": 0.5}},
+    ],
+    [
+        {"autrainer.augmentations.GaussianNoise": {"generator_seed": 2}},
+        "autrainer.augmentations.CutMix",
+    ],
+    [
+        "autrainer.augmentations.GaussianNoise",
+        {"autrainer.augmentations.CutMix": {"generator_seed": 3, "p": 0.5}},
+        "autrainer.augmentations.MixUp",
+    ],
+    [
+        "autrainer.augmentations.GaussianNoise",
+        {"autrainer.augmentations.CutMix": {"generator_seed": 4}},
+        "autrainer.augmentations.MixUp",
+    ],
+    [
+        {"autrainer.augmentations.CutMix": {"p": 0.5}},
+        {"autrainer.augmentations.CutMix": {"generator_seed": 5, "p": 0.5}},
+        "autrainer.augmentations.MixUp",
+        {"autrainer.augmentations.CutMix": {"generator_seed": 6}},
+        "autrainer.augmentations.MixUp",
+    ],
+]
+
+
+class TestAugmentationPipeline:
+    @pytest.mark.parametrize(
+        "idx, seeds",
+        [
+            (0, [42, 43]),
+            (1, [2, 42]),
+            (2, [42, 3, 43]),
+            (3, [42, 4, 43]),
+            (4, [42, 5, 43, 6, 44]),
+        ],
+    )
+    def test_with_increment(self, idx: int, seeds: List[int]) -> None:
+        self._test_increment(idx, seeds, increment=True)
+
+    @pytest.mark.parametrize(
+        "idx, seeds",
+        [
+            (0, [42, 42]),
+            (1, [2, 42]),
+            (2, [42, 3, 42]),
+            (3, [42, 4, 42]),
+            (4, [42, 5, 42, 6, 42]),
+        ],
+    )
+    def test_without_increment(self, idx: int, seeds: List[int]) -> None:
+        self._test_increment(idx, seeds, increment=False)
+
+    def _test_increment(
+        self,
+        idx: int,
+        seeds: List[int],
+        increment: bool,
+    ) -> None:
+        pipeline = AugmentationPipeline(
+            deepcopy(PIPELINE_FIXTURES)[idx],
+            generator_seed=42,
+            increment=increment,
+        ).create_pipeline()
+
+        assert len(pipeline.transforms) == len(PIPELINE_FIXTURES[idx])
+
+        for i, t in enumerate(pipeline.transforms):
+            assert isinstance(t, AbstractAugmentation)
+            assert t.generator_seed == seeds[i], (
+                f"Generator seed at index {i} should be {seeds[i]}, "
+                f"but got {t.generator_seed}."
+            )
