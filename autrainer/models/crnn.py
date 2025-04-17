@@ -23,6 +23,7 @@ class CRNN(AbstractModel):
         hidden_size: int = 64,
         n_layers_rnn: int = 1,
         rnn_type: str = "LSTM",
+        bidirectional: bool = True,
     ) -> None:
         """DCASE 2019 Task 4 Baseline CRNN model. For more information see:
         Paper: https://inria.hal.science/hal-02160855.
@@ -44,11 +45,8 @@ class CRNN(AbstractModel):
             activation: Activation function for CNN. Defaults to "Relu".
             hidden_size: Hidden size of the RNN. Defaults to 64.
             n_layers_rnn: Number of RNN layers. Defaults to 1.
-            attention: Whether to use attention. Defaults to False.
-            threshold: Threshold for binary classification. Defaults to 0.3.
-            return_raw_predictions: If True, return the raw predictions before thresholding. Defaults to False.
-            fc_grad_clip: Gradient clipping for the FC layer. Defaults to 0.5.
-            rnn_type: Type of RNN to use. One of ["GRU", "LSTM"]. Defaults to "GRU".
+            rnn_type: Type of RNN to use. One of ["GRU", "LSTM"]. Defaults to "LSTM".
+            bidirectional: Whether to use bidirectional RNN. Defaults to True.
         """
         super().__init__(output_dim)
         self.dropout = dropout
@@ -64,6 +62,7 @@ class CRNN(AbstractModel):
         self.hidden_size = hidden_size
         self.n_layers_rnn = n_layers_rnn
         self.rnn_type = rnn_type
+        self.bidirectional = bidirectional
 
         if isinstance(dropout, float):
             conv_dropout = rnn_dropout = fc_dropout = dropout
@@ -100,15 +99,14 @@ class CRNN(AbstractModel):
                 hidden_size=hidden_size,
                 num_layers=n_layers_rnn,
                 batch_first=True,
-                bidirectional=True,
+                bidirectional=bidirectional,
                 dropout=rnn_dropout if n_layers_rnn > 1 else 0.0,
             )
-
         elif rnn_type.upper() == "LSTM":
             self.rnn = nn.LSTM(
                 input_size=cnn_output_channels,
                 hidden_size=hidden_size,
-                bidirectional=True,
+                bidirectional=bidirectional,
                 batch_first=True,
                 dropout=rnn_dropout if n_layers_rnn > 1 else 0.0,
                 num_layers=n_layers_rnn,
@@ -119,19 +117,12 @@ class CRNN(AbstractModel):
             )
 
         self.dropout_layer = nn.Dropout(fc_dropout)
-        self.fc = nn.Linear(hidden_size * 2, output_dim)
+        fc_input_size = hidden_size * 2 if bidirectional else hidden_size
+        self.fc = nn.Linear(fc_input_size, output_dim)
         self.batch_norm = nn.BatchNorm1d(output_dim)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
-        x = self.cnn(features)
-        bs, chan, frames, freq = x.size()
-        if freq != 1:
-            x = x.permute(0, 2, 1, 3)
-            x = x.contiguous().view(bs, frames, chan * freq)
-        else:
-            x = x.squeeze(-1)
-            x = x.permute(0, 2, 1)  # [bs, frames, chan]
-        x, _ = self.rnn(x)  # Extract output from RNN tuple
+        x = self.embeddings(features)
         x = self.dropout_layer(x)
         strong = self.fc(x)  # [bs, frames, nclass]
         strong = self.batch_norm(strong.transpose(1, 2)).transpose(1, 2)
@@ -146,7 +137,7 @@ class CRNN(AbstractModel):
         else:
             x = x.squeeze(-1)
             x = x.permute(0, 2, 1)  # [bs, frames, chan]
-        x = self.rnn(x)
+        x, _ = self.rnn(x)  # Extract output from RNN tuple
         return x
 
 
