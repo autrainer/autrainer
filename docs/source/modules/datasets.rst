@@ -17,9 +17,9 @@ In addition to the common attributes like :attr:`id`, :attr:`_target_`, the data
 
 * :attr:`path`: Directory path containing the :attr:`features_subdir` directory and corresponding CSV files
   (such as :file:`train.csv`, :file:`dev.csv`, and :file:`test.csv`).
-* :attr:`features_subdir`: The subdirectory within the dataset path where (extracted) features are stored.
+* :attr:`features_subdir`: Optional subdirectory within the dataset path where (extracted) features are stored.
 
-  * If no preprocessing is used (e.g., for raw audio), it should be :attr:`default`.
+  * If not present and no preprocessing is used (e.g., for raw audio), the subdirectory defaults to :attr:`~autrainer.datasets.AbstractDataset.audio_subdir`.
   * For :ref:`preprocessing transforms <preprocessing_transforms>` (e.g., log-Mel spectrograms with :attr:`log_mel_16k`),
     it should match the transform's name, and the processed features are saved in this subdirectory after preprocessing.
 
