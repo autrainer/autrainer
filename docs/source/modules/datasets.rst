@@ -25,6 +25,9 @@ In addition to the common attributes like :attr:`id`, :attr:`_target_`, the data
   * If features are stored outside of the dataset root directory (:attr:`path`),
     an absolute path can be specified to override the default directory structure outlined below.
 
+* :attr:`features_path`: Optional root directory for the :attr:`features_subdir` directory, replacing the :attr:`path` attribute for the features.
+  Useful when the features are stored in (or should be extracted to) a different directory than the root of the dataset.
+  If not specified, the :attr:`path` attribute is used as the root directory for the features.
 * :attr:`index_column`: Column in the CSV files containing the file paths, relative to the :attr:`features_subdir` directory.
 * :attr:`target_column`: Column in the CSV files containing the corresponding targets or labels for each file.
 * :attr:`file_type`: Specifies the type of files to be loaded (e.g., :attr:`wav`, :attr:`npy`, etc.).
