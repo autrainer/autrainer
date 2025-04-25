@@ -22,6 +22,8 @@ In addition to the common attributes like :attr:`id`, :attr:`_target_`, the data
   * If not present and no preprocessing is used (e.g., for raw audio), the subdirectory defaults to :attr:`~autrainer.datasets.AbstractDataset.audio_subdir`.
   * For :ref:`preprocessing transforms <preprocessing_transforms>` (e.g., log-Mel spectrograms with :attr:`log_mel_16k`),
     it should match the transform's name, and the processed features are saved in this subdirectory after preprocessing.
+  * If features are stored outside of the dataset root directory (:attr:`path`),
+    an absolute path can be specified to override the default directory structure outlined below.
 
 * :attr:`index_column`: Column in the CSV files containing the file paths, relative to the :attr:`features_subdir` directory.
 * :attr:`target_column`: Column in the CSV files containing the corresponding targets or labels for each file.
