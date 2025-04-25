@@ -26,7 +26,7 @@ class MSPPodcast(AbstractDataset):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         index_column: str = "FileName",
-        features_subdir: str = None,
+        features_subdir: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,

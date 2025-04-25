@@ -33,7 +33,7 @@ class AbstractDataset(ABC):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         task: str,
         metrics: List[Union[str, DictConfig, Dict]],
@@ -384,7 +384,7 @@ class BaseClassificationDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
@@ -464,7 +464,7 @@ class BaseMLClassificationDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
@@ -559,7 +559,7 @@ class BaseRegressionDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
@@ -631,7 +631,7 @@ class BaseMTRegressionDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],

@@ -14,7 +14,7 @@ class AIBO(BaseClassificationDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
