@@ -1,0 +1,17 @@
+id: DCASE2019Task4-32k
+_target_: autrainer.datasets.DCASE2019Task4
+
+path: data/DCASE2019
+features_subdir: log_mel_32k
+index_column: filename
+target_column: event_label
+file_type: npy
+file_handler: autrainer.datasets.utils.NumpyFileHandler
+
+criterion: torch.nn.BCEWithLogitsLoss
+metrics:
+  - autrainer.metrics.SegmentBasedF1
+tracking_metric: autrainer.metrics.SegmentBasedF1
+
+transform:
+  type: grayscale

@@ -1,0 +1,5 @@
+id: DCASE2019-T4
+_target_: autrainer.models.CRNN
+
+transform:
+  type: grayscale
