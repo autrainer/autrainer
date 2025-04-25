@@ -103,7 +103,7 @@ class MSPPodcast(AbstractDataset):
 
     @property
     def audio_subdir(self) -> str:
-        """Subfolder containing audio data.
+        """Subdirectory containing audio data.
 
         Defaults to `Audios` for MSP-Podcast.
         """

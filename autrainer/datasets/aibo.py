@@ -46,7 +46,7 @@ class AIBO(BaseClassificationDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -78,7 +78,7 @@ class AIBO(BaseClassificationDataset):
 
     @property
     def audio_subdir(self) -> str:
-        """Subfolder containing audio data."""
+        """Subdirectory containing audio data."""
         return "wav"
 
     @cached_property

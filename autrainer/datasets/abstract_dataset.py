@@ -67,7 +67,7 @@ class AbstractDataset(ABC):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -108,7 +108,7 @@ class AbstractDataset(ABC):
 
     @property
     def audio_subdir(self) -> str:
-        """Subfolder containing audio data.
+        """Subdirectory containing audio data.
 
         Defaults to `default` for our standard format.
         Should be overridden for datasets
@@ -415,7 +415,7 @@ class BaseClassificationDataset(AbstractDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -496,7 +496,7 @@ class BaseMLClassificationDataset(AbstractDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -590,7 +590,7 @@ class BaseRegressionDataset(AbstractDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -662,7 +662,7 @@ class BaseMTRegressionDataset(AbstractDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
