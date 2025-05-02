@@ -35,8 +35,8 @@ class SpectrogramCNN(AbstractModel):
         self.backbone = torch.nn.Sequential(*layers)
         self.classifier = torch.nn.Linear(self.hidden_dims[-1], output_dim)
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        return self.backbone(x)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        return self.backbone(features)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.classifier(self.embeddings(x))
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        return self.classifier(self.embeddings(features))
