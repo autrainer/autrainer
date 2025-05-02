@@ -4,6 +4,8 @@ import torch
 import torchaudio.transforms as T
 import torchvision.transforms.functional as F
 
+from autrainer.core.structs import AbstractDataItem
+
 from .abstract_augmentation import AbstractAugmentation
 from .spectrogram_warp_utils import _sparse_image_warp
 
@@ -42,9 +44,10 @@ class GaussianNoise(AbstractAugmentation):
         if self.generator_seed is not None:
             self._generator.manual_seed(self.generator_seed)
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
-        r = torch.randn(x.size(), generator=self._generator)
-        return x + r * self.std + self.mean
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
+        r = torch.randn(item.features.size(), generator=self._generator)
+        item.features = item.features + r * self.std + self.mean
+        return item
 
 
 class TimeShift(AbstractAugmentation):
@@ -85,19 +88,22 @@ class TimeShift(AbstractAugmentation):
         if self.generator_seed is not None:
             self._generator.manual_seed(self.generator_seed)
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         if self.time_steps == 0:
-            return x
+            return item
 
         t = torch.randint(
-            -self.time_steps, self.time_steps, (1,), generator=self._generator
+            -self.time_steps,
+            self.time_steps,
+            (1,),
+            generator=self._generator,
         ).item()
         if self.axis == 1:
-            t1, t2 = x[:, :, :-t].clone(), x[:, :, -t:].clone()
+            t1, t2 = item.features[:, :, :-t], item.features[:, :, -t:]
         else:
-            t1, t2 = x[:, :-t, :].clone(), x[:, -t:, :].clone()
-
-        return torch.cat((t2, t1), dim=self.axis + 1)
+            t1, t2 = item.features[:, :-t, :], item.features[:, -t:, :]
+        item.features = torch.cat((t2, t1), dim=self.axis + 1)
+        return item
 
 
 class TimeMask(AbstractAugmentation):
@@ -140,17 +146,16 @@ class TimeMask(AbstractAugmentation):
         self.replace_with_zero = replace_with_zero
         self.masking = T.TimeMasking(time_mask_param=self.time_mask)
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         if self.time_mask == 0:
-            return x
+            return item
         if self.axis == 0:
-            x = torch.rot90(x, 3, [1, 2])
-            x = self.masking(x)
-            x = torch.rot90(x, 1, [1, 2])
+            item.features = torch.rot90(item.features, 3, [1, 2])
+            item.features = self.masking(item.features)
+            item.features = torch.rot90(item.features, 1, [1, 2])
         else:
-            x = self.masking(x)
-
-        return x
+            item.features = self.masking(item.features)
+        return item
 
 
 class FrequencyMask(AbstractAugmentation):
@@ -193,17 +198,16 @@ class FrequencyMask(AbstractAugmentation):
         self.replace_with_zero = replace_with_zero
         self.masking = T.FrequencyMasking(freq_mask_param=self.freq_mask)
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         if self.freq_mask == 0:
-            return x
+            return item
         if self.axis == 1:
-            x = torch.rot90(x, 3, [1, 2])
-            x = self.masking(x)
-            x = torch.rot90(x, 1, [1, 2])
+            item.features = torch.rot90(item.features, 3, [1, 2])
+            item.features = self.masking(item.features)
+            item.features = torch.rot90(item.features, 1, [1, 2])
         else:
-            x = self.masking(x)
-
-        return x
+            item.features = self.masking(item.features)
+        return item
 
 
 class TimeWarp(AbstractAugmentation):
@@ -244,12 +248,12 @@ class TimeWarp(AbstractAugmentation):
         if self.generator_seed is not None:
             self._generator.manual_seed(self.generator_seed)
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
-        device = x.device
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
+        device = item.features.device
         if self.axis == 0:
-            x = torch.rot90(x, 3, [1, 2])
+            item.features = torch.rot90(item.features, 3, [1, 2])
 
-        _, num_freq_channels, len_time = F.get_dimensions(x)
+        _, num_freq_channels, len_time = F.get_dimensions(item.features)
 
         # random point along the time axis
         pt = (len_time - 2 * self.W) * torch.rand(
@@ -277,7 +281,8 @@ class TimeWarp(AbstractAugmentation):
         dest_ctr_pt_freq = src_ctr_pt_freq
         dest_ctr_pt_time = src_ctr_pt_time + w
         dest_ctr_pts = torch.stack(
-            (dest_ctr_pt_freq, dest_ctr_pt_time), dim=-1
+            (dest_ctr_pt_freq, dest_ctr_pt_time),
+            dim=-1,
         )
         dest_ctr_pts = dest_ctr_pts.float().to(device)
 
@@ -285,12 +290,15 @@ class TimeWarp(AbstractAugmentation):
         dest_ctr_pt_locations = torch.unsqueeze(dest_ctr_pts, 0)
 
         warped_spectro, _ = _sparse_image_warp(
-            x, src_ctr_pt_locations, dest_ctr_pt_locations
+            item.features,
+            src_ctr_pt_locations,
+            dest_ctr_pt_locations,
         )
 
         if self.axis == 0:
             warped_spectro = torch.rot90(warped_spectro, 1, [1, 2])
-        return warped_spectro
+        item.features = warped_spectro
+        return item
 
 
 class SpecAugment(AbstractAugmentation):
@@ -348,8 +356,8 @@ class SpecAugment(AbstractAugmentation):
             axis=0,
         )
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
-        x = self._time_warp(x)
-        x = self._freq_mask(x)
-        x = self._time_mask(x)
-        return x
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
+        item = self._time_warp(item)
+        item = self._freq_mask(item)
+        item = self._time_mask(item)
+        return item
