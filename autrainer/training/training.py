@@ -176,7 +176,7 @@ class ModularTaskTrainer:
         if optimizer_checkpoint:
             state_dict = torch.load(
                 optimizer_checkpoint,
-                map_location="cpu",
+                map_location=self.DEVICE,
                 weights_only=True,
             )
             load_pretrained_optim_state(
