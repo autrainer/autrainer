@@ -39,8 +39,8 @@ class TimmModel(AbstractModel):
         )
         self._embedding_extractor = ExtractLayerEmbeddings(self.model)
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        return self._embedding_extractor(x)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        return self._embedding_extractor(features)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         return self.model(features)
