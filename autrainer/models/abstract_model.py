@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
 from inspect import signature
-from typing import List, Optional, Union
+from typing import Callable, List, Optional, Union
 
 import audobject
 import torch
@@ -24,6 +24,8 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         super().__init__()
         self.output_dim = output_dim
         self.transfer = transfer
+        self.inputs  # precompute and verify inputs
+        self.embedding_inputs  # precompute and verify embedding inputs
 
     @abstractmethod
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
@@ -43,15 +45,28 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         Returns:
             Model inputs.
         """
-        names = [v.name for v in signature(self.forward).parameters.values()]
+        return self._collect_inputs(self.forward)
+
+    @cached_property
+    def embedding_inputs(self) -> List[str]:
+        """Get the inputs to the model's embedding method.
+
+        Returns:
+            Model inputs.
+        """
+        return self._collect_inputs(self.embeddings)
+
+    def _collect_inputs(self, fn: Callable) -> List[str]:
+        names = [v.name for v in signature(fn).parameters.values()]
+        fn_name = fn.__name__
         if names[0] != "features":
             raise NameError(
                 (
                     f"Model {type(self).__name__} "
                     "does not have 'features' "
-                    "as the first argument of its 'forward' method. "
+                    f"as the first argument of its '{fn_name}' method. "
                     f"Its arguments are: {names}. "
-                    "Please rewrite the 'forward' method accordingly."
+                    f"Please rewrite the '{fn_name}' method accordingly."
                 )
             )
         return names

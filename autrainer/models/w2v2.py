@@ -37,14 +37,14 @@ class W2V2Backbone(AbstractModel):
         if self.freeze_extractor:
             self.model.freeze_feature_encoder()
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.model(x)["last_hidden_state"]
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        features = self.model(features)["last_hidden_state"]
         if self.time_pooling:
-            x = x.mean(1)
-        return x
+            features = features.mean(1)
+        return features
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.embeddings(x)
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        return self.embeddings(features)
 
 
 class W2V2FFNN(AbstractModel):
@@ -92,8 +92,8 @@ class W2V2FFNN(AbstractModel):
             dropout=dropout,
         )
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        return self.backbone(x.squeeze(1))
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        return self.backbone(features.squeeze(1))
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.frontend(self.embeddings(x))
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        return self.frontend(self.embeddings(features))

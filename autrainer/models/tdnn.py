@@ -65,11 +65,11 @@ class TDNNFFNN(AbstractModel):
             dropout=dropout,
         )
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        _device = x.device
-        feats = self.features(x.squeeze(1).cpu())
-        feats = feats.to(_device)
-        embs = self.backbone(feats).squeeze(1)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        _device = features.device
+        features = self.features(features.squeeze(1).cpu())
+        features = features.to(_device)
+        embs = self.backbone(features).squeeze(1)
         return embs
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:

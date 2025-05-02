@@ -100,8 +100,8 @@ class Cnn14(AbstractModel):
         x = F.relu_(self.fc1(x))
         return x
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        return self.get_embedding(x)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        return self.get_embedding(features)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         x = self.embeddings(features)

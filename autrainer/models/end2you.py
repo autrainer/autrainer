@@ -340,10 +340,10 @@ class AudioRNNModel(AbstractModel):
         )
         self.linear = nn.Linear(self.rnn.hidden_size, self.output_dim)
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        batch_size, seq_length, t = x.shape
-        x = x.view(batch_size * seq_length, 1, t)
-        audio_out = self.audio_model(x)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        batch_size, seq_length, t = features.shape
+        features = features.view(batch_size * seq_length, 1, t)
+        audio_out = self.audio_model(features)
         audio_out = audio_out.transpose(1, 2)
 
         rnn_out = self.rnn(audio_out)

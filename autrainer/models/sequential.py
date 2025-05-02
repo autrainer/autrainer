@@ -43,8 +43,8 @@ class Sequential(AbstractModel):
             bidirectional=bidirectional,
         )
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.model(x)[0]
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        x = self.model(features)[0]
         if self.time_pooling:
             x = x.mean(1)
         return x
@@ -118,8 +118,8 @@ class SeqFFNN(AbstractModel):
             dropout=dropout,
         )
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        return self.backbone(x.squeeze(1))
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        return self.backbone(features.squeeze(1))
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         return self.frontend(self.embeddings(features))

@@ -31,12 +31,12 @@ class WhisperBackbone(AbstractModel):
             torch.tensor([1, 1]) * self.model.config.decoder_start_token_id,
         )
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        decoder_input_ids = torch.stack([self.decoder_input_ids] * x.shape[0])
-        x = self.model(x, decoder_input_ids=decoder_input_ids)[
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        ids = torch.stack([self.decoder_input_ids] * features.shape[0])
+        features = self.model(features, decoder_input_ids=ids)[
             "last_hidden_state"
         ][:, 0, :]
-        return x
+        return features
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         return self.embeddings(features)
@@ -79,8 +79,8 @@ class WhisperFFNN(AbstractModel):
             dropout=dropout,
         )
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        return self.backbone(x)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        return self.backbone(features)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         return self.frontend(self.embeddings(features))
