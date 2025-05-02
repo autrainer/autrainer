@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict, List, Tuple, Type, Union
+from copy import deepcopy
+from typing import Any, Dict, List, Tuple, Type, Union
 import warnings
 
 import numpy as np
@@ -6,10 +7,9 @@ from omegaconf import DictConfig
 from PIL import Image
 import pytest
 import torch
-from torchvision import transforms as T
 
 from autrainer.augmentations import AbstractAugmentation, CutMix
-from autrainer.core.structs import DataBatch
+from autrainer.core.structs import DataBatch, DataItem
 from autrainer.datasets import AbstractDataset, ToyDataset
 from autrainer.transforms import (
     AbstractTransform,
@@ -25,7 +25,6 @@ from autrainer.transforms import (
     RandomCrop,
     Resample,
     Resize,
-    RGBAToGrayscale,
     RGBAToRGB,
     RGBToGrayscale,
     ScaleRange,
@@ -57,7 +56,6 @@ TRANSFORM_FIXTURES = [
         (1, 44100),
     ),
     (Resize, {"height": 64, "width": 128}, (3, 32, 32), (3, 64, 128)),
-    (RGBAToGrayscale, {}, (4, 32, 32), (1, 32, 32)),
     (RGBAToRGB, {}, (4, 32, 32), (3, 32, 32)),
     (RGBToGrayscale, {}, (3, 32, 32), (1, 32, 32)),
     (ScaleRange, {}, (3, 32, 32), (3, 32, 32)),
@@ -88,13 +86,21 @@ class TestAllTransforms:
             x = torch.randn(*input_shape, dtype=torch.float32)
         else:
             x = torch.randint(0, 256, input_shape, dtype=torch.uint8)
-        y = instance(x)
+        device = x.device
+        item = DataItem(x, 0, 0)
+        transformed = instance(item)
+        assert isinstance(
+            transformed, DataItem
+        ), "Transformed item should be of type DataItem."
+        assert isinstance(
+            transformed.features, torch.Tensor
+        ), "Transformed features should be of type torch.Tensor."
         assert (
-            y.shape == output_shape
-        ), "Output shape should match the expected shape"
+            transformed.features.shape == output_shape
+        ), "Output shape should match the expected shape."
         assert (
-            y.device == x.device
-        ), "Output device should match the input device"
+            transformed.features.device == device
+        ), "Output device should match the input device."
 
     def test_repr(self) -> None:
         assert (
@@ -104,56 +110,61 @@ class TestAllTransforms:
 
 class TestAnyToTensor:
     def test_tensor(self) -> None:
-        x = torch.randn(3, 32, 32)
+        x = DataItem(torch.randn(3, 32, 32), 0, 0)
         y = AnyToTensor()(x)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.dtype == torch.float32, "Output should be float32"
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert y.features.dtype == torch.float32, "Output should be float32"
         assert (
-            y.device == x.device
+            y.features.device == x.features.device
         ), "Output device should match the input device"
 
     def test_numpy(self) -> None:
-        x = np.random.rand(3, 32, 32)
-        x = x.astype(np.float32)
+        x = DataItem(np.random.rand(3, 32, 32).astype(np.float32), 0, 0)
         y = AnyToTensor()(x)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == torch.Size(
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert y.features.shape == torch.Size(
             [3, 32, 32]
         ), "Output shape should match input"
-        assert y.dtype == torch.float32, "Output should be float32"
-        assert y.device == torch.device("cpu"), "Output should be on CPU"
+        assert y.features.dtype == torch.float32, "Output should be float32"
+        assert y.features.device == torch.device(
+            "cpu"
+        ), "Output should be on CPU"
 
     def test_pil(self) -> None:
         x = Image.fromarray(np.random.rand(32, 32, 3).astype(np.uint8))
+        x = DataItem(x, 0, 0)
         y = AnyToTensor()(x)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == torch.Size(
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert y.features.shape == torch.Size(
             [3, 32, 32]
         ), "Output shape should match input"
-        assert y.dtype == torch.uint8, "Output should be uint8"
-        assert y.device == torch.device("cpu"), "Output should be on CPU"
+        assert y.features.dtype == torch.uint8, "Output should be uint8"
+        assert y.features.device == torch.device(
+            "cpu"
+        ), "Output should be on CPU"
 
     def test_wrong_input(self) -> None:
         with pytest.raises(TypeError):
-            AnyToTensor()(1)
+            AnyToTensor()(DataItem(0, 0, 0))
 
 
 class TestNumpyToTensor:
     def test_numpy(self) -> None:
-        x = np.random.rand(3, 32, 32)
-        x = x.astype(np.float32)
+        x = DataItem(np.random.rand(3, 32, 32).astype(np.float32), 0, 0)
         y = NumpyToTensor()(x)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == torch.Size(
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert y.features.shape == torch.Size(
             [3, 32, 32]
         ), "Output shape should match input"
-        assert y.dtype == torch.float32, "Output should be float32"
-        assert y.device == torch.device("cpu"), "Output should be on CPU"
+        assert y.features.dtype == torch.float32, "Output should be float32"
+        assert y.features.device == torch.device(
+            "cpu"
+        ), "Output should be on CPU"
 
 
 class TestPannMel:
     def test_spectrogram(self) -> None:
-        x = torch.randn(1, 16000 * 3)
+        x = DataItem(torch.randn(1, 16000 * 3), 0, 0)
         transform = PannMel(
             sample_rate=16000,
             window_size=512,
@@ -166,12 +177,14 @@ class TestPannMel:
             top_db=None,
         )
         y = transform(x)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == torch.Size(
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert y.features.shape == torch.Size(
             [1, 301, 64]
         ), "Output shape should match input"
-        assert y.dtype == torch.float32, "Output should be float32"
-        assert y.device == torch.device("cpu"), "Output should be on CPU"
+        assert y.features.dtype == torch.float32, "Output should be float32"
+        assert y.features.device == torch.device(
+            "cpu"
+        ), "Output should be on CPU"
 
 
 class TestResize:
@@ -189,13 +202,14 @@ class TestResize:
         width: Union[int, str],
         expected: Union[Tuple[int, int, int], None],
     ) -> None:
-        x = torch.randn(3, 32, 32)
+        x = DataItem(torch.randn(3, 32, 32), 0, 0)
         if not expected:
             with pytest.raises(ValueError):
                 Resize(height=height, width=width)
         else:
+            r = Resize(height=height, width=width)
             assert (
-                Resize(height=height, width=width)(x).shape == expected
+                r(x).features.shape == expected
             ), "Output shape should match the expected shape"
 
 
@@ -214,13 +228,13 @@ class TestSquarePadCrop:
         input_shape: Tuple[int, int, int],
         expected: Union[Tuple[int, int, int], None],
     ) -> None:
-        x = torch.randn(*input_shape)
+        x = DataItem(torch.randn(*input_shape), 0, 0)
         if not expected:
             with pytest.raises(ValueError):
                 SquarePadCrop(mode=mode)
         else:
             assert (
-                SquarePadCrop(mode=mode)(x).shape == expected
+                SquarePadCrop(mode=mode)(x).features.shape == expected
             ), "Output shape should match the expected shape"
 
 
@@ -237,15 +251,15 @@ class TestScaleRange:
         self._test_range(torch.randn(3, 32, 32), range)
 
     def test_range_zeros(self) -> None:
-        x = torch.zeros(3, 32, 32)
+        x = DataItem(torch.zeros(3, 32, 32), 0, 0)
         y = ScaleRange((0, 1))(x)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == torch.Size(
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert y.features.shape == torch.Size(
             [3, 32, 32]
         ), "Output shape should match input"
-        assert y.dtype == torch.float32, "Output should be float32"
-        assert y.min() == 0, "Min value should be 0"
-        assert y.max() == 0, "Max value should be 0"
+        assert y.features.dtype == torch.float32, "Output should be float32"
+        assert y.features.min() == 0, "Min value should be 0"
+        assert y.features.max() == 0, "Max value should be 0"
 
     @pytest.mark.parametrize("range", [(0, 0), (1, 2, 3)])
     def test_range_invalid(self, range: Tuple[int, int]) -> None:
@@ -253,14 +267,14 @@ class TestScaleRange:
             ScaleRange(range)
 
     def _test_range(self, x: torch.Tensor, range: Tuple[int, int]) -> None:
-        y = ScaleRange(range)(x)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == torch.Size(
+        y = ScaleRange(range)(DataItem(x, 0, 0))
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert y.features.shape == torch.Size(
             [3, 32, 32]
         ), "Output shape should match input"
-        assert y.dtype == torch.float32, "Output should be float32"
-        assert y.min() == range[0], "Min value should match the range"
-        assert y.max() == range[1], "Max value should match the range"
+        assert y.features.dtype == torch.float32, "Output should be float32"
+        assert y.features.min() == range[0], "Min value should match the range"
+        assert y.features.max() == range[1], "Max value should match the range"
 
 
 class TestImageToFloat:
@@ -272,10 +286,13 @@ class TestImageToFloat:
         ],
     )
     def test_image_to_float(self, data: torch.Tensor) -> None:
-        y = ImageToFloat()(data)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == data.shape, "Output shape should match input"
-        assert y.dtype == torch.float32, "Output should be float32"
+        x = DataItem(data, 0, 0)
+        y = ImageToFloat()(x)
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert (
+            y.features.shape == x.features.shape
+        ), "Output shape should match input"
+        assert y.features.dtype == torch.float32, "Output should be float32"
 
 
 class TestNormalize:
@@ -288,7 +305,7 @@ class TestNormalize:
     )
     def test_invalid_normalize(self, data: torch.Tensor) -> None:
         with pytest.raises(ValueError):
-            Normalize(mean=[0.0, 1.0], std=[1.0])(data)
+            Normalize(mean=[0.0, 1.0], std=[1.0])(DataItem(data, 0, 0))
 
     @pytest.mark.parametrize(
         "data",
@@ -301,10 +318,13 @@ class TestNormalize:
         ],
     )
     def test_normalize(self, data: torch.Tensor) -> None:
-        y = Normalize(mean=[0.0], std=[1.0])(data)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == data.shape, "Output shape should match input"
-        assert y.dtype == torch.float32, "Output should be float32"
+        x = DataItem(data, 0, 0)
+        y = Normalize(mean=[0.0], std=[1.0])(x)
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert (
+            y.features.shape == data.shape
+        ), "Output shape should match input"
+        assert y.features.dtype == torch.float32, "Output should be float32"
 
 
 class TestFeatureExtractor:
@@ -339,10 +359,10 @@ class TestFeatureExtractor:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             fe = FeatureExtractor(fe_type, fe_transfer)
-        x = torch.randn(*input_shape)
+        x = DataItem(torch.randn(*input_shape), 0, 0)
         y = fe(x)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == torch.Size(
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert y.features.shape == torch.Size(
             expected
         ), "Output shape should match the expected shape"
 
@@ -372,13 +392,13 @@ class TestOpenSMILE:
         functionals: bool,
         expected: Tuple[int, int],
     ) -> None:
-        x = torch.randn(16000)
+        x = DataItem(torch.randn(16000), 0, 0)
         y = OpenSMILE(feature_set, 16000, functionals=functionals)(x)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert y.shape == torch.Size(
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert y.features.shape == torch.Size(
             expected
         ), "Output shape should match the expected shape"
-        assert y.dtype == torch.float32, "Output should be float32"
+        assert y.features.dtype == torch.float32, "Output should be float32"
 
     def test_invalid(self) -> None:
         with pytest.raises(FileNotFoundError):
@@ -421,13 +441,15 @@ class TestStandardizer:
     def test_precomputed(self, mean: List[float], std: List[float]) -> None:
         t1 = Standardizer(mean=mean, std=std)
         t2 = Normalize(mean=mean, std=std)
-        x = torch.randn(3, 32, 32)
-        assert torch.allclose(t1(x), t2(x)), "Output should match Normalize."
+        x = DataItem(torch.randn(3, 32, 32), 0, 0)
+        assert torch.allclose(
+            t1(deepcopy(x)).features, t2(deepcopy(x)).features
+        ), "Output should match Normalize."
 
     def test_invalid_call(self) -> None:
         t = Standardizer()
         with pytest.raises(ValueError):
-            t(torch.randn(3, 32, 32))
+            t(DataItem(torch.randn(3, 32, 32), 0, 0))
 
     def test_invalid_setup(self) -> None:
         dataset = self._mock_dataset(
@@ -481,15 +503,14 @@ class TestSmartCompose:
     @pytest.mark.parametrize(
         "other",
         [
-            T.Compose([]),
             AnyToTensor(),
-            lambda x: x,
-            [lambda x: x],
+            SmartCompose([AnyToTensor()]),
+            [AnyToTensor(), CutMix()],
         ],
     )
     def test_add_valid(
         self,
-        other: Union[T.Compose, AbstractTransform, Callable, List[Callable]],
+        other: Union[SmartCompose, AbstractTransform, List[AbstractTransform]],
     ) -> None:
         assert isinstance(
             SmartCompose([]) + other, SmartCompose
@@ -509,9 +530,7 @@ class TestSmartCompose:
     )
     def test_collate_fn(
         self,
-        transforms: List[
-            Union[T.Compose, AbstractTransform, Callable, List[Callable]]
-        ],
+        transforms: List[AbstractTransform],
         has_collate_fn: bool,
     ) -> None:
         sc = SmartCompose(transforms)
@@ -548,11 +567,12 @@ class TestSmartCompose:
         assert sc.transforms == order, "Transforms should not be sorted"
 
     def test_call(self) -> None:
-        sc = SmartCompose([AnyToTensor(), CutMix(p=0)])
-        x = torch.randn(3, 32, 32)
-        y = sc(x, 0)
-        assert torch.is_tensor(y), "Output should be a tensor"
-        assert torch.allclose(x, y), "Output should match the input"
+        x = DataItem(torch.randn(3, 32, 32), 0, 0)
+        y = SmartCompose([AnyToTensor(), CutMix(p=0)])(x)
+        assert torch.is_tensor(y.features), "Output should be a tensor"
+        assert torch.allclose(
+            x.features, y.features
+        ), "Output should match the input"
 
     def test_setup(self) -> None:
         dataset = ToyDataset(

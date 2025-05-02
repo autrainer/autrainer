@@ -5,6 +5,7 @@ import tempfile
 from omegaconf import OmegaConf
 import torch
 
+from autrainer.core.structs import AbstractDataItem
 from autrainer.core.utils import Bookkeeping
 from autrainer.datasets.utils import LabelEncoder, NumpyFileHandler
 from autrainer.models import FFNN
@@ -18,8 +19,9 @@ class MockSqueezeFirstDim(AbstractTransform):
     def __init__(self):
         super().__init__(0)
 
-    def __call__(self, x: torch.Tensor) -> torch.Tensor:
-        return x.squeeze(0)
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = item.features.squeeze(0)
+        return item
 
 
 class TestInference(BaseIndividualTempDir):
