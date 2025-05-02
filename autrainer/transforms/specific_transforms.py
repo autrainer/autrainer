@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional
 import warnings
 
 from audtorch import transforms as AT
@@ -17,9 +17,11 @@ from transformers import (
     WhisperFeatureExtractor,
 )
 
+from autrainer.core.structs import AbstractDataItem
+
 from .abstract_transform import AbstractTransform
 from .smart_compose import SmartCompose
-from .utils import _to_numpy, _to_tensor
+from .utils import to_numpy, to_tensor
 
 
 try:
@@ -53,21 +55,21 @@ class AnyToTensor(AbstractTransform):
         super().__init__(order=order)
         self._convert_pil = T.ToTensor()
 
-    def __call__(
-        self,
-        data: Union[torch.Tensor, np.ndarray, Image.Image],
-    ) -> torch.Tensor:
-        if isinstance(data, torch.Tensor):
-            return data
-        elif isinstance(data, np.ndarray):
-            return _to_tensor(data)
-        elif isinstance(data, Image.Image):
-            return (self._convert_pil(data) * 255).to(torch.uint8)
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        if isinstance(item.features, torch.Tensor):
+            return item
+        if isinstance(item.features, np.ndarray):
+            item.features = to_tensor(item.features)
+        elif isinstance(item.features, Image.Image):
+            item.features = self._convert_pil(item.features) * 255
+            item.features = item.features.to(torch.uint8)
         else:
             raise TypeError(
-                "Input must be a 'torch.Tensor', 'np.ndarray' "
-                f"or 'PIL.Image.Image' but got '{data.__class__.__name__}'"
+                "Input must be a 'torch.Tensor', 'np.ndarray', or "
+                "'PIL.Image.Image', but got "
+                f"'{item.features.__class__.__name__}'"
             )
+        return item
 
 
 class NumpyToTensor(AbstractTransform):
@@ -79,8 +81,9 @@ class NumpyToTensor(AbstractTransform):
         """
         super().__init__(order=order)
 
-    def __call__(self, data: Union[torch.Tensor, np.ndarray]) -> torch.Tensor:
-        return _to_tensor(data)
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = to_tensor(item.features)
+        return item
 
 
 class SpectToImage(AbstractTransform):
@@ -110,17 +113,19 @@ class SpectToImage(AbstractTransform):
         self.cmap = cmap
         self._cmap = get_cmap(cmap)
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        if data.dtype == torch.uint8:
-            data = data.float()
-        data = data.numpy().squeeze()
-        data -= data.min()
-        data /= data.max()
-        data = np.uint8(self._cmap(data)[..., :3] * 255)
-        im = Image.fromarray(data)
-        im = im.transpose(Image.FLIP_TOP_BOTTOM)
-        im = im.resize((self.width, self.height))
-        return torch.from_numpy(np.array(im)).transpose(0, 2).to(torch.uint8)
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        if item.features.dtype == torch.uint8:
+            item.features = item.features / 255
+        im = item.features.numpy().squeeze()
+        im -= im.min()
+        im /= im.max()
+        im = (
+            Image.fromarray(np.uint8(self._cmap(im)[..., :3] * 255))
+            .transpose(Image.FLIP_TOP_BOTTOM)
+            .resize((self.width, self.height))
+        )
+        item.features = torch.from_numpy(np.array(im)).transpose(0, 2)
+        return item
 
 
 class PannMel(AbstractTransform):
@@ -181,8 +186,9 @@ class PannMel(AbstractTransform):
             top_db=self.top_db,
         )
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return self._mel(self._spectrogram(data)).squeeze(1)
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = self._mel(self._spectrogram(item.features)).squeeze(1)
+        return item
 
 
 class Resize(AbstractTransform):
@@ -231,8 +237,9 @@ class Resize(AbstractTransform):
             antialias=self.antialias,
         )
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return self._resize(data)
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = self._resize(item.features)
+        return item
 
 
 class SquarePadCrop(AbstractTransform):
@@ -257,8 +264,10 @@ class SquarePadCrop(AbstractTransform):
         else:
             raise ValueError(f"Invalid mode '{self.mode}'.")
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return T.functional.center_crop(data, self._mode_fn(data.shape[-2:]))
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        m = self._mode_fn(item.features.shape[-2:])
+        item.features = T.functional.center_crop(item.features, m)
+        return item
 
 
 class ScaleRange(AbstractTransform):
@@ -285,12 +294,14 @@ class ScaleRange(AbstractTransform):
             )
         self.range = sorted(range)
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        data_min, data_max = data.min(), data.max()
-        if data_min == data_max:
-            return torch.full_like(data, data_min)
-        data = (data - data_min) / (data_max - data_min)
-        return data * (self.range[1] - self.range[0]) + self.range[0]
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        m, M, (r0, r1) = item.features.min(), item.features.max(), self.range
+        if m == M:
+            item.features = torch.full_like(item.features, m)
+            return item
+        item.features = (item.features - m) / (M - m)
+        item.features = item.features * (r1 - r0) + r0
+        return item
 
 
 class ImageToFloat(AbstractTransform):
@@ -303,10 +314,10 @@ class ImageToFloat(AbstractTransform):
         """
         super().__init__(order=order)
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        if data.dtype == torch.uint8:
-            data = data.float() / 255
-        return data
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        if item.features.dtype == torch.uint8:
+            item.features = item.features.float() / 255
+        return item
 
 
 class Normalize(AbstractTransform):
@@ -329,7 +340,7 @@ class Normalize(AbstractTransform):
         self._mean = torch.as_tensor(mean)
         self._std = torch.as_tensor(std)
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
         # reshapes mean and std to match the data dimensions and broadcast
         # the values along the correct axes
         views = {
@@ -339,13 +350,16 @@ class Normalize(AbstractTransform):
         }
 
         for dim, axes in views.items():
-            if data.ndim == dim:
+            if item.features.ndim == dim:
                 break
         else:
-            raise ValueError(f"Unsupported data dimensions: {data.shape}")
+            raise ValueError(
+                f"Unsupported feature dimensions: {item.features.shape}"
+            )
 
         mean, std = self._mean.view(*axes), self._std.view(*axes)
-        return data.to(torch.float32).sub(mean).div(std)
+        item.features = item.features.to(torch.float32).sub(mean).div(std)
+        return item
 
 
 class Standardizer(AbstractTransform):
@@ -428,10 +442,10 @@ class Standardizer(AbstractTransform):
         self.std = collected.std(dim=axes).tolist()
         self._transform = self._init_transform()
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
         if self._transform is None:
             raise ValueError("Standardize transform not initialized.")
-        return self._transform(data)
+        return self._transform(item)
 
 
 class FeatureExtractor(AbstractTransform):
@@ -496,8 +510,9 @@ class FeatureExtractor(AbstractTransform):
 
         self._extract_features = extract_features
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return self._extract_features(data.numpy())
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = self._extract_features(item.features.numpy())
+        return item
 
 
 class Expand(AbstractTransform):
@@ -530,8 +545,9 @@ class Expand(AbstractTransform):
         )
         self._to_tensor = AnyToTensor()
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return self._to_tensor(self._expand(data))
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = self._expand(item.features)
+        return self._to_tensor(item)
 
 
 class RandomCrop(AbstractTransform):
@@ -573,8 +589,9 @@ class RandomCrop(AbstractTransform):
         )
         self._to_tensor = AnyToTensor()
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return self._to_tensor(self._random_crop(data))
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = self._random_crop(item.features)
+        return self._to_tensor(item)
 
 
 class StereoToMono(AbstractTransform):
@@ -587,8 +604,9 @@ class StereoToMono(AbstractTransform):
         """
         super().__init__(order=order)
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return data.mean(0, keepdim=True)
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = item.features.mean(0, keepdim=True)
+        return item
 
 
 class RGBAToRGB(AbstractTransform):
@@ -601,13 +619,14 @@ class RGBAToRGB(AbstractTransform):
     def __init__(self, order: int = -95) -> None:
         super().__init__(order=order)
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return data[:3]
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = item.features[:3]
+        return item
 
 
 class RGBToGrayscale(AbstractTransform):
     def __init__(self, order: int = 100) -> None:
-        """Convert an RGB image to a grayscale image.
+        """Convert an RGB or RGBA image to a grayscale image.
 
         For the conversion to grayscale, the
         luminance is calculated in line with the implementation in
@@ -620,30 +639,9 @@ class RGBToGrayscale(AbstractTransform):
         super().__init__(order=order)
         self._to_grayscale = T.Grayscale()
 
-    def __call__(self, image: Union[torch.Tensor, np.ndarray]) -> torch.Tensor:
-        image_grs = self._to_grayscale(image)
-        return image_grs
-
-
-class RGBAToGrayscale(AbstractTransform):
-    def __init__(self, order: int = -95) -> None:
-        """Convert an RGBA image to grayscale by dropping the alpha channel
-        and converting to grayscale.
-
-        For the conversion to grayscale, the
-        luminance is calculated in line with the implementation in
-        torchvision.transforms.Grayscale:
-        Y = 0.2989 * R + 0.587 * G + 0.114 * B.
-
-
-        Args:
-            order: The order of the transform in the pipeline. Defaults to -95.
-        """
-        super().__init__(order=order)
-        self._to_grayscale = T.Grayscale()
-
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return self._to_grayscale(data[:3])
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = self._to_grayscale(item.features[:3])
+        return item
 
 
 class GrayscaleToRGB(AbstractTransform):
@@ -655,10 +653,9 @@ class GrayscaleToRGB(AbstractTransform):
         """
         super().__init__(order=order)
 
-    def __call__(self, image: Union[torch.Tensor, np.ndarray]) -> torch.Tensor:
-        image = _to_numpy(image)
-        image_rgb = AT.Upmix(3, axis=0)(image)
-        return _to_tensor(image_rgb)
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = to_tensor(AT.Upmix(3, axis=0)(to_numpy(item.features)))
+        return item
 
 
 class Resample(AbstractTransform):
@@ -682,8 +679,9 @@ class Resample(AbstractTransform):
             orig_freq=self.current_sr, new_freq=self.target_sr
         )
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        return self._resample(data)
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = self._resample(item.features)
+        return item
 
 
 class OpenSMILE(AbstractTransform):
@@ -726,6 +724,7 @@ class OpenSMILE(AbstractTransform):
                 feature_level=opensmile.FeatureLevel.LowLevelDescriptors,
             )
 
-    def __call__(self, data: torch.Tensor) -> torch.Tensor:
-        data = self.smile.process_signal(data.numpy(), self.sample_rate)
-        return torch.from_numpy(self.smile.to_numpy(data)).squeeze()
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        it = self.smile.process_signal(item.features, self.sample_rate)
+        item.features = torch.from_numpy(self.smile.to_numpy(it)).squeeze()
+        return item
