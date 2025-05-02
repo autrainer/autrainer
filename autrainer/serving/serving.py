@@ -12,12 +12,14 @@ from tqdm import tqdm
 import yaml
 
 import autrainer
+from autrainer.core.structs import DataBatch, DataItem
 from autrainer.core.utils import set_device
 from autrainer.datasets.utils import (
     AbstractFileHandler,
     AbstractTargetTransform,
 )
 from autrainer.models import AbstractModel
+from autrainer.models.utils import create_model_inputs
 from autrainer.transforms import SmartCompose
 
 
@@ -334,20 +336,21 @@ class Inference:
         pattern = f"**/*.{extension}" if recursive else f"*.{extension}"
         return glob.glob(os.path.join(directory, pattern), recursive=True)
 
-    def _preprocess_file(self, x: torch.Tensor) -> torch.Tensor:
-        x = self._pad_audio(x)
-        x = self.preprocess_pipeline(x, 0)
-        x = self.inference_transform(x, 0)
-        x = x.unsqueeze(0).to(self._device)
-        return x
+    def _preprocess_file(self, x: torch.Tensor) -> DataBatch:
+        item = DataItem(self._pad_audio(x), 0, 0)
+        item = self.preprocess_pipeline(item)
+        item = self.inference_transform(item)
+        batch = DataBatch.collate([item])
+        batch.to(self._device)
+        return batch
 
     def _predict(
         self,
         x: torch.Tensor,
     ) -> Tuple[Any, torch.Tensor, Dict[str, float]]:
-        x = self._preprocess_file(x)
+        data = self._preprocess_file(x)
         with torch.inference_mode():
-            output = self.model(x).cpu()
+            output = self.model(**create_model_inputs(self.model, data)).cpu()
         probabilities = self.target_transform.probabilities_inference(output)
         prediction = self.target_transform.predict_inference(probabilities)
         decoded_prediction = self.target_transform.decode(prediction)
@@ -357,9 +360,13 @@ class Inference:
         return decoded_prediction, output, probs_dict
 
     def _embed(self, x: torch.Tensor) -> torch.Tensor:
-        x = self._preprocess_file(x)
+        data = self._preprocess_file(x)
         with torch.inference_mode():
-            embedding = self.model.embeddings(x).cpu().squeeze()
+            embedding = (
+                self.model.embeddings(**create_model_inputs(self.model, data))
+                .cpu()
+                .squeeze()
+            )
         return embedding
 
     def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, List[int]]:
