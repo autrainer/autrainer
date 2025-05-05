@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
 import os
-from typing import Callable, Dict, List, Optional, TypeVar, Union
+from typing import Dict, List, Optional, TypeVar, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -10,7 +10,6 @@ from torch.utils.data import DataLoader
 
 import autrainer
 from autrainer.core.constants import TrainingConstants
-from autrainer.datasets.utils import DataBatch
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 
@@ -276,10 +275,6 @@ class AbstractDataset(ABC):
         """
         return self._init_dataset(self.df_test, self.test_transform)
 
-    @property
-    def default_collate_fn(self) -> Callable:
-        return DataBatch.collate
-
     @cached_property
     def train_loader(self) -> DataLoader:
         """Get the training loader.
@@ -322,7 +317,7 @@ class AbstractDataset(ABC):
             batch_size=self.inference_batch_size,
             shuffle=False,
             generator=self._generator,
-            collate_fn=self.test_transform.get_collate_fn(self),
+            collate_fn=self.dev_transform.get_collate_fn(self),
         )
 
     @staticmethod
@@ -623,6 +618,11 @@ class BaseSEDDataset(BaseClassificationDataset):
             df=df,
             transform=transform,
         )
+
+    @staticmethod
+    def _assert_choice(choice: T, choices: List[T], name: str) -> None:
+        if choice not in choices:
+            raise ValueError(f"{name} '{choice}' not in {choices}.")
 
 
 class BaseRegressionDataset(AbstractDataset):
