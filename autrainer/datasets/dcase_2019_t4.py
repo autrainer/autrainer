@@ -31,14 +31,6 @@ EVENTS = [
     "Electric_shaver_toothbrush",
 ]
 
-DURATIONS = {
-    "frame_rate": 0.08,
-    "duration": 10,
-    "threshold": 0.3,
-    "min_event_length": 0.3,
-    "pause_length": 0.5,
-}
-
 
 class DCASE2019Task4(BaseSEDDataset):
     def __init__(
@@ -57,6 +49,11 @@ class DCASE2019Task4(BaseSEDDataset):
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
+        frame_rate: float = 0.08,
+        duration: float = 10.0,
+        threshold: float = 0.3,
+        min_event_length: float = 0.3,
+        pause_length: float = 0.5,
     ) -> None:
         """DCASE 2019 Task 4 dataset.
 
@@ -72,14 +69,23 @@ class DCASE2019Task4(BaseSEDDataset):
             batch_size: Batch size.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
+            frame_rate: Frame rate in seconds. Defaults to 0.08.
+            duration: Duration of each audio segment in seconds. Defaults to 10.0.
+            threshold: Threshold for event detection. Defaults to 0.3.
+            min_event_length: Minimum length of an event in seconds. Defaults to 0.3.
+            pause_length: Minimum pause length between events in seconds. Defaults to 0.5.
         """
         self.onset_column = "onset"
         self.offset_column = "offset"
-        assert DURATIONS["frame_rate"] > 0
-        self.frame_rate = DURATIONS["frame_rate"]
-        self.num_frames = int(
-            np.ceil(DURATIONS["duration"] / DURATIONS["frame_rate"])
-        )
+        self.frame_rate = frame_rate
+        self.num_frames = int(np.ceil(duration / frame_rate))
+        self.durations = {
+            "frame_rate": frame_rate,
+            "duration": duration,
+            "threshold": threshold,
+            "min_event_length": min_event_length,
+            "pause_length": pause_length,
+        }
         super().__init__(
             path=path,
             features_subdir=features_subdir,
@@ -99,7 +105,7 @@ class DCASE2019Task4(BaseSEDDataset):
 
     @cached_property
     def target_transform(self) -> SEDEncoder:
-        return SEDEncoder(EVENTS, **DURATIONS)
+        return SEDEncoder(EVENTS, **self.durations)
 
     def _framewise_representation(self, df):
         """Transform data to framewise representations.
