@@ -14,12 +14,7 @@ from .utils import SEDEncoder, ZipDownloadManager
 
 
 FILES = {
-    # Development dataset - Synthetic data ~1 GB
     "Synthetic_dataset.zip": "https://zenodo.org/records/2583796/files/Synthetic_dataset.zip?download=1",
-    # TODO: Development set - Weak data, unlabel_in_domain_dev_path -requires youtube-dl package
-    # https://github.com/turpaultn/DESED/blob/master/desed/desed/download.py
-    # https://github.com/turpaultn/DCASE2019_task4/blob/public/baseline/download_data.py
-    # Evaluation dataset - Public evaluation set ~1 GB
     "DESED_public_eval.tar.gz": "https://zenodo.org/records/3588172/files/DESEDpublic_eval.tar.gz?download=1",
 }
 
@@ -35,12 +30,6 @@ EVENTS = [
     "Vacuum_cleaner",
     "Electric_shaver_toothbrush",
 ]
-
-DURATIONS = {
-    "min_dur_event": 0.25,
-    "min_dur_inter": 0.15,
-    "length_sec": 10,
-}
 
 
 class DCASE2019Task4(BaseSEDDataset):
@@ -61,6 +50,10 @@ class DCASE2019Task4(BaseSEDDataset):
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
         frame_rate: float = 0.08,
+        duration: float = 10.0,
+        threshold: float = 0.3,
+        min_event_length: float = 0.3,
+        pause_length: float = 0.5,
     ) -> None:
         """DCASE 2019 Task 4 dataset.
 
@@ -76,16 +69,23 @@ class DCASE2019Task4(BaseSEDDataset):
             batch_size: Batch size.
             inference_batch_size: Inference batch size. If None, defaults to
                 batch_size. Defaults to None.
+            frame_rate: Frame rate in seconds. Defaults to 0.08.
+            duration: Duration of each audio segment in seconds. Defaults to 10.0.
+            threshold: Threshold for event detection. Defaults to 0.3.
+            min_event_length: Minimum length of an event in seconds. Defaults to 0.3.
+            pause_length: Minimum pause length between events in seconds. Defaults to 0.5.
         """
         self.onset_column = "onset"
         self.offset_column = "offset"
-        # FIXME: make more modular
-        self.duration = 10  # duration fixed @ 10s
         self.frame_rate = frame_rate
-        assert self.frame_rate is not None
-        assert self.frame_rate > 0
-        # FIXME: Maybe np.ceil?
-        self.num_frames = int(self.duration / self.frame_rate)
+        self.num_frames = int(np.ceil(duration / frame_rate))
+        self.durations = {
+            "frame_rate": frame_rate,
+            "duration": duration,
+            "threshold": threshold,
+            "min_event_length": min_event_length,
+            "pause_length": pause_length,
+        }
         super().__init__(
             path=path,
             features_subdir=features_subdir,
@@ -105,7 +105,7 @@ class DCASE2019Task4(BaseSEDDataset):
 
     @cached_property
     def target_transform(self) -> SEDEncoder:
-        return SEDEncoder(EVENTS)
+        return SEDEncoder(EVENTS, **self.durations)
 
     def _framewise_representation(self, df):
         """Transform data to framewise representations.
