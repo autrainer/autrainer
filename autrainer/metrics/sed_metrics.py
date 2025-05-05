@@ -1,3 +1,6 @@
+from collections import OrderedDict
+import hashlib
+
 import numpy as np
 from sed_eval.sound_event import EventBasedMetrics, SegmentBasedMetrics
 
@@ -6,45 +9,72 @@ from autrainer.datasets.utils.target_transforms import SEDEncoder
 from .abstract_metric import BaseAscendingMetric, BaseDescendingMetric
 
 
-class SEDMetric:
-    def __init__(
+class SEDMetricBackend:
+    _instance = None
+
+    def __new__(cls):
+        """Create a new instance of the SEDMetricBackend."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.initialize()
+        return cls._instance
+
+    def initialize(self) -> None:
+        """Initialize the backend with default values."""
+        self.cache = OrderedDict()
+        self.max_cache_size = 1
+        self._sed = None
+        self.target_transform = None
+        self.metric_type = None
+        self.t_collar = None
+        self.percentage_of_length = None
+        self.time_resolution = None
+
+    def configure(
         self,
         target_transform: SEDEncoder,
-        t_collar: float,
-        percentage_of_length: float,
-        time_resolution: float,
+        t_collar: float = 0.2,
+        percentage_of_length: float = 0.5,
+        time_resolution: float = 0.01,
         metric_type: str = "event",
-    ):
-        """SED Metric Mixin Class for Event-based and Segment-based metrics.
-        Uses `sed_eval.sound_event.{EventBasedMetrics, SegmentBasedMetrics}`.
-
-        TODO: avoid recomputation of metrics for each metric instance.
+    ) -> None:
+        """Configure the SED metric backend.
 
         Args:
-            target_transform: The SED encoder to use for decoding.
+            target_transform: SED encoder for target transformation.
+            t_collar: Time collar for event-based metrics in seconds.
+            percentage_of_length: Percentage of event length for matching.
+            time_resolution: Time resolution for segment-based metrics in seconds.
             metric_type: Type of metric to use ('event' or 'segment').
-            **kwargs: Additional parameters for specific metric types:
-                     - event: t_collar, percentage_of_length
-                     - segment: time_resolution
+
+        Raises:
+            ValueError: If parameters are invalid or target_transform has no labels.
         """
         if not target_transform.labels:
             raise ValueError("target_transform must have at least one label")
 
-        if metric_type not in ["event", "segment"]:
-            raise ValueError(
-                f"metric_type must be 'event' or 'segment', got {metric_type}"
-            )
+        if t_collar <= 0:
+            raise ValueError("t_collar must be positive")
 
+        if not 0 < percentage_of_length <= 1:
+            raise ValueError("percentage_of_length must be between 0 and 1")
+
+        if time_resolution <= 0:
+            raise ValueError("time_resolution must be positive")
+
+        if metric_type not in ["event", "segment"]:
+            raise ValueError("metric_type must be either 'event' or 'segment'")
+
+        self.cache.clear()
         self.target_transform = target_transform
         self.t_collar = t_collar
         self.percentage_of_length = percentage_of_length
         self.time_resolution = time_resolution
         self.metric_type = metric_type
-        self.implemented_metrics = ["f_measure", "error_rate"]
         self._init_sed_metric()
 
     def _init_sed_metric(self) -> None:
-        """Initialize sed_eval metric based on type."""
+        """Initialize the SED metric based on the configured type."""
         if self.metric_type == "event":
             self._sed = EventBasedMetrics(
                 event_label_list=self.target_transform.labels,
@@ -58,7 +88,7 @@ class SEDMetric:
             )
 
     def _evaluate_events(self, y_true: np.ndarray, y_pred: np.ndarray) -> None:
-        """Evaluate matching events of the target and prediction arrays."""
+        """Evaluate events using the configured SED metric."""
         y_true = np.asarray(y_true)
         y_pred = np.asarray(y_pred)
 
@@ -72,91 +102,85 @@ class SEDMetric:
         y_true = y_true[np.newaxis, ...] if y_true.ndim == 2 else y_true
         y_pred = y_pred[np.newaxis, ...] if y_pred.ndim == 2 else y_pred
 
-        for i, (true, pred) in enumerate(zip(y_true, y_pred)):
-            true_events = self.target_transform.decode(true)
-            pred_events = self.target_transform.decode(pred)
-            for event in true_events + pred_events:
-                event["file"] = i
-            self._sed.evaluate(  # unified sed evaluator
-                reference_event_list=true_events,
-                estimated_event_list=pred_events,
-            )
+        try:
+            for i, (true, pred) in enumerate(zip(y_true, y_pred)):
+                true_events = self.target_transform.decode(true)
+                pred_events = self.target_transform.decode(pred)
+                for event in true_events + pred_events:
+                    event["file"] = i
+                self._sed.evaluate(
+                    reference_event_list=true_events,
+                    estimated_event_list=pred_events,
+                )
+        except Exception as e:
+            raise ValueError(f"Failed to evaluate events: {str(e)}")
 
-    def get_metric(self, metric_type: str) -> float:
-        """Get the metric value."""
-        if metric_type not in self.implemented_metrics:
-            raise ValueError(
-                f"metric_type must be one of {self.implemented_metrics}, got {metric_type}"
-            )
-
+    def calculate(self, targets: np.ndarray, preds: np.ndarray) -> dict:
+        """Calculate metrics for the given targets and predictions."""
+        self._evaluate_events(targets, preds)
         results = self._sed.results_overall_metrics()
-        if metric_type == "error_rate" and self.metric_type == "segment":
-            return 1.0 - float(results["f_measure"]["f_measure"])
-
-        return float(results[metric_type][metric_type])
-
-
-class SegmentBasedF1(BaseAscendingMetric, SEDMetric):
-    def __init__(self, target_transform: SEDEncoder, **kwargs):
-        """Segment-based F1 metric using `sed_eval.sound_event.SegmentBasedMetrics`."""
-        SEDMetric.__init__(
-            self,
-            target_transform=target_transform,
-            metric_type="segment",
+        f_measure = float(results["f_measure"]["f_measure"])
+        error_rate = (
+            1.0 - f_measure
+            if self.metric_type == "segment"
+            else float(results["error_rate"]["error_rate"])
         )
-        BaseAscendingMetric.__init__(
-            self,
+        return {"f_measure": f_measure, "error_rate": error_rate}
+
+    def __call__(
+        self, targets: np.ndarray, preds: np.ndarray, metric: str
+    ) -> float:
+        """Calculate a specific metric for the given targets and predictions."""
+        if metric not in ["f_measure", "error_rate"]:
+            raise ValueError(
+                "metric must be either 'f_measure' or 'error_rate'"
+            )
+
+        key = hashlib.md5(
+            np.concatenate([targets.flatten(), preds.flatten()]).tobytes()
+        ).hexdigest()
+
+        if key not in self.cache:
+            if len(self.cache) >= self.max_cache_size:
+                self.cache.popitem(last=False)
+            self.cache[key] = self.calculate(targets, preds)
+        return self.cache[key][metric]
+
+
+class SegmentBasedF1(BaseAscendingMetric):
+    def __init__(self, target_transform: SEDEncoder, **kwargs):
+        backend = SEDMetricBackend()
+        backend.configure(
+            target_transform=target_transform, metric_type="segment", **kwargs
+        )
+        super().__init__(
             name="segment-based-f1",
-            fn=self.forward,
+            fn=lambda y_true, y_pred: backend(y_true, y_pred, "f_measure"),
             fallback=-1e32,
-            **kwargs,
         )
-        self.metric_name = "f_measure"
-
-    def forward(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
-        self._evaluate_events(y_true, y_pred)
-        return self.get_metric(self.metric_name)
 
 
-class EventBasedF1(BaseAscendingMetric, SEDMetric):
+class EventBasedF1(BaseAscendingMetric):
     def __init__(self, target_transform: SEDEncoder, **kwargs):
-        """Event-based F1 metric using `sed_eval.sound_event.EventBasedMetrics`."""
-        SEDMetric.__init__(
-            self,
-            target_transform=target_transform,
-            metric_type="event",
+        backend = SEDMetricBackend()
+        backend.configure(
+            target_transform=target_transform, metric_type="event", **kwargs
         )
-        BaseAscendingMetric.__init__(
-            self,
+        super().__init__(
             name="event-based-f1",
-            fn=self.forward,
+            fn=lambda y_true, y_pred: backend(y_true, y_pred, "f_measure"),
             fallback=-1e32,
-            **kwargs,
         )
-        self.metric_name = "f_measure"
-
-    def forward(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
-        self._evaluate_events(y_true, y_pred)
-        return self.get_metric(self.metric_name)
 
 
-class SegmentBasedErrorRate(BaseDescendingMetric, SEDMetric):
+class SegmentBasedErrorRate(BaseDescendingMetric):
     def __init__(self, target_transform: SEDEncoder, **kwargs):
-        """Segment-based error rate metric using `sed_eval.sound_event.SegmentBasedMetrics`."""
-        SEDMetric.__init__(
-            self,
-            target_transform=target_transform,
-            metric_type="segment",
+        backend = SEDMetricBackend()
+        backend.configure(
+            target_transform=target_transform, metric_type="segment", **kwargs
         )
-        BaseDescendingMetric.__init__(
-            self,
+        super().__init__(
             name="segment-based-error-rate",
-            fn=self.forward,
+            fn=lambda y_true, y_pred: backend(y_true, y_pred, "error_rate"),
             fallback=1e32,
-            **kwargs,
         )
-        self.metric_name = "error_rate"
-
-    def forward(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
-        self._evaluate_events(y_true, y_pred)
-        return self.get_metric(self.metric_name)

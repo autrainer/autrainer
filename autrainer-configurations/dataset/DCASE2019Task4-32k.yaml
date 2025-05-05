@@ -10,7 +10,10 @@ file_handler: autrainer.datasets.utils.NumpyFileHandler
 
 criterion: torch.nn.BCEWithLogitsLoss
 metrics:
-  - autrainer.metrics.SegmentBasedF1
+  - autrainer.metrics.SegmentBasedF1:
+      t_collar: 0.2
+      percentage_of_length: 0.5
+      time_resolution: 0.01
   - autrainer.metrics.EventBasedF1
   - autrainer.metrics.SegmentBasedErrorRate
 tracking_metric: autrainer.metrics.SegmentBasedF1
