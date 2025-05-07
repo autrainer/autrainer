@@ -273,7 +273,6 @@ class AbstractDataset(ABC):
         drop_last: bool = False,
         timeout: float = 0,
         prefetch_factor: Optional[int] = None,
-        persistent_workers: bool = False,
         pin_memory_device: str = "",
     ) -> DataLoader:
         self.train_transform.setup(self)
@@ -293,7 +292,7 @@ class AbstractDataset(ABC):
             drop_last=drop_last,
             timeout=timeout,
             prefetch_factor=prefetch_factor,
-            persistent_workers=persistent_workers,
+            persistent_workers=True if num_workers > 0 else False,
             pin_memory_device=pin_memory_device,
         )
 
@@ -305,7 +304,6 @@ class AbstractDataset(ABC):
         drop_last: bool = False,
         timeout: float = 0,
         prefetch_factor: Optional[int] = None,
-        persistent_workers: bool = False,
         pin_memory_device: str = "",
     ) -> DataLoader:
         self.dev_transform.setup(self)
@@ -325,7 +323,7 @@ class AbstractDataset(ABC):
             drop_last=drop_last,
             timeout=timeout,
             prefetch_factor=prefetch_factor,
-            persistent_workers=persistent_workers,
+            persistent_workers=True if num_workers > 0 else False,
             pin_memory_device=pin_memory_device,
         )
 
@@ -337,7 +335,6 @@ class AbstractDataset(ABC):
         drop_last: bool = False,
         timeout: float = 0,
         prefetch_factor: Optional[int] = None,
-        persistent_workers: bool = False,
         pin_memory_device: str = "",
     ) -> DataLoader:
         self.test_transform.setup(self)
@@ -357,7 +354,7 @@ class AbstractDataset(ABC):
             drop_last=drop_last,
             timeout=timeout,
             prefetch_factor=prefetch_factor,
-            persistent_workers=persistent_workers,
+            persistent_workers=True if num_workers > 0 else False,
             pin_memory_device=pin_memory_device,
         )
 
