@@ -7,6 +7,7 @@ from .abstract_dataset import (
 )
 from .aibo import AIBO
 from .dcase_2016_t1 import DCASE2016Task1
+from .dcase_2017_t3 import DCASE2017Task3
 from .dcase_2018_t3 import DCASE2018Task3
 from .dcase_2019_t4 import DCASE2019Task4
 from .dcase_2020_t1a import DCASE2020Task1A
@@ -24,6 +25,7 @@ __all__ = [
     "BaseRegressionDataset",
     "AIBO",
     "DCASE2016Task1",
+    "DCASE2017Task3",
     "DCASE2018Task3",
     "DCASE2019Task4",
     "DCASE2020Task1A",
