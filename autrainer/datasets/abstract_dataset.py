@@ -624,6 +624,11 @@ class BaseSEDDataset(BaseClassificationDataset):
             transform=transform,
         )
 
+    @staticmethod
+    def _assert_choice(choice: T, choices: List[T], name: str) -> None:
+        if choice not in choices:
+            raise ValueError(f"{name} '{choice}' not in {choices}.")
+
 
 class BaseRegressionDataset(AbstractDataset):
     def __init__(
