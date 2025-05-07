@@ -56,7 +56,7 @@ class Sequential(AbstractAugmentation, audobject.Object):
                 aug,
                 instance_of=AbstractAugmentation,
             )
-            for aug in self.sequence
+            for aug in self.augmentation_sequence
         ]
         for aug in self.augmentation_sequence:
             if hasattr(aug, "get_collate_fn"):

@@ -67,7 +67,7 @@ class Choice(AbstractAugmentation, audobject.Object):
                 choice,
                 instance_of=AbstractAugmentation,
             )
-            for choice in self.choices
+            for choice in self.augmentation_choices
         ]
         for aug in self.augmentation_choices:
             if hasattr(aug, "get_collate_fn"):
