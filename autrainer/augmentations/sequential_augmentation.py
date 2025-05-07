@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, List, Optional
 
 import audobject
@@ -6,6 +7,7 @@ import autrainer
 from autrainer.core.structs import AbstractDataItem
 
 from .abstract_augmentation import AbstractAugmentation
+from .utils import convert_shorthand
 
 
 class Sequential(AbstractAugmentation, audobject.Object):
@@ -40,16 +42,12 @@ class Sequential(AbstractAugmentation, audobject.Object):
         self.sequence = sequence
         self.augmentation_sequence = []
 
-        for aug in self.sequence:
-            if isinstance(aug, str):
-                self.augmentation_sequence.append(
-                    {aug: {"generator_seed": self.generator_seed}}
-                )
-            else:
-                aug_name = next(iter(aug.keys()))
-                if aug[aug_name].get("generator_seed") is None:
-                    aug[aug_name]["generator_seed"] = self.generator_seed
-                self.augmentation_sequence.append(aug)
+        for aug in deepcopy(self.sequence):
+            aug = convert_shorthand(aug)
+            aug_name = next(iter(aug.keys()))
+            if aug[aug_name].get("generator_seed") is None:
+                aug[aug_name]["generator_seed"] = self.generator_seed
+            self.augmentation_sequence.append(aug)
 
         self.augmentation_sequence: List[AbstractAugmentation] = [
             autrainer.instantiate_shorthand(

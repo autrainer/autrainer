@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, List, Optional
 
 import audobject
@@ -7,6 +8,7 @@ import autrainer
 from autrainer.core.structs import AbstractDataItem
 
 from .abstract_augmentation import AbstractAugmentation
+from .utils import convert_shorthand
 
 
 class Choice(AbstractAugmentation, audobject.Object):
@@ -51,16 +53,12 @@ class Choice(AbstractAugmentation, audobject.Object):
         self.choices = choices
         self.augmentation_choices = []
 
-        for aug in self.choices:
-            if isinstance(aug, str):
-                self.augmentation_choices.append(
-                    {aug: {"generator_seed": self.generator_seed}}
-                )
-            else:
-                aug_name = next(iter(aug.keys()))
-                if aug[aug_name].get("generator_seed") is None:
-                    aug[aug_name]["generator_seed"] = self.generator_seed
-                self.augmentation_choices.append(aug)
+        for aug in deepcopy(self.choices):
+            aug = convert_shorthand(aug)
+            aug_name = next(iter(aug.keys()))
+            if aug[aug_name].get("generator_seed") is None:
+                aug[aug_name]["generator_seed"] = self.generator_seed
+            self.augmentation_choices.append(aug)
 
         self.augmentation_choices: List[AbstractAugmentation] = [
             autrainer.instantiate_shorthand(
