@@ -1,6 +1,7 @@
 import scipy.ndimage
 import torch
 
+from autrainer.core.structs import AbstractDataItem
 from autrainer.transforms import AbstractTransform
 
 
@@ -19,10 +20,11 @@ class SpectMedianFilter(AbstractTransform):
         super().__init__(order=order)
         self.size = size
 
-    def __call__(self, x: torch.Tensor) -> torch.Tensor:
-        return torch.from_numpy(
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        item.features = torch.from_numpy(
             scipy.ndimage.median_filter(
-                x.cpu().numpy(),
+                item.features.cpu().numpy(),
                 size=self.size,
             )
-        ).to(x.device)
+        ).to(item.features.device)
+        return item

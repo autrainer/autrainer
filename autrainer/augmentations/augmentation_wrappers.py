@@ -3,6 +3,7 @@ from typing import Optional
 import torch
 
 import autrainer
+from autrainer.core.structs import AbstractDataItem
 
 from .abstract_augmentation import AbstractAugmentation
 
@@ -82,10 +83,12 @@ class AugmentationWrapper(AbstractAugmentation):
         ):
             setattr(self.augmentation, self.probability_attr, 1.0)
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
-        if self.pass_index:
-            return self.augmentation(x, index)  # pragma: no cover
-        return self.augmentation(x)
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
+        if self.pass_index:  # pragma: no cover
+            item.features = self.augmentation(item.features, item.index)
+        else:
+            item.features = self.augmentation(item.features)
+        return item
 
 
 class TorchvisionAugmentation(AugmentationWrapper):
@@ -170,11 +173,11 @@ class TorchaudioAugmentation(AugmentationWrapper):
             **kwargs,
         )
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
-        x = super().apply(x, index)
-        if isinstance(x, tuple):
-            return x[0]
-        return x
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
+        item = super().apply(item)
+        if isinstance(item.features, tuple):
+            item.features = item.features[0]
+        return item
 
 
 class AlbumentationsAugmentation(AugmentationWrapper):
@@ -227,12 +230,12 @@ class AlbumentationsAugmentation(AugmentationWrapper):
             **kwargs,
         )
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
-        device = x.device
-        x = x.cpu().permute(1, 2, 0).numpy()
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
+        device = item.features.device
+        x = item.features.cpu().permute(1, 2, 0).numpy()
         x = self.augmentation(image=x)["image"]
-        x = torch.from_numpy(x).permute(2, 0, 1).to(device)
-        return x
+        item.features = torch.from_numpy(x).permute(2, 0, 1).to(device)
+        return item
 
 
 class AudiomentationsAugmentation(AugmentationWrapper):
@@ -293,10 +296,11 @@ class AudiomentationsAugmentation(AugmentationWrapper):
             **kwargs,
         )
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
-        device = x.device
-        x = self.augmentation(x.cpu().numpy(), **self._aug_kwargs)
-        return torch.from_numpy(x).to(device)
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
+        device = item.features.device
+        x = self.augmentation(item.features.cpu().numpy(), **self._aug_kwargs)
+        item.features = torch.from_numpy(x).to(device)
+        return item
 
 
 class TorchAudiomentationsAugmentation(AugmentationWrapper):
@@ -349,7 +353,8 @@ class TorchAudiomentationsAugmentation(AugmentationWrapper):
             **kwargs,
         )
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
-        x = x.unsqueeze(0)
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
+        x = item.features.unsqueeze(0)
         x = self.augmentation(x, sample_rate=self.sample_rate).samples
-        return x.squeeze(0)
+        item.features = x.squeeze(0)
+        return item

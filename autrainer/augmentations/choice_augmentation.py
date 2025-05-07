@@ -4,6 +4,7 @@ import audobject
 import torch
 
 import autrainer
+from autrainer.core.structs import AbstractDataItem
 
 from .abstract_augmentation import AbstractAugmentation
 
@@ -74,18 +75,16 @@ class Choice(AbstractAugmentation, audobject.Object):
                     "Choice augmentations must not have a collate function."
                 )
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         """Choose one augmentation from the list of augmentations based on the
         given weights.
 
         Args:
-            x: The input tensor.
-            index: The index of the input tensor in the dataset.
-                Defaults to None.
+            item: The input data item.
 
         Returns:
-            The augmented tensor.
+            The augmented item.
         """
         weights = torch.Tensor(self.weights)
         choice = torch.multinomial(weights, 1, generator=self.g).item()
-        return self.augmentation_choices[choice](x, index)
+        return self.augmentation_choices[choice](item)

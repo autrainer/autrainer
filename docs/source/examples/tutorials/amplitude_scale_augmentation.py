@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 import torch
 
 from autrainer.augmentations import AbstractAugmentation
+from autrainer.core.structs import AbstractDataItem
 
 
 class AmplitudeScale(AbstractAugmentation):
@@ -31,9 +32,11 @@ class AmplitudeScale(AbstractAugmentation):
         super().__init__(order, p, generator_seed)
         self.scale_range = scale_range
         self.scale_g = torch.Generator()
-        if self.generator_seed:
+        if self.generator_seed is not None:
             self.scale_g.manual_seed(self.generator_seed)
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         s0, s1 = self.scale_range
-        return x * (torch.rand(1, generator=self.scale_g) * (s1 - s0) + s0)
+        scale = torch.rand(1, generator=self.scale_g)
+        item.features = item.features * (scale * (s1 - s0) + s0)
+        return item

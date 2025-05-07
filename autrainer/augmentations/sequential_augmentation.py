@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional
 
 import audobject
-import torch
 
 import autrainer
+from autrainer.core.structs import AbstractDataItem
 
 from .abstract_augmentation import AbstractAugmentation
 
@@ -64,17 +64,15 @@ class Sequential(AbstractAugmentation, audobject.Object):
                     "Choice augmentations must not have a collate function."
                 )
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         """Apply all augmentations in sequence to the input tensor.
 
         Args:
-            x: The input tensor.
-            index: The index of the input tensor in the dataset.
-                Defaults to None.
+            item: The input data item.
 
         Returns:
-            The augmented tensor.
+            The augmented item.
         """
         for aug in self.augmentation_sequence:
-            x = aug(x, index)
-        return x
+            item = aug(item)
+        return item

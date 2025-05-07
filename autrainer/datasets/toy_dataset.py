@@ -60,11 +60,12 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
                 dtype=torch.uint8,
                 generator=self.generator,
             )
+        it = DataItem(features=data, target=target, index=index)
         if self.transform:
-            data = self.transform(data, index=index)
+            it = self.transform(it)
         if self.target_transform:
-            target = self.target_transform(target)
-        return DataItem(features=data, target=target, index=index)
+            it.target = self.target_transform(it.target)
+        return it
 
 
 class ToyDataset(AbstractDataset):

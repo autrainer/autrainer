@@ -3,6 +3,7 @@ from typing import Optional
 
 import torch
 
+from autrainer.core.structs import AbstractDataItem
 from autrainer.transforms import AbstractTransform
 
 
@@ -51,32 +52,28 @@ class AbstractAugmentation(AbstractTransform):
         self.generator_seed += offset
         self.g.manual_seed(self.generator_seed)
 
-    def __call__(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
         """Call the augmentation apply method with probability p.
 
         Args:
-            x: The input tensor.
-            index: The index of the input tensor in the dataset.
-                Defaults to None.
+            item: The input data item.
 
         Returns:
-            The augmented tensor if the probability is less than p, otherwise
-            the input tensor.
+            The augmented item if the probability is less than p, otherwise
+            the input item.
         """
         probability = torch.rand(1, generator=self.g).item()
-        return self.apply(x, index) if probability < self.p else x
+        return self.apply(item) if probability < self.p else item
 
     @abstractmethod
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         """Apply the augmentation to the input tensor.
 
         Apply is called with probability p.
 
         Args:
-            x: The input tensor.
-            index: The index of the input tensor in the dataset.
-                Defaults to None.
+            item: The input data item.
 
         Returns:
-            The augmented tensor.
+            The augmented item.
         """
