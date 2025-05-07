@@ -91,3 +91,8 @@ class Choice(AbstractAugmentation, audobject.Object):
         weights = torch.Tensor(self.weights)
         choice = torch.multinomial(weights, 1, generator=self.g).item()
         return self.augmentation_choices[choice](item)
+
+    @property
+    def _deterministic(self) -> bool:
+        """Return True if the augmentation is deterministic, False otherwise."""
+        return all(aug._deterministic for aug in self.augmentation_choices)

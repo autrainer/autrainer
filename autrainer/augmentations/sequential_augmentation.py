@@ -79,3 +79,8 @@ class Sequential(AbstractAugmentation, audobject.Object):
         for aug in self.augmentation_sequence:
             item = aug(item)
         return item
+
+    @property
+    def _deterministic(self) -> bool:
+        """Return True if the augmentation is deterministic, False otherwise."""
+        return all(aug._deterministic for aug in self.augmentation_sequence)
