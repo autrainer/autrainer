@@ -62,6 +62,11 @@ class Sequential(AbstractAugmentation, audobject.Object):
                     "Choice augmentations must not have a collate function."
                 )
 
+    def offset_generator_seed(self, offset: int) -> None:
+        super().offset_generator_seed(offset)
+        for aug in self.augmentation_sequence:
+            aug.offset_generator_seed(offset)
+
     def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         """Apply all augmentations in sequence to the input tensor.
 

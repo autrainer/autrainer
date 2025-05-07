@@ -73,6 +73,11 @@ class Choice(AbstractAugmentation, audobject.Object):
                     "Choice augmentations must not have a collate function."
                 )
 
+    def offset_generator_seed(self, offset: int) -> None:
+        super().offset_generator_seed(offset)
+        for aug in self.augmentation_choices:
+            aug.offset_generator_seed(offset)
+
     def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         """Choose one augmentation from the list of augmentations based on the
         given weights.
