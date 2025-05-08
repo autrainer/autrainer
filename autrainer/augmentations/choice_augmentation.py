@@ -95,4 +95,7 @@ class Choice(AbstractAugmentation, audobject.Object):
     @property
     def _deterministic(self) -> bool:
         """Return True if the augmentation is deterministic, False otherwise."""
-        return all(aug._deterministic for aug in self.augmentation_choices)
+        return all(
+            getattr(aug, "_deterministic", True)  # true if not set
+            for aug in self.augmentation_choices
+        )
