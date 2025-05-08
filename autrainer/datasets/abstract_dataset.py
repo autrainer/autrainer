@@ -292,7 +292,7 @@ class AbstractDataset(ABC):
             drop_last=drop_last,
             timeout=timeout,
             prefetch_factor=prefetch_factor,
-            persistent_workers=True if num_workers > 0 else False,
+            persistent_workers=num_workers > 0,
             pin_memory_device=pin_memory_device,
         )
 
@@ -323,7 +323,7 @@ class AbstractDataset(ABC):
             drop_last=drop_last,
             timeout=timeout,
             prefetch_factor=prefetch_factor,
-            persistent_workers=True if num_workers > 0 else False,
+            persistent_workers=num_workers > 0,
             pin_memory_device=pin_memory_device,
         )
 
@@ -354,7 +354,7 @@ class AbstractDataset(ABC):
             drop_last=drop_last,
             timeout=timeout,
             prefetch_factor=prefetch_factor,
-            persistent_workers=True if num_workers > 0 else False,
+            persistent_workers=num_workers > 0,
             pin_memory_device=pin_memory_device,
         )
 
