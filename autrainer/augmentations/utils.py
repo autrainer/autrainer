@@ -36,7 +36,7 @@ def assign_seeds(
     aug_name = next(iter(aug))
     config = aug[aug_name]
 
-    if config.get("generator_seed") is not None:
+    if config.get("generator_seed") is None:
         config["generator_seed"] = current_seed
         if increment:
             current_seed += 1
