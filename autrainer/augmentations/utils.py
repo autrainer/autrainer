@@ -20,10 +20,23 @@ def assign_seeds(
     current_seed: int,
     increment: bool,
 ) -> Tuple[Dict[str, Any], int]:
+    """Recursively assign optionally incrementing seeds to augmentation
+    configurations.
+
+    Args:
+        aug: Potentially nested augmentation configuration.
+        current_seed: The current seed to assign.
+        increment: Whether to increment the seed after assignment. If True,
+            the seed of each augmentation will be incremented by 1.
+            If False, the same seed will be used for all augmentations.
+
+    Returns:
+        The updated augmentation configuration and the next seed to use.
+    """
     aug_name = next(iter(aug))
     config = aug[aug_name]
 
-    if "generator_seed" not in config or config["generator_seed"] is None:
+    if config.get("generator_seed") is not None:
         config["generator_seed"] = current_seed
         if increment:
             current_seed += 1
