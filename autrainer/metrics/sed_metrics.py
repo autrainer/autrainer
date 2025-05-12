@@ -172,7 +172,8 @@ class SegmentBasedF1(BaseAscendingMetric):
         )
         super().__init__(
             name="segment-based-f1",
-            fn=lambda y_true, y_pred: backend(y_true, y_pred, "f_measure"),
+            fn=backend,
+            metric="f_measure",
             fallback=-1e32,
         )
 
@@ -185,7 +186,8 @@ class EventBasedF1(BaseAscendingMetric):
         )
         super().__init__(
             name="event-based-f1",
-            fn=lambda y_true, y_pred: backend(y_true, y_pred, "f_measure"),
+            fn=backend,
+            metric="f_measure",
             fallback=-1e32,
         )
 
@@ -198,6 +200,7 @@ class SegmentBasedErrorRate(BaseDescendingMetric):
         )
         super().__init__(
             name="segment-based-error-rate",
-            fn=lambda y_true, y_pred: backend(y_true, y_pred, "error_rate"),
+            fn=backend,
+            metric="error_rate",
             fallback=1e32,
         )
