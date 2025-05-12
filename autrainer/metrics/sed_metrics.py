@@ -2,7 +2,14 @@ from collections import OrderedDict
 import hashlib
 
 import numpy as np
-from sed_eval.sound_event import EventBasedMetrics, SegmentBasedMetrics
+
+
+try:
+    from sed_eval.sound_event import EventBasedMetrics, SegmentBasedMetrics
+
+    SED_EVAL_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    SED_EVAL_AVAILABLE = False
 
 from autrainer.datasets.utils.target_transforms import SEDEncoder
 
@@ -21,6 +28,10 @@ class SEDMetricBackend:
 
     def initialize(self) -> None:
         """Initialize the backend with default values."""
+        if not SED_EVAL_AVAILABLE:
+            raise ImportError(
+                "sed_eval is required for SED metrics. Install it with: poetry install --with sed_eval"
+            )
         self.cache = OrderedDict()
         self.max_cache_size = 1
         self._sed = None
@@ -49,7 +60,13 @@ class SEDMetricBackend:
 
         Raises:
             ValueError: If parameters are invalid or target_transform has no labels.
+            ImportError: If sed_eval is not installed.
         """
+        if not SED_EVAL_AVAILABLE:
+            raise ImportError(
+                "sed_eval is required for SED metrics. Install it with: poetry install --with sed_eval"
+            )
+
         if not target_transform.labels:
             raise ValueError("target_transform must have at least one label")
 

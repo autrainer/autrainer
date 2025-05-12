@@ -86,6 +86,8 @@ class OutputsTracker:
         self._predictions = self._data.target_transform.predict_inference(
             _probabilities
         )
+        if isinstance(self._predictions, list):
+            self._predictions = np.array(self._predictions)
         if len(self._predictions.shape) == 3:  # sequential data
             instances, tokens, classes = self._predictions.shape
             # assume all sequences are uniformly sampled
@@ -115,10 +117,16 @@ class OutputsTracker:
             self._results_df = res_df
         else:
             self._results_df = pd.DataFrame(index=results["indices"])
-            self._results_df["predictions"] = self._predictions
-            self._results_df["predictions"] = self._results_df[
-                "predictions"
-            ].apply(self._data.target_transform.decode)
+            if len(self._predictions.shape) == 2:
+                self._results_df["predictions"] = [
+                    self._data.target_transform.decode(pred)
+                    for pred in self._predictions
+                ]
+            else:
+                self._results_df["predictions"] = self._predictions
+                self._results_df["predictions"] = self._results_df[
+                    "predictions"
+                ].apply(self._data.target_transform.decode)
             _probs_df = pd.DataFrame(
                 index=results["indices"],
                 data=(
