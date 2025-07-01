@@ -41,6 +41,9 @@ def assign_seeds(
         if increment:
             current_seed += 1
 
+    # recursively assign unique seeds to each augmentation in choice or
+    # sequential to avoid shared seeds, which can lead to identical
+    # augmentations within a batch
     if aug_name == "autrainer.augmentations.Choice" and "choices" in config:
         new_choices = []
         for choice in config["choices"]:
