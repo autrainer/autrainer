@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -538,7 +538,7 @@ the <a class="reference internal" href="cli_wrapper.html#cli-wrapper"><span clas
 <span id="cli-preprocessing"></span><h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h2>
 <p>To avoid race conditions when using <a class="reference internal" href="hydra_configurations.html#hydra-launcher-plugins"><span class="std std-ref">Launcher Plugins</span></a> that may run multiple training jobs in parallel,
 <a class="reference internal" href="#cli-autrainer-fetch"><span class="std std-ref">autrainer fetch</span></a> and <a class="reference internal" href="#cli-autrainer-preprocess"><span class="std std-ref">autrainer preprocess</span></a> allow for
-downloading and <a class="reference internal" href="../modules/transforms.html#preprocessing-transforms"><span class="std std-ref">preprocessing</span></a> of <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">Datasets</span></a> (and pretrained model states) before training.</p>
+downloading and <a class="reference internal" href="../modules/transforms.html#preprocessing-transforms"><span class="std std-ref">preprocessing</span></a> of <a class="reference internal" href="../modules/datasets.html#datasets"><span class="std std-ref">Datasets</span></a> (and pretrained model states or transforms) before training.</p>
 <p>Both commands are based on the <a class="reference internal" href="hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file (e.g., <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code>),
 such that the specified models and datasets are fetched and preprocessed accordingly.
 If a model or dataset is already fetched or preprocessed, it will be skipped.</p>
@@ -547,7 +547,7 @@ If a model or dataset is already fetched or preprocessed, it will be skipped.</p
 <div class="highlight-aucli notranslate"><div class="highlight"><pre><span></span>usage: <span class="nb">autrainer</span> <span class="k">fetch</span> [-h] [-b]
 </pre></div>
 </div>
-<p><p>Fetch the datasets and models specified in a training configuration (Hydra).
+<p><p>Fetch the datasets, models, and transforms specified in a training configuration (Hydra).
 For more information on Hydra’s command line line flags, see:
 <a class="reference external" href="https://hydra.cc/docs/advanced/hydra-command-line-flags/">https://hydra.cc/docs/advanced/hydra-command-line-flags/</a>.</p>
 </p>

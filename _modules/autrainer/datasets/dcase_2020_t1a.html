@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -406,7 +406,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">features_subdir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">features_subdir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
         <span class="n">tracking_metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
@@ -442,7 +442,7 @@ document.write(`
 <span class="sd">            file_handler: File handler to load the data.</span>
 <span class="sd">            features_path: Root path to features. Useful</span>
 <span class="sd">                when features need to be extracted and stored</span>
-<span class="sd">                in a different folder than the root of the dataset.</span>
+<span class="sd">                in a different directory than the root of the dataset.</span>
 <span class="sd">                If `None`, will be set to `path`. Defaults to `None`.</span>
 <span class="sd">            train_transform: Transform to apply to the training set.</span>
 <span class="sd">                Defaults to None.</span>

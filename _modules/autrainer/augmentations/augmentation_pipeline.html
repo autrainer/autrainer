@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -359,6 +359,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartCompose</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_augmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAugmentation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">assign_seeds</span><span class="p">,</span> <span class="n">convert_shorthand</span>
 
 
 <div class="viewcode-block" id="AugmentationPipeline">
@@ -368,6 +369,7 @@ document.write(`
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pipeline</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
         <span class="n">generator_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">increment</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an augmentation pipeline.</span>
 
@@ -376,20 +378,17 @@ document.write(`
 <span class="sd">            generator_seed: Seed to pass to each augmentation for</span>
 <span class="sd">                reproducibility if the augmentation does not have a seed.</span>
 <span class="sd">                Defaults to 0.</span>
+<span class="sd">            increment: Whether to increment the generator seed for each</span>
+<span class="sd">                augmentation that does not define its own seed.</span>
+<span class="sd">                Defaults to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span> <span class="o">=</span> <span class="n">generator_seed</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">current_seed</span> <span class="o">=</span> <span class="n">generator_seed</span>
         <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">{</span><span class="n">aug</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;generator_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span><span class="p">}}</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">aug_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">aug</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
-                <span class="k">if</span> <span class="n">aug</span><span class="p">[</span><span class="n">aug_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generator_seed&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">aug</span><span class="p">[</span><span class="n">aug_name</span><span class="p">][</span><span class="s2">&quot;generator_seed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aug</span><span class="p">)</span>
+            <span class="n">aug</span> <span class="o">=</span> <span class="n">convert_shorthand</span><span class="p">(</span><span class="n">aug</span><span class="p">)</span>
+            <span class="n">aug</span><span class="p">,</span> <span class="n">current_seed</span> <span class="o">=</span> <span class="n">assign_seeds</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="n">current_seed</span><span class="p">,</span> <span class="n">increment</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aug</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractAugmentation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span>

@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -397,7 +397,7 @@ a different number of filters each:</p>
 <span class="linenos">13</span><span class="sd">            output_dim: Output dimension of the model.</span>
 <span class="linenos">14</span><span class="sd">            hidden_dims: List of hidden dimensions for the CNN layers.</span>
 <span class="linenos">15</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">16</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">output_dim</span><span class="p">)</span>
+<span class="linenos">16</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># no transfer learning</span>
 <span class="linenos">17</span>        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dims</span> <span class="o">=</span> <span class="n">hidden_dims</span>
 <span class="linenos">18</span>        <span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="linenos">19</span>        <span class="n">input_dim</span> <span class="o">=</span> <span class="mi">1</span>
@@ -419,11 +419,11 @@ a different number of filters each:</p>
 <span class="linenos">35</span>        <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
 <span class="linenos">36</span>        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_dims</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">output_dim</span><span class="p">)</span>
 <span class="linenos">37</span>
-<span class="linenos">38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="linenos">39</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos">38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">39</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
 <span class="linenos">40</span>
-<span class="linenos">41</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="linenos">42</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="linenos">41</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">42</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">features</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -821,9 +821,9 @@ of a <a class="reference internal" href="../modules/datasets.html#datasets"><spa
 </section>
 <section id="advanced-data-pipelines">
 <span id="tut-advanced"></span><h3>Advanced Data Pipelines<a class="headerlink" href="#advanced-data-pipelines" title="Link to this heading">#</a></h3>
-<p>To create data and model pipelines that go beyond the standard <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.DataItem" title="autrainer.datasets.utils.DataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataItem</span></code></a> convention of using
-only <code class="xref py py-attr docutils literal notranslate"><span class="pre">DataItem.features</span></code> as input to the model, first create a new <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.DataItem" title="autrainer.datasets.utils.DataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataItem</span></code></a> struct
-decorated with <code class="xref py py-class docutils literal notranslate"><span class="pre">dataclasses.dataclass</span></code>:</p>
+<p>To create data and model pipelines that go beyond the standard <a class="reference internal" href="../modules/core.html#autrainer.core.structs.DataItem" title="autrainer.core.structs.DataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataItem</span></code></a> convention of using
+only <code class="xref py py-attr docutils literal notranslate"><span class="pre">features</span></code> as input to the model,
+first create a new <a class="reference internal" href="../modules/core.html#autrainer.core.structs.DataItem" title="autrainer.core.structs.DataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataItem</span></code></a> dataclass that includes a new parameter (e.g., <code class="xref py py-attr docutils literal notranslate"><span class="pre">meta</span></code>):</p>
 <div class="literal-block-wrapper docutils container" id="id15">
 <div class="code-block-caption"><span class="caption-text">multi_branch_data.py</span><a class="headerlink" href="#id15" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
@@ -835,7 +835,7 @@ decorated with <code class="xref py py-class docutils literal notranslate"><span
 </pre></div>
 </div>
 </div>
-<p>and override <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.AbstractDataBatch" title="autrainer.datasets.utils.AbstractDataBatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataBatch</span></code></a>:</p>
+<p>Next, override <a class="reference internal" href="../modules/core.html#autrainer.core.structs.AbstractDataBatch" title="autrainer.core.structs.AbstractDataBatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataBatch</span></code></a> to include the new <code class="xref py py-attr docutils literal notranslate"><span class="pre">meta</span></code> parameter:</p>
 <div class="literal-block-wrapper docutils container" id="id16">
 <div class="code-block-caption"><span class="caption-text">multi_branch_data.py</span><a class="headerlink" href="#id16" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
@@ -861,12 +861,9 @@ decorated with <code class="xref py py-class docutils literal notranslate"><span
 </pre></div>
 </div>
 </div>
-<p>Following that, inherit from <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.DatasetWrapper" title="autrainer.datasets.utils.DatasetWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetWrapper</span></code></a>
-to create a <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code>
-that iterates over your data
-and returns your custom <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.AbstractDataBatch" title="autrainer.datasets.utils.AbstractDataBatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataBatch</span></code></a>
-(here we simply replicate <code class="xref py py-attr docutils literal notranslate"><span class="pre">features</span></code>
-as our auxiliary features):</p>
+<p>Following that, inherit from <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.DatasetWrapper" title="autrainer.datasets.utils.DatasetWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetWrapper</span></code></a> to create a <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code>
+that iterates over your data and returns your custom <a class="reference internal" href="../modules/core.html#autrainer.core.structs.AbstractDataBatch" title="autrainer.core.structs.AbstractDataBatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataBatch</span></code></a>
+(here we simply replicate <code class="xref py py-attr docutils literal notranslate"><span class="pre">features</span></code> as our auxiliary features):</p>
 <div class="literal-block-wrapper docutils container" id="id17">
 <div class="code-block-caption"><span class="caption-text">multi_branch_data.py</span><a class="headerlink" href="#id17" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ToyDatasetMultiBranch</span><span class="p">(</span><span class="n">ToyDatasetWrapper</span><span class="p">):</span>
@@ -881,8 +878,7 @@ as our auxiliary features):</p>
 </pre></div>
 </div>
 </div>
-<p>Subsequently, inherit from <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a>
-to create a dataset
+<p>Subsequently, inherit from <a class="reference internal" href="../modules/datasets.html#autrainer.datasets.AbstractDataset" title="autrainer.datasets.AbstractDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code></a> to create a dataset
 that instantiates your <a class="reference internal" href="../modules/dataset_utils.html#autrainer.datasets.utils.DatasetWrapper" title="autrainer.datasets.utils.DatasetWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetWrapper</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id18">
 <div class="code-block-caption"><span class="caption-text">multi_branch_data.py</span><a class="headerlink" href="#id18" title="Link to this code">#</a></div>
@@ -933,14 +929,13 @@ that instantiates your <a class="reference internal" href="../modules/dataset_ut
 </pre></div>
 </div>
 </div>
-<p>Finally, you must inherit from <a class="reference internal" href="../modules/models.html#autrainer.models.AbstractModel" title="autrainer.models.AbstractModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractModel</span></code></a>
-and create a model <strong>with a matching signature</strong>,
+<p>Finally, inherit from <a class="reference internal" href="../modules/models.html#autrainer.models.AbstractModel" title="autrainer.models.AbstractModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractModel</span></code></a> and create a model <strong>with a matching signature</strong>,
 in its forward pass to access the <code class="xref py py-attr docutils literal notranslate"><span class="pre">meta</span></code> parameter:</p>
 <div class="literal-block-wrapper docutils container" id="id20">
 <div class="code-block-caption"><span class="caption-text">multi_branch_model.py</span><a class="headerlink" href="#id20" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ToyMultiBranchModel</span><span class="p">(</span><span class="n">AbstractModel</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">output_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># no transfer learning</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_dim</span> <span class="o">=</span> <span class="n">input_dim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
 
@@ -962,10 +957,7 @@ in its forward pass to access the <code class="xref py py-attr docutils literal 
 </pre></div>
 </div>
 </div>
-<p>Next, create a
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">ToyMultiBranchModel.yaml</span></code>
-configuration file
-for the model in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">conf/model/</span></code> directory:</p>
+<p>Next, create a <code class="xref py py-attr docutils literal notranslate"><span class="pre">ToyMultiBranchModel.yaml</span></code> configuration file for the model in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">conf/model/</span></code> directory:</p>
 <div class="literal-block-wrapper docutils container" id="id21">
 <div class="code-block-caption"><span class="caption-text">conf/data/ToyMultiBranchModel.yaml</span><a class="headerlink" href="#id21" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyMultiBranchModel</span>
@@ -992,9 +984,9 @@ with an additional randomly scaled learning rate using a <a class="reference int
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataBatch</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataBatch</span>
 <span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractModel</span>
-<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.training.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_model_inputs</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_model_inputs</span>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">RandomScaledSGD</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
@@ -1019,7 +1011,7 @@ with an additional randomly scaled learning rate using a <a class="reference int
 <span class="linenos">29</span>        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
 <span class="linenos">30</span>        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span>
 <span class="linenos">31</span>        <span class="bp">self</span><span class="o">.</span><span class="n">base_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
-<span class="linenos">32</span>        <span class="k">if</span> <span class="n">generator_seed</span><span class="p">:</span>
+<span class="linenos">32</span>        <span class="k">if</span> <span class="n">generator_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">33</span>            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">generator_seed</span><span class="p">)</span>
 <span class="linenos">34</span>
 <span class="linenos">35</span>    <span class="k">def</span><span class="w"> </span><span class="nf">custom_step</span><span class="p">(</span>
@@ -1130,31 +1122,33 @@ and implement the <a class="reference internal" href="../modules/transforms.html
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span>
 <span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractTransform</span>
-<span class="linenos"> 5</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataItem</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractTransform</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="k">class</span><span class="w"> </span><span class="nc">SpectMedianFilter</span><span class="p">(</span><span class="n">AbstractTransform</span><span class="p">):</span>
-<span class="linenos"> 8</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos"> 9</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Spectrogram median filter to remove noise.</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="sd">        Args:</span>
-<span class="linenos">12</span><span class="sd">            size: Number of neighboring pixels to consider when filtering.</span>
-<span class="linenos">13</span><span class="sd">                Must be odd.</span>
-<span class="linenos">14</span><span class="sd">            order: The order of the transform in the pipeline. Larger means</span>
-<span class="linenos">15</span><span class="sd">                later in the pipeline. If multiple transforms have the same</span>
-<span class="linenos">16</span><span class="sd">                order, they are applied in the order they were added to the</span>
-<span class="linenos">17</span><span class="sd">                pipeline. Defaults to 0.</span>
-<span class="linenos">18</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">19</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-<span class="linenos">20</span>        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
-<span class="linenos">21</span>
-<span class="linenos">22</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="linenos">23</span>        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
-<span class="linenos">24</span>            <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span>
-<span class="linenos">25</span>                <span class="n">x</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
-<span class="linenos">26</span>                <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
-<span class="linenos">27</span>            <span class="p">)</span>
-<span class="linenos">28</span>        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">SpectMedianFilter</span><span class="p">(</span><span class="n">AbstractTransform</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Spectrogram median filter to remove noise.</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="sd">        Args:</span>
+<span class="linenos">13</span><span class="sd">            size: Number of neighboring pixels to consider when filtering.</span>
+<span class="linenos">14</span><span class="sd">                Must be odd.</span>
+<span class="linenos">15</span><span class="sd">            order: The order of the transform in the pipeline. Larger means</span>
+<span class="linenos">16</span><span class="sd">                later in the pipeline. If multiple transforms have the same</span>
+<span class="linenos">17</span><span class="sd">                order, they are applied in the order they were added to the</span>
+<span class="linenos">18</span><span class="sd">                pipeline. Defaults to 0.</span>
+<span class="linenos">19</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">20</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+<span class="linenos">21</span>        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">AbstractDataItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractDataItem</span><span class="p">:</span>
+<span class="linenos">24</span>        <span class="n">item</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+<span class="linenos">25</span>            <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span>
+<span class="linenos">26</span>                <span class="n">item</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
+<span class="linenos">27</span>                <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+<span class="linenos">28</span>            <span class="p">)</span>
+<span class="linenos">29</span>        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="linenos">30</span>        <span class="k">return</span> <span class="n">item</span>
 </pre></div>
 </div>
 </div>
@@ -1254,40 +1248,43 @@ and implement the <a class="reference internal" href="../modules/augmentations.h
 <span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 4</span>
 <span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.augmentations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAugmentation</span>
-<span class="linenos"> 6</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataItem</span>
 <span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">AmplitudeScale</span><span class="p">(</span><span class="n">AbstractAugmentation</span><span class="p">):</span>
-<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<span class="linenos">10</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">11</span>        <span class="n">scale_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
-<span class="linenos">12</span>        <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="linenos">13</span>        <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-<span class="linenos">14</span>        <span class="n">generator_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="linenos">15</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">16</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Amplitude scaling augmentation. The amplitude is randomly scaled by</span>
-<span class="linenos">17</span><span class="sd">        a factor drawn from scale_range.</span>
-<span class="linenos">18</span>
-<span class="linenos">19</span><span class="sd">        Args:</span>
-<span class="linenos">20</span><span class="sd">            scale_range: The range of the amplitude scaling factor.</span>
-<span class="linenos">21</span><span class="sd">            order: The order of the augmentation in the transformation pipeline.</span>
-<span class="linenos">22</span><span class="sd">                Defaults to 0.</span>
-<span class="linenos">23</span><span class="sd">            p: The probability of applying the augmentation. Defaults to 1.0.</span>
-<span class="linenos">24</span><span class="sd">            generator_seed: The initial seed for the internal random number</span>
-<span class="linenos">25</span><span class="sd">                generator drawing the probability. If None, the generator is</span>
-<span class="linenos">26</span><span class="sd">                not seeded. Defaults to None.</span>
-<span class="linenos">27</span>
-<span class="linenos">28</span><span class="sd">        Raises:</span>
-<span class="linenos">29</span><span class="sd">            ValueError: If p is not in the range [0, 1].</span>
-<span class="linenos">30</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">31</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">generator_seed</span><span class="p">)</span>
-<span class="linenos">32</span>        <span class="bp">self</span><span class="o">.</span><span class="n">scale_range</span> <span class="o">=</span> <span class="n">scale_range</span>
-<span class="linenos">33</span>        <span class="bp">self</span><span class="o">.</span><span class="n">scale_g</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span>
-<span class="linenos">34</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span><span class="p">:</span>
-<span class="linenos">35</span>            <span class="bp">self</span><span class="o">.</span><span class="n">scale_g</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span><span class="p">)</span>
-<span class="linenos">36</span>
-<span class="linenos">37</span>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="linenos">38</span>        <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_range</span>
-<span class="linenos">39</span>        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scale_g</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">s1</span> <span class="o">-</span> <span class="n">s0</span><span class="p">)</span> <span class="o">+</span> <span class="n">s0</span><span class="p">)</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">AmplitudeScale</span><span class="p">(</span><span class="n">AbstractAugmentation</span><span class="p">):</span>
+<span class="linenos">10</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos">11</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">12</span>        <span class="n">scale_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+<span class="linenos">13</span>        <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="linenos">14</span>        <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="linenos">15</span>        <span class="n">generator_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="linenos">16</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">17</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Amplitude scaling augmentation. The amplitude is randomly scaled by</span>
+<span class="linenos">18</span><span class="sd">        a factor drawn from scale_range.</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="sd">        Args:</span>
+<span class="linenos">21</span><span class="sd">            scale_range: The range of the amplitude scaling factor.</span>
+<span class="linenos">22</span><span class="sd">            order: The order of the augmentation in the transformation pipeline.</span>
+<span class="linenos">23</span><span class="sd">                Defaults to 0.</span>
+<span class="linenos">24</span><span class="sd">            p: The probability of applying the augmentation. Defaults to 1.0.</span>
+<span class="linenos">25</span><span class="sd">            generator_seed: The initial seed for the internal random number</span>
+<span class="linenos">26</span><span class="sd">                generator drawing the probability. If None, the generator is</span>
+<span class="linenos">27</span><span class="sd">                not seeded. Defaults to None.</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="sd">        Raises:</span>
+<span class="linenos">30</span><span class="sd">            ValueError: If p is not in the range [0, 1].</span>
+<span class="linenos">31</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">32</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">generator_seed</span><span class="p">)</span>
+<span class="linenos">33</span>        <span class="bp">self</span><span class="o">.</span><span class="n">scale_range</span> <span class="o">=</span> <span class="n">scale_range</span>
+<span class="linenos">34</span>        <span class="bp">self</span><span class="o">.</span><span class="n">scale_g</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span>
+<span class="linenos">35</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">36</span>            <span class="bp">self</span><span class="o">.</span><span class="n">scale_g</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span><span class="p">)</span>
+<span class="linenos">37</span>
+<span class="linenos">38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">AbstractDataItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractDataItem</span><span class="p">:</span>
+<span class="linenos">39</span>        <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_range</span>
+<span class="linenos">40</span>        <span class="n">scale</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scale_g</span><span class="p">)</span>
+<span class="linenos">41</span>        <span class="n">item</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">features</span> <span class="o">*</span> <span class="p">(</span><span class="n">scale</span> <span class="o">*</span> <span class="p">(</span><span class="n">s1</span> <span class="o">-</span> <span class="n">s0</span><span class="p">)</span> <span class="o">+</span> <span class="n">s0</span><span class="p">)</span>
+<span class="linenos">42</span>        <span class="k">return</span> <span class="n">item</span>
 </pre></div>
 </div>
 </div>
@@ -1350,13 +1347,13 @@ In case the collate function modifies the shape of the input or labels, this may
 on the batch level:</p>
 <div class="literal-block-wrapper docutils container" id="id34">
 <div class="code-block-caption"><span class="caption-text">cut_mix_up.py</span><a class="headerlink" href="#id34" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_collate</span>
-<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">v2</span>
-<span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.augmentations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAugmentation</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">v2</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.augmentations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAugmentation</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataBatch</span><span class="p">,</span> <span class="n">AbstractDataItem</span>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -1386,35 +1383,40 @@ on the batch level:</p>
 <span class="linenos">34</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">generator_seed</span><span class="p">)</span>
 <span class="linenos">35</span>        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
 <span class="linenos">36</span>        <span class="bp">self</span><span class="o">.</span><span class="n">cut_mix_up_g</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span>
-<span class="linenos">37</span>        <span class="k">if</span> <span class="n">generator_seed</span><span class="p">:</span>
+<span class="linenos">37</span>        <span class="k">if</span> <span class="n">generator_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">38</span>            <span class="bp">self</span><span class="o">.</span><span class="n">cut_mix_up_g</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">generator_seed</span><span class="p">)</span>
 <span class="linenos">39</span>
-<span class="linenos">40</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_collate_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-<span class="linenos">41</span>        <span class="bp">self</span><span class="o">.</span><span class="n">cutmix</span> <span class="o">=</span> <span class="n">v2</span><span class="o">.</span><span class="n">CutMix</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
-<span class="linenos">42</span>        <span class="bp">self</span><span class="o">.</span><span class="n">mixup</span> <span class="o">=</span> <span class="n">v2</span><span class="o">.</span><span class="n">MixUp</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
-<span class="linenos">43</span>
-<span class="linenos">44</span>        <span class="k">def</span><span class="w"> </span><span class="nf">_collate_fn</span><span class="p">(</span>
-<span class="linenos">45</span>            <span class="n">batch</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
-<span class="linenos">46</span>        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
-<span class="linenos">47</span>            <span class="n">probability</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-<span class="linenos">48</span>            <span class="k">if</span> <span class="n">probability</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
-<span class="linenos">49</span>                <span class="n">p</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cut_mix_up_g</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-<span class="linenos">50</span>                <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
-<span class="linenos">51</span>                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutmix</span><span class="p">(</span><span class="o">*</span><span class="n">default_collate</span><span class="p">(</span><span class="n">batch</span><span class="p">))</span>
-<span class="linenos">52</span>                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixup</span><span class="p">(</span><span class="o">*</span><span class="n">default_collate</span><span class="p">(</span><span class="n">batch</span><span class="p">))</span>
-<span class="linenos">53</span>
-<span class="linenos">54</span>            <span class="c1"># still one-hot encode the labels if no augmentation is applied</span>
-<span class="linenos">55</span>            <span class="n">batched</span> <span class="o">=</span> <span class="n">default_collate</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
-<span class="linenos">56</span>            <span class="n">batched</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span>
-<span class="linenos">57</span>                <span class="n">batched</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">output_dim</span>
-<span class="linenos">58</span>            <span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
-<span class="linenos">59</span>            <span class="k">return</span> <span class="n">batched</span>
-<span class="linenos">60</span>
-<span class="linenos">61</span>        <span class="k">return</span> <span class="n">_collate_fn</span>
-<span class="linenos">62</span>
-<span class="linenos">63</span>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="linenos">64</span>        <span class="c1"># no-op as the augmentation is applied in the collate function</span>
-<span class="linenos">65</span>        <span class="k">return</span> <span class="n">x</span>
+<span class="linenos">40</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_collate_fn</span><span class="p">(</span>
+<span class="linenos">41</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">42</span>        <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">,</span>
+<span class="linenos">43</span>        <span class="n">default</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+<span class="linenos">44</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="linenos">45</span>        <span class="bp">self</span><span class="o">.</span><span class="n">cutmix</span> <span class="o">=</span> <span class="n">v2</span><span class="o">.</span><span class="n">CutMix</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+<span class="linenos">46</span>        <span class="bp">self</span><span class="o">.</span><span class="n">mixup</span> <span class="o">=</span> <span class="n">v2</span><span class="o">.</span><span class="n">MixUp</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span>        <span class="k">def</span><span class="w"> </span><span class="nf">_collate_fn</span><span class="p">(</span><span class="n">batch</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractDataItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AbstractDataBatch</span><span class="p">:</span>
+<span class="linenos">49</span>            <span class="n">probability</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="linenos">50</span>            <span class="n">batched</span><span class="p">:</span> <span class="n">AbstractDataBatch</span> <span class="o">=</span> <span class="n">default</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+<span class="linenos">51</span>            <span class="k">if</span> <span class="n">probability</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
+<span class="linenos">52</span>                <span class="n">features</span> <span class="o">=</span> <span class="n">batched</span><span class="o">.</span><span class="n">features</span>
+<span class="linenos">53</span>                <span class="n">target</span> <span class="o">=</span> <span class="n">batched</span><span class="o">.</span><span class="n">target</span>
+<span class="linenos">54</span>                <span class="k">if</span> <span class="n">probability</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+<span class="linenos">55</span>                    <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutmix</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="linenos">56</span>                <span class="k">else</span><span class="p">:</span>
+<span class="linenos">57</span>                    <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixup</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="linenos">58</span>                <span class="n">batched</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos">59</span>                <span class="n">batched</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">60</span>                <span class="k">return</span> <span class="n">batched</span>
+<span class="linenos">61</span>            <span class="n">batched</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span>
+<span class="linenos">62</span>                <span class="n">batched</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">output_dim</span>
+<span class="linenos">63</span>            <span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+<span class="linenos">64</span>            <span class="k">return</span> <span class="n">batched</span>
+<span class="linenos">65</span>
+<span class="linenos">66</span>        <span class="k">return</span> <span class="n">_collate_fn</span>
+<span class="linenos">67</span>
+<span class="linenos">68</span>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">AbstractDataItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractDataItem</span><span class="p">:</span>
+<span class="linenos">69</span>        <span class="c1"># no-op as the augmentation is applied in the collate function</span>
+<span class="linenos">70</span>        <span class="k">return</span> <span class="n">item</span>
 </pre></div>
 </div>
 </div>

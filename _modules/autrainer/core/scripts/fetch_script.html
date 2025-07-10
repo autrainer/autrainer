@@ -39,7 +39,7 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -368,6 +368,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">add_hydra_args_to_sys</span><span class="p">,</span>
     <span class="n">catch_cli_errors</span><span class="p">,</span>
+    <span class="n">check_invalid_config_path_arg</span><span class="p">,</span>
     <span class="n">run_hydra_cmd</span><span class="p">,</span>
     <span class="n">running_in_notebook</span><span class="p">,</span>
 <span class="p">)</span>
@@ -378,7 +379,7 @@ document.write(`
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="s2">&quot;fetch&quot;</span><span class="p">,</span>
             <span class="p">(</span>
-                <span class="s2">&quot;Fetch the datasets and models specified in a &quot;</span>
+                <span class="s2">&quot;Fetch the datasets, models, and transforms specified in a &quot;</span>
                 <span class="s2">&quot;training configuration (Hydra).&quot;</span>
             <span class="p">),</span>
             <span class="n">extended_description</span><span class="o">=</span><span class="p">(</span>
@@ -405,6 +406,7 @@ document.write(`
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_in_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
 
+        <span class="n">check_invalid_config_path_arg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="p">)</span>
         <span class="n">main</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_download_datasets</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_download_models</span><span class="p">()</span>
@@ -422,17 +424,33 @@ document.write(`
                     <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
                 <span class="p">},</span>
             <span class="p">)</span>  <span class="c1"># pragma: no cover</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_download_transform</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_download_models</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fetching models...&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;model_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">model_checkpoint</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;model_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">model_checkpoint</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># no need to download if checkpoint is provided</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_download_transform</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
             <span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;optimizer_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scheduler_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;skip_last_layer&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">output_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_download_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">transform</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransformManager</span>
+
+        <span class="k">for</span> <span class="n">subset</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">transforms</span> <span class="o">:=</span> <span class="n">transform</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>  <span class="c1"># skip removed transforms</span>
+                <span class="n">TransformManager</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="fetch">
@@ -444,7 +462,8 @@ document.write(`
     <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span>
     <span class="n">config_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the datasets and models specified in a training configuration.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the datasets, models, and transforms specified in a training</span>
+<span class="sd">    configuration.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        override_kwargs: Additional Hydra override arguments to pass to the</span>

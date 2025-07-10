@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -370,6 +370,12 @@ If two transforms share the same <code class="xref py py-attr docutils literal n
 or custom transforms inheriting from the <code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTransform</span></code> class.</p>
 <p>While the choice to use offline or online transforms depends on the use case and is a tradeoff between storage and computational costs,
 both can be used in conjunction for maximum flexibility.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some transforms (such as <a class="reference internal" href="#autrainer.transforms.FeatureExtractor" title="autrainer.transforms.FeatureExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureExtractor</span></code></a>) may require additional resources
+(e.g., tokenizers), which can be automatically downloaded using the <a class="reference internal" href="../usage/cli_reference.html#cli-autrainer-fetch"><span class="std std-ref">autrainer fetch</span></a> CLI command
+or the <a class="reference internal" href="../usage/cli_wrapper.html#autrainer.cli.fetch" title="autrainer.cli.fetch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fetch()</span></code></a> CLI wrapper function after specifying the transform in the model or dataset configuration.</p>
+</div>
 <section id="preprocessing-transforms">
 <span id="id2"></span><h2>Preprocessing Transforms<a class="headerlink" href="#preprocessing-transforms" title="Link to this heading">#</a></h2>
 <p>Preprocessing transforms are specified in the dataset configuration aligning the <code class="xref py py-attr docutils literal notranslate"><span class="pre">features_subdir</span></code> with the name of the preprocessing file.
@@ -702,7 +708,7 @@ specified will be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>transforms</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Compose</span></code>, <a class="reference internal" href="#autrainer.transforms.AbstractTransform" title="autrainer.transforms.abstract_transform.AbstractTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTransform</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]]</span>) – List of transforms to compose.</p></li>
+<li><p><strong>transforms</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#autrainer.transforms.AbstractTransform" title="autrainer.transforms.abstract_transform.AbstractTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTransform</span></code></a>]</span>) – List of transforms to compose.</p></li>
 <li><p><strong>**kwargs</strong> – Additional keyword arguments to pass to
 torchvision.transforms.Compose.</p></li>
 </ul>
@@ -715,12 +721,12 @@ torchvision.transforms.Compose.</p></li>
 automatically sorted by their order attribute if present.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Compose</span></code>, <a class="reference internal" href="#autrainer.transforms.AbstractTransform" title="autrainer.transforms.abstract_transform.AbstractTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTransform</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]]</span>) – Transform to add to the composition.</p>
+<dd class="field-odd"><p><strong>other</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#autrainer.transforms.SmartCompose" title="autrainer.transforms.smart_compose.SmartCompose"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmartCompose</span></code></a>, <a class="reference internal" href="#autrainer.transforms.AbstractTransform" title="autrainer.transforms.abstract_transform.AbstractTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTransform</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#autrainer.transforms.AbstractTransform" title="autrainer.transforms.abstract_transform.AbstractTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTransform</span></code></a>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – Transform to add to the composition.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – If the addition is not a valid type.
-    Supported types are ‘torchvision.transforms.Compose’,
-    ‘AbstractTransform’, ‘Callable’, or ‘List[Callable]’.</p>
+    Supported types are AbstractTransform, SmartCompose,
+    and list of AbstractTransform or SmartCompose.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#autrainer.transforms.SmartCompose" title="autrainer.transforms.smart_compose.SmartCompose"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmartCompose</span></code></a></span></p>
@@ -770,20 +776,17 @@ worker index.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.transforms.SmartCompose.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/smart_compose.html#SmartCompose.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.SmartCompose.__call__" title="Link to this definition">#</a></dt>
-<dd><p>Apply the transforms to the input tensor.</p>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/smart_compose.html#SmartCompose.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.SmartCompose.__call__" title="Link to this definition">#</a></dt>
+<dd><p>Apply the transform to the input data item.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Input tensor.</p></li>
-<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Dataset index of the input tensor.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span>) – The input data item to transform.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Transformed tensor.</p>
+<dd class="field-odd"><p>The transformed data item.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -811,21 +814,17 @@ pipeline. Defaults to 0.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.transforms.AbstractTransform.__call__">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/abstract_transform.html#AbstractTransform.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.AbstractTransform.__call__" title="Link to this definition">#</a></dt>
-<dd><p>Apply the transform to the input tensor.</p>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/abstract_transform.html#AbstractTransform.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.AbstractTransform.__call__" title="Link to this definition">#</a></dt>
+<dd><p>Apply the transform to the input data item.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – The input tensor.</p></li>
-<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – The index of the input tensor in the dataset.
-Defaults to None.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span>) – The input data item to transform.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The transformed tensor.</p>
+<dd class="field-odd"><p>The transformed data item.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1051,22 +1050,6 @@ as the size. Defaults to 64.</p></li>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="autrainer.transforms.RGBAToGrayscale">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">RGBAToGrayscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#RGBAToGrayscale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.RGBAToGrayscale" title="Link to this definition">#</a></dt>
-<dd><p>Convert an RGBA image to grayscale by dropping the alpha channel
-and converting to grayscale.</p>
-<p>For the conversion to grayscale, the
-luminance is calculated in line with the implementation in
-torchvision.transforms.Grayscale:
-Y = 0.2989 * R + 0.587 * G + 0.114 * B.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the transform in the pipeline. Defaults to -95.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="autrainer.transforms.RGBAToRGB">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">RGBAToRGB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#RGBAToRGB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.RGBAToRGB" title="Link to this definition">#</a></dt>
 <dd><p>Abstract class for a transform.</p>
@@ -1086,7 +1069,7 @@ pipeline. Defaults to 0.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.transforms.RGBToGrayscale">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">RGBToGrayscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#RGBToGrayscale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.RGBToGrayscale" title="Link to this definition">#</a></dt>
-<dd><p>Convert an RGB image to a grayscale image.</p>
+<dd><p>Convert an RGB or RGBA image to a grayscale image.</p>
 <p>For the conversion to grayscale, the
 luminance is calculated in line with the implementation in
 torchvision.transforms.Grayscale:
@@ -1260,7 +1243,6 @@ deviation. Must be one of [“train”, “dev”, “test”]. Defaults to
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.RandomCrop"><code class="docutils literal notranslate"><span class="pre">RandomCrop</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.Resample"><code class="docutils literal notranslate"><span class="pre">Resample</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.Resize"><code class="docutils literal notranslate"><span class="pre">Resize</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.RGBAToGrayscale"><code class="docutils literal notranslate"><span class="pre">RGBAToGrayscale</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.RGBAToRGB"><code class="docutils literal notranslate"><span class="pre">RGBAToRGB</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.RGBToGrayscale"><code class="docutils literal notranslate"><span class="pre">RGBToGrayscale</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.transforms.ScaleRange"><code class="docutils literal notranslate"><span class="pre">ScaleRange</span></code></a></li>

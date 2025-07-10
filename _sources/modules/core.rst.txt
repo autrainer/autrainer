@@ -29,6 +29,45 @@ providing additional type safety and :ref:`shorthand_syntax` support.
 .. autofunction:: autrainer.instantiate_shorthand
 
 
+.. _core_data_items:
+
+Data Items and Batches
+----------------------
+
+`autrainer` provides a set of classes to represent data items and batches of data items.
+The :class:`~autrainer.core.structs.DataItem` class represents individual data *instances*.
+These classes (or *structs*) are meant to hold all important attributes needed by :class:`~autrainer.models.AbstractModel`
+objects that are compatible with a particular dataset.
+In addition they hold attributes needed by `autrainer`'s utilities, such as the *index* corresponding to each *instance*
+(where we assume that each :class:`~autrainer.datasets.AbstractDataset` is an ordered set of instances).
+
+.. autoclass:: autrainer.core.structs.AbstractDataItem
+   :members:
+
+.. autoclass:: autrainer.core.structs.DataItem
+   :members:
+
+
+Additionally, `autrainer` provides a set of classes that hold *batches* of individual data instances.
+They provide an implementation of the :meth:`collate_fn` which is used to collate the individual data items
+into a batch of data items and must be passed to the :class:`torch.utils.data.DataLoader`.
+
+.. autoclass:: autrainer.core.structs.AbstractDataBatch
+   :members:
+
+.. autoclass:: autrainer.core.structs.DataBatch
+   :members:
+
+
+.. warning::
+
+   :attr:`~autrainer.core.structs.AbstractDataItem.features`, :attr:`~autrainer.core.structs.AbstractDataItem.target`,
+   and :attr:`~autrainer.core.structs.AbstractDataItem.index` are the three **reserved** attributes that every object derived from
+   :class:`~autrainer.core.structs.AbstractDataItem` **must** include.
+   Moreover, every object derived from :class:`~autrainer.models.AbstractModel` **must** include :attr:`~autrainer.core.structs.AbstractDataItem.features`
+   as the first argument (after `self`) of its :meth:`~autrainer.models.AbstractModel.forward` method.
+
+
 .. _core_utils:
 
 Utils

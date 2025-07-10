@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -417,7 +417,7 @@ and test sets.</p>
 <p>The <a class="reference internal" href="#autrainer.augmentations.AugmentationPipeline" title="autrainer.augmentations.AugmentationPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">AugmentationPipeline</span></code></a> class is used to define the configuration and instantiate the augmentation pipeline.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.augmentations.AugmentationPipeline">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.augmentations.</span></span><span class="sig-name descname"><span class="pre">AugmentationPipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/augmentation_pipeline.html#AugmentationPipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AugmentationPipeline" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.augmentations.</span></span><span class="sig-name descname"><span class="pre">AugmentationPipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/augmentation_pipeline.html#AugmentationPipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AugmentationPipeline" title="Link to this definition">#</a></dt>
 <dd><p>Initialize an augmentation pipeline.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -426,6 +426,9 @@ and test sets.</p>
 <li><p><strong>generator_seed</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Seed to pass to each augmentation for
 reproducibility if the augmentation does not have a seed.
 Defaults to 0.</p></li>
+<li><p><strong>increment</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to increment the generator seed for each
+augmentation that does not define its own seed.
+Defaults to True.</p></li>
 </ul>
 </dd>
 </dl>
@@ -487,44 +490,36 @@ worker index.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.augmentations.AbstractAugmentation.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/abstract_augmentation.html#AbstractAugmentation.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AbstractAugmentation.__call__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/abstract_augmentation.html#AbstractAugmentation.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AbstractAugmentation.__call__" title="Link to this definition">#</a></dt>
 <dd><p>Call the augmentation apply method with probability p.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – The input tensor.</p></li>
-<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – The index of the input tensor in the dataset.
-Defaults to None.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span>) – The input data item.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The augmented tensor if the probability is less than p, otherwise
-the input tensor.</p>
+<dd class="field-odd"><p>The augmented item if the probability is less than p, otherwise
+the input item.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="autrainer.augmentations.AbstractAugmentation.apply">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/abstract_augmentation.html#AbstractAugmentation.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AbstractAugmentation.apply" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/abstract_augmentation.html#AbstractAugmentation.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.AbstractAugmentation.apply" title="Link to this definition">#</a></dt>
 <dd><p>Apply the augmentation to the input tensor.</p>
 <p>Apply is called with probability p.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – The input tensor.</p></li>
-<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – The index of the input tensor in the dataset.
-Defaults to None.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span>) – The input data item.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The augmented tensor.</p>
+<dd class="field-odd"><p>The augmented item.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -839,22 +834,35 @@ not seeded. Defaults to None.</p></li>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="autrainer.augmentations.Sequential.offset_generator_seed">
+<span class="sig-name descname"><span class="pre">offset_generator_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/sequential_augmentation.html#Sequential.offset_generator_seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.Sequential.offset_generator_seed" title="Link to this definition">#</a></dt>
+<dd><p>Offset the generator seed used to draw the probability of applying
+the augmentation. Useful for ensuring reproducibility and
+randomness of augmentations when using multiple workers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>offset</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Offset to add to the generator seed. Usually the
+worker index.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="autrainer.augmentations.Sequential.apply">
-<span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/sequential_augmentation.html#Sequential.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.Sequential.apply" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/sequential_augmentation.html#Sequential.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.Sequential.apply" title="Link to this definition">#</a></dt>
 <dd><p>Apply all augmentations in sequence to the input tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – The input tensor.</p></li>
-<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – The index of the input tensor in the dataset.
-Defaults to None.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span>) – The input data item.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The augmented tensor.</p>
+<dd class="field-odd"><p>The augmented item.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -892,23 +900,36 @@ not seeded. Defaults to None.</p></li>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="autrainer.augmentations.Choice.offset_generator_seed">
+<span class="sig-name descname"><span class="pre">offset_generator_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/choice_augmentation.html#Choice.offset_generator_seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.Choice.offset_generator_seed" title="Link to this definition">#</a></dt>
+<dd><p>Offset the generator seed used to draw the probability of applying
+the augmentation. Useful for ensuring reproducibility and
+randomness of augmentations when using multiple workers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>offset</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Offset to add to the generator seed. Usually the
+worker index.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="autrainer.augmentations.Choice.apply">
-<span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/choice_augmentation.html#Choice.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.Choice.apply" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/augmentations/choice_augmentation.html#Choice.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.augmentations.Choice.apply" title="Link to this definition">#</a></dt>
 <dd><p>Choose one augmentation from the list of augmentations based on the
 given weights.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – The input tensor.</p></li>
-<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – The index of the input tensor in the dataset.
-Defaults to None.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span>) – The input data item.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.abstract_data_struct.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The augmented tensor.</p>
+<dd class="field-odd"><p>The augmented item.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1192,14 +1213,16 @@ This method is used to retrieve the collate function from the augmentation if it
 <p>To create custom augmentations with collate functions, refer to the <a class="reference internal" href="../usage/tutorials.html#tut-augmentation-collate"><span class="std std-ref">custom augmentations tutorial</span></a>.</p>
 </div>
 <p>The signature of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">get_collate_fn</span></code> method should be as follows and return a collate function taking in a list of
-<a class="reference internal" href="dataset_utils.html#autrainer.datasets.utils.AbstractDataItem" title="autrainer.datasets.utils.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a> objects and returning a single <a class="reference internal" href="dataset_utils.html#autrainer.datasets.utils.AbstractDataBatch" title="autrainer.datasets.utils.AbstractDataBatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataBatch</span></code></a> object.</p>
+<a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a> objects and returning a single <a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataBatch" title="autrainer.core.structs.AbstractDataBatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataBatch</span></code></a> object.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">example_augmentation.ExampleCollateAugmentation</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">2</span>        <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">,</span>
-<span class="linenos">3</span>        <span class="n">default</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-<span class="linenos">4</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-<span class="linenos">5</span>        <span class="k">return</span> <span class="n">DataBatch</span><span class="o">.</span><span class="n">collate</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">class</span><span class="w"> </span><span class="nc">ExampleCollateAugmentation</span><span class="p">(</span><span class="n">AbstractAugmentation</span><span class="p">):</span>
+<span class="linenos">2</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_collate_fn</span><span class="p">(</span>
+<span class="linenos">3</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">4</span>        <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;AbstractDataset&quot;</span><span class="p">,</span>
+<span class="linenos">5</span>        <span class="n">default</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+<span class="linenos">6</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="linenos">7</span>        <span class="k">return</span> <span class="n">DataBatch</span><span class="o">.</span><span class="n">collate</span>
 </pre></div>
 </div>
 </div>
@@ -1381,10 +1404,12 @@ not seeded. Defaults to None.</p></li>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#augmentation-graphs">Augmentation Graphs</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.Sequential"><code class="docutils literal notranslate"><span class="pre">Sequential</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.Sequential.offset_generator_seed"><code class="docutils literal notranslate"><span class="pre">Sequential.offset_generator_seed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.Sequential.apply"><code class="docutils literal notranslate"><span class="pre">Sequential.apply()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.Choice"><code class="docutils literal notranslate"><span class="pre">Choice</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.Choice.offset_generator_seed"><code class="docutils literal notranslate"><span class="pre">Choice.offset_generator_seed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.augmentations.Choice.apply"><code class="docutils literal notranslate"><span class="pre">Choice.apply()</span></code></a></li>
 </ul>
 </li>

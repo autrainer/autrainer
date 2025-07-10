@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -367,6 +367,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">autrainer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.augmentations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AugmentationManager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotMetrics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataBatch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Bookkeeping</span><span class="p">,</span>
     <span class="n">ThreadManager</span><span class="p">,</span>
@@ -377,11 +378,7 @@ document.write(`
     <span class="n">set_seed</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataset</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AbstractDataBatch</span><span class="p">,</span>
-    <span class="n">AbstractFileHandler</span><span class="p">,</span>
-    <span class="n">AudioFileHandler</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractFileHandler</span><span class="p">,</span> <span class="n">AudioFileHandler</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractLogger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_model_inputs</span>
@@ -492,6 +489,8 @@ document.write(`
 
         <span class="c1"># ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints</span>
         <span class="n">model_checkpoint</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;model_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_checkpoint</span> <span class="ow">and</span> <span class="n">model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;transfer&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;transfer&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># skip transfer for checkpoints</span>
         <span class="n">optimizer_checkpoint</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;optimizer_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">scheduler_checkpoint</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scheduler_checkpoint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">skip_last_layer</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;skip_last_layer&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -534,7 +533,7 @@ document.write(`
         <span class="k">if</span> <span class="n">optimizer_checkpoint</span><span class="p">:</span>
             <span class="n">state_dict</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
                 <span class="n">optimizer_checkpoint</span><span class="p">,</span>
-                <span class="n">map_location</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+                <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">,</span>
                 <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">load_pretrained_optim_state</span><span class="p">(</span>

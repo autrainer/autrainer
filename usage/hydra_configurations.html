@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -591,43 +591,45 @@ and setting the output directory and experiment name according to the current co
 <div class="literal-block-wrapper docutils container" id="default-_autrainer_">
 <div class='code-block-caption'><span class='caption-text'>conf/_autrainer_.yaml</span><a class='headerlink' href='#default-_autrainer_' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">defaults</span><span class="p">:</span>
 <span class="linenos"> 2</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
-<span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span>
-<span class="linenos"> 4</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span>
-<span class="linenos"> 5</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">optimizer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyTabular-C</span>
+<span class="linenos"> 4</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToyFFNN</span>
+<span class="linenos"> 5</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">optimizer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Adam</span>
 <span class="linenos"> 6</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">scheduler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
 <span class="linenos"> 7</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">augmentation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
 <span class="linenos"> 8</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">plotting</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Default</span>
-<span class="linenos"> 9</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">override hydra/sweeper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer_filter_sweeper</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="nt">training_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">epoch</span>
-<span class="linenos">12</span><span class="nt">eval_frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="linenos">13</span><span class="nt">save_frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${eval_frequency}</span>
-<span class="linenos">14</span><span class="nt">inference_batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${batch_size}</span>
-<span class="linenos">15</span><span class="nt">device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cuda:0</span>
-<span class="linenos">16</span>
-<span class="linenos">17</span><span class="nt">progress_bar</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="linenos">18</span><span class="nt">continue_training</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="linenos">19</span><span class="nt">remove_continued_runs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="linenos">20</span><span class="nt">save_train_outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="linenos">21</span><span class="nt">save_dev_outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="linenos">22</span><span class="nt">save_test_outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="linenos">23</span>
-<span class="linenos">24</span><span class="nt">hydra</span><span class="p">:</span>
-<span class="linenos">25</span><span class="w">  </span><span class="nt">output_subdir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="linenos">26</span><span class="w">  </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MULTIRUN</span>
-<span class="linenos">27</span><span class="w">  </span><span class="nt">sweep</span><span class="p">:</span>
-<span class="linenos">28</span><span class="w">    </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${results_dir}/${experiment_id}/training/</span>
-<span class="linenos">29</span><span class="w">    </span><span class="nt">subdir</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\</span>
-<span class="linenos">30</span><span class="w">      </span><span class="s">${dataset.id}_\</span>
-<span class="linenos">31</span><span class="w">      </span><span class="s">${model.id}_\</span>
-<span class="linenos">32</span><span class="w">      </span><span class="s">${optimizer.id}_\</span>
-<span class="linenos">33</span><span class="w">      </span><span class="s">${learning_rate}_\</span>
-<span class="linenos">34</span><span class="w">      </span><span class="s">${batch_size}_\</span>
-<span class="linenos">35</span><span class="w">      </span><span class="s">${training_type}_\</span>
-<span class="linenos">36</span><span class="w">      </span><span class="s">${iterations}_\</span>
-<span class="linenos">37</span><span class="w">      </span><span class="s">${scheduler.id}_\</span>
-<span class="linenos">38</span><span class="w">      </span><span class="s">${augmentation.id}_\</span>
-<span class="linenos">39</span><span class="w">      </span><span class="s">${seed}&quot;</span>
+<span class="linenos"> 9</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">/hydra/callbacks</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigDirSnapshot</span>
+<span class="linenos">11</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">override hydra/sweeper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer_filter_sweeper</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="nt">training_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">epoch</span>
+<span class="linenos">14</span><span class="nt">eval_frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">15</span><span class="nt">save_frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${eval_frequency}</span>
+<span class="linenos">16</span><span class="nt">inference_batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${batch_size}</span>
+<span class="linenos">17</span><span class="nt">device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cuda:0</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="nt">progress_bar</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">20</span><span class="nt">continue_training</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">21</span><span class="nt">remove_continued_runs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">22</span><span class="nt">save_train_outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">23</span><span class="nt">save_dev_outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">24</span><span class="nt">save_test_outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="nt">hydra</span><span class="p">:</span>
+<span class="linenos">27</span><span class="w">  </span><span class="nt">output_subdir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="linenos">28</span><span class="w">  </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MULTIRUN</span>
+<span class="linenos">29</span><span class="w">  </span><span class="nt">sweep</span><span class="p">:</span>
+<span class="linenos">30</span><span class="w">    </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${results_dir}/${experiment_id}/training/</span>
+<span class="linenos">31</span><span class="w">    </span><span class="nt">subdir</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\</span>
+<span class="linenos">32</span><span class="w">      </span><span class="s">${dataset.id}_\</span>
+<span class="linenos">33</span><span class="w">      </span><span class="s">${model.id}_\</span>
+<span class="linenos">34</span><span class="w">      </span><span class="s">${optimizer.id}_\</span>
+<span class="linenos">35</span><span class="w">      </span><span class="s">${learning_rate}_\</span>
+<span class="linenos">36</span><span class="w">      </span><span class="s">${batch_size}_\</span>
+<span class="linenos">37</span><span class="w">      </span><span class="s">${training_type}_\</span>
+<span class="linenos">38</span><span class="w">      </span><span class="s">${iterations}_\</span>
+<span class="linenos">39</span><span class="w">      </span><span class="s">${scheduler.id}_\</span>
+<span class="linenos">40</span><span class="w">      </span><span class="s">${augmentation.id}_\</span>
+<span class="linenos">41</span><span class="w">      </span><span class="s">${seed}&quot;</span>
 </pre></div>
 </div>
 </div></section>

@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -407,14 +407,19 @@ can be named differently
 but they must be present
 as attributes
 in the corresponding
-<a class="reference internal" href="dataset_utils.html#autrainer.datasets.utils.AbstractDataItem" title="autrainer.datasets.utils.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a>.</p>
+<a class="reference internal" href="core.html#autrainer.core.structs.AbstractDataItem" title="autrainer.core.structs.AbstractDataItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataItem</span></code></a>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.AbstractModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">AbstractModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/abstract_model.html#AbstractModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.AbstractModel" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">AbstractModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/abstract_model.html#AbstractModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.AbstractModel" title="Link to this definition">#</a></dt>
 <dd><p>Abstract model class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>output_dim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Output dimension of the model.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_dim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Output dimension of the model.</p></li>
+<li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – Whether to load the model with pretrained weights if
+available. May be a boolean or a string representing a truthy
+or falsy value. Defaults to None.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -438,6 +443,17 @@ in the corresponding
 <dt class="sig sig-object py" id="autrainer.models.AbstractModel.inputs">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.models.AbstractModel.inputs" title="Link to this definition">#</a></dt>
 <dd><p>Get the inputs to the model’s forward method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Model inputs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="autrainer.models.AbstractModel.embedding_inputs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embedding_inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#autrainer.models.AbstractModel.embedding_inputs" title="Link to this definition">#</a></dt>
+<dd><p>Get the inputs to the model’s embedding method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model inputs.</p>
@@ -478,7 +494,7 @@ in the corresponding
 <li><p><strong>output_dim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of output classes.</p></li>
 <li><p><strong>torchvision_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the model available in
 <cite>torchvision.models</cite>.</p></li>
-<li><p><strong>transfer</strong> – Whether to load the model with pretrained weights.
+<li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to load the model with pretrained weights.
 The “DEFAULT” weights are used if <cite>transfer</cite> is True.
 The final layer is replaced with a new layer with <cite>output_dim</cite>
 output features. Defaults to False.</p></li>
@@ -1934,7 +1950,7 @@ use the default pretrained weights provided by torchvision.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output_dim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of output classes.</p></li>
 <li><p><strong>timm_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the model available in <cite>timm.create_model</cite>.</p></li>
-<li><p><strong>transfer</strong> – Whether to load the model with pretrained weights.
+<li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to load the model with pretrained weights.
 The final layer is replaced with a new layer with <cite>output_dim</cite>
 output features. Defaults to False.</p></li>
 <li><p><strong>kwargs</strong> – Additional arguments to pass to the model constructor.</p></li>
@@ -1989,12 +2005,24 @@ For more information see:
 <span class="linenos">10</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MIT/ast-finetuned-audioset-10-10-0.4593</span>
 </pre></div>
 </div>
+</div><div class="literal-block-wrapper docutils container" id="default-astmodel">
+<div class='code-block-caption'><span class='caption-text'>conf/model/ASTModel.yaml</span><a class='headerlink' href='#default-astmodel' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ASTModel</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.ASTModel</span>
+<span class="linenos">3</span>
+<span class="linenos">4</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">5</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">6</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">7</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">8</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AST</span>
+<span class="linenos">9</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MIT/ast-finetuned-audioset-10-10-0.4593</span>
+</pre></div>
+</div>
 </div></div>
 </details></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.AudioRNNModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">AudioRNNModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LSTM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/end2you.html#AudioRNNModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.AudioRNNModel" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">AudioRNNModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LSTM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/end2you.html#AudioRNNModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.AudioRNNModel" title="Link to this definition">#</a></dt>
 <dd><p>Audio RNN model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2007,6 +2035,8 @@ For more information see:
 <li><p><strong>cell</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Type of RNN cell in [“LSTM”, “GRU”] Defaults to “LSTM”.</p></li>
 <li><p><strong>bidirectional</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to use a bidirectional RNN.
 Defaults to False.</p></li>
+<li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – Not available for this model. If set, raises an error.
+Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2047,7 +2077,7 @@ Defaults to False.</p></li>
 Defaults to False.</p></li>
 <li><p><strong>in_channels</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of input channels. Defaults to 1.</p></li>
 <li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Link to the weights to transfer. If None, the weights
-weights will be randomly initialized. Defaults to None.</p></li>
+are randomly initialized. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2158,7 +2188,7 @@ weights will be randomly initialized. Defaults to None.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.FFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">FFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/ffnn.html#FFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.FFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">FFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/ffnn.html#FFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.FFNN" title="Link to this definition">#</a></dt>
 <dd><p>Feedforward neural network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2168,6 +2198,8 @@ weights will be randomly initialized. Defaults to None.</p></li>
 <li><p><strong>hidden_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Hidden size.</p></li>
 <li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate.</p></li>
+<li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – Not available for this model. If set, raises an error.
+Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2246,7 +2278,7 @@ Defaults to False.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.SeqFFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">SeqFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_num_layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LSTM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_time_pooling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/sequential.html#SeqFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.SeqFFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">SeqFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_num_layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LSTM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_time_pooling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backbone_bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/sequential.html#SeqFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.SeqFFNN" title="Link to this definition">#</a></dt>
 <dd><p>Sequential model with FFNN frontend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2265,6 +2297,8 @@ Defaults to “LSTM”.</p></li>
 backbone. Defaults to True.</p></li>
 <li><p><strong>backbone_bidirectional</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to use a bidirectional backbone.
 Defaults to False.</p></li>
+<li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – Not available for this model. If set, raises an error.
+Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2381,7 +2415,7 @@ Defaults to False.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.TDNNFFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">TDNNFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/tdnn.html#TDNNFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.TDNNFFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">TDNNFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/tdnn.html#TDNNFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.TDNNFFNN" title="Link to this definition">#</a></dt>
 <dd><p>Time Delay Neural Network with FFNN frontend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2390,6 +2424,8 @@ Defaults to False.</p></li>
 <li><p><strong>hidden_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Hidden size.</p></li>
 <li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers. Defaults to 2.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate. Defaults to 0.5.</p></li>
+<li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to initialize the TDNN backbone with
+pretrained weights. Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2398,6 +2434,16 @@ Defaults to False.</p></li>
 <span class="sd-summary-text">Default Configurations</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="default-tdnnffnn-t">
 <div class='code-block-caption'><span class='caption-text'>conf/model/TDNNFFNN-T.yaml</span><a class='headerlink' href='#default-tdnnffnn-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TDNNFFNN-T</span>
+<span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.TDNNFFNN</span>
+<span class="linenos">3</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="linenos">4</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos">5</span>
+<span class="linenos">6</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">7</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-tdnnffnn">
+<div class='code-block-caption'><span class='caption-text'>conf/model/TDNNFFNN.yaml</span><a class='headerlink' href='#default-tdnnffnn' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TDNNFFNN</span>
 <span class="linenos">2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.TDNNFFNN</span>
 <span class="linenos">3</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
 <span class="linenos">4</span>
@@ -2410,7 +2456,7 @@ Defaults to False.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.W2V2FFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">W2V2FFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_extractor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/w2v2.html#W2V2FFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.W2V2FFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">W2V2FFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_extractor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/w2v2.html#W2V2FFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.W2V2FFNN" title="Link to this definition">#</a></dt>
 <dd><p>Wav2Vec2 model with FFNN frontend adapted for audio classification.
 For more information, see:
 <a class="reference external" href="https://huggingface.co/docs/transformers/model_doc/wav2vec2">https://huggingface.co/docs/transformers/model_doc/wav2vec2</a></p>
@@ -2423,13 +2469,33 @@ For more information, see:
 <li><p><strong>hidden_size</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Hidden size of the FFNN.</p></li>
 <li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers of the FFNN. Defaults to 2.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate. Defaults to 0.5.</p></li>
+<li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to initialize the Wav2Vec2 backbone with
+pretrained weights. Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 <span class="sd-summary-text">Default Configurations</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
-<div class="literal-block-wrapper docutils container" id="default-w2v2-b">
+<div class="literal-block-wrapper docutils container" id="default-w2v2-b-t">
+<div class='code-block-caption'><span class='caption-text'>conf/model/w2v2-b-T.yaml</span><a class='headerlink' href='#default-w2v2-b-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">w2v2-b-T</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.W2V2FFNN</span>
+<span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-base</span>
+<span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-base</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-w2v2-b">
 <div class='code-block-caption'><span class='caption-text'>conf/model/w2v2-b.yaml</span><a class='headerlink' href='#default-w2v2-b' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">w2v2-b</span>
 <span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.W2V2FFNN</span>
 <span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-base</span>
@@ -2444,6 +2510,24 @@ For more information, see:
 <span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
 <span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
 <span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-base</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-100k-t">
+<div class='code-block-caption'><span class='caption-text'>conf/model/w2v2-l-100k-T.yaml</span><a class='headerlink' href='#default-w2v2-l-100k-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">w2v2-l-100k-T</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.W2V2FFNN</span>
+<span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-100k-voxpopuli</span>
+<span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-100k-voxpopuli</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-100k">
@@ -2463,6 +2547,24 @@ For more information, see:
 <span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-100k-voxpopuli</span>
 </pre></div>
 </div>
+</div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-emo-t">
+<div class='code-block-caption'><span class='caption-text'>conf/model/w2v2-l-emo-T.yaml</span><a class='headerlink' href='#default-w2v2-l-emo-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">w2v2-l-emo-T</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.W2V2FFNN</span>
+<span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim</span>
+<span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim</span>
+</pre></div>
+</div>
 </div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-emo">
 <div class='code-block-caption'><span class='caption-text'>conf/model/w2v2-l-emo.yaml</span><a class='headerlink' href='#default-w2v2-l-emo' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">w2v2-l-emo</span>
 <span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.W2V2FFNN</span>
@@ -2480,6 +2582,24 @@ For more information, see:
 <span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim</span>
 </pre></div>
 </div>
+</div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-rob-t">
+<div class='code-block-caption'><span class='caption-text'>conf/model/w2v2-l-rob-T.yaml</span><a class='headerlink' href='#default-w2v2-l-rob-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">w2v2-l-rob-T</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.W2V2FFNN</span>
+<span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-robust</span>
+<span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-robust</span>
+</pre></div>
+</div>
 </div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-rob">
 <div class='code-block-caption'><span class='caption-text'>conf/model/w2v2-l-rob.yaml</span><a class='headerlink' href='#default-w2v2-l-rob' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">w2v2-l-rob</span>
 <span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.W2V2FFNN</span>
@@ -2495,6 +2615,24 @@ For more information, see:
 <span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
 <span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
 <span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large-robust</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-w2v2-l-t">
+<div class='code-block-caption'><span class='caption-text'>conf/model/w2v2-l-T.yaml</span><a class='headerlink' href='#default-w2v2-l-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">w2v2-l-T</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.W2V2FFNN</span>
+<span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large</span>
+<span class="linenos"> 4</span><span class="nt">freeze_extractor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 5</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="linenos"> 6</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="linenos"> 7</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 8</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">12</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">W2V2</span>
+<span class="linenos">15</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">facebook/wav2vec2-large</span>
 </pre></div>
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-w2v2-l">
@@ -2519,7 +2657,7 @@ For more information, see:
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.models.WhisperFFNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">WhisperFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/whisper.html#WhisperFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.WhisperFFNN" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.models.</span></span><span class="sig-name descname"><span class="pre">WhisperFFNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/models/whisper.html#WhisperFFNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.models.WhisperFFNN" title="Link to this definition">#</a></dt>
 <dd><p>Whisper model with FFNN frontend adapted for audio classification.
 For more information, see:
 <a class="reference external" href="https://doi.org/10.48550/arXiv.2212.04356">https://doi.org/10.48550/arXiv.2212.04356</a></p>
@@ -2531,6 +2669,8 @@ For more information, see:
 <li><p><strong>output_dim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Output dimension of the FFNN.</p></li>
 <li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of layers of the FFNN. Defaults to 2.</p></li>
 <li><p><strong>dropout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Dropout rate. Defaults to 0.5.</p></li>
+<li><p><strong>transfer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to initialize the Whisper backbone with
+pretrained weights. Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2539,6 +2679,23 @@ For more information, see:
 <span class="sd-summary-text">Default Configurations</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="default-whisper-ffnn-base-t">
 <div class='code-block-caption'><span class='caption-text'>conf/model/Whisper-FFNN-Base-T.yaml</span><a class='headerlink' href='#default-whisper-ffnn-base-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper-FFNN-Base-T</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.WhisperFFNN</span>
+<span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-base</span>
+<span class="linenos"> 4</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="linenos"> 5</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="linenos"> 6</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 7</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-base</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-whisper-ffnn-base">
+<div class='code-block-caption'><span class='caption-text'>conf/model/Whisper-FFNN-Base.yaml</span><a class='headerlink' href='#default-whisper-ffnn-base' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper-FFNN-Base</span>
 <span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.WhisperFFNN</span>
 <span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-base</span>
 <span class="linenos"> 4</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
@@ -2560,6 +2717,23 @@ For more information, see:
 <span class="linenos"> 4</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 <span class="linenos"> 5</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="linenos"> 6</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 7</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-small</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-whisper-ffnn-small">
+<div class='code-block-caption'><span class='caption-text'>conf/model/Whisper-FFNN-Small.yaml</span><a class='headerlink' href='#default-whisper-ffnn-small' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper-FFNN-Small</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.WhisperFFNN</span>
+<span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-small</span>
+<span class="linenos"> 4</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="linenos"> 5</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="linenos"> 6</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="nt">transform</span><span class="p">:</span>
 <span class="linenos"> 9</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
@@ -2571,6 +2745,23 @@ For more information, see:
 </div>
 </div><div class="literal-block-wrapper docutils container" id="default-whisper-ffnn-tiny-t">
 <div class='code-block-caption'><span class='caption-text'>conf/model/Whisper-FFNN-Tiny-T.yaml</span><a class='headerlink' href='#default-whisper-ffnn-tiny-t' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper-FFNN-Tiny-T</span>
+<span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.WhisperFFNN</span>
+<span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-tiny</span>
+<span class="linenos"> 4</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="linenos"> 5</span><span class="nt">num_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="linenos"> 6</span><span class="nt">dropout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="linenos"> 7</span><span class="nt">transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">transform</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">base</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">autrainer.transforms.FeatureExtractor</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">fe_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">fe_transfer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-tiny</span>
+</pre></div>
+</div>
+</div><div class="literal-block-wrapper docutils container" id="default-whisper-ffnn-tiny">
+<div class='code-block-caption'><span class='caption-text'>conf/model/Whisper-FFNN-Tiny.yaml</span><a class='headerlink' href='#default-whisper-ffnn-tiny' title='Link to this code'>#</a></div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Whisper-FFNN-Tiny</span>
 <span class="linenos"> 2</span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autrainer.models.WhisperFFNN</span>
 <span class="linenos"> 3</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai/whisper-tiny</span>
 <span class="linenos"> 4</span><span class="nt">hidden_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
@@ -2617,6 +2808,7 @@ For more information, see:
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel"><code class="docutils literal notranslate"><span class="pre">AbstractModel</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel.embeddings"><code class="docutils literal notranslate"><span class="pre">AbstractModel.embeddings()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel.inputs"><code class="docutils literal notranslate"><span class="pre">AbstractModel.inputs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel.embedding_inputs"><code class="docutils literal notranslate"><span class="pre">AbstractModel.embedding_inputs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.models.AbstractModel.forward"><code class="docutils literal notranslate"><span class="pre">AbstractModel.forward()</span></code></a></li>
 </ul>
 </li>

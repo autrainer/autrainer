@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>autrainer.core.constants.training_constants &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+    <title>autrainer.core.structs.data_struct &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
   
   
   
@@ -45,7 +45,7 @@
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/core/constants/training_constants';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/core/structs/data_struct';</script>
     <script src="../../../../_static/external_links.js?v=919ee35f"></script>
     <script src="../../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
@@ -352,51 +352,46 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for autrainer.core.constants.training_constants</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+  <h1>Source code for autrainer.core.structs.data_struct</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractConstants</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_data_struct</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataBatch</span><span class="p">,</span> <span class="n">AbstractDataItem</span>
 
 
-<div class="viewcode-block" id="TrainingConstants">
-<a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.constants.TrainingConstants">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TrainingConstants</span><span class="p">(</span><span class="n">AbstractConstants</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Singleton for managing the training configurations of `autrainer`.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DataItem">
+<a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.structs.DataItem">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataItem</span><span class="p">(</span><span class="n">AbstractDataItem</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data item for a single sample.</span>
 
-    <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;TrainingConstants&quot;</span>
-    <span class="n">_tasks</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;classification&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ml-classification&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;regression&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;mt-regression&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
+<span class="sd">    Args:</span>
+<span class="sd">        features: Tensor of input features.</span>
+<span class="sd">        target: Target value for the input features.</span>
+<span class="sd">        index: Index of the data sample.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">TASKS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the supported training tasks.</span>
-<span class="sd">        Defaults to :attr:`[&quot;classification&quot;, &quot;ml-classification&quot;,</span>
-<span class="sd">        &quot;regression&quot;, &quot;mt-regression&quot;]`.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            Supported training tasks.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span>
 
-    <span class="nd">@TASKS</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">TASKS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the supported training tasks.</span>
+<div class="viewcode-block" id="DataBatch">
+<a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.structs.DataBatch">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataBatch</span><span class="p">(</span><span class="n">AbstractDataBatch</span><span class="p">[</span><span class="n">DataItem</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data batch for a batch of samples.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            training_tasks: Supported training tasks.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        features: Tensor of input features.</span>
+<span class="sd">        target: Tensor of target values for the input features.</span>
+<span class="sd">        index: Tensor of indices for the data samples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the training tasks are not a list of strings.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_type</span><span class="p">(</span><span class="n">tasks</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="s2">&quot;TASKS&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_assert_type</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;TASKS&quot;</span><span class="p">,</span> <span class="s2">&quot;in training tasks&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span> <span class="o">=</span> <span class="n">tasks</span></div>
+<div class="viewcode-block" id="DataBatch.to">
+<a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.structs.DataBatch.to">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
 

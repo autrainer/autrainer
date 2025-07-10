@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,11 +353,12 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.transforms.smart_compose</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">audobject</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">transforms</span> <span class="k">as</span> <span class="n">T</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataItem</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractTransform</span>
 
@@ -369,11 +370,7 @@ document.write(`
 <div class="viewcode-block" id="SmartCompose">
 <a class="viewcode-back" href="../../../modules/transforms.html#autrainer.transforms.SmartCompose">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SmartCompose</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">Compose</span><span class="p">,</span> <span class="n">audobject</span><span class="o">.</span><span class="n">Object</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">transforms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">Compose</span><span class="p">,</span> <span class="n">AbstractTransform</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]],</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transforms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractTransform</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;SmartCompose wrapper for torchvision.transforms.Compose, which</span>
 <span class="sd">        allows for simple composition of transforms by adding them together.</span>
 <span class="sd">        Transforms are automatically sorted by their order attribute if present.</span>
@@ -394,7 +391,9 @@ document.write(`
 <a class="viewcode-back" href="../../../modules/transforms.html#autrainer.transforms.SmartCompose.__add__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">Compose</span><span class="p">,</span> <span class="n">AbstractTransform</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Callable</span><span class="p">]],</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;SmartCompose&quot;</span><span class="p">,</span> <span class="n">AbstractTransform</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractTransform</span><span class="p">]]</span>
+        <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SmartCompose&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add another transform to the composition. Transforms are</span>
 <span class="sd">        automatically sorted by their order attribute if present.</span>
@@ -404,31 +403,35 @@ document.write(`
 
 <span class="sd">        Raises:</span>
 <span class="sd">            TypeError: If the addition is not a valid type.</span>
-<span class="sd">                Supported types are &#39;torchvision.transforms.Compose&#39;,</span>
-<span class="sd">                &#39;AbstractTransform&#39;, &#39;Callable&#39;, or &#39;List[Callable]&#39;.</span>
+<span class="sd">                Supported types are AbstractTransform, SmartCompose,</span>
+<span class="sd">                and list of AbstractTransform or SmartCompose.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            New SmartCompose object with the added transform.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">Compose</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">SmartCompose</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">transforms</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="n">AbstractTransform</span><span class="p">,</span> <span class="n">Callable</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">AbstractTransform</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">SmartCompose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">+</span> <span class="p">[</span><span class="n">other</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">SmartCompose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">+</span> <span class="n">other</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;SmartCompose addition must be a &quot;</span>
-                <span class="s2">&quot;&#39;torchvision.transforms.Compose&#39;, &#39;AbstractTransform&#39;, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;Callable&#39;, or &#39;List[Callable]&#39; got &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
-            <span class="p">)</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SmartCompose</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">SmartCompose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">transforms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">SmartCompose</span><span class="p">([])</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">AbstractTransform</span><span class="p">):</span>
+                    <span class="n">t</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">SmartCompose</span><span class="p">):</span>
+                    <span class="n">t</span><span class="o">.</span><span class="n">transforms</span> <span class="o">+=</span> <span class="n">o</span><span class="o">.</span><span class="n">transforms</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">transforms</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">SmartCompose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">+</span> <span class="n">t</span><span class="o">.</span><span class="n">transforms</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unsupported type for addition: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;Supported types are AbstractTransform, SmartCompose, &quot;</span>
+            <span class="s2">&quot;and list of AbstractTransform or SmartCompose.&quot;</span>
+        <span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sort</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort the transforms by their order attribute if present.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
@@ -480,22 +483,18 @@ document.write(`
 
 <div class="viewcode-block" id="SmartCompose.__call__">
 <a class="viewcode-back" href="../../../modules/transforms.html#autrainer.transforms.SmartCompose.__call__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the transforms to the input tensor.</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">AbstractDataItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractDataItem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the transform to the input data item.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            x: Input tensor.</span>
-<span class="sd">            index: Dataset index of the input tensor.</span>
+<span class="sd">            item: The input data item to transform.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Transformed tensor.</span>
+<span class="sd">            The transformed data item.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;index&quot;</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="fm">__call__</span><span class="o">.</span><span class="vm">__annotations__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">x</span></div>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">item</span></div>
 </div>
 
 </pre></div>

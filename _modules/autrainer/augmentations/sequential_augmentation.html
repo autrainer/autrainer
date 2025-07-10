@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -353,14 +353,16 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.augmentations.sequential_augmentation</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">audobject</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">autrainer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataItem</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_augmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAugmentation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_shorthand</span>
 
 
 <div class="viewcode-block" id="Sequential">
@@ -397,23 +399,19 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">sequence</span> <span class="o">=</span> <span class="n">sequence</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">{</span><span class="n">aug</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;generator_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span><span class="p">}}</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">aug_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">aug</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
-                <span class="k">if</span> <span class="n">aug</span><span class="p">[</span><span class="n">aug_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generator_seed&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">aug</span><span class="p">[</span><span class="n">aug_name</span><span class="p">][</span><span class="s2">&quot;generator_seed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aug</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence</span><span class="p">):</span>
+            <span class="n">aug</span> <span class="o">=</span> <span class="n">convert_shorthand</span><span class="p">(</span><span class="n">aug</span><span class="p">)</span>
+            <span class="n">aug_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">aug</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="k">if</span> <span class="n">aug</span><span class="p">[</span><span class="n">aug_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generator_seed&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">aug</span><span class="p">[</span><span class="n">aug_name</span><span class="p">][</span><span class="s2">&quot;generator_seed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_seed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aug</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractAugmentation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span>
                 <span class="n">aug</span><span class="p">,</span>
                 <span class="n">instance_of</span><span class="o">=</span><span class="n">AbstractAugmentation</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence</span>
+            <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="s2">&quot;get_collate_fn&quot;</span><span class="p">):</span>
@@ -421,23 +419,37 @@ document.write(`
                     <span class="s2">&quot;Choice augmentations must not have a collate function.&quot;</span>
                 <span class="p">)</span>
 
+<div class="viewcode-block" id="Sequential.offset_generator_seed">
+<a class="viewcode-back" href="../../../modules/augmentations.html#autrainer.augmentations.Sequential.offset_generator_seed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">offset_generator_seed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">offset_generator_seed</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span><span class="p">:</span>
+            <span class="n">aug</span><span class="o">.</span><span class="n">offset_generator_seed</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Sequential.apply">
 <a class="viewcode-back" href="../../../modules/augmentations.html#autrainer.augmentations.Sequential.apply">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">AbstractDataItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractDataItem</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply all augmentations in sequence to the input tensor.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            x: The input tensor.</span>
-<span class="sd">            index: The index of the input tensor in the dataset.</span>
-<span class="sd">                Defaults to None.</span>
+<span class="sd">            item: The input data item.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The augmented tensor.</span>
+<span class="sd">            The augmented item.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">aug</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">x</span></div>
-</div>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">aug</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">item</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deterministic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if the augmentation is deterministic, False otherwise.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="s2">&quot;_deterministic&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># true if not set</span>
+            <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmentation_sequence</span>
+        <span class="p">)</span></div>
 
 </pre></div>
 

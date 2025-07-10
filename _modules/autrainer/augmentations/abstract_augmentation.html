@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -358,6 +358,7 @@ document.write(`
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataItem</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractTransform</span>
 
 
@@ -413,37 +414,33 @@ document.write(`
 
 <div class="viewcode-block" id="AbstractAugmentation.__call__">
 <a class="viewcode-back" href="../../../modules/augmentations.html#autrainer.augmentations.AbstractAugmentation.__call__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">AbstractDataItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractDataItem</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the augmentation apply method with probability p.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            x: The input tensor.</span>
-<span class="sd">            index: The index of the input tensor in the dataset.</span>
-<span class="sd">                Defaults to None.</span>
+<span class="sd">            item: The input data item.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The augmented tensor if the probability is less than p, otherwise</span>
-<span class="sd">            the input tensor.</span>
+<span class="sd">            The augmented item if the probability is less than p, otherwise</span>
+<span class="sd">            the input item.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">probability</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="k">if</span> <span class="n">probability</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="k">else</span> <span class="n">x</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">if</span> <span class="n">probability</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="k">else</span> <span class="n">item</span></div>
 
 
 <div class="viewcode-block" id="AbstractAugmentation.apply">
 <a class="viewcode-back" href="../../../modules/augmentations.html#autrainer.augmentations.AbstractAugmentation.apply">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">AbstractDataItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractDataItem</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the augmentation to the input tensor.</span>
 
 <span class="sd">        Apply is called with probability p.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            x: The input tensor.</span>
-<span class="sd">            index: The index of the input tensor in the dataset.</span>
-<span class="sd">                Defaults to None.</span>
+<span class="sd">            item: The input data item.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The augmented tensor.</span>
+<span class="sd">            The augmented item.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 </div>
 

@@ -107,7 +107,7 @@ Preprocessing
 
 To avoid race conditions when using :ref:`hydra_launcher_plugins` that may run multiple training jobs in parallel,
 :ref:`autrainer fetch <cli_autrainer_fetch>` and :ref:`autrainer preprocess <cli_autrainer_preprocess>` allow for
-downloading and :ref:`preprocessing <preprocessing_transforms>` of :ref:`datasets` (and pretrained model states) before training.
+downloading and :ref:`preprocessing <preprocessing_transforms>` of :ref:`datasets` (and pretrained model states or transforms) before training.
 
 Both commands are based on the :ref:`main configuration <main_configuration>` file (e.g., :file:`conf/config.yaml`),
 such that the specified models and datasets are fetched and preprocessed accordingly.
