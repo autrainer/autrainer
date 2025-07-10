@@ -14,7 +14,7 @@ Adapted to match coding styles of current repo:
 
 """
 
-from typing import Tuple
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import torch
@@ -22,6 +22,7 @@ import torch.nn as nn
 
 from .abstract_model import AbstractModel
 from .sequential import Sequential
+from .utils import assert_no_transfer_weights
 
 
 class Base(nn.Module):
@@ -302,6 +303,7 @@ class AudioRNNModel(AbstractModel):
         dropout: float = 0.5,
         cell: str = "LSTM",
         bidirectional: bool = False,
+        transfer: Optional[Union[bool, str]] = None,
     ) -> None:
         """Audio RNN model.
 
@@ -314,8 +316,11 @@ class AudioRNNModel(AbstractModel):
             cell: Type of RNN cell in ["LSTM", "GRU"] Defaults to "LSTM".
             bidirectional: Whether to use a bidirectional RNN.
                 Defaults to False.
+            transfer: Not available for this model. If set, raises an error.
+                Defaults to None.
         """
-        super().__init__(output_dim)
+        assert_no_transfer_weights(self, transfer)
+        super().__init__(output_dim, None)  # no transfer learning weights
         self.model_name = model_name
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -335,10 +340,10 @@ class AudioRNNModel(AbstractModel):
         )
         self.linear = nn.Linear(self.rnn.hidden_size, self.output_dim)
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        batch_size, seq_length, t = x.shape
-        x = x.view(batch_size * seq_length, 1, t)
-        audio_out = self.audio_model(x)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        batch_size, seq_length, t = features.shape
+        features = features.view(batch_size * seq_length, 1, t)
+        audio_out = self.audio_model(features)
         audio_out = audio_out.transpose(1, 2)
 
         rnn_out = self.rnn(audio_out)

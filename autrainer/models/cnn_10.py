@@ -24,12 +24,11 @@ class Cnn10(AbstractModel):
                 Defaults to False.
             in_channels: Number of input channels. Defaults to 1.
             transfer: Link to the weights to transfer. If None, the weights
-                weights will be randomly initialized. Defaults to None.
+                are randomly initialized. Defaults to None.
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, transfer)
         self.segmentwise = segmentwise
         self.in_channels = in_channels
-        self.transfer = transfer
         self.bn0 = torch.nn.BatchNorm2d(64)
 
         self.conv_block1 = ConvBlock(in_channels=in_channels, out_channels=64)
@@ -41,7 +40,7 @@ class Cnn10(AbstractModel):
         self.out = torch.nn.Linear(512, output_dim, bias=True)
 
         self.init_weight()
-        if self.transfer is not None:
+        if self.transfer:  # pragma: no cover
             load_transfer_weights(self, self.transfer)
 
     def init_weight(self) -> None:
@@ -87,8 +86,8 @@ class Cnn10(AbstractModel):
         x = F.relu_(self.fc1(x))
         return x
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        return self.get_embedding(x)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        return self.get_embedding(features)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         x = self.embeddings(features)

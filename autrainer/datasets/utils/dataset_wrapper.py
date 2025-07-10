@@ -4,9 +4,9 @@ from typing import List, Optional, Union
 import pandas as pd
 import torch
 
+from autrainer.core.structs import DataItem
 from autrainer.transforms import SmartCompose
 
-from .data_struct import DataItem
 from .file_handlers import AbstractFileHandler
 from .target_transforms import AbstractTargetTransform
 
@@ -81,10 +81,13 @@ class DatasetWrapper(torch.utils.data.Dataset):
         if isinstance(target, pd.Series):
             target = torch.Tensor(target.to_list())
 
+        it = DataItem(features=data, target=target, index=item)
+
         if self.transform is not None:
-            data = self.transform(data, index=item).float()
+            it = self.transform(it)
+            it.features = it.features.float()
 
         if self.target_transform is not None:
-            target = self.target_transform(target)
+            it.target = self.target_transform(it.target)
 
-        return DataItem(features=data, target=target, index=item)
+        return it

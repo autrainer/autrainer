@@ -12,6 +12,7 @@ from tqdm import tqdm
 import autrainer
 from autrainer.augmentations import AugmentationManager
 from autrainer.core.plotting import PlotMetrics
+from autrainer.core.structs import AbstractDataBatch
 from autrainer.core.utils import (
     Bookkeeping,
     ThreadManager,
@@ -22,11 +23,7 @@ from autrainer.core.utils import (
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
-from autrainer.datasets.utils import (
-    AbstractDataBatch,
-    AbstractFileHandler,
-    AudioFileHandler,
-)
+from autrainer.datasets.utils import AbstractFileHandler, AudioFileHandler
 from autrainer.loggers import AbstractLogger
 from autrainer.models import AbstractModel
 from autrainer.models.utils import create_model_inputs
@@ -135,6 +132,8 @@ class ModularTaskTrainer:
 
         # ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints
         model_checkpoint = model_config.pop("model_checkpoint", None)
+        if model_checkpoint and model_config.get("transfer", None):
+            model_config.pop("transfer", None)  # skip transfer for checkpoints
         optimizer_checkpoint = model_config.pop("optimizer_checkpoint", None)
         scheduler_checkpoint = model_config.pop("scheduler_checkpoint", None)
         skip_last_layer = model_config.pop("skip_last_layer", True)
@@ -177,7 +176,7 @@ class ModularTaskTrainer:
         if optimizer_checkpoint:
             state_dict = torch.load(
                 optimizer_checkpoint,
-                map_location="cpu",
+                map_location=self.DEVICE,
                 weights_only=True,
             )
             load_pretrained_optim_state(

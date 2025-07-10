@@ -4,6 +4,7 @@ model_name: openai/whisper-tiny
 hidden_size: 512
 num_layers: 2
 dropout: 0.5
+transfer: true
 
 transform:
   type: raw

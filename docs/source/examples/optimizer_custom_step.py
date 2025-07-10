@@ -2,7 +2,7 @@ from typing import Callable, Tuple
 
 import torch
 
-from autrainer.datasets.utils import DataBatch
+from autrainer.core.structs import DataBatch
 from autrainer.models import AbstractModel
 
 

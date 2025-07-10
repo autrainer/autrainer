@@ -1,8 +1,9 @@
-from typing import TYPE_CHECKING, Callable, List, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Union
 
 import audobject
-import torch
 from torchvision import transforms as T
+
+from autrainer.core.structs import AbstractDataItem
 
 from .abstract_transform import AbstractTransform
 
@@ -12,11 +13,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class SmartCompose(T.Compose, audobject.Object):
-    def __init__(
-        self,
-        transforms: List[Union[T.Compose, AbstractTransform, Callable]],
-        **kwargs,
-    ) -> None:
+    def __init__(self, transforms: List[AbstractTransform], **kwargs) -> None:
         """SmartCompose wrapper for torchvision.transforms.Compose, which
         allows for simple composition of transforms by adding them together.
         Transforms are automatically sorted by their order attribute if present.
@@ -35,7 +32,9 @@ class SmartCompose(T.Compose, audobject.Object):
 
     def __add__(
         self,
-        other: Union[T.Compose, AbstractTransform, Callable, List[Callable]],
+        other: Optional[
+            Union["SmartCompose", AbstractTransform, List[AbstractTransform]]
+        ],
     ) -> "SmartCompose":
         """Add another transform to the composition. Transforms are
         automatically sorted by their order attribute if present.
@@ -45,30 +44,34 @@ class SmartCompose(T.Compose, audobject.Object):
 
         Raises:
             TypeError: If the addition is not a valid type.
-                Supported types are 'torchvision.transforms.Compose',
-                'AbstractTransform', 'Callable', or 'List[Callable]'.
+                Supported types are AbstractTransform, SmartCompose,
+                and list of AbstractTransform or SmartCompose.
 
         Returns:
             New SmartCompose object with the added transform.
         """
         if other is None:
             return self
-        elif isinstance(other, T.Compose):
-            return SmartCompose(
-                self.transforms + other.transforms,
-            )
-        elif isinstance(other, (AbstractTransform, Callable)):
+        if isinstance(other, AbstractTransform):
             return SmartCompose(self.transforms + [other])
-        elif isinstance(other, List):
-            return SmartCompose(self.transforms + other)
-        else:
-            raise TypeError(
-                "SmartCompose addition must be a "
-                "'torchvision.transforms.Compose', 'AbstractTransform', "
-                f"'Callable', or 'List[Callable]' got '{type(other)}'."
-            )
+        if isinstance(other, SmartCompose):
+            return SmartCompose(self.transforms + other.transforms)
+        if isinstance(other, list):
+            t = SmartCompose([])
+            for o in other:
+                if isinstance(o, AbstractTransform):
+                    t.transforms.append(o)
+                elif isinstance(o, SmartCompose):
+                    t.transforms += o.transforms
+            if len(t.transforms):
+                return SmartCompose(self.transforms + t.transforms)
+        raise TypeError(
+            f"Unsupported type for addition: {type(other)}. "
+            "Supported types are AbstractTransform, SmartCompose, "
+            "and list of AbstractTransform or SmartCompose."
+        )
 
-    def _sort(self):
+    def _sort(self) -> None:
         """Sort the transforms by their order attribute if present."""
         self.transforms.sort(key=lambda x: getattr(x, "order", 0))
 
@@ -112,19 +115,15 @@ class SmartCompose(T.Compose, audobject.Object):
             if hasattr(t, "offset_generator_seed"):
                 t.offset_generator_seed(offset)
 
-    def __call__(self, x: torch.Tensor, index: int) -> torch.Tensor:
-        """Apply the transforms to the input tensor.
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        """Apply the transform to the input data item.
 
         Args:
-            x: Input tensor.
-            index: Dataset index of the input tensor.
+            item: The input data item to transform.
 
         Returns:
-            Transformed tensor.
+            The transformed data item.
         """
         for t in self.transforms:
-            if "index" in t.__call__.__annotations__.keys():
-                x = t(x, index=index)
-            else:
-                x = t(x)
-        return x
+            item = t(item)
+        return item

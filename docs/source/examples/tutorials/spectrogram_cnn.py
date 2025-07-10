@@ -13,7 +13,7 @@ class SpectrogramCNN(AbstractModel):
             output_dim: Output dimension of the model.
             hidden_dims: List of hidden dimensions for the CNN layers.
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, None)  # no transfer learning
         self.hidden_dims = hidden_dims
         layers = []
         input_dim = 1
@@ -35,8 +35,8 @@ class SpectrogramCNN(AbstractModel):
         self.backbone = torch.nn.Sequential(*layers)
         self.classifier = torch.nn.Linear(self.hidden_dims[-1], output_dim)
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        return self.backbone(x)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        return self.backbone(features)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.classifier(self.embeddings(x))
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        return self.classifier(self.embeddings(features))

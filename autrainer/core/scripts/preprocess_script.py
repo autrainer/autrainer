@@ -5,7 +5,6 @@ from omegaconf import DictConfig, OmegaConf
 
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
-from autrainer.datasets.utils import DataBatch
 
 from .abstract_preprocess_script import (
     AbstractPreprocessScript,
@@ -14,6 +13,7 @@ from .abstract_preprocess_script import (
 from .utils import (
     add_hydra_args_to_sys,
     catch_cli_errors,
+    check_invalid_config_path_arg,
     run_hydra_cmd,
     running_in_notebook,
 )
@@ -37,6 +37,7 @@ def preprocess_main(
     import torch
     from tqdm import tqdm
 
+    from autrainer.core.structs import DataBatch
     from autrainer.datasets import AbstractDataset
     from autrainer.datasets.utils import AbstractFileHandler
     from autrainer.transforms import SmartCompose
@@ -70,14 +71,14 @@ def preprocess_main(
 
     dataset["features_subdir"] = None
     data = autrainer.instantiate(dataset, AbstractDataset)
-    # manually disable dataset transforms
-    data.train_transform = SmartCompose([])
-    data.dev_transform = SmartCompose([])
-    data.test_transform = SmartCompose([])
-
     pipeline = SmartCompose(
         [autrainer.instantiate_shorthand(t) for t in preprocess["pipeline"]]
     )
+    # use pipeline to process the features
+    data.train_transform = pipeline
+    data.dev_transform = pipeline
+    data.test_transform = pipeline
+
     for d, df, n in (
         (data.train_dataset, data.df_train, "train"),
         (data.dev_dataset, data.df_dev, "dev"),
@@ -98,7 +99,6 @@ def preprocess_main(
             desc=f"{name}-{n}",
             disable=update_frequency == 0,
         ):
-            # TODO: will be streamlined once we switch to dataclass
             item_path = df.loc[df.index[int(instance.index)], d.index_column]
             out_path = Path(
                 features_path,
@@ -109,7 +109,8 @@ def preprocess_main(
             if out_path.exists():
                 continue
             output_file_handler.save(
-                out_path, pipeline(instance.features.squeeze(dim=0), 0)
+                out_path,
+                instance.features.squeeze(dim=0),
             )
 
 
@@ -185,6 +186,7 @@ class PreprocessScript(AbstractPreprocessScript):
                     pass
             self.preprocessing[cfg.dataset.id] = preprocessing_cfg
 
+        check_invalid_config_path_arg(self.parser)
         main()
         self._preprocess_datasets()
         self._clean_up()

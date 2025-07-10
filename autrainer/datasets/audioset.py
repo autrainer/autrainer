@@ -77,7 +77,7 @@ class AudioSet(BaseMLClassificationDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
@@ -126,7 +126,7 @@ class AudioSet(BaseMLClassificationDataset):
                 batch_size. Defaults to None.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -171,9 +171,9 @@ class AudioSet(BaseMLClassificationDataset):
 
     @property
     def audio_subdir(self) -> str:
-        """Subfolder containing audio data.
+        """Subdirectory containing audio data.
 
-        Data assumed to be in root folder
+        Data assumed to be in root directory
         under the name of the respective partition
         which is prepended once the CSV file is loaded.
         Available partitions are (with original number of instances):

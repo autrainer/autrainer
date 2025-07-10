@@ -1,6 +1,7 @@
+from copy import deepcopy
 import os
 import tempfile
-from typing import Any, Callable, Dict, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Tuple, Type, Union
 
 from omegaconf import DictConfig, ListConfig
 import pandas as pd
@@ -12,6 +13,7 @@ from autrainer.augmentations import (
     AlbumentationsAugmentation,
     AudiomentationsAugmentation,
     AugmentationManager,
+    AugmentationPipeline,
     Choice,
     CutMix,
     FrequencyMask,
@@ -28,7 +30,7 @@ from autrainer.augmentations import (
     TorchvisionAugmentation,
 )
 from autrainer.augmentations.image_augmentations import BaseMixUpCutMix
-from autrainer.datasets.utils import DataBatch, DataItem
+from autrainer.core.structs import DataBatch, DataItem
 from autrainer.transforms import SmartCompose
 
 
@@ -123,7 +125,10 @@ class TestAllAugmentations:
             x = torch.randn(*input_shape)
         else:
             x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
-        assert torch.allclose(x, instance(x)), "Should not apply augmentation"
+        x = DataItem(x, 0, 0)
+        assert torch.allclose(
+            x.features, instance(x).features
+        ), "Should not apply augmentation"
 
     @pytest.mark.parametrize(
         "augmentation, params, input_shape, output_shape",
@@ -140,15 +145,16 @@ class TestAllAugmentations:
             x = torch.randn(*input_shape)
         else:
             x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
+        x = DataItem(x, 0, 0)
         aug1 = augmentation(**params, generator_seed=AUGMENTATION_SEED)
         aug2 = augmentation(**params, generator_seed=AUGMENTATION_SEED)
         if hasattr(aug1, "_deterministic") and not aug1._deterministic:
             return  # Skip if known to be non-deterministic
-        y1 = aug1(x)
-        y2 = aug2(x)
+        y1 = aug1(deepcopy(x)).features
+        y2 = aug2(deepcopy(x)).features
         assert torch.allclose(y1, y2), "Should be deterministic"
-        y3 = aug1(x)
-        y4 = aug2(x)
+        y3 = aug1(deepcopy(x)).features
+        y4 = aug2(deepcopy(x)).features
         assert torch.allclose(y3, y4), "Should be deterministic"
 
     @pytest.mark.parametrize(
@@ -167,6 +173,7 @@ class TestAllAugmentations:
                 x = torch.randn(*input_shape)
             else:
                 x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
+            x = DataItem(x, 0, 0)
             aug1 = augmentation(
                 **params, generator_seed=AUGMENTATION_SEED + 1, p=0.5
             )
@@ -176,11 +183,11 @@ class TestAllAugmentations:
             aug2.offset_generator_seed(1)
             if hasattr(aug1, "_deterministic") and not aug1._deterministic:
                 return  # Skip if known to be non-deterministic
-            y1 = aug1(x)
-            y2 = aug2(x)
+            y1 = aug1(deepcopy(x)).features
+            y2 = aug2(deepcopy(x)).features
             assert torch.allclose(y1, y2), "Should be deterministic"
-            y3 = aug1(x)
-            y4 = aug2(x)
+            y3 = aug1(deepcopy(x)).features
+            y4 = aug2(deepcopy(x)).features
             assert torch.allclose(y3, y4), "Should be deterministic"
 
     def test_unset_offset_generator_seed(self) -> None:
@@ -251,11 +258,45 @@ class TestChoice:
         with pytest.raises(ValueError):
             Choice(choices=["autrainer.augmentations.CutMix"])
 
+    def test_offset_generator_seed(self) -> None:
+        choice = Choice(
+            choices=[
+                "autrainer.augmentations.GaussianNoise",
+                "autrainer.augmentations.GaussianNoise",
+            ],
+            generator_seed=AUGMENTATION_SEED,
+        )
+        choice.offset_generator_seed(1)
+        assert (
+            choice.generator_seed == AUGMENTATION_SEED + 1
+        ), "Should offset the generator seed"
+        for c in choice.augmentation_choices:
+            assert (
+                c.generator_seed == AUGMENTATION_SEED + 1
+            ), "Should offset the generator seed of the choice"
+
 
 class TestSequential:
     def test_invalid_collate_fn(self) -> None:
         with pytest.raises(ValueError):
             Sequential(sequence=["autrainer.augmentations.CutMix"])
+
+    def test_offset_generator_seed(self) -> None:
+        seq = Sequential(
+            sequence=[
+                "autrainer.augmentations.GaussianNoise",
+                "autrainer.augmentations.GaussianNoise",
+            ],
+            generator_seed=AUGMENTATION_SEED,
+        )
+        seq.offset_generator_seed(1)
+        assert (
+            seq.generator_seed == AUGMENTATION_SEED + 1
+        ), "Should offset the generator seed"
+        for s in seq.augmentation_sequence:
+            assert (
+                s.generator_seed == AUGMENTATION_SEED + 1
+            ), "Should offset the generator seed of the sequence"
 
 
 class TestBaseMixUpCutMix:
@@ -347,35 +388,39 @@ class TestSampleGaussianWhiteNoise:
             generator_seed=AUGMENTATION_SEED,
         )
         g = torch.Generator()
-        x1 = torch.randn(1, 16000)
-        x2 = torch.randn(1, 16000)
-        x3 = torch.randn(1, 16000)
-        c1 = self._mock_snr_calculation(x1, 0, 10, g)
-        c2 = self._mock_snr_calculation(x2, 1, 20, g)
-        c3 = self._mock_snr_calculation(x3, 2, 30, g)
-        y1, y2, y3 = aug(x1, 0), aug(x2, 1), aug(x3, 2)
-        assert torch.allclose(y1, c1), "Should apply noise"
-        assert torch.allclose(y2, c2), "Should apply noise"
-        assert torch.allclose(y3, c3), "Should apply noise"
+        x1 = DataItem(torch.randn(1, 16000), 0, 0)
+        x2 = DataItem(torch.randn(1, 16000), 0, 1)
+        x3 = DataItem(torch.randn(1, 16000), 0, 2)
+        c1 = self._mock_snr_calculation(deepcopy(x1), 0, 10, g)
+        c2 = self._mock_snr_calculation(deepcopy(x2), 1, 20, g)
+        c3 = self._mock_snr_calculation(deepcopy(x3), 2, 30, g)
+        y1, y2, y3 = aug(deepcopy(x1)), aug(deepcopy(x2)), aug(deepcopy(x3))
+        assert torch.allclose(y1.features, c1.features), "Should apply noise"
+        assert torch.allclose(y2.features, c2.features), "Should apply noise"
+        assert torch.allclose(y3.features, c3.features), "Should apply noise"
 
-        c4 = self._mock_snr_calculation(x1, 0, 10, g)
-        y4 = aug(x1, 0)
-        assert torch.allclose(y4, c4), "Should be deterministic"
+        c4 = self._mock_snr_calculation(deepcopy(x1), 0, 10, g)
+        y4 = aug(deepcopy(x1))
+        assert torch.allclose(
+            y4.features, c4.features
+        ), "Should be deterministic"
 
     def _mock_snr_calculation(
         self,
-        x: torch.Tensor,
+        x: DataItem,
         index: int,
         snr: float,
         generator: torch.Generator,
-    ) -> torch.Tensor:
+    ) -> DataItem:
         generator.manual_seed(hash((AUGMENTATION_SEED, index)) & 0xFFFFFFFF)
         snr = 10 ** (snr / 10)
-        energy = torch.mean(x**2)
-        noise = torch.normal(0, 1, generator=generator, size=x.shape)
+        energy = torch.mean(x.features**2)
+        shape = x.features.shape
+        noise = torch.normal(0, 1, generator=generator, size=shape)
         noise_energy = torch.mean(noise**2)
         scale = torch.sqrt(energy / (snr * noise_energy))
-        return x + noise * scale
+        x.features = x.features + noise * scale
+        return x
 
 
 class TestTimeShift:
@@ -384,15 +429,15 @@ class TestTimeShift:
             TimeShift(time_steps=-1, axis=0)
 
     def test_identity(self) -> None:
-        x = torch.randn(1, 101, 64)
+        x = DataItem(torch.randn(1, 101, 64), 0, 0)
         y = TimeShift(time_steps=0, axis=0)(x)
-        assert torch.allclose(x, y), "Should be the same"
+        assert torch.allclose(x.features, y.features), "Should be the same"
 
     @pytest.mark.parametrize("axis", [0, 1])
     def test_time_shift(self, axis: int) -> None:
-        x = torch.randn(1, 101, 64)
+        x = DataItem(torch.randn(1, 101, 64), 0, 0)
         y = TimeShift(time_steps=3, axis=axis)(x)
-        assert x.shape == y.shape, "Should have same shape"
+        assert x.features.shape == y.features.shape, "Should have same shape"
 
 
 class TestTimeMask:
@@ -401,15 +446,15 @@ class TestTimeMask:
             TimeMask(time_mask=-1, axis=0)
 
     def test_identity(self) -> None:
-        x = torch.randn(1, 101, 64)
+        x = DataItem(torch.randn(1, 101, 64), 0, 0)
         y = TimeMask(time_mask=0, axis=0)(x)
-        assert torch.allclose(x, y), "Should be the same"
+        assert torch.allclose(x.features, y.features), "Should be the same"
 
     @pytest.mark.parametrize("axis", [0, 1])
     def test_time_mask(self, axis: int) -> None:
-        x = torch.randn(1, 101, 64)
+        x = DataItem(torch.randn(1, 101, 64), 0, 0)
         y = TimeMask(time_mask=3, axis=axis)(x)
-        assert x.shape == y.shape, "Should have same shape"
+        assert x.features.shape == y.features.shape, "Should have same shape"
 
 
 class TestFrequencyMask:
@@ -418,20 +463,98 @@ class TestFrequencyMask:
             FrequencyMask(freq_mask=-1, axis=0)
 
     def test_identity(self) -> None:
-        x = torch.randn(1, 101, 64)
+        x = DataItem(torch.randn(1, 101, 64), 0, 0)
         y = FrequencyMask(freq_mask=0, axis=0)(x)
-        assert torch.allclose(x, y), "Should be the same"
+        assert torch.allclose(x.features, y.features), "Should be the same"
 
     @pytest.mark.parametrize("axis", [0, 1])
     def test_freq_mask(self, axis: int) -> None:
-        x = torch.randn(1, 101, 64)
+        x = DataItem(torch.randn(1, 101, 64), 0, 0)
         y = FrequencyMask(freq_mask=3, axis=axis)(x)
-        assert x.shape == y.shape, "Should have same shape"
+        assert x.features.shape == y.features.shape, "Should have same shape"
 
 
 class TestTimeWarp:
     @pytest.mark.parametrize("axis", [0, 1])
     def test_time_warp(self, axis: int) -> None:
-        x = torch.randn(1, 101, 64)
+        x = DataItem(torch.randn(1, 101, 64), 0, 0)
         y = TimeWarp(W=3, axis=axis)(x)
-        assert x.shape == y.shape, "Should have same shape"
+        assert x.features.shape == y.features.shape, "Should have same shape"
+
+
+PIPELINE_FIXTURES = [
+    [
+        "autrainer.augmentations.GaussianNoise",
+        {"autrainer.augmentations.CutMix": {"p": 0.5}},
+    ],
+    [
+        {"autrainer.augmentations.GaussianNoise": {"generator_seed": 2}},
+        "autrainer.augmentations.CutMix",
+    ],
+    [
+        "autrainer.augmentations.GaussianNoise",
+        {"autrainer.augmentations.CutMix": {"generator_seed": 3, "p": 0.5}},
+        "autrainer.augmentations.MixUp",
+    ],
+    [
+        "autrainer.augmentations.GaussianNoise",
+        {"autrainer.augmentations.CutMix": {"generator_seed": 4}},
+        "autrainer.augmentations.MixUp",
+    ],
+    [
+        {"autrainer.augmentations.CutMix": {"p": 0.5}},
+        {"autrainer.augmentations.CutMix": {"generator_seed": 5, "p": 0.5}},
+        "autrainer.augmentations.MixUp",
+        {"autrainer.augmentations.CutMix": {"generator_seed": 6}},
+        "autrainer.augmentations.MixUp",
+    ],
+]
+
+
+class TestAugmentationPipeline:
+    @pytest.mark.parametrize(
+        "idx, seeds",
+        [
+            (0, [42, 43]),
+            (1, [2, 42]),
+            (2, [42, 3, 43]),
+            (3, [42, 4, 43]),
+            (4, [42, 5, 43, 6, 44]),
+        ],
+    )
+    def test_with_increment(self, idx: int, seeds: List[int]) -> None:
+        self._test_increment(idx, seeds, increment=True)
+
+    @pytest.mark.parametrize(
+        "idx, seeds",
+        [
+            (0, [42, 42]),
+            (1, [2, 42]),
+            (2, [42, 3, 42]),
+            (3, [42, 4, 42]),
+            (4, [42, 5, 42, 6, 42]),
+        ],
+    )
+    def test_without_increment(self, idx: int, seeds: List[int]) -> None:
+        self._test_increment(idx, seeds, increment=False)
+
+    def _test_increment(
+        self,
+        idx: int,
+        seeds: List[int],
+        increment: bool,
+    ) -> None:
+        pipeline = AugmentationPipeline(
+            deepcopy(PIPELINE_FIXTURES)[idx],
+            generator_seed=42,
+            increment=increment,
+        ).create_pipeline()
+
+        assert len(pipeline.transforms) == len(PIPELINE_FIXTURES[idx])
+
+        for i, t in enumerate(pipeline.transforms):
+            assert isinstance(t, AbstractAugmentation)
+            assert t.generator_seed == seeds[i], (
+                f"Generator seed at index {i} should be {seeds[i]}, "
+                f"but got {t.generator_seed}."
+            )

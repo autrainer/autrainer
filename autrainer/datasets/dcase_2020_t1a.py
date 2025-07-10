@@ -49,7 +49,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
@@ -85,7 +85,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.

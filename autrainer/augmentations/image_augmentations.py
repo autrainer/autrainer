@@ -5,14 +5,13 @@ import pandas as pd
 import torch
 from torchvision.transforms import v2
 
-from autrainer.datasets.utils import AbstractDataBatch
+from autrainer.core.structs import AbstractDataBatch, AbstractDataItem
 
 from .abstract_augmentation import AbstractAugmentation
 
 
 if TYPE_CHECKING:  # pragma: no cover
     from autrainer.datasets import AbstractDataset
-    from autrainer.datasets.utils import AbstractDataItem
 
 
 class BaseMixUpCutMix(AbstractAugmentation):
@@ -41,7 +40,9 @@ class BaseMixUpCutMix(AbstractAugmentation):
         self.alpha = alpha
 
     def get_collate_fn(
-        self, data: "AbstractDataset", default: Callable
+        self,
+        data: "AbstractDataset",
+        default: Callable,
     ) -> Callable:
         if data.output_dim <= 1:
             raise ValueError(
@@ -52,7 +53,7 @@ class BaseMixUpCutMix(AbstractAugmentation):
             num_classes=data.output_dim, alpha=self.alpha
         )
 
-        def _collate_fn(batch: List["AbstractDataItem"]) -> AbstractDataBatch:
+        def _collate_fn(batch: List[AbstractDataItem]) -> AbstractDataBatch:
             probability = torch.rand(1, generator=self.g).item()
             batched: AbstractDataBatch = default(batch)
             if probability < self.p:
@@ -69,8 +70,8 @@ class BaseMixUpCutMix(AbstractAugmentation):
 
         return _collate_fn
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
-        return x
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
+        return item
 
 
 class MixUp(BaseMixUpCutMix):
@@ -159,15 +160,17 @@ class SampleGaussianWhiteNoise(AbstractAugmentation):
         self.snr = df[self.snr_col]
         self._generator = torch.Generator()
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         if self.sample_seed:
             self._generator.manual_seed(
-                hash((self.sample_seed, index)) & 0xFFFFFFFF
+                hash((self.sample_seed, item.index)) & 0xFFFFFFFF
             )
 
-        snr = 10 ** (self.snr[index] / 10)
-        energy = torch.mean(x**2)
-        noise = torch.normal(0, 1, generator=self._generator, size=x.shape)
+        snr = 10 ** (self.snr[item.index] / 10)
+        energy = torch.mean(item.features**2)
+        shape = item.features.shape
+        noise = torch.normal(0, 1, generator=self._generator, size=shape)
         noise_energy = torch.mean(noise**2)
         scale = torch.sqrt(energy / (snr * noise_energy))
-        return x + noise * scale
+        item.features = item.features + noise * scale
+        return item

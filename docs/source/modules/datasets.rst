@@ -17,12 +17,17 @@ In addition to the common attributes like :attr:`id`, :attr:`_target_`, the data
 
 * :attr:`path`: Directory path containing the :attr:`features_subdir` directory and corresponding CSV files
   (such as :file:`train.csv`, :file:`dev.csv`, and :file:`test.csv`).
-* :attr:`features_subdir`: The subdirectory within the dataset path where (extracted) features are stored.
+* :attr:`features_subdir`: Optional subdirectory within the dataset path where (extracted) features are stored.
 
-  * If no preprocessing is used (e.g., for raw audio), it should be :attr:`default`.
+  * If not present and no preprocessing is used (e.g., for raw audio), the subdirectory defaults to :attr:`~autrainer.datasets.AbstractDataset.audio_subdir`.
   * For :ref:`preprocessing transforms <preprocessing_transforms>` (e.g., log-Mel spectrograms with :attr:`log_mel_16k`),
     it should match the transform's name, and the processed features are saved in this subdirectory after preprocessing.
+  * If features are stored outside of the dataset root directory (:attr:`path`),
+    an absolute path can be specified to override the default directory structure outlined below.
 
+* :attr:`features_path`: Optional root directory for the :attr:`features_subdir` directory, replacing the :attr:`path` attribute for the features.
+  Useful when the features are stored in (or should be extracted to) a different directory than the root of the dataset.
+  If not specified, the :attr:`path` attribute is used as the root directory for the features.
 * :attr:`index_column`: Column in the CSV files containing the file paths, relative to the :attr:`features_subdir` directory.
 * :attr:`target_column`: Column in the CSV files containing the corresponding targets or labels for each file.
 * :attr:`file_type`: Specifies the type of files to be loaded (e.g., :attr:`wav`, :attr:`npy`, etc.).
@@ -78,6 +83,10 @@ are used to download the dataset and preprocess the data before training.
    All datasets that are provided by `autrainer` can be automatically downloaded as well as optionally preprocessed using the
    :ref:`autrainer fetch <cli_autrainer_fetch>` and :ref:`autrainer preprocess <cli_preprocessing>` CLI commands or the
    :meth:`~autrainer.cli.fetch` and :meth:`~autrainer.cli.preprocess` CLI wrapper functions.
+
+
+All `autrainer` datasets and loaders return :ref:`DataItem and DataBatch structs <core_data_items>` which represent the data items
+and batches of data, respectively.
 
 
 Abstract Dataset

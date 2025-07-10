@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 import audobject
-import torch
+
+from autrainer.core.structs import AbstractDataItem
 
 
 class AbstractTransform(ABC, audobject.Object):
@@ -31,18 +31,12 @@ class AbstractTransform(ABC, audobject.Object):
         return self.__class__.__name__ + f"({args_repr})"
 
     @abstractmethod
-    def __call__(
-        self,
-        x: torch.Tensor,
-        index: Optional[int] = None,
-    ) -> torch.Tensor:
-        """Apply the transform to the input tensor.
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+        """Apply the transform to the input data item.
 
         Args:
-            x: The input tensor.
-            index: The index of the input tensor in the dataset.
-                Defaults to None.
+            item: The input data item to transform.
 
         Returns:
-            The transformed tensor.
+            The transformed data item.
         """

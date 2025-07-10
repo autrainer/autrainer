@@ -1,10 +1,10 @@
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
+from typing import TYPE_CHECKING, Callable, List, Optional
 
 import torch
-from torch.utils.data import default_collate
 from torchvision.transforms import v2
 
 from autrainer.augmentations import AbstractAugmentation
+from autrainer.core.structs import AbstractDataBatch, AbstractDataItem
 
 
 if TYPE_CHECKING:
@@ -34,32 +34,37 @@ class CutMixUp(AbstractAugmentation):
         super().__init__(order, p, generator_seed)
         self.alpha = alpha
         self.cut_mix_up_g = torch.Generator()
-        if generator_seed:
+        if generator_seed is not None:
             self.cut_mix_up_g.manual_seed(generator_seed)
 
-    def get_collate_fn(self, data: "AbstractDataset") -> Callable:
+    def get_collate_fn(
+        self,
+        data: "AbstractDataset",
+        default: Callable,
+    ) -> Callable:
         self.cutmix = v2.CutMix(num_classes=data.output_dim, alpha=self.alpha)
         self.mixup = v2.MixUp(num_classes=data.output_dim, alpha=self.alpha)
 
-        def _collate_fn(
-            batch: List[Tuple[torch.Tensor, int, int]],
-        ) -> List[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
+        def _collate_fn(batch: List[AbstractDataItem]) -> AbstractDataBatch:
             probability = torch.rand(1, generator=self.g).item()
+            batched: AbstractDataBatch = default(batch)
             if probability < self.p:
-                p = torch.rand(1, generator=self.cut_mix_up_g).item()
-                if p < 0.5:
-                    return self.cutmix(*default_collate(batch))
-                return self.mixup(*default_collate(batch))
-
-            # still one-hot encode the labels if no augmentation is applied
-            batched = default_collate(batch)
-            batched[1] = torch.nn.functional.one_hot(
-                batched[1], data.output_dim
+                features = batched.features
+                target = batched.target
+                if probability < 0.5:
+                    results = self.cutmix(features, target)
+                else:
+                    results = self.mixup(features, target)
+                batched.features = results[0]
+                batched.target = results[1]
+                return batched
+            batched.target = torch.nn.functional.one_hot(
+                batched.target, data.output_dim
             ).float()
             return batched
 
         return _collate_fn
 
-    def apply(self, x: torch.Tensor, index: int = None) -> torch.Tensor:
+    def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         # no-op as the augmentation is applied in the collate function
-        return x
+        return item

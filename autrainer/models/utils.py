@@ -1,12 +1,12 @@
 import os
-from typing import Callable, Dict, List, Union
+from typing import Callable, Dict, List, Optional, Union
 import warnings
 
 import requests
 import torch
 import torch.nn.functional as F
 
-from autrainer.datasets.utils import AbstractDataBatch, DataItem
+from autrainer.core.structs import AbstractDataBatch
 from autrainer.models import AbstractModel
 
 
@@ -192,7 +192,7 @@ class ExtractLayerEmbeddings:
 
 def create_model_inputs(
     model: AbstractModel,
-    data: Union[AbstractDataBatch, DataItem],
+    data: AbstractDataBatch,
 ) -> Dict[str, torch.Tensor]:
     _forbidden = ["features", "target", "index"]
     model_inputs = {model.inputs[0]: data.features}
@@ -200,3 +200,15 @@ def create_model_inputs(
         if key not in _forbidden and key in model.inputs:
             model_inputs[key] = value
     return model_inputs
+
+
+def assert_no_transfer_weights(
+    model: AbstractModel,
+    transfer: Optional[Union[bool, str]] = None,
+) -> None:
+    if not transfer:
+        return
+    raise ValueError(
+        f"Model '{type(model).__name__}' does not support "
+        f"transfer='{transfer}'. Set transfer to 'False' or 'None'. "
+    )

@@ -26,7 +26,7 @@ class MSPPodcast(AbstractDataset):
         file_type: str,
         file_handler: Union[str, DictConfig, Dict],
         index_column: str = "FileName",
-        features_subdir: str = None,
+        features_subdir: Optional[str] = None,
         train_transform: Optional[SmartCompose] = None,
         dev_transform: Optional[SmartCompose] = None,
         test_transform: Optional[SmartCompose] = None,
@@ -103,7 +103,7 @@ class MSPPodcast(AbstractDataset):
 
     @property
     def audio_subdir(self) -> str:
-        """Subfolder containing audio data.
+        """Subdirectory containing audio data.
 
         Defaults to `Audios` for MSP-Podcast.
         """

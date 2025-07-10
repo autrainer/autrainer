@@ -10,8 +10,8 @@ from torch.utils.data import DataLoader
 
 import autrainer
 from autrainer.core.constants import TrainingConstants
+from autrainer.core.structs import DataBatch
 from autrainer.core.utils import set_seed
-from autrainer.datasets.utils import DataBatch
 from autrainer.metrics import AbstractMetric
 from autrainer.transforms import SmartCompose
 
@@ -33,7 +33,7 @@ class AbstractDataset(ABC):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         task: str,
         metrics: List[Union[str, DictConfig, Dict]],
@@ -67,7 +67,7 @@ class AbstractDataset(ABC):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -108,7 +108,7 @@ class AbstractDataset(ABC):
 
     @property
     def audio_subdir(self) -> str:
-        """Subfolder containing audio data.
+        """Subdirectory containing audio data.
 
         Defaults to `default` for our standard format.
         Should be overridden for datasets
@@ -273,7 +273,6 @@ class AbstractDataset(ABC):
         drop_last: bool = False,
         timeout: float = 0,
         prefetch_factor: Optional[int] = None,
-        persistent_workers: bool = False,
         pin_memory_device: str = "",
     ) -> DataLoader:
         self.train_transform.setup(self)
@@ -293,7 +292,7 @@ class AbstractDataset(ABC):
             drop_last=drop_last,
             timeout=timeout,
             prefetch_factor=prefetch_factor,
-            persistent_workers=persistent_workers,
+            persistent_workers=num_workers > 0,
             pin_memory_device=pin_memory_device,
         )
 
@@ -305,7 +304,6 @@ class AbstractDataset(ABC):
         drop_last: bool = False,
         timeout: float = 0,
         prefetch_factor: Optional[int] = None,
-        persistent_workers: bool = False,
         pin_memory_device: str = "",
     ) -> DataLoader:
         self.dev_transform.setup(self)
@@ -325,7 +323,7 @@ class AbstractDataset(ABC):
             drop_last=drop_last,
             timeout=timeout,
             prefetch_factor=prefetch_factor,
-            persistent_workers=persistent_workers,
+            persistent_workers=num_workers > 0,
             pin_memory_device=pin_memory_device,
         )
 
@@ -337,7 +335,6 @@ class AbstractDataset(ABC):
         drop_last: bool = False,
         timeout: float = 0,
         prefetch_factor: Optional[int] = None,
-        persistent_workers: bool = False,
         pin_memory_device: str = "",
     ) -> DataLoader:
         self.test_transform.setup(self)
@@ -357,7 +354,7 @@ class AbstractDataset(ABC):
             drop_last=drop_last,
             timeout=timeout,
             prefetch_factor=prefetch_factor,
-            persistent_workers=persistent_workers,
+            persistent_workers=num_workers > 0,
             pin_memory_device=pin_memory_device,
         )
 
@@ -384,7 +381,7 @@ class BaseClassificationDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
@@ -415,7 +412,7 @@ class BaseClassificationDataset(AbstractDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -464,7 +461,7 @@ class BaseMLClassificationDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
@@ -496,7 +493,7 @@ class BaseMLClassificationDataset(AbstractDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -559,7 +556,7 @@ class BaseRegressionDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
@@ -590,7 +587,7 @@ class BaseRegressionDataset(AbstractDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.
@@ -631,7 +628,7 @@ class BaseMTRegressionDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: str,
+        features_subdir: Optional[str],
         seed: int,
         metrics: List[Union[str, DictConfig, Dict]],
         tracking_metric: Union[str, DictConfig, Dict],
@@ -662,7 +659,7 @@ class BaseMTRegressionDataset(AbstractDataset):
             file_handler: File handler to load the data.
             features_path: Root path to features. Useful
                 when features need to be extracted and stored
-                in a different folder than the root of the dataset.
+                in a different directory than the root of the dataset.
                 If `None`, will be set to `path`. Defaults to `None`.
             train_transform: Transform to apply to the training set.
                 Defaults to None.

@@ -208,13 +208,13 @@ This method is used to retrieve the collate function from the augmentation if it
    To create custom augmentations with collate functions, refer to the :ref:`custom augmentations tutorial <tut_augmentation_collate>`.
 
 The signature of the :attr:`get_collate_fn` method should be as follows and return a collate function taking in a list of
-:class:`~autrainer.datasets.utils.AbstractDataItem` objects and returning a single :class:`~autrainer.datasets.utils.AbstractDataBatch` object.
+:class:`~autrainer.core.structs.AbstractDataItem` objects and returning a single :class:`~autrainer.core.structs.AbstractDataBatch` object.
 
 .. literalinclude:: ../examples/augmentation_get_collate_fn.py
    :language: python
    :caption: example_augmentation.ExampleCollateAugmentation
    :linenos:
-   :lines: 13-
+   :lines: 11-
 
 .. note::
    Only one collate function can be used in each transform pipeline.

@@ -2,9 +2,9 @@ from typing import Callable, Tuple
 
 import torch
 
-from autrainer.datasets.utils import AbstractDataBatch
+from autrainer.core.structs import AbstractDataBatch
 from autrainer.models import AbstractModel
-from autrainer.training.utils import create_model_inputs
+from autrainer.models.utils import create_model_inputs
 
 
 class RandomScaledSGD(torch.optim.Optimizer):
@@ -29,7 +29,7 @@ class RandomScaledSGD(torch.optim.Optimizer):
         self.p = p
         self.g = torch.Generator()
         self.base_lr = self.param_groups[0]["lr"]
-        if generator_seed:
+        if generator_seed is not None:
             self.g.manual_seed(generator_seed)
 
     def custom_step(

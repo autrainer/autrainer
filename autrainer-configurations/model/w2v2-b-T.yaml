@@ -1,0 +1,15 @@
+id: w2v2-b-T
+_target_: autrainer.models.W2V2FFNN
+model_name: facebook/wav2vec2-base
+freeze_extractor: true
+hidden_size: 512
+num_layers: 2
+dropout: 0.5
+transfer: true
+
+transform:
+  type: raw
+  base:
+    - autrainer.transforms.FeatureExtractor:
+        fe_type: W2V2
+        fe_transfer: facebook/wav2vec2-base

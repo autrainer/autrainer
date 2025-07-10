@@ -1,27 +1,42 @@
+import warnings
+
 import torch
-from transformers import WhisperModel
+from transformers import WhisperConfig, WhisperModel
 
 from .abstract_model import AbstractModel
 from .ffnn import FFNN
 
 
 class WhisperBackbone(AbstractModel):
-    def __init__(self, model_name: str) -> None:
+    def __init__(self, model_name: str, transfer: bool = False) -> None:
         self.model_name = model_name
-        model = WhisperModel.from_pretrained(self.model_name)
-        super().__init__(output_dim=model.config.hidden_size)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            if transfer:  # pragma: no cover
+                model = WhisperModel.from_pretrained(self.model_name)
+            else:
+                config = WhisperConfig.from_pretrained(
+                    self.model_name,
+                    output_hidden_states=True,
+                    return_dict=True,
+                )
+                model = WhisperModel(config)
+        super().__init__(
+            output_dim=model.config.hidden_size,
+            transfer=transfer,
+        )
         self.model = model
         self.register_buffer(
             "decoder_input_ids",
             torch.tensor([1, 1]) * self.model.config.decoder_start_token_id,
         )
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        decoder_input_ids = torch.stack([self.decoder_input_ids] * x.shape[0])
-        x = self.model(x, decoder_input_ids=decoder_input_ids)[
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        ids = torch.stack([self.decoder_input_ids] * features.shape[0])
+        features = self.model(features, decoder_input_ids=ids)[
             "last_hidden_state"
         ][:, 0, :]
-        return x
+        return features
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         return self.embeddings(features)
@@ -35,6 +50,7 @@ class WhisperFFNN(AbstractModel):
         hidden_size: int,
         num_layers: int = 2,
         dropout: float = 0.5,
+        transfer: bool = False,
     ) -> None:
         """Whisper model with FFNN frontend adapted for audio classification.
         For more information, see:
@@ -46,13 +62,15 @@ class WhisperFFNN(AbstractModel):
             output_dim: Output dimension of the FFNN.
             num_layers: Number of layers of the FFNN. Defaults to 2.
             dropout: Dropout rate. Defaults to 0.5.
+            transfer: Whether to initialize the Whisper backbone with
+                pretrained weights. Defaults to False.
         """
-        super().__init__(output_dim)
+        super().__init__(output_dim, transfer)
         self.model_name = model_name
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.dropout = dropout
-        self.backbone = WhisperBackbone(model_name=model_name)
+        self.backbone = WhisperBackbone(model_name, transfer)
         self.frontend = FFNN(
             input_size=self.backbone.output_dim,
             hidden_size=hidden_size,
@@ -61,8 +79,8 @@ class WhisperFFNN(AbstractModel):
             dropout=dropout,
         )
 
-    def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        return self.backbone(x)
+    def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        return self.backbone(features)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         return self.frontend(self.embeddings(features))

@@ -9,6 +9,8 @@ from hydra.plugins.search_path_plugin import SearchPathPlugin
 
 import autrainer
 
+from .config_dir_snapshot import ConfigDirSnapshot
+
 
 class AutrainerPathPlugin(SearchPathPlugin):
     def manipulate_search_path(self, search_path: ConfigSearchPath) -> None:
@@ -16,7 +18,12 @@ class AutrainerPathPlugin(SearchPathPlugin):
             os.path.dirname(autrainer.__path__[0]),
             "autrainer-configurations",
         )
-        search_path.append(provider="autrainer-current", path="file://conf")
+        snapshot = ConfigDirSnapshot().create_snapshot_dir()
+        if snapshot is not None:
+            search_path.append(
+                provider="autrainer-snapshot",
+                path=f"file://{snapshot}",
+            )
         search_path.append(
             provider="autrainer-configs",
             path=f"file://{lib_path}",
@@ -48,6 +55,10 @@ def main(
             search path. Defaults to None.
         version_base: Hydra version base. Defaults to None.
     """
+    if not any("jupyter" in arg or "ipykernel" in arg for arg in sys.argv):
+        import matplotlib
+
+        matplotlib.use("Agg")  # TkAgg is not thread-safe
 
     Plugins.instance().register(AutrainerPathPlugin)
     add_current_directory_to_path()
