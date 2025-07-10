@@ -29,7 +29,7 @@ class RandomScaledSGD(torch.optim.Optimizer):
         self.p = p
         self.g = torch.Generator()
         self.base_lr = self.param_groups[0]["lr"]
-        if generator_seed:
+        if generator_seed is not None:
             self.g.manual_seed(generator_seed)
 
     def custom_step(

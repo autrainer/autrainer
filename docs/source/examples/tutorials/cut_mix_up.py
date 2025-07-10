@@ -34,7 +34,7 @@ class CutMixUp(AbstractAugmentation):
         super().__init__(order, p, generator_seed)
         self.alpha = alpha
         self.cut_mix_up_g = torch.Generator()
-        if generator_seed:
+        if generator_seed is not None:
             self.cut_mix_up_g.manual_seed(generator_seed)
 
     def get_collate_fn(

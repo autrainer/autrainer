@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, List, Optional
 
 import audobject
@@ -7,6 +8,7 @@ import autrainer
 from autrainer.core.structs import AbstractDataItem
 
 from .abstract_augmentation import AbstractAugmentation
+from .utils import convert_shorthand
 
 
 class Choice(AbstractAugmentation, audobject.Object):
@@ -51,29 +53,30 @@ class Choice(AbstractAugmentation, audobject.Object):
         self.choices = choices
         self.augmentation_choices = []
 
-        for aug in self.choices:
-            if isinstance(aug, str):
-                self.augmentation_choices.append(
-                    {aug: {"generator_seed": self.generator_seed}}
-                )
-            else:
-                aug_name = next(iter(aug.keys()))
-                if aug[aug_name].get("generator_seed") is None:
-                    aug[aug_name]["generator_seed"] = self.generator_seed
-                self.augmentation_choices.append(aug)
+        for aug in deepcopy(self.choices):
+            aug = convert_shorthand(aug)
+            aug_name = next(iter(aug.keys()))
+            if aug[aug_name].get("generator_seed") is None:
+                aug[aug_name]["generator_seed"] = self.generator_seed
+            self.augmentation_choices.append(aug)
 
         self.augmentation_choices: List[AbstractAugmentation] = [
             autrainer.instantiate_shorthand(
                 choice,
                 instance_of=AbstractAugmentation,
             )
-            for choice in self.choices
+            for choice in self.augmentation_choices
         ]
         for aug in self.augmentation_choices:
             if hasattr(aug, "get_collate_fn"):
                 raise ValueError(
                     "Choice augmentations must not have a collate function."
                 )
+
+    def offset_generator_seed(self, offset: int) -> None:
+        super().offset_generator_seed(offset)
+        for aug in self.augmentation_choices:
+            aug.offset_generator_seed(offset)
 
     def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         """Choose one augmentation from the list of augmentations based on the
@@ -88,3 +91,11 @@ class Choice(AbstractAugmentation, audobject.Object):
         weights = torch.Tensor(self.weights)
         choice = torch.multinomial(weights, 1, generator=self.g).item()
         return self.augmentation_choices[choice](item)
+
+    @property
+    def _deterministic(self) -> bool:
+        """Return True if the augmentation is deterministic, False otherwise."""
+        return all(
+            getattr(aug, "_deterministic", True)  # true if not set
+            for aug in self.augmentation_choices
+        )

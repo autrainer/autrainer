@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, List, Optional
 
 import audobject
@@ -6,6 +7,7 @@ import autrainer
 from autrainer.core.structs import AbstractDataItem
 
 from .abstract_augmentation import AbstractAugmentation
+from .utils import convert_shorthand
 
 
 class Sequential(AbstractAugmentation, audobject.Object):
@@ -40,29 +42,30 @@ class Sequential(AbstractAugmentation, audobject.Object):
         self.sequence = sequence
         self.augmentation_sequence = []
 
-        for aug in self.sequence:
-            if isinstance(aug, str):
-                self.augmentation_sequence.append(
-                    {aug: {"generator_seed": self.generator_seed}}
-                )
-            else:
-                aug_name = next(iter(aug.keys()))
-                if aug[aug_name].get("generator_seed") is None:
-                    aug[aug_name]["generator_seed"] = self.generator_seed
-                self.augmentation_sequence.append(aug)
+        for aug in deepcopy(self.sequence):
+            aug = convert_shorthand(aug)
+            aug_name = next(iter(aug.keys()))
+            if aug[aug_name].get("generator_seed") is None:
+                aug[aug_name]["generator_seed"] = self.generator_seed
+            self.augmentation_sequence.append(aug)
 
         self.augmentation_sequence: List[AbstractAugmentation] = [
             autrainer.instantiate_shorthand(
                 aug,
                 instance_of=AbstractAugmentation,
             )
-            for aug in self.sequence
+            for aug in self.augmentation_sequence
         ]
         for aug in self.augmentation_sequence:
             if hasattr(aug, "get_collate_fn"):
                 raise ValueError(
                     "Choice augmentations must not have a collate function."
                 )
+
+    def offset_generator_seed(self, offset: int) -> None:
+        super().offset_generator_seed(offset)
+        for aug in self.augmentation_sequence:
+            aug.offset_generator_seed(offset)
 
     def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         """Apply all augmentations in sequence to the input tensor.
@@ -76,3 +79,11 @@ class Sequential(AbstractAugmentation, audobject.Object):
         for aug in self.augmentation_sequence:
             item = aug(item)
         return item
+
+    @property
+    def _deterministic(self) -> bool:
+        """Return True if the augmentation is deterministic, False otherwise."""
+        return all(
+            getattr(aug, "_deterministic", True)  # true if not set
+            for aug in self.augmentation_sequence
+        )

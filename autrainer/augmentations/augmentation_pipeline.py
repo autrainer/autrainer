@@ -4,6 +4,7 @@ import autrainer
 from autrainer.transforms import SmartCompose
 
 from .abstract_augmentation import AbstractAugmentation
+from .utils import assign_seeds, convert_shorthand
 
 
 class AugmentationPipeline:
@@ -26,14 +27,10 @@ class AugmentationPipeline:
         """
         self.generator_seed = generator_seed
         self.pipeline = []
+        current_seed = generator_seed
         for aug in pipeline:
-            if isinstance(aug, str):
-                aug = {aug: {}}  # convert to shorthand syntax
-            aug_name = next(iter(aug.keys()))
-            if aug[aug_name].get("generator_seed") is None:
-                aug[aug_name]["generator_seed"] = generator_seed
-                if increment:
-                    generator_seed += 1
+            aug = convert_shorthand(aug)
+            aug, current_seed = assign_seeds(aug, current_seed, increment)
             self.pipeline.append(aug)
 
         self.pipeline: List[AbstractAugmentation] = [

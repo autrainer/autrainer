@@ -258,11 +258,45 @@ class TestChoice:
         with pytest.raises(ValueError):
             Choice(choices=["autrainer.augmentations.CutMix"])
 
+    def test_offset_generator_seed(self) -> None:
+        choice = Choice(
+            choices=[
+                "autrainer.augmentations.GaussianNoise",
+                "autrainer.augmentations.GaussianNoise",
+            ],
+            generator_seed=AUGMENTATION_SEED,
+        )
+        choice.offset_generator_seed(1)
+        assert (
+            choice.generator_seed == AUGMENTATION_SEED + 1
+        ), "Should offset the generator seed"
+        for c in choice.augmentation_choices:
+            assert (
+                c.generator_seed == AUGMENTATION_SEED + 1
+            ), "Should offset the generator seed of the choice"
+
 
 class TestSequential:
     def test_invalid_collate_fn(self) -> None:
         with pytest.raises(ValueError):
             Sequential(sequence=["autrainer.augmentations.CutMix"])
+
+    def test_offset_generator_seed(self) -> None:
+        seq = Sequential(
+            sequence=[
+                "autrainer.augmentations.GaussianNoise",
+                "autrainer.augmentations.GaussianNoise",
+            ],
+            generator_seed=AUGMENTATION_SEED,
+        )
+        seq.offset_generator_seed(1)
+        assert (
+            seq.generator_seed == AUGMENTATION_SEED + 1
+        ), "Should offset the generator seed"
+        for s in seq.augmentation_sequence:
+            assert (
+                s.generator_seed == AUGMENTATION_SEED + 1
+            ), "Should offset the generator seed of the sequence"
 
 
 class TestBaseMixUpCutMix:
