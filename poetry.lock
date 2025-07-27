@@ -5848,4 +5848,4 @@ torch-audiomentations = ["torch-audiomentations"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "3b4b4c3f365566f2989b073294eb5159a6ce2b3eb421a5a48a7f352690845dbe"
+content-hash = "0ab6d68b59b0cbf5e5c11e623ad2438c4c745f5b7bb292a482696d3ae07eac27"
