@@ -16,7 +16,7 @@ hydra:
       model: ToyFFNN, Three-Layer-FFNN
       optimizer: Adam
     filters:
-      - type: exists
-        path: metrics.csv
-      - type: expr
-        expr: model.id == "Three-Layer-FFNN" and seed > 2
+      - hydra_filter_sweeper.Exists:
+          path: metrics.csv
+      - hydra_filter_sweeper.Expression:
+          expr: model.id == "Three-Layer-FFNN" and seed > 2

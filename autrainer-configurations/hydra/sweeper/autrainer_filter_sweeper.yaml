@@ -2,5 +2,5 @@
 _target_: hydra_plugins.filter.FilterSweeper
 max_batch_size: null
 filters:
-  - type: exists
-    path: metrics.csv
+  - hydra_filter_sweeper.Exists:
+      path: metrics.csv
