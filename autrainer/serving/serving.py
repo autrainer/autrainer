@@ -122,6 +122,8 @@ class Inference:
     ) -> pd.DataFrame:
         """Obtain the model predictions for all files in a directory.
 
+        If a file is empty, it will be skipped.
+
         Args:
             directory: Path to the directory containing audio files.
             extension: File extension of the audio files.
@@ -143,7 +145,10 @@ class Inference:
             miniters=update_frequency,
             desc="Inference prediction",
         ):
-            prediction, output, probs = self.predict_file(file)
+            preds = self.predict_file(file)
+            if preds is None:
+                continue
+            prediction, output, probs = preds
             if isinstance(prediction, dict):
                 for (offset, pred), out in zip(
                     prediction.items(), output.values()
@@ -177,6 +182,8 @@ class Inference:
     ) -> pd.DataFrame:
         """Obtain the model embeddings for all files in a directory.
 
+        If a file is empty, it will be skipped.
+
         Args:
             directory: Path to the directory containing audio files.
             extension: File extension of the audio files.
@@ -199,6 +206,8 @@ class Inference:
             desc="Inference embedding",
         ):
             embedding = self.embed_file(file)
+            if embedding is None:
+                continue
             if isinstance(embedding, dict):
                 for offset, emb in embedding.items():
                     records.append(
@@ -220,9 +229,11 @@ class Inference:
     def predict_file(
         self,
         file: str,
-    ) -> Union[
-        Tuple[Any, torch.Tensor, Dict[str, float]],
-        Tuple[Dict[str, Any], Dict[str, torch.Tensor], Dict[str, dict]],
+    ) -> Optional[
+        Union[
+            Tuple[Any, torch.Tensor, Dict[str, float]],
+            Tuple[Dict[str, Any], Dict[str, torch.Tensor], Dict[str, dict]],
+        ]
     ]:
         """Obtain the model prediction for a single file.
 
@@ -233,13 +244,14 @@ class Inference:
             Model prediction, output, and probabilties for the file.
             If sliding window inference is used, the prediction is a dictionary
             with the offset as the key.
+            If the file is empty, None is returned.
         """
         return self._delegate_file(file, self._predict, self._predict_windowed)
 
     def embed_file(
         self,
         file: str,
-    ) -> Union[torch.Tensor, Dict[str, torch.Tensor]]:
+    ) -> Optional[Union[torch.Tensor, Dict[str, torch.Tensor]]]:
         """Obtain the model embedding for a single file.
 
         Args:
@@ -248,6 +260,7 @@ class Inference:
         Returns:
             Model embedding for the file. If sliding window inference is used,
             the embedding is a dictionary with the offset as the key.
+            If the file is empty, None is returned.
         """
         return self._delegate_file(file, self._embed, self._embed_windowed)
 
@@ -325,12 +338,23 @@ class Inference:
         file: str,
         fn: Callable,
         window_fn: Callable,
-    ) -> Union[Tuple[Any, torch.Tensor], torch.Tensor]:
+    ) -> Optional[Union[Tuple[Any, torch.Tensor], torch.Tensor]]:
         x = self.file_handler.load(file)
-        if self._window_length and self._stride_length and self._sample_rate:
-            return window_fn(x)
-        else:
-            return fn(x)
+        if x.numel() == 0:
+            tqdm.write(f"Skipping empty file: '{file}'")
+            return None
+        try:
+            if (
+                self._window_length
+                and self._stride_length
+                and self._sample_rate
+            ):
+                return window_fn(x)
+            else:
+                return fn(x)
+        except Exception as e:
+            tqdm.write(f"Error processing file '{file}': {e}")
+            return None
 
     def _collect_files(self, directory: str, extension: str, recursive: bool):
         pattern = f"**/*.{extension}" if recursive else f"*.{extension}"
