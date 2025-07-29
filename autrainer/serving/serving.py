@@ -1,7 +1,7 @@
 import glob
 import os
 import sys
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Union
 import warnings
 
 import audobject
@@ -369,9 +369,11 @@ class Inference:
             )
         return embedding
 
-    def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, List[int]]:
+    def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, int]:
         w_len = int(self._window_length * self._sample_rate)
         s_len = int(self._stride_length * self._sample_rate)
+        if x.shape[1] < w_len:
+            return w_len, s_len, 1  # force a single window if too short
         num_windows = (x.shape[1] - w_len) // s_len + 1
         return w_len, s_len, num_windows
 
