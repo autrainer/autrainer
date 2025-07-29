@@ -122,7 +122,8 @@ class Inference:
     ) -> pd.DataFrame:
         """Obtain the model predictions for all files in a directory.
 
-        If a file is empty, it will be skipped.
+        If an audio is empty, too short, or an error occurs during
+        processing, it will be skipped.
 
         Args:
             directory: Path to the directory containing audio files.
@@ -182,7 +183,8 @@ class Inference:
     ) -> pd.DataFrame:
         """Obtain the model embeddings for all files in a directory.
 
-        If a file is empty, it will be skipped.
+        If an audio is empty, too short, or an error occurs during
+        processing, it will be skipped.
 
         Args:
             directory: Path to the directory containing audio files.
@@ -244,7 +246,8 @@ class Inference:
             Model prediction, output, and probabilties for the file.
             If sliding window inference is used, the prediction is a dictionary
             with the offset as the key.
-            If the file is empty, None is returned.
+            If the audio is empty, too short, or an error occurs during
+            processing, it will be skipped.
         """
         return self._delegate_file(file, self._predict, self._predict_windowed)
 
@@ -260,7 +263,8 @@ class Inference:
         Returns:
             Model embedding for the file. If sliding window inference is used,
             the embedding is a dictionary with the offset as the key.
-            If the file is empty, None is returned.
+            If the audio is empty, too short, or an error occurs during
+            processing, it will be skipped.
         """
         return self._delegate_file(file, self._embed, self._embed_windowed)
 
