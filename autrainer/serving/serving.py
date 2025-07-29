@@ -369,11 +369,22 @@ class Inference:
             )
         return embedding
 
-    def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, List[int]]:
+    def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, int]:
         w_len = int(self._window_length * self._sample_rate)
         s_len = int(self._stride_length * self._sample_rate)
+
+        if x.shape[1] < w_len:
+            warnings.warn(
+                f"Sliding window length ({self._window_length:.2f}s) is greater "
+                f"than the audio file length ({x.shape[1] / self._sample_rate:.2f}s). "
+                "This may result in zero or incomplete windows.",
+                UserWarning
+            )
+            return w_len, s_len, 0  #you can change 0 with 1 if you want to process it anyway
+
         num_windows = (x.shape[1] - w_len) // s_len + 1
         return w_len, s_len, num_windows
+
 
     def _predict_windowed(
         self,
