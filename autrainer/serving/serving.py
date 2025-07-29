@@ -372,8 +372,20 @@ class Inference:
     def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, List[int]]:
         w_len = int(self._window_length * self._sample_rate)
         s_len = int(self._stride_length * self._sample_rate)
+
+        if x.shape[1] < w_len:
+            warnings.warn(
+                f"Sliding window length ({w_len} samples) "
+                f"is greater than audio length ({x.shape[1]} samples)."
+                " No full windows can be created."
+            )
+            # Let's force at least one window to start from 0
+            return w_len, s_len, [0]
+
         num_windows = (x.shape[1] - w_len) // s_len + 1
-        return w_len, s_len, num_windows
+        window_starts = [i * s_len for i in range(num_windows)]
+
+        return w_len, s_len, window_starts
 
     def _predict_windowed(
         self,
