@@ -1,7 +1,7 @@
 import glob
 import os
 import sys
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Union
 import warnings
 
 import audobject
@@ -122,6 +122,9 @@ class Inference:
     ) -> pd.DataFrame:
         """Obtain the model predictions for all files in a directory.
 
+        If an audio is empty, too short, or an error occurs during
+        processing, it will be skipped.
+
         Args:
             directory: Path to the directory containing audio files.
             extension: File extension of the audio files.
@@ -143,7 +146,10 @@ class Inference:
             miniters=update_frequency,
             desc="Inference prediction",
         ):
-            prediction, output, probs = self.predict_file(file)
+            preds = self.predict_file(file)
+            if preds is None:
+                continue
+            prediction, output, probs = preds
             if isinstance(prediction, dict):
                 for (offset, pred), out in zip(
                     prediction.items(), output.values()
@@ -177,6 +183,9 @@ class Inference:
     ) -> pd.DataFrame:
         """Obtain the model embeddings for all files in a directory.
 
+        If an audio is empty, too short, or an error occurs during
+        processing, it will be skipped.
+
         Args:
             directory: Path to the directory containing audio files.
             extension: File extension of the audio files.
@@ -199,6 +208,8 @@ class Inference:
             desc="Inference embedding",
         ):
             embedding = self.embed_file(file)
+            if embedding is None:
+                continue
             if isinstance(embedding, dict):
                 for offset, emb in embedding.items():
                     records.append(
@@ -220,9 +231,11 @@ class Inference:
     def predict_file(
         self,
         file: str,
-    ) -> Union[
-        Tuple[Any, torch.Tensor, Dict[str, float]],
-        Tuple[Dict[str, Any], Dict[str, torch.Tensor], Dict[str, dict]],
+    ) -> Optional[
+        Union[
+            Tuple[Any, torch.Tensor, Dict[str, float]],
+            Tuple[Dict[str, Any], Dict[str, torch.Tensor], Dict[str, dict]],
+        ]
     ]:
         """Obtain the model prediction for a single file.
 
@@ -233,13 +246,15 @@ class Inference:
             Model prediction, output, and probabilties for the file.
             If sliding window inference is used, the prediction is a dictionary
             with the offset as the key.
+            If the audio is empty, too short, or an error occurs during
+            processing, it will be skipped.
         """
         return self._delegate_file(file, self._predict, self._predict_windowed)
 
     def embed_file(
         self,
         file: str,
-    ) -> Union[torch.Tensor, Dict[str, torch.Tensor]]:
+    ) -> Optional[Union[torch.Tensor, Dict[str, torch.Tensor]]]:
         """Obtain the model embedding for a single file.
 
         Args:
@@ -248,6 +263,8 @@ class Inference:
         Returns:
             Model embedding for the file. If sliding window inference is used,
             the embedding is a dictionary with the offset as the key.
+            If the audio is empty, too short, or an error occurs during
+            processing, it will be skipped.
         """
         return self._delegate_file(file, self._embed, self._embed_windowed)
 
@@ -325,12 +342,23 @@ class Inference:
         file: str,
         fn: Callable,
         window_fn: Callable,
-    ) -> Union[Tuple[Any, torch.Tensor], torch.Tensor]:
+    ) -> Optional[Union[Tuple[Any, torch.Tensor], torch.Tensor]]:
         x = self.file_handler.load(file)
-        if self._window_length and self._stride_length and self._sample_rate:
-            return window_fn(x)
-        else:
-            return fn(x)
+        if x.numel() == 0:
+            tqdm.write(f"Skipping empty file: '{file}'")
+            return None
+        try:
+            if (
+                self._window_length
+                and self._stride_length
+                and self._sample_rate
+            ):
+                return window_fn(x)
+            else:
+                return fn(x)
+        except Exception as e:
+            tqdm.write(f"Error processing file '{file}': {e}")
+            return None
 
     def _collect_files(self, directory: str, extension: str, recursive: bool):
         pattern = f"**/*.{extension}" if recursive else f"*.{extension}"
@@ -369,9 +397,11 @@ class Inference:
             )
         return embedding
 
-    def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, List[int]]:
+    def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, int]:
         w_len = int(self._window_length * self._sample_rate)
         s_len = int(self._stride_length * self._sample_rate)
+        if x.shape[1] < w_len:
+            return w_len, s_len, 1  # force a single window if too short
         num_windows = (x.shape[1] - w_len) // s_len + 1
         return w_len, s_len, num_windows
 

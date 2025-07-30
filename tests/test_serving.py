@@ -191,3 +191,43 @@ class TestInference(BaseIndividualTempDir):
         assert isinstance(pred, str), "Should return a prediction string."
         assert isinstance(out, torch.Tensor), "Should return an output tensor."
         assert isinstance(probs, dict), "Should return a probabilities dict."
+
+    def test_long_audio_not_padded(self) -> None:
+        self._mock_model_setup()
+        inference = Inference(
+            model_path="TestModel",
+            min_length=2.0,
+            sample_rate=10,
+        )
+        x = torch.randn(1, 25)
+        out = inference._pad_audio(x)
+        assert torch.equal(out, x), "Should not be padded."
+
+    def _setup_invalid_files(self) -> None:
+        os.makedirs("input", exist_ok=True)
+        NumpyFileHandler().save("input/empty.npy", torch.zeros(1, 0))
+        NumpyFileHandler().save("input/short.npy", torch.randn(1, 20))
+
+    def test_predict_skips_invalid_files(self) -> None:
+        self._mock_model_setup()
+        self._setup_invalid_files()
+        inference = Inference(
+            model_path="TestModel",
+            window_length=2,
+            stride_length=1,
+            sample_rate=16,
+        )
+        df = inference.predict_directory("input", "npy")
+        assert df.empty, "Should skip invalid files."
+
+    def test_embed_skips_invalid_files(self) -> None:
+        self._mock_model_setup()
+        self._setup_invalid_files()
+        inference = Inference(
+            model_path="TestModel",
+            window_length=2,
+            stride_length=1,
+            sample_rate=16,
+        )
+        df = inference.embed_directory("input", "npy")
+        assert df.empty, "Should skip invalid files."
