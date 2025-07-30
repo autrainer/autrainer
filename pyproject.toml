@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "autrainer"
-version = "0.7.0"
+version = "0.7.1"
 description = "A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."
 authors = [
     "Simon Rampp <simon.rampp@tum.de>",
