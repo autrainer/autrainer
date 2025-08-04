@@ -43,12 +43,7 @@ Overview
    development/citing
 
 .. toctree::
-   :caption: Configurations
-   :maxdepth: 1
+   :caption: Configuration
+   :maxdepth: 2
 
-   configuration/datasets
-   configuration/preprocessing
-   configuration/models
-   configuration/augmentations
-   configuration/optimizers
-   configuration/schedulers
+   configuration/configs

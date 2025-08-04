@@ -10,7 +10,7 @@ including :ref:`configuration management <cli_configuration_management>`,
 :ref:`inference <cli_inference>`,
 and :ref:`postprocessing <cli_postprocessing>`.
 
-In addition to the CLI, `autrainer` provides an :ref:`CLI wrapper <cli_wrapper>` to manage configurations, data, training, inference,
+In addition to the CLI, `autrainer` provides a :ref:`CLI wrapper <cli_wrapper>` to manage configurations, data, training, inference,
 and postprocessing programmatically with the same functionality as the CLI.
 
 .. _cli_autrainer:
@@ -44,6 +44,7 @@ as well as saving of default configurations provided by `autrainer`.
    
    Default configurations can be discovered both through the :ref:`CLI <cli_reference>`,
    the :ref:`CLI wrapper <cli_wrapper>`, and the respective module documentation.
+   There are also available in :ref:`the list of configuration files <configurations>`.
 
 
 .. _cli_autrainer_create:
