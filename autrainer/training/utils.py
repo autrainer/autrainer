@@ -76,6 +76,21 @@ def format_results(
     training_type: str,
     iteration: Optional[int] = None,
 ) -> str:
+    """Format the results of the evaluation.
+
+    Formats the results of the evaluation into a string
+    for easy printing and logging.
+
+    Args:
+        results: Dictionary containing the results of the evaluation.
+        results_type: Type of results (e.g., "dev", "test").
+        training_type: Type of training (e.g., "epoch", "step").
+        iteration: Optional iteration number (e.g., epoch number). If None,
+            the iteration is not included in the string. Defaults to None.
+
+    Returns:
+        A formatted string containing the results.
+    """
     s = f"{results_type} results"
     s += f" at {training_type} {iteration}" if iteration else ""
     s += ":\n"
