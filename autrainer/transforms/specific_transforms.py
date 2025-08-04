@@ -699,6 +699,17 @@ class OpenSMILE(AbstractTransform):
         To install the required extras, run:
         'pip install autrainer[opensmile]'.
 
+        .. warning::
+            Setting `lld_deltas` to `True`
+            will extract and concatenate
+            :py:attr:`opensmile.FeatureLevel.LowLevelDescriptors_Deltas` to the
+            :py:attr:`opensmile.FeatureLevel.LowLevelDescriptors` features.
+            However, :py:mod:`opensmile` returns *longer* sequences
+            for the delta features. To match to the original length,
+            we drop the first and last frame of the delta features.
+            This may result in misalignment, as we are not sure
+            how padding is handled in :py:mod:`opensmile`.
+
         Args:
             feature_set: The feature set to use.
             sample_rate: The sample rate of the audio signal.
