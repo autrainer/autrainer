@@ -4,7 +4,6 @@ import os
 import sys
 from typing import Any
 
-from docutils import nodes
 from docutils.parsers.rst import Directive
 from sphinx.application import Sphinx
 import toml
@@ -107,9 +106,7 @@ class AddYamlDirective(Directive):
             logger.warning(f"[add_yaml] Path does not exist: {target_dir}")
             return []
 
-        # Collect YAML files recursively
         yaml_files = sorted(glob.glob(os.path.join(target_dir, "*.yaml")))
-
         output_dir = os.path.join(doc_dir, "_generated_yaml_pages")
         os.makedirs(output_dir, exist_ok=True)
 
@@ -118,29 +115,25 @@ class AddYamlDirective(Directive):
             # need relative path for literalinclude
             # this is the parent dir of env.srcdir
             rel_path = os.path.join(
-                os.path.pardir, os.path.relpath(file_path, start=env.srcdir)
+                os.path.pardir,
+                os.path.pardir,
+                os.path.relpath(file_path, start=env.srcdir),
             )
-
-            literalinclude = nodes.literal_block("", "")
-            literalinclude["classes"].append("code")
-            literalinclude["source"] = file_path
-            literalinclude["language"] = "yaml"
-            literalinclude["linenos"] = False
-
-            # Create directive string to re-parse
             caption = os.path.splitext(os.path.basename(file_path))[0]
-            include_text = (
-                f".. literalinclude:: {rel_path}\n"
-                f"   :language: yaml\n"
-                f"   :caption: {caption}\n"
-                f"   :linenos:\n"
-            )
-
-            # Parse as RST
-            include_lines = include_text.splitlines()
-            self.state_machine.insert_input(include_lines, self.arguments[0])
-
-        return result
+            output_rst_path = os.path.join(output_dir, caption + ".rst")
+            with open(output_rst_path, "w") as f:
+                f.write(f"{caption}\n")
+                f.write("=" * len(caption))
+                f.write("\n")
+                f.write(f".. literalinclude:: {rel_path}\n")
+                f.write("   :language: yaml\n")
+                f.write(f"   :caption: {caption}\n")
+                f.write("   :linenos:\n")
+            result.append(os.path.join("_generated_yaml_pages", caption))
+        toctree_lines = [".. toctree::", "   :maxdepth: 1", ""]
+        toctree_lines += [f"   {path}" for path in result]
+        self.state_machine.insert_input(toctree_lines, "<auto_yaml_toctree>")
+        return []
 
 
 def setup(app: Sphinx):

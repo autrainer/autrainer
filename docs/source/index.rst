@@ -47,3 +47,8 @@ Overview
    :maxdepth: 1
 
    configuration/datasets
+   configuration/preprocessing
+   configuration/models
+   configuration/augmentations
+   configuration/optimizers
+   configuration/schedulers
