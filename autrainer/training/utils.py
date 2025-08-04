@@ -151,6 +151,61 @@ def load_pretrained_optim_state(
     optim.load_state_dict(state_dict)
 
 
+def get_optimizer_params(
+    model: torch.nn.Module,
+    weight_decay: Optional[float] = None,
+) -> List[Dict[str, torch.nn.Parameter]]:
+    """Get the model parameters for the optimizer separated by weight decay if
+    specified.
+
+    Separates the parameters of the model into two groups:
+
+    * Parameters that should have weight decay applied (e.g., weights of
+      convolutional layers, linear layers).
+    * Parameters that should not have weight decay applied (e.g., biases,
+      normalization layers).
+
+    Args:
+        model: The model whose parameters are to be separated.
+        weight_decay: Weight decay to apply to the parameters. If None, no
+            weight decay is applied. Defaults to None.
+
+    Returns:
+        Parameters grouped by weight decay.
+    """
+    try:
+        rms_norm = (torch.nn.RMSNorm,)  # RMSNorm requires torch >= 2.4
+    except AttributeError:
+        rms_norm = ()
+
+    norm_classes = (
+        torch.nn.modules.batchnorm._NormBase,
+        torch.nn.modules.instancenorm._InstanceNorm,
+        torch.nn.LayerNorm,
+        torch.nn.GroupNorm,
+        torch.nn.LocalResponseNorm,
+        torch.nn.CrossMapLRN2d,
+    ) + rms_norm
+
+    if weight_decay is None:
+        return [{"params": model.parameters()}]
+
+    decay, no_decay = [], []
+    for _, module in model.named_modules():
+        for name, param in module.named_parameters(recurse=False):
+            if not param.requires_grad:
+                continue
+            if isinstance(module, norm_classes) or name == "bias":
+                no_decay.append(param)
+            else:
+                decay.append(param)
+
+    return [
+        {"params": decay, "weight_decay": weight_decay},
+        {"params": no_decay, "weight_decay": 0.0},
+    ]
+
+
 def load_checkpoint(checkpoint: str) -> Dict[str, torch.Tensor]:
     """Load a checkpoint state dict from a file.
 
