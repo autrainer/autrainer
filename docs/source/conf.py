@@ -1,8 +1,11 @@
 import datetime
+import glob
 import os
 import sys
 from typing import Any
 
+from docutils import nodes
+from docutils.parsers.rst import Directive
 from sphinx.application import Sphinx
 import toml
 
@@ -86,5 +89,60 @@ def set_custom_title(
         context["title"] = f"{project} — {description}"
 
 
+class AddYamlDirective(Directive):
+    required_arguments = 1  # subfolder path
+    has_content = False
+
+    def run(self):
+        from sphinx.util import logging
+
+        logger = logging.getLogger(__name__)
+
+        env = self.state.document.settings.env
+        doc_dir = os.path.dirname(env.doc2path(env.docname))
+        target_dir = os.path.abspath(os.path.join(doc_dir, self.arguments[0]))
+        logger.info(f"[add_yaml] Searching for YAML files in {target_dir} ...")
+
+        if not os.path.isdir(target_dir):
+            logger.warning(f"[add_yaml] Path does not exist: {target_dir}")
+            return []
+
+        # Collect YAML files recursively
+        yaml_files = sorted(glob.glob(os.path.join(target_dir, "*.yaml")))
+
+        output_dir = os.path.join(doc_dir, "_generated_yaml_pages")
+        os.makedirs(output_dir, exist_ok=True)
+
+        result = []
+        for file_path in yaml_files:
+            # need relative path for literalinclude
+            # this is the parent dir of env.srcdir
+            rel_path = os.path.join(
+                os.path.pardir, os.path.relpath(file_path, start=env.srcdir)
+            )
+
+            literalinclude = nodes.literal_block("", "")
+            literalinclude["classes"].append("code")
+            literalinclude["source"] = file_path
+            literalinclude["language"] = "yaml"
+            literalinclude["linenos"] = False
+
+            # Create directive string to re-parse
+            caption = os.path.splitext(os.path.basename(file_path))[0]
+            include_text = (
+                f".. literalinclude:: {rel_path}\n"
+                f"   :language: yaml\n"
+                f"   :caption: {caption}\n"
+                f"   :linenos:\n"
+            )
+
+            # Parse as RST
+            include_lines = include_text.splitlines()
+            self.state_machine.insert_input(include_lines, self.arguments[0])
+
+        return result
+
+
 def setup(app: Sphinx):
     app.connect("html-page-context", set_custom_title)
+    app.add_directive("listyaml", AddYamlDirective)

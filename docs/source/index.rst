@@ -41,3 +41,9 @@ Overview
    development/reproducibility_guide
    development/contributing
    development/citing
+
+.. toctree::
+   :caption: Configurations
+   :maxdepth: 1
+
+   configuration/datasets
