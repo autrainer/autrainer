@@ -32,10 +32,15 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "sphinxarg.ext",
+    "sphinx.ext.intersphinx",
     "sphinxcontrib.jquery",
     "sphinx_hydra_configurations",
     "sphinx_lexers",
 ]
+
+intersphinx_mapping = {
+    "opensmile": ("https://audeering.github.io/opensmile-python/", None),
+}
 
 master_doc = "index"
 html_theme = "pydata_sphinx_theme"

@@ -690,6 +690,7 @@ class OpenSMILE(AbstractTransform):
         feature_set: str,
         sample_rate: int,
         functionals: bool = False,
+        lld_deltas: bool = False,
         order: int = -80,
     ) -> None:
         """Extract features from an audio signal using openSMILE.
@@ -698,10 +699,23 @@ class OpenSMILE(AbstractTransform):
         To install the required extras, run:
         'pip install autrainer[opensmile]'.
 
+        .. warning::
+            Setting `lld_deltas` to `True`
+            will extract and concatenate
+            :py:attr:`opensmile.FeatureLevel.LowLevelDescriptors_Deltas` to the
+            :py:attr:`opensmile.FeatureLevel.LowLevelDescriptors` features.
+            However, :py:mod:`opensmile` returns *longer* sequences
+            for the delta features. To match to the original length,
+            we drop the first and last frame of the delta features.
+            This may result in misalignment, as we are not sure
+            how padding is handled in :py:mod:`opensmile`.
+
         Args:
             feature_set: The feature set to use.
             sample_rate: The sample rate of the audio signal.
             functionals: Whether to use functionals. Defaults to False.
+            lld_deltas: Whether to additionally compute deltas. Only relevant
+                for LLDs. Defaults to False.
             order: The order of the transform in the pipeline. Defaults to -80.
 
         Raises:
@@ -716,6 +730,8 @@ class OpenSMILE(AbstractTransform):
         self.feature_set = feature_set
         self.sample_rate = sample_rate
         self.functionals = functionals
+        self.lld_deltas = lld_deltas
+        self.smile_de = None
         if self.functionals:
             self.smile = opensmile.Smile(self.feature_set)
         else:
@@ -723,8 +739,22 @@ class OpenSMILE(AbstractTransform):
                 self.feature_set,
                 feature_level=opensmile.FeatureLevel.LowLevelDescriptors,
             )
+            if self.lld_deltas and self.feature_set != "eGeMAPSv02":
+                self.smile_de = opensmile.Smile(
+                    self.feature_set,
+                    feature_level=opensmile.FeatureLevel.LowLevelDescriptors_Deltas,
+                )
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
         it = self.smile.process_signal(item.features, self.sample_rate)
-        item.features = torch.from_numpy(self.smile.to_numpy(it)).squeeze()
+        feats = torch.from_numpy(self.smile.to_numpy(it)).squeeze()
+        if self.smile_de is not None:
+            data_de = self.smile_de.process_signal(
+                item.features, self.sample_rate
+            )
+            data_de = torch.from_numpy(self.smile.to_numpy(data_de)).squeeze()[
+                :, 1:-1
+            ]
+            feats = torch.cat((feats, data_de), axis=-2)
+        item.features = feats
         return item

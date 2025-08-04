@@ -378,22 +378,27 @@ class TestFeatureExtractor:
 
 class TestOpenSMILE:
     @pytest.mark.parametrize(
-        "feature_set, functionals, expected",
+        "feature_set, functionals, lld_deltas, expected",
         [
-            ("ComParE_2016", False, (65, 96)),
-            ("ComParE_2016", True, (6373,)),
-            ("eGeMAPSv02", False, (25, 96)),
-            ("eGeMAPSv02", True, (88,)),
+            ("ComParE_2016", False, False, (65, 96)),
+            ("ComParE_2016", False, True, (130, 96)),
+            ("ComParE_2016", True, False, (6373,)),
+            ("eGeMAPSv02", False, False, (25, 96)),
+            ("eGeMAPSv02", False, True, (25, 96)),
+            ("eGeMAPSv02", True, False, (88,)),
         ],
     )
     def test_opensmile(
         self,
         feature_set: str,
         functionals: bool,
+        lld_deltas: bool,
         expected: Tuple[int, int],
     ) -> None:
         x = DataItem(torch.randn(16000), 0, 0)
-        y = OpenSMILE(feature_set, 16000, functionals=functionals)(x)
+        y = OpenSMILE(
+            feature_set, 16000, functionals=functionals, lld_deltas=lld_deltas
+        )(x)
         assert torch.is_tensor(y.features), "Output should be a tensor"
         assert y.features.shape == torch.Size(
             expected
