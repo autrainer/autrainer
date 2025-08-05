@@ -1,5 +1,4 @@
-
-.. image:: _static/logo_banner.png
+.. image:: https://autrainer.github.io/autrainer/_images/logo_banner.png
     :alt: autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks
     :align: center
 
@@ -60,16 +59,19 @@ To install `autrainer` with all optional dependencies, use the following command
    pip install autrainer[all]
 
 
-To install `autrainer` from source, refer to the :ref:`contribution guide <contributing>`.
+To install `autrainer` from source, refer to the `contribution guide <https://autrainer.github.io/autrainer/development/contributing>`_.
 
 
 Next Steps
 ----------
 
-To get started using `autrainer`, the :ref:`quickstart guide <quickstart>` outlines the creation of a simple training configuration
-and :ref:`tutorials` provide examples for implementing custom modules including their configurations.
+To get started using `autrainer`, the `quickstart guide <https://autrainer.github.io/autrainer/usage/quickstart>`_
+outlines the creation of a simple training configuration and `tutorials <https://autrainer.github.io/autrainer/usage/tutorials>`_
+provide examples for implementing custom modules including their configurations.
 
-For a complete list of available CLI commands, refer to the :ref:`CLI reference <cli_reference>` or the :ref:`CLI wrapper <cli_wrapper>`.
+For a complete list of available CLI commands, refer to the
+`CLI reference <https://autrainer.github.io/autrainer/usage/cli_reference>`_ or the
+`CLI wrapper <https://autrainer.github.io/autrainer/usage/cli_wrapper>`_.
 
 .. |pypi| image:: https://img.shields.io/pypi/v/autrainer?logo=pypi&logoColor=b4befe&color=b4befe
    :target: https://pypi.org/project/autrainer/
