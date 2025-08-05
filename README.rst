@@ -7,7 +7,7 @@
 autrainer
 =========
 
-|pypi| |python_versions| |hugging_face| |license|
+|pypi| |python_versions| |hugging_face| |license| |preprint|
 
 A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.
 
@@ -86,3 +86,7 @@ For a complete list of available CLI commands, refer to the :ref:`CLI reference 
 .. |license| image:: https://img.shields.io/badge/license-MIT-b4befe?logo=c
    :target: https://github.com/autrainer/autrainer/blob/main/LICENSE
    :alt: autrainer GitHub License
+
+.. |preprint| image:: https://img.shields.io/badge/arXiv-2412.11943-AD1C18?logoColor=b4befe&color=b4befe
+   :target: https://arxiv.org/abs/2412.11943
+   :alt: autrainer arXiv preprint
