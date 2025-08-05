@@ -359,6 +359,10 @@ class ModularTaskTrainer:
             )
         else:
             self.train_tracker = None
+        self.training_type = self.cfg.training_type
+        self.iterations = self.cfg.iterations
+        self.save_frequency = self.cfg.save_frequency
+        self.eval_frequency = self.cfg.eval_frequency
 
     def train(self) -> float:
         """Train the model.
@@ -382,13 +386,13 @@ class ModularTaskTrainer:
             position="cb_on_train_begin", trainer=self
         )
 
-        if self.cfg.training_type == "epoch":
+        if self.training_type == "epoch":
             self.train_epochs()
-        elif self.cfg.training_type == "step":
+        elif self.training_type == "step":
             self.train_steps()
         else:
             raise ValueError(
-                f"Training type {self.cfg.training_type} not supported"
+                f"Training type {self.training_type} not supported"
             )
 
         # ? Score best model on test set
@@ -427,7 +431,7 @@ class ModularTaskTrainer:
                 .drop("iteration")
                 .to_dict(),
                 "Best",
-                self.cfg.training_type,
+                self.training_type,
                 self.best_iteration,
             )
         )
@@ -435,7 +439,7 @@ class ModularTaskTrainer:
             format_results(
                 test_results,
                 "Test",
-                self.cfg.training_type,
+                self.training_type,
             )
         )
 
@@ -463,7 +467,7 @@ class ModularTaskTrainer:
             and self.DEVICE.type == "cuda"
         )
         self.train_timer.start()
-        for epoch in range(self.initial_iteration, self.cfg.iterations + 1):
+        for epoch in range(self.initial_iteration, self.iterations + 1):
             self.callback_manager.callback(
                 position="cb_on_iteration_begin", trainer=self, iteration=epoch
             )
@@ -508,7 +512,7 @@ class ModularTaskTrainer:
                     loss=reduced_loss,
                 )
                 train_loss.append(reduced_loss)
-            if epoch % self.cfg.eval_frequency == 0:
+            if epoch % self.eval_frequency == 0:
                 if self.scheduler and self.scheduler_frequency == "evaluation":
                     self.scheduler.step()
                 self.train_timer.stop()
@@ -537,7 +541,7 @@ class ModularTaskTrainer:
                     iteration=epoch,
                     metrics=self.metrics.loc[epoch].to_dict(),
                 )
-                if epoch < self.cfg.iterations:
+                if epoch < self.iterations:
                     train_loss = []
                     self.train_timer.start()
             self.callback_manager.callback(
@@ -549,7 +553,7 @@ class ModularTaskTrainer:
     def train_steps(self):
         """Train the model for a fixed number of steps."""
         pbar = tqdm(
-            total=self.cfg.eval_frequency,
+            total=self.eval_frequency,
             desc="Train",
             disable=self.disable_progress_bar,
         )
@@ -564,7 +568,7 @@ class ModularTaskTrainer:
             and self.DEVICE.type == "cuda"
         )
         self.train_timer.start()
-        while step < self.cfg.iterations:
+        while step < self.iterations:
             step += 1
             pbar.update(1)
             self.model.train()
@@ -584,7 +588,7 @@ class ModularTaskTrainer:
                 position="cb_on_step_begin",
                 trainer=self,
                 iteration=step,
-                batch_idx=(step - 1) % self.cfg.eval_frequency,
+                batch_idx=(step - 1) % self.eval_frequency,
             )
             loss, output = self.train_step_fn(
                 self.model,
@@ -605,11 +609,11 @@ class ModularTaskTrainer:
                 position="cb_on_step_end",
                 trainer=self,
                 iteration=step,
-                batch_idx=(step - 1) % self.cfg.eval_frequency,
+                batch_idx=(step - 1) % self.eval_frequency,
                 loss=reduced_loss,
             )
             train_loss.append(reduced_loss)
-            if step % self.cfg.eval_frequency == 0:
+            if step % self.eval_frequency == 0:
                 if self.scheduler and self.scheduler_frequency == "evaluation":
                     self.scheduler.step()
                 self.train_timer.stop()
@@ -640,7 +644,7 @@ class ModularTaskTrainer:
                     iteration=step,
                     metrics=self.metrics.loc[step].to_dict(),
                 )
-                if step < self.cfg.iterations:
+                if step < self.iterations:
                     train_loss = []
                     pbar.reset()
                     self.train_timer.start()
@@ -736,7 +740,7 @@ class ModularTaskTrainer:
                 format_results(
                     self.metrics.loc[iteration].to_dict(),
                     "Dev",
-                    self.cfg.training_type,
+                    self.training_type,
                     iteration,
                 )
             )
@@ -790,8 +794,8 @@ class ModularTaskTrainer:
             )
 
         if (
-            iteration % self.cfg.save_frequency == 0
-            or iteration == self.cfg.iterations
+            iteration % self.save_frequency == 0
+            or iteration == self.iterations
         ):
             self.bookkeeping.save_state(
                 self.model, "model.pt", iteration_folder
@@ -874,3 +878,253 @@ class ModularTaskTrainer:
             Copy of the configuration.
         """
         return deepcopy(self._cfg)
+
+
+class Trainer(ModularTaskTrainer):
+    def __init__(
+        self,
+        dataset: AbstractDataset,
+        model: AbstractModel,
+        output_directory: str,
+        criterion: torch.nn.modules.loss._Loss,
+        optimizer: torch.optim.Optimizer,
+        batch_size: int,
+        iterations: int,
+        scheduler: Optional[torch.optim.lr_scheduler.LRScheduler] = None,
+        inference_batch_size: int = None,
+        loader_kwargs: Optional[Dict[str, Dict[str, Any]]] = {
+            "train": {},
+            "dev": {},
+            "test": {},
+        },
+        progress_bar: Optional[bool] = False,
+        training_seed: Optional[int] = None,
+        experiment_id: str = None,
+        run_name: str = None,
+        device: str = "cpu",
+        loggers: List[AbstractLogger] = [],
+        callbacks: List[str] = [],
+        save_train_outputs: bool = True,
+        save_dev_outputs: bool = True,
+        save_test_outputs: bool = True,
+        training_type: str = "epoch",
+        save_frequency: int = 1,
+        eval_frequency: int = 1,
+    ):
+        self._thread_manager = ThreadManager()
+        self.data = dataset
+        self.model = model
+        self.optimizer = optimizer
+        self.scheduler = scheduler
+        self.training_type = training_type
+        self.iterations = iterations
+        self.save_frequency = (
+            save_frequency if save_frequency is not None else iterations
+        )
+        self.eval_frequency = (
+            eval_frequency if eval_frequency is not None else iterations
+        )
+
+        self.DEVICE = set_device(device)
+        save_hardware_info(output_directory, device=self.DEVICE)
+        self.output_directory = Path(output_directory)
+        self.initial_iteration = 1
+
+        # ? Customly set reduction to "none"
+        # ? Needed to store sample-level loss
+        self.criterion = criterion
+        self.reduction = "none"
+        if hasattr(self.criterion, "setup"):
+            self.criterion.setup(self.data)
+        self.criterion.to(self.DEVICE)
+
+        # ? If no training seed provided, use data seed
+        if training_seed is None:
+            training_seed = self.data.seed
+        set_seed(training_seed)
+
+        # ? Save current requirements.txt
+        self._thread_manager.spawn(save_requirements, self.output_directory)
+
+        # ? Create Bookkeeping
+        self.bookkeeping = Bookkeeping(
+            output_directory=output_directory,
+            file_handler_path=os.path.join(output_directory, "training.log"),
+        )
+
+        # ? Misc Training Parameters
+        self.disable_progress_bar = not progress_bar
+
+        self._thread_manager.spawn(
+            self.bookkeeping.save_model_summary,
+            deepcopy(self.model),
+            self.data.train_dataset[0].features.unsqueeze(0).shape,
+            self.DEVICE,
+            "model_summary.txt",
+        )
+        self._loader_kwargs = loader_kwargs
+        self.train_loader = self.data.create_train_loader(
+            batch_size=batch_size,
+            **loader_kwargs["train"],
+        )
+        self.dev_loader = self.data.create_dev_loader(
+            batch_size=inference_batch_size or batch_size,
+            **loader_kwargs["dev"],
+        )
+        self.test_loader = self.data.create_test_loader(
+            batch_size=inference_batch_size or batch_size,
+            **loader_kwargs["test"],
+        )
+        metrics = [m.name for m in self.data.metrics] + [
+            "train_loss",
+            "dev_loss",
+        ]
+        self.metrics = pd.DataFrame(columns=metrics)
+        self.max_dev_metric = self.data.tracking_metric.starting_metric
+        self.best_iteration = 1
+
+        # ? Save initial (and best) Model, Optimizer and Scheduler states
+        save_tasks = [
+            (self.model, "model.pt", "_initial"),
+            (self.optimizer, "optimizer.pt", "_initial"),
+            (self.scheduler, "scheduler.pt", "_initial"),
+            (self.model, "model.pt", "_best"),
+            (self.optimizer, "optimizer.pt", "_best"),
+            (self.scheduler, "scheduler.pt", "_best"),
+        ]
+        for task in save_tasks:
+            self._thread_manager.spawn(self.bookkeeping.save_state, *task)
+
+        # TODO: figure out how to save hydra pipeline
+        # # ? Load and Save Preprocessing Pipeline if specified
+        # _preprocess_pipe = SmartCompose([])
+        # _file_handler = self.data.file_handler
+        # _features_subdir = self.data.features_subdir
+        # if (
+        #     not isinstance(self.data.file_handler, AudioFileHandler)
+        #     and _features_subdir != "default"
+        # ):
+        #     hydra.initialize(config_path="conf")
+        #     _preprocess = OmegaConf.to_container(
+        #         hydra.compose(f"preprocessing/{_features_subdir}")
+        #     )["preprocessing"]
+        #     _file_handler = autrainer.instantiate_shorthand(
+        #         config=_preprocess["file_handler"],
+        #         instance_of=AbstractFileHandler,
+        #     )
+        #     _preprocess_pipe = SmartCompose(
+        #         [
+        #             autrainer.instantiate_shorthand(t)
+        #             for t in _preprocess["pipeline"]
+        #         ]
+        #     )
+
+        save_tasks = [
+            (self.data.target_transform, "target_transform.yaml"),
+            (self.model, "model.yaml"),
+            (self.data.test_transform, "inference_transform.yaml"),
+            (self.data.file_handler, "file_handler.yaml"),
+            # (_preprocess_pipe, "preprocess_pipeline.yaml"),
+            # (_file_handler, "preprocess_file_handler.yaml"),
+        ]
+        for task in save_tasks:
+            self._thread_manager.spawn(self.bookkeeping.save_audobject, *task)
+
+        # ? Create Timers
+        self.train_timer = Timer(output_directory, "train")
+        self.dev_timer = Timer(output_directory, "dev")
+        self.test_timer = Timer(output_directory, "test")
+
+        # # ? Continue run
+        # if self.cfg.get("continue_training", False):
+        #     self.continue_training = ContinueTraining(
+        #         run_name=run_name or self.output_directory.name,
+        #         remove_continued_runs=self.cfg.get(
+        #             "remove_continued_runs", False
+        #         ),
+        #     )
+        # else:
+        self.continue_training = None
+
+        # ? Create Loggers
+        self.loggers: List[AbstractLogger] = []
+        for logger in loggers:
+            self.loggers.append(
+                autrainer.instantiate_shorthand(
+                    config=logger,
+                    instance_of=AbstractLogger,
+                    exp_name=experiment_id
+                    or self.output_directory.parent.parent.name,
+                    run_name=run_name or self.output_directory.name,
+                    metrics=self.data.metrics,
+                    tracking_metric=self.data.tracking_metric,
+                )
+            )
+
+        # ? Create Callbacks and Callback Manager
+        self.callbacks = []
+        for callback in callbacks:
+            self.callbacks.append(
+                autrainer.instantiate_shorthand(
+                    config=callback,
+                    instance_of=object,
+                )
+            )
+
+        self.callback_manager = CallbackManager()
+        self.callback_manager.register_multiple(
+            [
+                self.data,
+                self.model,
+                self.optimizer,
+                self.scheduler,
+                self.criterion,
+                *self.loggers,
+                *self.callbacks,
+                self.continue_training,  # has to be last as it might overwrite other callbacks
+            ]
+        )
+
+        # # ? Create Plot Metrics
+        self.plot_metrics = PlotMetrics(
+            self.output_directory,
+            training_type="epoch",
+            latex=False,
+            rcParams={"legend.fontsize": 9},
+            pickle=False,
+            context="notebook",
+            figsize=[10, 5],
+            add_titles=True,
+            add_xlabels=True,
+            add_ylabels=True,
+            replace_none=False,
+            palette="colorblind",
+            metric_fns=self.data.metrics,
+            filetypes=["png"],
+        )
+
+        # ? Create Outputs Tracker
+        self.dev_tracker, self.test_tracker = init_trackers(
+            exports=[save_dev_outputs, save_test_outputs],
+            prefixes=["dev", "test"],
+            data=self.data,
+            bookkeeping=self.bookkeeping,
+        )
+        if save_train_outputs:
+            self.train_tracker = OutputsTracker(
+                export=True,
+                prefix="train",
+                data=self.data,
+                bookkeeping=self.bookkeeping,
+            )
+        else:
+            self.train_tracker = None
+
+    @property
+    def cfg(self) -> DictConfig:
+        """Return the configuration of the trainer.
+
+        Returns:
+            Copy of the configuration.
+        """
+        raise NotImplementedError
