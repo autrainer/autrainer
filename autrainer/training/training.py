@@ -35,6 +35,7 @@ from .outputs_tracker import OutputsTracker, init_trackers
 from .utils import (
     disaggregated_evaluation,
     format_results,
+    get_optimizer_params,
     load_pretrained_model_state,
     load_pretrained_optim_state,
 )
@@ -167,10 +168,15 @@ class ModularTaskTrainer:
         )
 
         # ? Load Optimizer
+        optimizer_cfg = self.cfg.optimizer
+        _wd = optimizer_cfg.pop("weight_decay", None)
+        _wd_bias = optimizer_cfg.pop("apply_weight_decay_to_bias", False)
+        _wd_norm = optimizer_cfg.pop("apply_weight_decay_to_norm", False)
+
         self.optimizer = autrainer.instantiate(
-            config=self.cfg.optimizer,
+            config=optimizer_cfg,
             instance_of=torch.optim.Optimizer,
-            params=self.model.parameters(),
+            params=get_optimizer_params(self.model, _wd, _wd_bias, _wd_norm),
             lr=self.cfg.learning_rate,
         )
         if optimizer_checkpoint:

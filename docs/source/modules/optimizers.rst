@@ -9,6 +9,12 @@ Any :ref:`torch optimizer <torch_optimizers>` or :ref:`custom optimizer <custom_
 
    To create custom optimizers, refer to the :ref:`custom optimizers tutorial <tut_optimizers>`.
 
+.. note::
+
+   Optimizer :attr:`weight_decay` is not applied to biases and normalization layers by default.
+   To change this behaviour, set :attr:`apply_weight_decay_to_bias` and :attr:`apply_weight_decay_to_norm`
+   to ``true`` in the optimizer configuration.
+
 
 .. _torch_optimizers:
 
