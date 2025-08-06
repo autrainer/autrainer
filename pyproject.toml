@@ -8,7 +8,7 @@ authors = [
     "Manuel Milling <manuel.milling@tum.de>",
     "Björn W. Schuller <schuller@tum.de>",
 ]
-readme = "README.md"
+readme = "README.rst"
 license = "MIT"
 keywords = [
     "computer audition",
