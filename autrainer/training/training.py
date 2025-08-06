@@ -169,17 +169,14 @@ class ModularTaskTrainer:
 
         # ? Load Optimizer
         optimizer_cfg = self.cfg.optimizer
-        optimizer_weight_decay = optimizer_cfg.pop("weight_decay", None)
-        apply_wd_to_all = optimizer_cfg.pop("apply_weight_decay_to_all", False)
+        _wd = optimizer_cfg.pop("weight_decay", None)
+        _wd_bias = optimizer_cfg.pop("apply_weight_decay_to_bias", False)
+        _wd_norm = optimizer_cfg.pop("apply_weight_decay_to_norm", False)
 
         self.optimizer = autrainer.instantiate(
             config=optimizer_cfg,
             instance_of=torch.optim.Optimizer,
-            params=(
-                get_optimizer_params(self.model, optimizer_weight_decay)
-                if not apply_wd_to_all
-                else self.model.parameters()
-            ),
+            params=get_optimizer_params(self.model, _wd, _wd_bias, _wd_norm),
             lr=self.cfg.learning_rate,
         )
         if optimizer_checkpoint:

@@ -154,6 +154,8 @@ def load_pretrained_optim_state(
 def get_optimizer_params(
     model: torch.nn.Module,
     weight_decay: Optional[float] = None,
+    apply_to_bias: bool = True,
+    apply_to_norm: bool = True,
 ) -> List[Dict[str, torch.nn.Parameter]]:
     """Get the model parameters for the optimizer separated by weight decay if
     specified.
@@ -169,6 +171,10 @@ def get_optimizer_params(
         model: The model whose parameters are to be separated.
         weight_decay: Weight decay to apply to the parameters. If None, no
             weight decay is applied. Defaults to None.
+        apply_to_bias: Whether to apply weight decay to biases.
+            Defaults to True.
+        apply_to_norm: Whether to apply weight decay to normalization layers.
+            Defaults to True.
 
     Returns:
         Parameters grouped by weight decay.
@@ -195,7 +201,9 @@ def get_optimizer_params(
         for name, param in module.named_parameters(recurse=False):
             if not param.requires_grad:
                 continue
-            if isinstance(module, norm_classes) or name == "bias":
+            if isinstance(module, norm_classes) and not apply_to_norm:
+                no_decay.append(param)
+            elif name == "bias" and not apply_to_bias:
                 no_decay.append(param)
             else:
                 decay.append(param)
