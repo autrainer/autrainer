@@ -8,6 +8,7 @@
 [![autrainer Python Versions](https://img.shields.io/pypi/pyversions/autrainer?logo=python&logoColor=b4befe&color=b4befe)](https://pypi.org/project/autrainer/)
 [![autrainer Hugging Face](https://img.shields.io/badge/Hugging_Face-autrainer-b4befe?logo=huggingface&logoColor=b4befe)](https://huggingface.co/autrainer)
 [![autrainer GitHub License](https://img.shields.io/badge/license-MIT-b4befe?logo=c)](https://github.com/autrainer/autrainer/blob/main/LICENSE)
+[![autrainer arxiv preprint](https://img.shields.io/badge/arXiv-2412.11943-AD1C18?logoColor=b4befe&color=b4befe)](https://arxiv.org/abs/2412.11943)
 
 A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.
 
