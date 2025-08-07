@@ -10,11 +10,6 @@ from .abstract_model import AbstractModel
 from .timm_wrapper import TimmModel
 
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=FutureWarning)
-    from speechbrain.lobes.features import Leaf as LeafSb
-
-
 class LEAFNet(AbstractModel):
     def __init__(
         self,
@@ -98,6 +93,10 @@ class LEAFNet(AbstractModel):
             )
 
         elif mode == "speech_brain":
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=FutureWarning)
+                from speechbrain.lobes.features import Leaf as LeafSb
+
             self.leaf = LeafSb(
                 out_channels=leaf_filters,
                 in_channels=1,
