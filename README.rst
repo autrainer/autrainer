@@ -20,9 +20,6 @@ for computer audition tasks using YAML configuration files and the command line.
 Installation
 ------------
 
-To install `autrainer`, first ensure that PyTorch (along with torchvision and torchaudio) version 2.0 or higher is installed.
-For installation instructions, refer to the `PyTorch website <https://pytorch.org/get-started/locally/>`_.
-
 It is recommended to install `autrainer` within a virtual environment.
 To create a new virtual environment, refer to the `Python venv documentation <https://docs.python.org/3/library/venv.html>`_.
 
@@ -31,6 +28,12 @@ Next, install `autrainer` using `pip`.
 .. code-block:: pip
 
    pip install autrainer
+
+.. note::
+
+   If you are using Windows, make sure that PyTorch (along with :attr:`torchvision` and :attr:`torchaudio`) version 2.0 or higher is installed beforehand.
+   For installation instructions, refer to the `PyTorch documentation <https://pytorch.org/get-started/locally/>`_.
+
 
 The following optional dependencies can be installed to enable additional features:
 

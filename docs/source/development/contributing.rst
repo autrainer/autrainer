@@ -9,9 +9,6 @@ If you would like to contribute to `autrainer`, please open an issue or a pull r
 Installation
 ------------
 
-To install `autrainer`, first ensure that PyTorch (along with torchvision and torchaudio) version 2.0 or higher is installed.
-For installation instructions, refer to the `PyTorch website <https://pytorch.org/get-started/locally/>`_.
-
 It is recommended to install `autrainer` within a virtual environment.
 To create a new virtual environment, refer to the `Python venv documentation <https://docs.python.org/3/library/venv.html>`_.
 
@@ -27,8 +24,11 @@ and then install the development dependencies with `uv <https://docs.astral.sh/u
 
 .. note::
 
-   The :attr:`--inexact` flag allows for the manual installation of any PyTorch version beforehand.
-   This is necessary as `autrainer` does not pin any PyTorch version for Windows in combination with CUDA.
+   If you are using Windows, make sure that PyTorch (along with :attr:`torchvision` and :attr:`torchaudio`) version 2.0 or higher is installed beforehand.
+   For installation instructions, refer to the `PyTorch documentation <https://pytorch.org/get-started/locally/>`_.
+
+   The :attr:`--inexact` flag allows for manual installation of a specific PyTorch version prior to syncing dependencies.
+   This is necessary because `autrainer` does not pin a PyTorch version for Windows to not conflict with different CUDA versions.
 
 
 Conventions
