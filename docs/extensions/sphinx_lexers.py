@@ -78,7 +78,7 @@ class PipLexer(RegexLexer):
 EXTENDED_COMMANDS = [
     "git",
     "cd",
-    "poetry",
+    "uv",
     "pre-commit",
     "pytest",
     "mkdir",

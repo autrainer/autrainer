@@ -15,13 +15,20 @@ For installation instructions, refer to the `PyTorch website <https://pytorch.or
 It is recommended to install `autrainer` within a virtual environment.
 To create a new virtual environment, refer to the `Python venv documentation <https://docs.python.org/3/library/venv.html>`_.
 
-To set up `autrainer` for development, start by cloning the repository and then install the development dependencies with `poetry`:
+To set up `autrainer` for development, start by cloning the repository
+and then install the development dependencies with `uv <https://docs.astral.sh/uv/>`_:
 
 .. code-block:: extended
 
    git clone git@github.com:autrainer/autrainer.git
    cd autrainer
-   poetry install --all-extras
+   uv sync --all-extras --all-groups --inexact
+
+
+.. note::
+
+   The :attr:`--inexact` flag allows for the manual installation of any PyTorch version beforehand.
+   This is necessary as `autrainer` does not pin any PyTorch version for Windows in combination with CUDA.
 
 
 Conventions
@@ -45,4 +52,4 @@ To run the tests, use the following command:
 
 .. code-block:: extended
 
-   pytest tests
+   pytest

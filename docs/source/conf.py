@@ -8,7 +8,7 @@ import toml
 
 
 def build_authors(authors):
-    return ", ".join([a.split(" <")[0] for a in authors])
+    return ", ".join([a["name"] for a in authors])
 
 
 pyroject = toml.load("../../pyproject.toml")
@@ -16,11 +16,11 @@ pyroject = toml.load("../../pyproject.toml")
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.append(os.path.abspath("../extensions"))
 
-project = pyroject["tool"]["poetry"]["name"]
-description = pyroject["tool"]["poetry"]["description"]
-author = build_authors(pyroject["tool"]["poetry"]["authors"])
+project = pyroject["project"]["name"]
+description = pyroject["project"]["description"]
+author = build_authors(pyroject["project"]["authors"])
 copyright = f"{datetime.datetime.now().year} (MIT) {author}"
-release = pyroject["tool"]["poetry"]["version"]
+release = pyroject["project"]["version"]
 
 
 extensions = [
