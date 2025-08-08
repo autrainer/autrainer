@@ -34,10 +34,7 @@ class AugmentationPipeline:
             self.pipeline.append(aug)
 
         self.pipeline: List[AbstractAugmentation] = [
-            autrainer.instantiate_shorthand(
-                aug,
-                instance_of=AbstractAugmentation,
-            )
+            autrainer.instantiate_shorthand(aug, instance_of=AbstractAugmentation)
             for aug in self.pipeline
         ]
 

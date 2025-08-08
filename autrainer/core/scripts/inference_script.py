@@ -31,10 +31,7 @@ class InferenceArgs:
 
 class InferenceScript(AbstractScript):
     def __init__(self) -> None:
-        e = (
-            "Example: autrainer inference hf:autrainer/example "
-            "input/ output/ -d cuda:0"
-        )
+        e = "Example: autrainer inference hf:autrainer/example input/ output/ -d cuda:0"
         super().__init__(
             "inference",
             "Perform inference on a trained model.",
@@ -89,9 +86,7 @@ class InferenceScript(AbstractScript):
             metavar="D",
             required=False,
             default="cpu",
-            help=(
-                "CUDA-enabled device to use for processing. Defaults to 'cpu'."
-            ),
+            help=("CUDA-enabled device to use for processing. Defaults to 'cpu'."),
         )
         self.parser.add_argument(
             "-e",
@@ -101,8 +96,7 @@ class InferenceScript(AbstractScript):
             required=False,
             default="wav",
             help=(
-                "Type of file to look for in the input directory. "
-                "Defaults to 'wav'."
+                "Type of file to look for in the input directory. Defaults to 'wav'."
             ),
         )
         self.parser.add_argument(
@@ -255,15 +249,8 @@ class InferenceScript(AbstractScript):
                 code=1,
             )
 
-        pattern = (
-            f"**/*.{args.extension}"
-            if args.recursive
-            else f"*.{args.extension}"
-        )
-        if not glob.glob(
-            os.path.join(args.input, pattern),
-            recursive=True,
-        ):
+        pattern = f"**/*.{args.extension}" if args.recursive else f"*.{args.extension}"
+        if not glob.glob(os.path.join(args.input, pattern), recursive=True):
             raise CommandLineError(
                 self.parser,
                 f"No '{args.extension}' files found in '{args.input}'.",
@@ -322,10 +309,7 @@ class InferenceScript(AbstractScript):
 
         raise CommandLineError(
             self.parser,
-            (
-                f"Preprocessing configuration '{args.preprocess_cfg}' "
-                "does not exist."
-            ),
+            (f"Preprocessing configuration '{args.preprocess_cfg}' does not exist."),
             code=1,
         )
 

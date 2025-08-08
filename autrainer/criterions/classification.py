@@ -132,9 +132,7 @@ class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
 
         frequency = (
             pd.DataFrame(
-                data.df_train[data.target_column]
-                .apply(encode, axis=1)
-                .to_list(),
+                data.df_train[data.target_column].apply(encode, axis=1).to_list(),
                 columns=data.target_transform.labels,
             )
             .sum(axis=0)

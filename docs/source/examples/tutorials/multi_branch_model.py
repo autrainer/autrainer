@@ -13,14 +13,8 @@ class ToyMultiBranchModel(AbstractModel):
         self.linear2 = torch.nn.Linear(self.input_dim, self.hidden_dim)
         self.out = torch.nn.Linear(self.hidden_dim * 2, self.output_dim)
 
-    def embeddings(
-        self, features: torch.Tensor, meta: torch.Tensor
-    ) -> torch.Tensor:
-        return torch.concat(
-            [self.linear1(features), self.linear2(meta)], axis=1
-        )
+    def embeddings(self, features: torch.Tensor, meta: torch.Tensor) -> torch.Tensor:
+        return torch.concat([self.linear1(features), self.linear2(meta)], axis=1)
 
-    def forward(
-        self, features: torch.Tensor, meta: torch.Tensor
-    ) -> torch.Tensor:
+    def forward(self, features: torch.Tensor, meta: torch.Tensor) -> torch.Tensor:
         return self.out(self.embeddings(features=features, meta=meta))

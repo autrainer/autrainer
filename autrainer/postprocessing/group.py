@@ -122,18 +122,16 @@ class GroupGrid:
             return [os.path.basename(run_path)]
         return load_yaml(os.path.join(run_path, "runs.yaml"))
 
-    def _copy_run(
-        self, experiment: str, run_path: str, copy_state: bool
-    ) -> None:
+    def _copy_run(self, experiment: str, run_path: str, copy_state: bool) -> None:
         dst = os.path.join(
             self.results_dir,
             experiment,
             "training",
             os.path.basename(run_path),
         )
-        if os.path.exists(
-            os.path.join(dst, "metrics.csv")
-        ) or not os.path.exists(run_path):
+        if os.path.exists(os.path.join(dst, "metrics.csv")) or not os.path.exists(
+            run_path
+        ):
             return
         ignore = None if copy_state else shutil.ignore_patterns("*.pt")
         shutil.copytree(

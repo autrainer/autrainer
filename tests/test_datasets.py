@@ -94,9 +94,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
     ) -> None:
         if output_files is None:
             output_files = ["train", "dev", "test"]
-        dfs = [
-            pd.read_csv(os.path.join(path, f"{f}.csv")) for f in output_files
-        ]
+        dfs = [pd.read_csv(os.path.join(path, f"{f}.csv")) for f in output_files]
         for df in dfs:
             for filename in df[index_column]:
                 np.save(
@@ -533,16 +531,13 @@ class TestMSPPodcast(BaseIndividualTempDir):
         kwargs = TestBaseDatasets._mock_dataset_kwargs()
         kwargs["metrics"] = [metric]
         kwargs["tracking_metric"] = metric
-        kwargs["target_column"] = (
-            target if isinstance(target, list) else [target]
-        )
+        kwargs["target_column"] = target if isinstance(target, list) else [target]
         data = MSPPodcast(**kwargs)
         assert len(data.train_dataset) == 4, "Should be 4."
         assert len(data.dev_dataset) == 3, "Should be 3."
         assert len(data.test_dataset) == 3, "Should be 3."
         assert data.test_dataset[0].target.shape == shape, (
-            f"Target shape should be {shape} "
-            f"but is {data.test_dataset[0].target.shape}"
+            f"Target shape should be {shape} but is {data.test_dataset[0].target.shape}"
         )
 
 

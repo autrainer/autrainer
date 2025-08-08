@@ -78,9 +78,7 @@ class AugmentationWrapper(AbstractAugmentation):
 
         self.pass_index = pass_index
         self.probability_attr = probability_attr
-        if self.probability_attr and hasattr(
-            self.augmentation, self.probability_attr
-        ):
+        if self.probability_attr and hasattr(self.augmentation, self.probability_attr):
             setattr(self.augmentation, self.probability_attr, 1.0)
 
     def apply(self, item: AbstractDataItem) -> AbstractDataItem:

@@ -80,9 +80,7 @@ class MSPPodcast(AbstractDataset):
                 ["A", "H", "N", "S"] 4-class problem found in literature.
                 Defaults to None.
         """
-        task = (
-            "classification" if target_column == "EmoClass" else "regression"
-        )
+        task = "classification" if target_column == "EmoClass" else "regression"
         self.categories = categories
         super().__init__(
             task=task,
@@ -137,30 +135,24 @@ class MSPPodcast(AbstractDataset):
         Returns:
             Dataframes for training, development, and testing.
         """
-        df = pd.read_csv(
-            os.path.join(self.path, "Labels", "labels_consensus.csv")
-        )
+        df = pd.read_csv(os.path.join(self.path, "Labels", "labels_consensus.csv"))
         if self.categories is not None:
             df = df.loc[df["EmoClass"].isin(self.categories)]
         return df.reset_index(drop=True)
 
     @cached_property
     def df_train(self):
-        return self._df.loc[self._df["Split_Set"] == "Train"].reset_index(
-            drop=True
-        )
+        return self._df.loc[self._df["Split_Set"] == "Train"].reset_index(drop=True)
 
     @cached_property
     def df_dev(self):
-        return self._df.loc[
-            self._df["Split_Set"] == "Development"
-        ].reset_index(drop=True)
+        return self._df.loc[self._df["Split_Set"] == "Development"].reset_index(
+            drop=True
+        )
 
     @cached_property
     def df_test(self):
-        return self._df.loc[self._df["Split_Set"] == "Test1"].reset_index(
-            drop=True
-        )
+        return self._df.loc[self._df["Split_Set"] == "Test1"].reset_index(drop=True)
 
     @cached_property
     def target_transform(self) -> AbstractTargetTransform:
@@ -172,9 +164,7 @@ class MSPPodcast(AbstractDataset):
             Target transform.
         """
         if self.task == "classification":
-            return LabelEncoder(
-                self.df_train[self.target_column].unique().tolist()
-            )
+            return LabelEncoder(self.df_train[self.target_column].unique().tolist())
         elif self.task == "regression":
             if isinstance(self.target_column, list):
                 return MultiTargetMinMaxScaler(
@@ -189,6 +179,4 @@ class MSPPodcast(AbstractDataset):
                     maximum=self.df_train[self.target_column].max(),
                 )
         else:
-            raise NotImplementedError(
-                f"{self.task} not supported for MSPPodcast"
-            )
+            raise NotImplementedError(f"{self.task} not supported for MSPPodcast")

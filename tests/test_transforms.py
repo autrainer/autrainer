@@ -126,9 +126,7 @@ class TestAnyToTensor:
             "Output shape should match input"
         )
         assert y.features.dtype == torch.float32, "Output should be float32"
-        assert y.features.device == torch.device("cpu"), (
-            "Output should be on CPU"
-        )
+        assert y.features.device == torch.device("cpu"), "Output should be on CPU"
 
     def test_pil(self) -> None:
         x = Image.fromarray(np.random.rand(32, 32, 3).astype(np.uint8))
@@ -139,9 +137,7 @@ class TestAnyToTensor:
             "Output shape should match input"
         )
         assert y.features.dtype == torch.uint8, "Output should be uint8"
-        assert y.features.device == torch.device("cpu"), (
-            "Output should be on CPU"
-        )
+        assert y.features.device == torch.device("cpu"), "Output should be on CPU"
 
     def test_wrong_input(self) -> None:
         with pytest.raises(TypeError):
@@ -157,9 +153,7 @@ class TestNumpyToTensor:
             "Output shape should match input"
         )
         assert y.features.dtype == torch.float32, "Output should be float32"
-        assert y.features.device == torch.device("cpu"), (
-            "Output should be on CPU"
-        )
+        assert y.features.device == torch.device("cpu"), "Output should be on CPU"
 
 
 class TestPannMel:
@@ -182,9 +176,7 @@ class TestPannMel:
             "Output shape should match input"
         )
         assert y.features.dtype == torch.float32, "Output should be float32"
-        assert y.features.device == torch.device("cpu"), (
-            "Output should be on CPU"
-        )
+        assert y.features.device == torch.device("cpu"), "Output should be on CPU"
 
 
 class TestResize:
@@ -289,9 +281,7 @@ class TestImageToFloat:
         x = DataItem(data, 0, 0)
         y = ImageToFloat()(x)
         assert torch.is_tensor(y.features), "Output should be a tensor"
-        assert y.features.shape == x.features.shape, (
-            "Output shape should match input"
-        )
+        assert y.features.shape == x.features.shape, "Output shape should match input"
         assert y.features.dtype == torch.float32, "Output should be float32"
 
 
@@ -321,9 +311,7 @@ class TestNormalize:
         x = DataItem(data, 0, 0)
         y = Normalize(mean=[0.0], std=[1.0])(x)
         assert torch.is_tensor(y.features), "Output should be a tensor"
-        assert y.features.shape == data.shape, (
-            "Output shape should match input"
-        )
+        assert y.features.shape == data.shape, "Output shape should match input"
         assert y.features.dtype == torch.float32, "Output should be float32"
 
 
@@ -447,9 +435,9 @@ class TestStandardizer:
         t1 = Standardizer(mean=mean, std=std)
         t2 = Normalize(mean=mean, std=std)
         x = DataItem(torch.randn(3, 32, 32), 0, 0)
-        assert torch.allclose(
-            t1(deepcopy(x)).features, t2(deepcopy(x)).features
-        ), "Output should match Normalize."
+        assert torch.allclose(t1(deepcopy(x)).features, t2(deepcopy(x)).features), (
+            "Output should match Normalize."
+        )
 
     def test_invalid_call(self) -> None:
         t = Standardizer()
@@ -552,9 +540,7 @@ class TestSmartCompose:
         )
         assert (
             sc.get_collate_fn(MockDataset()) == DataBatch.collate
-        ) != has_collate_fn, (
-            f"Collate function should be default: {not has_collate_fn}"
-        )
+        ) != has_collate_fn, f"Collate function should be default: {not has_collate_fn}"
 
     def test_sorting_order(self) -> None:
         att1 = AnyToTensor(order=1)
@@ -576,9 +562,7 @@ class TestSmartCompose:
         x = DataItem(torch.randn(3, 32, 32), 0, 0)
         y = SmartCompose([AnyToTensor(), CutMix(p=0)])(x)
         assert torch.is_tensor(y.features), "Output should be a tensor"
-        assert torch.allclose(x.features, y.features), (
-            "Output should match the input"
-        )
+        assert torch.allclose(x.features, y.features), "Output should match the input"
 
     def test_setup(self) -> None:
         dataset = ToyDataset(
@@ -592,9 +576,7 @@ class TestSmartCompose:
             dtype="uint8",
             metrics=["autrainer.metrics.Accuracy"],
             tracking_metric="autrainer.metrics.Accuracy",
-            train_transform=SmartCompose(
-                [AnyToTensor(), Standardizer(), CutMix(p=0)]
-            ),
+            train_transform=SmartCompose([AnyToTensor(), Standardizer(), CutMix(p=0)]),
         )
         dataset.train_transform.setup(dataset)
 
@@ -798,9 +780,7 @@ class TestTransformManager:
             ],
         }
         train, _, _ = TransformManager(m, d).get_transforms()
-        assert len(train.transforms) == count, (
-            "Normalize@Tag should be removed."
-        )
+        assert len(train.transforms) == count, "Normalize@Tag should be removed."
 
     @pytest.mark.parametrize(
         "model_type, dataset_type, valid",

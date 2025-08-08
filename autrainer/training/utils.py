@@ -96,10 +96,7 @@ def format_results(
     s += ":\n"
     max_key_len = max([len(k) for k in results.keys()])
     s += "\n".join(
-        [
-            f"{(k + ':').ljust(max_key_len + 1)} {v:.4f}"
-            for k, v in results.items()
-        ]
+        [f"{(k + ':').ljust(max_key_len + 1)} {v:.4f}" for k, v in results.items()]
     )
     return s
 

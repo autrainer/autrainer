@@ -107,17 +107,15 @@ class TestCLICreate(BaseIndividualTempDir):
     )
     def test_create_directories(self, dirs: List[str]) -> None:
         autrainer.cli.create(dirs)
-        assert all(
-            os.path.exists(f"conf/{directory}") for directory in dirs
-        ), "Should create directories."
+        assert all(os.path.exists(f"conf/{directory}") for directory in dirs), (
+            "Should create directories."
+        )
         assert os.path.exists("conf/config.yaml"), "Should create config.yaml."
 
     def test_create_empty(self) -> None:
         autrainer.cli.create(empty=True)
         assert os.path.exists("conf/config.yaml"), "Should create config.yaml."
-        assert os.listdir("conf") == ["config.yaml"], (
-            "Should only contain config.yaml."
-        )
+        assert os.listdir("conf") == ["config.yaml"], "Should only contain config.yaml."
 
     def test_create_all(self) -> None:
         autrainer.cli.create(all=True)
@@ -170,9 +168,7 @@ class TestCLIList(BaseIndividualTempDir):
                 "Should print global configurations."
             )
 
-    def test_local_global_missing_configs(
-        self, capfd: pytest.CaptureFixture
-    ) -> None:
+    def test_local_global_missing_configs(self, capfd: pytest.CaptureFixture) -> None:
         os.makedirs("conf/model", exist_ok=True)
         autrainer.cli.list("model", pattern="MissingNet-*")
         out, _ = capfd.readouterr()
@@ -189,9 +185,7 @@ class TestCLIShow(BaseIndividualTempDir):
         "config",
         ["EfficientNet-B0", "EfficientNet-B0.yaml"],
     )
-    def test_valid_directory(
-        self, capfd: pytest.CaptureFixture, config: str
-    ) -> None:
+    def test_valid_directory(self, capfd: pytest.CaptureFixture, config: str) -> None:
         autrainer.cli.show("model", config)
         out, _ = capfd.readouterr()
         config = config.replace(".yaml", "")
@@ -262,9 +256,7 @@ class TestCLIPreprocess(BaseIndividualTempDir):
         with patch("sys.argv", [""]):
             autrainer.cli.preprocess(cfg_launcher=True, update_frequency=0)
         out, _ = capfd.readouterr()
-        assert "Preprocessing datasets..." in out, (
-            "Should print preprocessing message."
-        )
+        assert "Preprocessing datasets..." in out, "Should print preprocessing message."
 
 
 class TestCLIInference(BaseIndividualTempDir):
@@ -330,9 +322,7 @@ class TestCLIInference(BaseIndividualTempDir):
             CommandLineError,
             match="Input 'input.yaml' is not a directory.",
         ):
-            autrainer.cli.inference(
-                model="model", input="input.yaml", output=""
-            )
+            autrainer.cli.inference(model="model", input="input.yaml", output="")
 
         os.makedirs("input", exist_ok=True)
 
@@ -436,9 +426,9 @@ class TestCLIRmFailed(BaseCLIRemove):
         with patch("builtins.input", return_value="y"):
             autrainer.cli.rm_failed("results", "default")
         for name, success in zip(names, successful):
-            assert (
-                os.path.exists(f"results/default/training/{name}") == success
-            ), "Should remove unsuccessful runs."
+            assert os.path.exists(f"results/default/training/{name}") == success, (
+                "Should remove unsuccessful runs."
+            )
 
 
 class TestCLIRmStates(BaseCLIRemove):
@@ -467,9 +457,9 @@ class TestCLIRmStates(BaseCLIRemove):
                     f"results/default/training/{name}/{state}/model.pt"
                 ), "Should remove all states."
         for name in names:
-            assert os.path.exists(
-                f"results/default/training/{name}/_best/model.pt"
-            ), "Should keep best state."
+            assert os.path.exists(f"results/default/training/{name}/_best/model.pt"), (
+                "Should keep best state."
+            )
 
     @pytest.mark.parametrize("names", [["run1", "run2", "run3"]])
     def test_delete_keep_runs(self, names: List[str]) -> None:
@@ -490,9 +480,7 @@ class TestCLIRmStates(BaseCLIRemove):
             ), "Should keep states for specified runs."
 
     @pytest.mark.parametrize("names, keep_it", [(["run1", "run2", "run3"], 2)])
-    def test_delete_keep_iterations(
-        self, names: List[str], keep_it: int
-    ) -> None:
+    def test_delete_keep_iterations(self, names: List[str], keep_it: int) -> None:
         for name in names:
             self._mock_successful_run(name)
         with patch("builtins.input", return_value="y"):

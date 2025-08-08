@@ -152,9 +152,7 @@ class SummarizeGrid:
             metrics_list = []
             metrics_std_list = []
             for n in self.run_names:
-                metrics_path = os.path.join(
-                    self.training_directory, n, "metrics.csv"
-                )
+                metrics_path = os.path.join(self.training_directory, n, "metrics.csv")
                 df = pd.read_csv(metrics_path, index_col="iteration")
                 if metric not in df.columns:
                     continue
@@ -168,9 +166,7 @@ class SummarizeGrid:
 
             metrics_df = pd.concat(metrics_list, axis=1)
             metrics_std_df = (
-                pd.concat(metrics_std_list, axis=1)
-                if metrics_std_list
-                else None
+                pd.concat(metrics_std_list, axis=1) if metrics_std_list else None
             )
             plotter.plot_metric(
                 metrics_df, metric, metrics_std_df, max_runs=self.max_runs_plot
@@ -189,9 +185,7 @@ class SummarizeGrid:
 
         # Iterate over each CSV file and build up metrics dataframe
         for n in self.run_names:
-            metrics_path = os.path.join(
-                self.training_directory, n, "metrics.csv"
-            )
+            metrics_path = os.path.join(self.training_directory, n, "metrics.csv")
             df = pd.read_csv(metrics_path)
             last_row = df.iloc[-1:]
             run_details = n.split("_")
@@ -202,9 +196,7 @@ class SummarizeGrid:
             plotter.plot_aggregated_bars(metrics_df, metric)
 
     def _read_metrics(self, run_name: str) -> dict:
-        metrics_path = os.path.join(
-            self.training_directory, run_name, "metrics.csv"
-        )
+        metrics_path = os.path.join(self.training_directory, run_name, "metrics.csv")
         config_path = os.path.join(
             self.training_directory, run_name, ".hydra", "config.yaml"
         )

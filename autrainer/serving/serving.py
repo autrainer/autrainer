@@ -108,8 +108,7 @@ class Inference:
                 preprocess_cfg["file_handler"]
             )
             pipeline = [
-                autrainer.instantiate_shorthand(p)
-                for p in preprocess_cfg["pipeline"]
+                autrainer.instantiate_shorthand(p) for p in preprocess_cfg["pipeline"]
             ]
             self.preprocess_pipeline = SmartCompose(pipeline)
 
@@ -151,9 +150,7 @@ class Inference:
                 continue
             prediction, output, probs = preds
             if isinstance(prediction, dict):
-                for (offset, pred), out in zip(
-                    prediction.items(), output.values()
-                ):
+                for (offset, pred), out in zip(prediction.items(), output.values()):
                     records.append(
                         {
                             "filename": os.path.relpath(file, directory),
@@ -348,11 +345,7 @@ class Inference:
             tqdm.write(f"Skipping empty file: '{file}'")
             return None
         try:
-            if (
-                self._window_length
-                and self._stride_length
-                and self._sample_rate
-            ):
+            if self._window_length and self._stride_length and self._sample_rate:
                 return window_fn(x)
             else:
                 return fn(x)

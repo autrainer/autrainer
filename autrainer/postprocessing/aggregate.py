@@ -78,9 +78,7 @@ class AggregateGrid:
             shutil.rmtree(self.output_directory)
         os.makedirs(self.output_directory, exist_ok=True)
         self.run_names = get_run_names(self.training_directory)
-        self.training_type = get_training_type(
-            self.training_directory, self.run_names
-        )
+        self.training_type = get_training_type(self.training_directory, self.run_names)
         self.run_names.sort()
         if self.plot_params is None:
             self.plot_params = get_plotting_params(
@@ -126,9 +124,7 @@ class AggregateGrid:
 
     def _aggregate_run_names(self, over: list) -> dict:
         self._check_if_valid_aggregation(over)
-        param_dict = {
-            p: i for i, p in enumerate(NamingConstants().NAMING_CONVENTION)
-        }
+        param_dict = {p: i for i, p in enumerate(NamingConstants().NAMING_CONVENTION)}
         over_idxs = [param_dict[p] for p in over]
         aggregated = defaultdict(list)
         for run_name in self.run_names:
@@ -153,9 +149,7 @@ class AggregateGrid:
     def _aggregate_test(self, agg_name: str, run_list: list):
         path = os.path.join(self.output_directory, agg_name, "_test")
         os.makedirs(path, exist_ok=True)
-        metrics = self._aggregate_yaml(
-            run_list, "_test/test_holistic.yaml", "test"
-        )
+        metrics = self._aggregate_yaml(run_list, "_test/test_holistic.yaml", "test")
         save_yaml(os.path.join(path, "test_holistic.yaml"), metrics)
 
     def _aggregate_yaml(self, run_list: list, path: str, yaml_type: str):
@@ -163,9 +157,7 @@ class AggregateGrid:
         loss_type = "dev_loss" if yaml_type == "dev" else "loss"
         dfs = []
         for run in run_list:
-            metrics = load_yaml(
-                os.path.join(self.training_directory, run, path)
-            )
+            metrics = load_yaml(os.path.join(self.training_directory, run, path))
             dfs.append(pd.DataFrame(metrics))
         df = pd.concat(dfs, keys=run_list, names=["run", "type"])
         df_mean = df.groupby(level="type").mean().reset_index()
@@ -173,9 +165,7 @@ class AggregateGrid:
         df_std["type"] = df_std["type"].apply(lambda x: f"{x}.std")
         df = pd.concat([df_mean, df_std]).set_index(["type"])
         metrics = df.to_dict()
-        metrics[loss_type] = {
-            k: v for k, v in metrics[loss_type].items() if "all" == k
-        }
+        metrics[loss_type] = {k: v for k, v in metrics[loss_type].items() if "all" == k}
         if yaml_type == "dev":
             metrics["iteration"] = {
                 k: v for k, v in metrics["iteration"].items() if "all" == k
@@ -187,9 +177,7 @@ class AggregateGrid:
         os.makedirs(path, exist_ok=True)
         runs = [
             OmegaConf.load(
-                os.path.join(
-                    self.training_directory, r, ".hydra", "config.yaml"
-                )
+                os.path.join(self.training_directory, r, ".hydra", "config.yaml")
             )
             for r in run_list
         ]
@@ -197,9 +185,7 @@ class AggregateGrid:
         if self.aggregated_dict is None:
             for key in self.aggregate_list:
                 config[key] = self._replace_differing_values(config, runs, key)
-        save_yaml(
-            os.path.join(path, "config.yaml"), OmegaConf.to_container(config)
-        )
+        save_yaml(os.path.join(path, "config.yaml"), OmegaConf.to_container(config))
 
     def _replace_differing_values(
         self,
@@ -232,9 +218,7 @@ class AggregateGrid:
             "test": {"mean_seconds": 0, "total_seconds": 0},
         }
         for run in run_list:
-            timers = load_yaml(
-                os.path.join(self.training_directory, run, "timer.yaml")
-            )
+            timers = load_yaml(os.path.join(self.training_directory, run, "timer.yaml"))
             for k, v in timers.items():
                 mean_timer[k]["mean_seconds"] += v["mean_seconds"]
                 mean_timer[k]["total_seconds"] += v["total_seconds"]
@@ -257,9 +241,7 @@ class AggregateGrid:
             )
             dfs.append(df)
         cfg = OmegaConf.load(
-            os.path.join(
-                self.output_directory, agg_name, ".hydra", "config.yaml"
-            )
+            os.path.join(self.output_directory, agg_name, ".hydra", "config.yaml")
         )
         if isinstance(cfg.dataset.metrics, str):
             raise ValueError(
@@ -305,13 +287,9 @@ class AggregateGrid:
                     tracking_metric=tracking_metric,
                 )
             )
-        timers = load_yaml(
-            os.path.join(self.output_directory, agg_name, "timer.yaml")
-        )
+        timers = load_yaml(os.path.join(self.output_directory, agg_name, "timer.yaml"))
         test_metrics = load_yaml(
-            os.path.join(
-                self.output_directory, agg_name, "_test", "test_holistic.yaml"
-            )
+            os.path.join(self.output_directory, agg_name, "_test", "test_holistic.yaml")
         )
         for logger in loggers:
             logger.setup()
@@ -325,13 +303,9 @@ class AggregateGrid:
             )
             for iteration in df.index:
                 metrics = df.loc[iteration].to_dict()
-                metrics = {
-                    k: v for k, v in metrics.items() if not k.endswith(".std")
-                }
+                metrics = {k: v for k, v in metrics.items() if not k.endswith(".std")}
                 logger.log_metrics(metrics, iteration)
-            logger.log_metrics(
-                {"test_" + k: v["all"] for k, v in test_metrics.items()}
-            )
+            logger.log_metrics({"test_" + k: v["all"] for k, v in test_metrics.items()})
             logger.log_artifact(
                 os.path.join(agg_name, ".hydra", "config.yaml"),
                 self.output_directory,

@@ -70,9 +70,7 @@ def instantiate(
     if config.get("_target_") == "None":
         return None
     if not config.get("_convert_"):
-        config["_convert_"] = (
-            convert.value if convert else HydraConvertEnum.ALL.value
-        )
+        config["_convert_"] = convert.value if convert else HydraConvertEnum.ALL.value
     if not config.get("_recursive_"):
         config["_recursive_"] = recursive
     config.pop("id", None)

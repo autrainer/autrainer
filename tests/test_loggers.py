@@ -24,9 +24,9 @@ class TestFallbackLogger:
             FallbackLogger(requested, None)
         if requested is None:
             return
-        assert (
-            f"Requested logger '{requested}' not available." in caplog.text
-        ), "Should log warning"
+        assert f"Requested logger '{requested}' not available." in caplog.text, (
+            "Should log warning"
+        )
 
     def test_identity_functions(self) -> None:
         logger = FallbackLogger()
@@ -94,9 +94,7 @@ class TestMLFlowLogger(BaseIndividualTempDir):
         timer.stop()
         logger.log_timers({"time.test.mean": timer.get_mean_seconds()})
         logger.end_run()
-        assert self._file_exists("time.test.mean", "params"), (
-            "Should log timers"
-        )
+        assert self._file_exists("time.test.mean", "params"), "Should log timers"
 
     def test_log_artifact(self) -> None:
         OmegaConf.save({"model_parameters": 42}, "model_summary.yaml")
@@ -137,9 +135,7 @@ class TestTensorBoardLogger(BaseIndividualTempDir):
         logger = self._mock_tensorboard_logger("test_exp", "run1")
         logger.log_metrics({"accuracy": 0.5, "uar": 0.6}, iteration=1)
         logger.end_run()
-        assert len(os.listdir("tbruns/test_exp/run1")) > 0, (
-            "Should log metrics"
-        )
+        assert len(os.listdir("tbruns/test_exp/run1")) > 0, "Should log metrics"
 
     def test_log_timers(self) -> None:
         logger = self._mock_tensorboard_logger("test_exp", "run1")

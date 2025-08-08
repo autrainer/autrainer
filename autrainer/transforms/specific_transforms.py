@@ -220,9 +220,7 @@ class Resize(AbstractTransform):
         self.antialias = antialias
         self.interpolation = interpolation
         if self.width == "Any" and self.height == "Any":
-            raise ValueError(
-                "At least one of 'height' or 'width' must be specified."
-            )
+            raise ValueError("At least one of 'height' or 'width' must be specified.")
         if self.height == "Any":
             self._size = self.width
         elif self.width == "Any":
@@ -231,9 +229,7 @@ class Resize(AbstractTransform):
             self._size = (self.height, self.width)
         self._resize = T.Resize(
             size=self._size,
-            interpolation=getattr(
-                T.InterpolationMode, self.interpolation.upper()
-            ),
+            interpolation=getattr(T.InterpolationMode, self.interpolation.upper()),
             antialias=self.antialias,
         )
 
@@ -353,9 +349,7 @@ class Normalize(AbstractTransform):
             if item.features.ndim == dim:
                 break
         else:
-            raise ValueError(
-                f"Unsupported feature dimensions: {item.features.shape}"
-            )
+            raise ValueError(f"Unsupported feature dimensions: {item.features.shape}")
 
         mean, std = self._mean.view(*axes), self._std.view(*axes)
         item.features = item.features.to(torch.float32).sub(mean).div(std)
@@ -401,8 +395,7 @@ class Standardizer(AbstractTransform):
     def _validate_subset(self, subset: str) -> None:
         if subset not in {"train", "dev", "test"}:
             raise ValueError(
-                f"Invalid subset '{subset}'. Must be one of 'train', 'dev', "
-                "or 'test'."
+                f"Invalid subset '{subset}'. Must be one of 'train', 'dev', or 'test'."
             )
 
     def _init_transform(self) -> Optional[AbstractTransform]:
@@ -475,9 +468,7 @@ class FeatureExtractor(AbstractTransform):
         """
         super().__init__(order=order)
         if fe_type is None and fe_transfer is None:
-            raise ValueError(
-                "Either 'fe_type' or 'fe_transfer' must be provided."
-            )
+            raise ValueError("Either 'fe_type' or 'fe_transfer' must be provided.")
         self.fe_type = fe_type
         self.fe_transfer = fe_transfer
         self.sampling_rate = sampling_rate
@@ -488,9 +479,7 @@ class FeatureExtractor(AbstractTransform):
             feature_extractor = fe_class.from_pretrained(self.fe_transfer)
         else:
             feature_extractor = fe_class()
-            extractor_dict = {
-                k: repr(v) for k, v in feature_extractor.__dict__.items()
-            }
+            extractor_dict = {k: repr(v) for k, v in feature_extractor.__dict__.items()}
             warnings.warn(
                 f"{fe_class.__name__} "
                 "initialized with default values:\n"
@@ -540,9 +529,7 @@ class Expand(AbstractTransform):
         self.size = size
         self.method = method
         self.axis = axis
-        self._expand = AT.Expand(
-            size=self.size, method=self.method, axis=self.axis
-        )
+        self._expand = AT.Expand(size=self.size, method=self.method, axis=self.axis)
         self._to_tensor = AnyToTensor()
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
@@ -675,9 +662,7 @@ class Resample(AbstractTransform):
         self.current_sr = current_sr
         self.target_sr = target_sr
         super().__init__(order=order)
-        self._resample = TT.Resample(
-            orig_freq=self.current_sr, new_freq=self.target_sr
-        )
+        self._resample = TT.Resample(orig_freq=self.current_sr, new_freq=self.target_sr)
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
         item.features = self._resample(item.features)
@@ -749,12 +734,8 @@ class OpenSMILE(AbstractTransform):
         it = self.smile.process_signal(item.features, self.sample_rate)
         feats = torch.from_numpy(self.smile.to_numpy(it)).squeeze()
         if self.smile_de is not None:
-            data_de = self.smile_de.process_signal(
-                item.features, self.sample_rate
-            )
-            data_de = torch.from_numpy(self.smile.to_numpy(data_de)).squeeze()[
-                :, 1:-1
-            ]
+            data_de = self.smile_de.process_signal(item.features, self.sample_rate)
+            data_de = torch.from_numpy(self.smile.to_numpy(data_de)).squeeze()[:, 1:-1]
             feats = torch.cat((feats, data_de), axis=-2)
         item.features = feats
         return item

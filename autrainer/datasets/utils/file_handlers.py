@@ -164,10 +164,7 @@ class AudioFileHandler(AbstractFileHandler):
             Loaded audio file as a tensor.
         """
         x, sr = audiofile.read(file, always_2d=True)
-        if (
-            self.target_sample_rate is not None
-            and sr != self.target_sample_rate
-        ):
+        if self.target_sample_rate is not None and sr != self.target_sample_rate:
             resample = torchaudio.transforms.Resample(
                 sr,
                 self.target_sample_rate,

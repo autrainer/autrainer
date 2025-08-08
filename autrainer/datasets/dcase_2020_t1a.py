@@ -148,9 +148,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
         df_dev = self._filter_df_by_category(df_dev, self.scene_category)
 
         if self.exclude_cities is not None:
-            df_train = df_train.loc[
-                ~df_train["city"].isin(self.exclude_cities)
-            ]
+            df_train = df_train.loc[~df_train["city"].isin(self.exclude_cities)]
 
         return df_train, df_dev
 
@@ -234,9 +232,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
             df["city"] = df["filename"].apply(lambda x: x.split("-")[1])
             df["location"] = df["filename"].apply(lambda x: x.split("-")[2])
             df["segment"] = df["filename"].apply(lambda x: x.split("-")[3])
-            df["device"] = df["filename"].apply(
-                lambda x: x.split("-")[4].split(".")[0]
-            )
+            df["device"] = df["filename"].apply(lambda x: x.split("-")[4].split(".")[0])
             return df
 
         out_path = os.path.join(path, "default")

@@ -198,19 +198,15 @@ class TestBookkeeping(BaseIndividualTempDir):
             metric_fns=metrics,
             tracking_metric_fn=tracking_metric,
         )
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "best_results.yaml")
-        ), "Should save best results dict YAML."
-        loaded = OmegaConf.load(
-            os.path.join(self.temp_dir, "best_results.yaml")
+        assert os.path.isfile(os.path.join(self.temp_dir, "best_results.yaml")), (
+            "Should save best results dict YAML."
         )
+        loaded = OmegaConf.load(os.path.join(self.temp_dir, "best_results.yaml"))
         loaded = OmegaConf.to_container(loaded)
         assert loaded.get("best_iteration") == 1, "Should save best iteration."
         assert loaded.get("accuracy") == 0.99, "Should save best accuracy."
         assert loaded.get("uar") == 0.9, "Should save best UAR."
-        assert loaded.get("train_loss_min") == 0.01, (
-            "Should save best train loss."
-        )
+        assert loaded.get("train_loss_min") == 0.01, "Should save best train loss."
 
 
 class TestTimer(BaseIndividualTempDir):
@@ -237,9 +233,7 @@ class TestTimer(BaseIndividualTempDir):
 class TestHardware(BaseIndividualTempDir):
     @classmethod
     def setup_class(cls) -> None:
-        cls.device = torch.device(
-            "cuda:0" if torch.cuda.is_available() else "cpu"
-        )
+        cls.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def test_get_hardware_info(self) -> dict:
         hardware_info = get_hardware_info(self.device)
@@ -263,8 +257,7 @@ class TestHardware(BaseIndividualTempDir):
             device = set_device("invalid")
         assert device.type == "cpu", "Should fall back to CPU."
         assert (
-            "Device 'invalid' is not available. Falling back to CPU."
-            in caplog.text
+            "Device 'invalid' is not available. Falling back to CPU." in caplog.text
         ), "Should log warning."
 
 
@@ -283,9 +276,9 @@ class TestThreadManager:
 class TestSaveRequirements(BaseIndividualTempDir):
     def test_save_requirements(self) -> None:
         save_requirements(self.temp_dir)
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "requirements.txt")
-        ), "Should save requirements."
+        assert os.path.isfile(os.path.join(self.temp_dir, "requirements.txt")), (
+            "Should save requirements."
+        )
 
 
 class TestSetSeed:
@@ -300,12 +293,8 @@ class TestSetSeed:
         assert torch.initial_seed() == seed, "Should set Torch seed."
         if torch.cuda.is_available():
             assert torch.cuda.initial_seed() == seed, "Should set Cuda seed."
-            assert torch.backends.cudnn.deterministic, (
-                "Should be deterministic."
-            )
-            assert not torch.backends.cudnn.benchmark, (
-                "Should disable benchmark."
-            )
+            assert torch.backends.cudnn.deterministic, "Should be deterministic."
+            assert not torch.backends.cudnn.benchmark, "Should disable benchmark."
 
 
 class TestSilence:
@@ -419,9 +408,7 @@ class TestNamingConstants:
         "valid_aggregations",
         ["invalid", [1, "invalid"]],
     )
-    def test_invalid_valid_aggregations(
-        self, valid_aggregations: list
-    ) -> None:
+    def test_invalid_valid_aggregations(self, valid_aggregations: list) -> None:
         with pytest.raises(ValueError):
             self.c.VALID_AGGREGATIONS = valid_aggregations
 
@@ -439,9 +426,7 @@ class TestNamingConstants:
         "invalid_aggregations",
         ["invalid", [1, "invalid"]],
     )
-    def test_invalid_invalid_aggregations(
-        self, invalid_aggregations: list
-    ) -> None:
+    def test_invalid_invalid_aggregations(self, invalid_aggregations: list) -> None:
         with pytest.raises(ValueError):
             self.c.INVALID_AGGREGATIONS = invalid_aggregations
 
@@ -451,9 +436,9 @@ class TestNamingConstants:
     )
     def test_invalid_aggregations(self, invalid_aggregations: list) -> None:
         self.c.INVALID_AGGREGATIONS = invalid_aggregations
-        assert (
-            NamingConstants().INVALID_AGGREGATIONS == invalid_aggregations
-        ), f"Should set invalid aggregations to {invalid_aggregations}."
+        assert NamingConstants().INVALID_AGGREGATIONS == invalid_aggregations, (
+            f"Should set invalid aggregations to {invalid_aggregations}."
+        )
 
 
 class TestTrainingConstants:
@@ -474,6 +459,4 @@ class TestTrainingConstants:
     @pytest.mark.parametrize("tasks", [["task1", "task2"]])
     def test_tasks(self, tasks: list) -> None:
         self.c.TASKS = tasks
-        assert TrainingConstants().TASKS == tasks, (
-            f"Should set tasks to {tasks}."
-        )
+        assert TrainingConstants().TASKS == tasks, f"Should set tasks to {tasks}."

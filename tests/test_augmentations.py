@@ -174,12 +174,8 @@ class TestAllAugmentations:
             else:
                 x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
             x = DataItem(x, 0, 0)
-            aug1 = augmentation(
-                **params, generator_seed=AUGMENTATION_SEED + 1, p=0.5
-            )
-            aug2 = augmentation(
-                **params, generator_seed=AUGMENTATION_SEED, p=0.5
-            )
+            aug1 = augmentation(**params, generator_seed=AUGMENTATION_SEED + 1, p=0.5)
+            aug2 = augmentation(**params, generator_seed=AUGMENTATION_SEED, p=0.5)
             aug2.offset_generator_seed(1)
             if hasattr(aug1, "_deterministic") and not aug1._deterministic:
                 return  # Skip if known to be non-deterministic
@@ -224,9 +220,7 @@ class TestAugmentationManagerPipeline:
             (DictConfig(pipline_cfg2), "test"),
         ],
     )
-    def test_creation(
-        self, config: Union[DictConfig, Dict, None], subset: str
-    ) -> None:
+    def test_creation(self, config: Union[DictConfig, Dict, None], subset: str) -> None:
         am = AugmentationManager(**{f"{subset}_augmentation": config})
         augs = {}
         augs["train"], augs["dev"], augs["test"] = am.get_augmentations()
@@ -238,9 +232,7 @@ class TestAugmentationManagerPipeline:
                 "All augmentations should be empty"
             )
         else:
-            assert len(augs.pop(subset).transforms) == 1, (
-                "Should have 1 augmentation"
-            )
+            assert len(augs.pop(subset).transforms) == 1, "Should have 1 augmentation"
             assert all(not a.transforms for a in augs.values()), (
                 "All other augmentations should be empty"
             )
@@ -314,16 +306,12 @@ class TestBaseMixUpCutMix:
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_invalid_dataset(self, aug: Type[BaseMixUpCutMix]) -> None:
         with pytest.raises(ValueError):
-            aug().get_collate_fn(
-                self.regression_dataset, default=DataBatch.collate
-            )
+            aug().get_collate_fn(self.regression_dataset, default=DataBatch.collate)
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_collate_fn(self, aug: Type[BaseMixUpCutMix]) -> None:
         self._test_collate(
-            aug().get_collate_fn(
-                self.classification_dataset, default=DataBatch.collate
-            )
+            aug().get_collate_fn(self.classification_dataset, default=DataBatch.collate)
         )
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
@@ -401,9 +389,7 @@ class TestSampleGaussianWhiteNoise:
 
         c4 = self._mock_snr_calculation(deepcopy(x1), 0, 10, g)
         y4 = aug(deepcopy(x1))
-        assert torch.allclose(y4.features, c4.features), (
-            "Should be deterministic"
-        )
+        assert torch.allclose(y4.features, c4.features), "Should be deterministic"
 
     def _mock_snr_calculation(
         self,

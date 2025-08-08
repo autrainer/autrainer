@@ -61,9 +61,7 @@ class TestPreprocessing(BaseIndividualTempDir):
     ) -> None:
         if output_files is None:
             output_files = ["train", "dev", "test"]
-        dfs = [
-            pd.read_csv(os.path.join(path, f"{f}.csv")) for f in output_files
-        ]
+        dfs = [pd.read_csv(os.path.join(path, f"{f}.csv")) for f in output_files]
         for df in dfs:
             for filename in df[index_column]:
                 filepath = os.path.join(path, features_subdir, filename)
@@ -181,9 +179,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         dataset_args["_target_"] = target
         dataset_args["features_subdir"] = "log_mel_16k"
         dataset_args["file_type"] = "npy"
-        dataset_args["file_handler"] = (
-            "autrainer.datasets.utils.NumpyFileHandler"
-        )
+        dataset_args["file_handler"] = "autrainer.datasets.utils.NumpyFileHandler"
 
         preprocess_main(
             name="TestDataset",
@@ -198,9 +194,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         dataset_args.pop("_recursive_")
         dataset_args["features_path"] = features_path
         dataset_args["file_type"] = "npy"
-        dataset_args["file_handler"] = (
-            "autrainer.datasets.utils.NumpyFileHandler"
-        )
+        dataset_args["file_handler"] = "autrainer.datasets.utils.NumpyFileHandler"
         dataset_args["features_subdir"] = "log_mel_16k"
 
         _mel = preprocess["pipeline"][-1]["autrainer.transforms.PannMel"]

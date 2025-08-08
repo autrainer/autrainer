@@ -21,9 +21,7 @@ def _download_weights(url: str, destination: str) -> None:
         else:
             req.raise_for_status()
     except Exception as e:
-        raise ValueError(
-            f"Failed to download weights from {url} due to {e}."
-        ) from e
+        raise ValueError(f"Failed to download weights from {url} due to {e}.") from e
 
 
 def load_transfer_weights(model: torch.nn.Module, weights_link: str) -> None:

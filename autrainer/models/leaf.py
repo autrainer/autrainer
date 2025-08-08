@@ -194,15 +194,11 @@ class LEAFNet(AbstractModel):
         if self.mode == "interspeech":
             center_freqs_param = "filterbank.center_freqs"
             bandwith_param = "filterbank.bandwidths"
-            self.leaf.state_dict()[center_freqs_param].copy_(
-                center_frequencies
-            )
+            self.leaf.state_dict()[center_freqs_param].copy_(center_frequencies)
             self.leaf.state_dict()[bandwith_param].copy_(bandwidths)
         elif self.mode == "speech_brain":
             filterbank_param = "complex_conv.kernel"
-            self.leaf.state_dict()[filterbank_param][:, 0].copy_(
-                center_frequencies
-            )
+            self.leaf.state_dict()[filterbank_param][:, 0].copy_(center_frequencies)
             self.leaf.state_dict()[filterbank_param][:, 1].copy_(bandwidths)
 
 
@@ -382,9 +378,7 @@ class GaborFilterbank(nn.Module):
         )
         self.center_freqs = nn.Parameter(center_freqs)
         self.bandwidths = nn.Parameter(bandwidths)
-        self.pooling_widths = nn.Parameter(
-            torch.full((n_filters,), float(pool_init))
-        )
+        self.pooling_widths = nn.Parameter(torch.full((n_filters,), float(pool_init)))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # compute filters
@@ -399,9 +393,7 @@ class GaborFilterbank(nn.Module):
         x = x**2
         x = x[:, : self.n_filters] + x[:, self.n_filters :]
         # compute pooling windows
-        pooling_widths = self.pooling_widths.clamp(
-            min=2.0 / self.pool_size, max=0.5
-        )
+        pooling_widths = self.pooling_widths.clamp(min=2.0 / self.pool_size, max=0.5)
         windows = gauss_windows(self.pool_size, pooling_widths).unsqueeze(1)
         # apply temporal pooling
         x = F.conv1d(

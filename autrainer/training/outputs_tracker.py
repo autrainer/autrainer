@@ -37,9 +37,7 @@ class OutputsTracker:
         """Reset the tracker. Clears all the stored data accumulated over a
         single iteration.
         """
-        self._outputs = torch.zeros(
-            (0, self._data.output_dim), dtype=torch.float32
-        )
+        self._outputs = torch.zeros((0, self._data.output_dim), dtype=torch.float32)
         self._targets = torch.zeros(
             0, dtype=torch.long
         )  # automatic type promotion in case of float targets
@@ -92,9 +90,9 @@ class OutputsTracker:
         )
         self._results_df = pd.DataFrame(index=results["indices"])
         self._results_df["predictions"] = self._predictions
-        self._results_df["predictions"] = self._results_df[
-            "predictions"
-        ].apply(self._data.target_transform.decode)
+        self._results_df["predictions"] = self._results_df["predictions"].apply(
+            self._data.target_transform.decode
+        )
         _probs_df = pd.DataFrame(
             index=results["indices"],
             data=(

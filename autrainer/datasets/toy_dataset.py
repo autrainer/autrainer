@@ -107,8 +107,7 @@ class ToyDataset(AbstractDataset):
         """
         if task not in TrainingConstants().TASKS:
             raise ValueError(
-                f"Invalid task '{task}', "
-                f"must be in {TrainingConstants().TASKS}."
+                f"Invalid task '{task}', must be in {TrainingConstants().TASKS}."
             )
         self.size = size
         self.num_targets = num_targets
@@ -168,15 +167,11 @@ class ToyDataset(AbstractDataset):
         rng = np.random.default_rng(self.seed)
 
         if self.task == "ml-classification":
-            self.target_column = [
-                f"class_{i + 1}" for i in range(self.num_targets)
-            ]
+            self.target_column = [f"class_{i + 1}" for i in range(self.num_targets)]
             df = pd.DataFrame(
                 {
                     **{
-                        col: rng.integers(0, 2, size=self.size).astype(
-                            np.float32
-                        )
+                        col: rng.integers(0, 2, size=self.size).astype(np.float32)
                         for col in self.target_column
                     }
                 }
@@ -184,19 +179,13 @@ class ToyDataset(AbstractDataset):
         elif self.task == "classification":
             self.target_column = "target"
             df = pd.DataFrame(
-                {
-                    self.target_column: rng.integers(
-                        0, self.num_targets, size=self.size
-                    )
-                }
+                {self.target_column: rng.integers(0, self.num_targets, size=self.size)}
             )
             df[self.target_column] = df[self.target_column].apply(
                 lambda x: f"class_{x + 1}"
             )
         elif self.task == "mt-regression":
-            self.target_column = [
-                f"target_{i + 1}" for i in range(self.num_targets)
-            ]
+            self.target_column = [f"target_{i + 1}" for i in range(self.num_targets)]
             df = pd.DataFrame(
                 {
                     **{
@@ -210,8 +199,7 @@ class ToyDataset(AbstractDataset):
             df = pd.DataFrame({self.target_column: rng.random((self.size,))})
         else:
             raise ValueError(
-                f"Invalid task '{self.task}', "
-                f"must be in {TrainingConstants().TASKS}."
+                f"Invalid task '{self.task}', must be in {TrainingConstants().TASKS}."
             )
 
         return df
@@ -224,9 +212,7 @@ class ToyDataset(AbstractDataset):
     @cached_property
     def df_dev(self) -> pd.DataFrame:
         train_size, dev_size, _ = self._dataset_sizes
-        return self._reset_index(
-            self._mock_df.iloc[train_size : train_size + dev_size]
-        )
+        return self._reset_index(self._mock_df.iloc[train_size : train_size + dev_size])
 
     @cached_property
     def df_test(self) -> pd.DataFrame:
@@ -234,11 +220,7 @@ class ToyDataset(AbstractDataset):
         return self._reset_index(self._mock_df.iloc[train_size + dev_size :])
 
     def _reset_index(self, df: pd.DataFrame) -> pd.DataFrame:
-        return (
-            df.copy()
-            .reset_index(drop=True)
-            .reset_index(names=[self.index_column])
-        )
+        return df.copy().reset_index(drop=True).reset_index(names=[self.index_column])
 
     def _init_dataset(
         self,
@@ -260,9 +242,7 @@ class ToyDataset(AbstractDataset):
         if self.task == "ml-classification":
             return MultiLabelEncoder(0.5, self.target_column)
         elif self.task == "classification":
-            return LabelEncoder(
-                self.df_train[self.target_column].unique().tolist()
-            )
+            return LabelEncoder(self.df_train[self.target_column].unique().tolist())
         elif self.task == "mt-regression":
             return MultiTargetMinMaxScaler(
                 target=self.target_column,
@@ -277,6 +257,5 @@ class ToyDataset(AbstractDataset):
             )
         else:
             raise ValueError(
-                f"Invalid task '{self.task}', "
-                f"must be in {TrainingConstants().TASKS}."
+                f"Invalid task '{self.task}', must be in {TrainingConstants().TASKS}."
             )

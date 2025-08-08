@@ -33,9 +33,7 @@ class TDNNFFNN(AbstractModel):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=FutureWarning)
             if transfer:  # pragma: no cover
-                checkpoint_dir = os.path.join(
-                    torch.hub.get_dir(), "speechbrain"
-                )
+                checkpoint_dir = os.path.join(torch.hub.get_dir(), "speechbrain")
                 os.makedirs(checkpoint_dir, exist_ok=True)
                 from speechbrain.inference.classifiers import EncoderClassifier
 

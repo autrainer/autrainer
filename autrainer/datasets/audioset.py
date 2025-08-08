@@ -194,18 +194,10 @@ class AudioSet(BaseMLClassificationDataset):
         if self.target_column is None:
             unique_categories = set([x["name"] for x in self.ontology])
             train_categories = set(
-                [
-                    x
-                    for y in self.df_train["categories"].values.tolist()
-                    for x in y
-                ]
+                [x for y in self.df_train["categories"].values.tolist() for x in y]
             )
             dev_categories = set(
-                [
-                    x
-                    for y in self.df_dev["categories"].values.tolist()
-                    for x in y
-                ]
+                [x for y in self.df_dev["categories"].values.tolist() for x in y]
             )
             self.target_column = list(
                 (
@@ -334,9 +326,7 @@ class AudioSet(BaseMLClassificationDataset):
 
         """
         ids = []
-        category_ids = [
-            x["id"] for x in self.ontology if x["name"] in categories
-        ]
+        category_ids = [x["id"] for x in self.ontology if x["name"] in categories]
         for category_id in category_ids:
             ids += self._subcategory_ids(category_id)
         # Remove duplicates
@@ -353,9 +343,7 @@ class AudioSet(BaseMLClassificationDataset):
 
         """
         id_list = [parent_id]
-        child_ids = [
-            x["child_ids"] for x in self.ontology if x["id"] == parent_id
-        ]
+        child_ids = [x["child_ids"] for x in self.ontology if x["id"] == parent_id]
         child_ids = flatten_list(child_ids)
         # Add all subcategories
         for child_id in child_ids:
@@ -383,9 +371,7 @@ class AudioSet(BaseMLClassificationDataset):
             df = self._filter_by_categories(df, self.include)
         df["ids"] = df["ids"].map(self._add_parent_ids)
         if self.exclude is not None:
-            df = self._filter_by_categories(
-                df, self.exclude, exclude_mode=True
-            )
+            df = self._filter_by_categories(df, self.exclude, exclude_mode=True)
         df["categories"] = df["ids"].map(self._convert_ids_to_categories)
         unique_categories = list(set([x["name"] for x in self.ontology]))
         for c in unique_categories:
@@ -414,9 +400,7 @@ class AudioSet(BaseMLClassificationDataset):
             engine="python",
         )
         df = self.map_to_classes(df)
-        df["filename"] = df["filename"].apply(
-            lambda x: os.path.join(relative_path, x)
-        )
+        df["filename"] = df["filename"].apply(lambda x: os.path.join(relative_path, x))
         orig_len = len(df)
         df = df.loc[
             df["filename"].apply(

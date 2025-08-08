@@ -108,9 +108,7 @@ class TestBalancedCrossEntropyLoss:
 
     def test_setup(self) -> None:
         criterion, weights = self._mock_criterion_setup()
-        assert criterion.weight is not None, (
-            "Should have calculated the weights"
-        )
+        assert criterion.weight is not None, "Should have calculated the weights"
 
         assert torch.allclose(criterion.weight, weights), (
             "Should have calculated frequency-based weights"
@@ -311,9 +309,7 @@ class TestLossForward:
             (MSELoss, torch.rand(10, 5)),
         ],
     )
-    def test_forward_dtype(
-        self, cls: Type[CrossEntropyLoss], y: torch.Tensor
-    ) -> None:
+    def test_forward_dtype(self, cls: Type[CrossEntropyLoss], y: torch.Tensor) -> None:
         x = torch.rand(10, 5)
         loss = cls()(x, y)
         assert isinstance(loss, torch.Tensor), "Should return a torch.Tensor"

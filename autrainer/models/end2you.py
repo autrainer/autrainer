@@ -62,9 +62,7 @@ class Base(nn.Module):
         for conv_args, mp_args in zip(
             *[conv_layers_args.values(), maxpool_layers_args.values()]
         ):
-            network_layers.extend(
-                [self._conv_block(conv_args, activ_fn, normalize)]
-            )
+            network_layers.extend([self._conv_block(conv_args, activ_fn, normalize)])
             network_layers.extend([max_pool_op(**mp_args)])
 
         self.network = nn.Sequential(*network_layers)
@@ -117,11 +115,7 @@ class Base(nn.Module):
         ):
             # number of features in the convolution output
             layer_input = np.floor(
-                (
-                    layer_input
-                    - conv_arg["kernel_size"]
-                    + 2 * conv_arg["padding"]
-                )
+                (layer_input - conv_arg["kernel_size"] + 2 * conv_arg["padding"])
                 / conv_arg["stride"]
                 + 1
             )
@@ -253,9 +247,7 @@ class Zhao19(nn.Module):
             for i in range(num_layers)
         }
 
-        audio_model = Base(
-            conv_args, maxpool_args, normalize=True, activ_fn=nn.ELU()
-        )
+        audio_model = Base(conv_args, maxpool_args, normalize=True, activ_fn=nn.ELU())
 
         return audio_model, out_channels[-1]
 

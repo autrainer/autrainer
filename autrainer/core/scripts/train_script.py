@@ -36,9 +36,7 @@ class TrainScript(AbstractScript):
 
             OmegaConf.set_struct(cfg, False)
             OmegaConf.resolve(cfg)
-            output_dir = (
-                hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
-            )
+            output_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
 
             # ? Skip if run exists and return best tracking metric
             if os.path.exists(os.path.join(output_dir, "metrics.csv")):
@@ -67,10 +65,7 @@ class TrainScript(AbstractScript):
 
             from autrainer.training import ModularTaskTrainer
 
-            trainer = ModularTaskTrainer(
-                cfg=cfg,
-                output_directory=output_dir,
-            )
+            trainer = ModularTaskTrainer(cfg=cfg, output_directory=output_dir)
             return trainer.train()
 
         check_invalid_config_path_arg(self.parser)

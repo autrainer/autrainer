@@ -71,6 +71,4 @@ class TestSAM:
             lr=0.01,
         )
         optimizer.load_state_dict(state_dict)
-        assert str(optimizer.state_dict()) == str(state_dict), (
-            "Should be equal"
-        )
+        assert str(optimizer.state_dict()) == str(state_dict), "Should be equal"

@@ -46,9 +46,7 @@ class TestAudioFileHandler(BaseIndividualTempDir):
 class TestAllFileHandlers(BaseIndividualTempDir):
     def test_identity_file_handler(self) -> None:
         handler = IdentityFileHandler()
-        assert handler("file") == "file", (
-            "Should serve as an identity function."
-        )
+        assert handler("file") == "file", "Should serve as an identity function."
         handler.save("file", torch.rand(1))
         assert not os.path.exists("file"), "Should not save anything."
 
@@ -95,25 +93,19 @@ class TestMinMaxScaler:
         scaler = MinMaxScaler("target", 0, 1)
         x = torch.Tensor([[0.1], [0.9], [0.6], [0.4], [0.5]])
         probs = scaler.probabilities_training(x)
-        assert torch.all(probs >= 0) and torch.all(probs <= 1), (
-            "Should be in [0, 1]."
-        )
+        assert torch.all(probs >= 0) and torch.all(probs <= 1), "Should be in [0, 1]."
 
     def test_probabilities_predict(self) -> None:
         scaler = MinMaxScaler("target", 0, 1)
         x = torch.Tensor([[0.1], [0.9], [0.6], [0.4], [0.5]])
         probs = scaler.probabilities_inference(x)
         preds = scaler.predict_inference(probs)
-        assert preds == torch.sigmoid(x).squeeze().tolist(), (
-            "Should predict the batch."
-        )
+        assert preds == torch.sigmoid(x).squeeze().tolist(), "Should predict the batch."
 
     def test_majority_vote(self) -> None:
         encoder = MinMaxScaler("target", 0, 1)
         x = [0.1, 0.2, 0.3, 0.4, 0.5]
-        assert encoder.majority_vote(x) == 0.3, (
-            "Should compute the majority vote."
-        )
+        assert encoder.majority_vote(x) == 0.3, "Should compute the majority vote."
 
     def test_probabilities_to_dict(self) -> None:
         scaler = MinMaxScaler("target", 0, 1)
@@ -151,17 +143,13 @@ class TestMultiTargetMinMaxScaler:
     @pytest.mark.parametrize("x", [[0, 1, 0.5], [10, -1, -0.5], [-10, 0, 0.5]])
     def test_encode_decode(self, x: List[float]) -> None:
         scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
-        assert scaler.decode(scaler(x).tolist()) == x, (
-            "Should encode and decode."
-        )
+        assert scaler.decode(scaler(x).tolist()) == x, "Should encode and decode."
 
     def test_probabilities_training(self) -> None:
         scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
         x = torch.Tensor([[0.1, 0.9, 0.6], [0.9, 0.1, 0.6]])
         probs = scaler.probabilities_training(x)
-        assert torch.all(probs >= 0) and torch.all(probs <= 1), (
-            "Should be in [0, 1]."
-        )
+        assert torch.all(probs >= 0) and torch.all(probs <= 1), "Should be in [0, 1]."
 
     def test_probabilities_predict(self) -> None:
         scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
@@ -209,9 +197,7 @@ class TestMultiLabelEncoder:
 
     def test_empty_encode(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
-        assert torch.all(encoder([]) == torch.zeros(3)), (
-            "Should encode an empty list."
-        )
+        assert torch.all(encoder([]) == torch.zeros(3)), "Should encode an empty list."
 
     def test_empty_decode(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
@@ -235,17 +221,15 @@ class TestMultiLabelEncoder:
     def test_majority_vote(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
         x = [["fizz", "jazz"], ["fizz"], ["fizz", "buzz"]]
-        assert encoder.majority_vote(x) == ["fizz"], (
-            "Should compute the majority vote."
-        )
+        assert encoder.majority_vote(x) == ["fizz"], "Should compute the majority vote."
 
     def test_probabilities_to_dict(self) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
         x = torch.Tensor([0.5, 0.6, 0.7])
         probs = encoder.probabilities_to_dict(x)
-        assert _all_close_dict(
-            probs, {"fizz": 0.5, "buzz": 0.6, "jazz": 0.7}
-        ), "Should convert the probabilities to a dictionary."
+        assert _all_close_dict(probs, {"fizz": 0.5, "buzz": 0.6, "jazz": 0.7}), (
+            "Should convert the probabilities to a dictionary."
+        )
 
 
 class TestLabelEncoder:
@@ -258,9 +242,7 @@ class TestLabelEncoder:
     @pytest.mark.parametrize("label", ["jazz", "buzz", "fizz"])
     def test_encode_decode(self, label: str) -> None:
         encoder = LabelEncoder(self.labels)
-        assert encoder.decode(encoder(label)) == label, (
-            "Should encode and decode."
-        )
+        assert encoder.decode(encoder(label)) == label, "Should encode and decode."
 
     def test_probabilities_training(self) -> None:
         encoder = LabelEncoder(self.labels)
@@ -278,9 +260,7 @@ class TestLabelEncoder:
     def test_majority_vote(self) -> None:
         encoder = LabelEncoder(self.labels)
         x = ["fizz", "buzz", "jazz", "fizz", "buzz", "fizz"]
-        assert encoder.majority_vote(x) == "fizz", (
-            "Should compute the majority vote."
-        )
+        assert encoder.majority_vote(x) == "fizz", "Should compute the majority vote."
 
     def test_probabilities_to_dict(self) -> None:
         encoder = LabelEncoder(self.labels)

@@ -101,15 +101,11 @@ class DCASE2016Task1(BaseClassificationDataset):
 
     @cached_property
     def df_train(self) -> pd.DataFrame:
-        return pd.read_csv(
-            os.path.join(self.path, f"fold{self.fold}_train.csv")
-        )
+        return pd.read_csv(os.path.join(self.path, f"fold{self.fold}_train.csv"))
 
     @cached_property
     def df_dev(self) -> pd.DataFrame:
-        return pd.read_csv(
-            os.path.join(self.path, f"fold{self.fold}_evaluate.csv")
-        )
+        return pd.read_csv(os.path.join(self.path, f"fold{self.fold}_evaluate.csv"))
 
     @cached_property
     def df_test(self) -> pd.DataFrame:
@@ -186,10 +182,7 @@ class DCASE2016Task1(BaseClassificationDataset):
             header=None,
             names=["filename", "begin", "end", "error"],
         )
-        folds = [
-            fold[~fold["filename"].isin(erroneous["filename"])]
-            for fold in folds
-        ]
+        folds = [fold[~fold["filename"].isin(erroneous["filename"])] for fold in folds]
 
         # remove audio from path
         for fold in folds:
@@ -199,9 +192,7 @@ class DCASE2016Task1(BaseClassificationDataset):
         folds[-1].loc[:, "full_filename"] = folds[-1]["full_filename"].apply(
             os.path.basename
         )
-        for short_name, full_name in folds[-1][
-            ["filename", "full_filename"]
-        ].values:
+        for short_name, full_name in folds[-1][["filename", "full_filename"]].values:
             if not os.path.isfile(os.path.join(out_path, short_name)):
                 continue
             shutil.move(

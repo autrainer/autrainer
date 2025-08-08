@@ -28,14 +28,10 @@ class TensorBoardLogger(AbstractLogger):
         run_name: str,
         metrics: List[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[
-            Union[str, Dict[str, str]]
-        ] = ExportConstants().ARTIFACTS,
+        artifacts: List[Union[str, Dict[str, str]]] = ExportConstants().ARTIFACTS,
         output_dir: str = "runs",
     ) -> None:
-        super().__init__(
-            exp_name, run_name, metrics, tracking_metric, artifacts
-        )
+        super().__init__(exp_name, run_name, metrics, tracking_metric, artifacts)
         self.output_dir = os.path.join(output_dir, exp_name, run_name)
 
     def setup(self) -> None:

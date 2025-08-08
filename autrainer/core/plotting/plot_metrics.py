@@ -78,9 +78,7 @@ class PlotMetrics(PlotBase):
         has_std = not std_columns.empty
 
         fig, ax = plt.subplots(1, 1, figsize=self.figsize)
-        sns.lineplot(
-            data=metrics[["train_loss", "dev_loss"]], ax=ax, dashes=False
-        )
+        sns.lineplot(data=metrics[["train_loss", "dev_loss"]], ax=ax, dashes=False)
         if has_std:
             for col in ["train_loss", "dev_loss"]:
                 ax.fill_between(
@@ -283,9 +281,7 @@ class PlotMetrics(PlotBase):
                 ascending_order = True
 
         top_runs = (
-            top_values.sort_values(ascending=ascending_order)
-            .head(max_runs)
-            .index
+            top_values.sort_values(ascending=ascending_order).head(max_runs).index
         )
 
         metrics = metrics[top_runs]

@@ -62,9 +62,7 @@ class TestAllMetrics:
         np.testing.assert_almost_equal(m(truth, pred), res, 2)
 
     @pytest.mark.parametrize("cls", [Accuracy, F1, UAR, CCC, MAE, MSE, PCC])
-    def test_classification_regression_metrics(
-        self, cls: Type[AbstractMetric]
-    ) -> None:
+    def test_classification_regression_metrics(self, cls: Type[AbstractMetric]) -> None:
         self._test_metric(cls())
         self._test_metric_invalid(cls())
         self._test_starting_metric(cls())

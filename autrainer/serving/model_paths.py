@@ -64,9 +64,7 @@ class LocalModelPath(AbstractModelPath):
 
     def verify(self) -> None:
         if not os.path.isdir(self.model_path):
-            raise ValueError(
-                f"Invalid local model directory: '{self.model_path}'"
-            )
+            raise ValueError(f"Invalid local model directory: '{self.model_path}'")
 
     def create_model_path(self) -> str:
         return self.model_path
@@ -164,9 +162,7 @@ class HubModelPath(AbstractModelPath):
 
         match = re.match(pattern, self.model_path)
         if not match:
-            raise ValueError(
-                f"Invalid hugging face path format: '{self.model_path}'"
-            )
+            raise ValueError(f"Invalid hugging face path format: '{self.model_path}'")
 
         return match.groups()
 
@@ -210,9 +206,7 @@ class HubModelPath(AbstractModelPath):
                 + (f" with subdir '{subdir}'" if subdir else "")
             )
         if len(model_files) > 1:
-            raise ValueError(
-                f"Multiple model directories found in repo '{repo_id}'"
-            )
+            raise ValueError(f"Multiple model directories found in repo '{repo_id}'")
 
     def _download(self) -> None:
         from huggingface_hub import HfApi

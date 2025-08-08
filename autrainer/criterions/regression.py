@@ -58,15 +58,12 @@ class WeightedMSELoss(MSELoss):
 
         if data.task != "mt-regression":
             raise ValueError(
-                "`WeightedMSELoss` is only supported for "
-                "multi-target regression tasks."
+                "`WeightedMSELoss` is only supported for multi-target regression tasks."
             )
 
         for target in data.target_transform.target:
             if target not in self.target_weights:
-                raise ValueError(
-                    f"Missing target weight for target '{target}'."
-                )
+                raise ValueError(f"Missing target weight for target '{target}'.")
             values.append(self.target_weights[target])
 
         assert_nonzero_frequency(np.array(values), len(data.target_transform))
