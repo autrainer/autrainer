@@ -90,8 +90,7 @@ class InferenceScript(AbstractScript):
             required=False,
             default="cpu",
             help=(
-                "CUDA-enabled device to use for processing. "
-                "Defaults to 'cpu'."
+                "CUDA-enabled device to use for processing. Defaults to 'cpu'."
             ),
         )
         self.parser.add_argument(

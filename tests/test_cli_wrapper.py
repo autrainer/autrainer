@@ -29,9 +29,9 @@ class TestMainEntryPoint(BaseIndividualTempDir):
             stderr=subprocess.PIPE,
             text=True,
         )
-        assert (
-            result.returncode == 0 and result.stderr == ""
-        ), "Should return 0 and no error message."
+        assert result.returncode == 0 and result.stderr == "", (
+            "Should return 0 and no error message."
+        )
 
     def test_no_command(self) -> None:
         result = subprocess.run(
@@ -115,9 +115,9 @@ class TestCLICreate(BaseIndividualTempDir):
     def test_create_empty(self) -> None:
         autrainer.cli.create(empty=True)
         assert os.path.exists("conf/config.yaml"), "Should create config.yaml."
-        assert os.listdir("conf") == [
-            "config.yaml"
-        ], "Should only contain config.yaml."
+        assert os.listdir("conf") == ["config.yaml"], (
+            "Should only contain config.yaml."
+        )
 
     def test_create_all(self) -> None:
         autrainer.cli.create(all=True)
@@ -162,13 +162,13 @@ class TestCLIList(BaseIndividualTempDir):
         )
         out, _ = capfd.readouterr()
         if local_only:
-            assert (
-                "Local 'model' configurations:" in out
-            ), "Should print local configurations."
+            assert "Local 'model' configurations:" in out, (
+                "Should print local configurations."
+            )
         if global_only:
-            assert (
-                "Global 'model' configurations:" in out
-            ), "Should print global configurations."
+            assert "Global 'model' configurations:" in out, (
+                "Should print global configurations."
+            )
 
     def test_local_global_missing_configs(
         self, capfd: pytest.CaptureFixture
@@ -176,12 +176,12 @@ class TestCLIList(BaseIndividualTempDir):
         os.makedirs("conf/model", exist_ok=True)
         autrainer.cli.list("model", pattern="MissingNet-*")
         out, _ = capfd.readouterr()
-        assert (
-            "No local 'model' configurations found." in out
-        ), "Should not print local configurations."
-        assert (
-            "No global 'model' configurations found." in out
-        ), "Should not print global configurations."
+        assert "No local 'model' configurations found." in out, (
+            "Should not print local configurations."
+        )
+        assert "No global 'model' configurations found." in out, (
+            "Should not print global configurations."
+        )
 
 
 class TestCLIShow(BaseIndividualTempDir):
@@ -215,9 +215,9 @@ class TestCLIShow(BaseIndividualTempDir):
         autrainer.cli.show("model", "EfficientNet-B0", save=True)
         out, _ = capfd.readouterr()
         assert "id: EfficientNet-B0" in out, "Should print configuration."
-        assert os.path.exists(
-            "conf/model/EfficientNet-B0.yaml"
-        ), "Should save configuration."
+        assert os.path.exists("conf/model/EfficientNet-B0.yaml"), (
+            "Should save configuration."
+        )
 
     def test_force_overwrite(self, capfd: pytest.CaptureFixture) -> None:
         os.makedirs("conf/model", exist_ok=True)
@@ -231,9 +231,9 @@ class TestCLIShow(BaseIndividualTempDir):
         autrainer.cli.show("model", "EfficientNet-B0", save=True, force=True)
         out, _ = capfd.readouterr()
         assert "id: EfficientNet-B0" in out, "Should print configuration."
-        assert os.path.exists(
-            "conf/model/EfficientNet-B0.yaml"
-        ), "Should save configuration."
+        assert os.path.exists("conf/model/EfficientNet-B0.yaml"), (
+            "Should save configuration."
+        )
 
 
 class TestCLIFetch(BaseIndividualTempDir):
@@ -262,9 +262,9 @@ class TestCLIPreprocess(BaseIndividualTempDir):
         with patch("sys.argv", [""]):
             autrainer.cli.preprocess(cfg_launcher=True, update_frequency=0)
         out, _ = capfd.readouterr()
-        assert (
-            "Preprocessing datasets..." in out
-        ), "Should print preprocessing message."
+        assert "Preprocessing datasets..." in out, (
+            "Should print preprocessing message."
+        )
 
 
 class TestCLIInference(BaseIndividualTempDir):

@@ -75,12 +75,12 @@ class TestInference(BaseIndividualTempDir):
         ), "Should have columns: audio, target, prediction."
         inference.save_prediction_results(df, "output")
         inference.save_prediction_yaml(df, "output")
-        assert os.path.exists(
-            "output/results.csv"
-        ), "Should save prediction results."
-        assert os.path.exists(
-            "output/results.yaml"
-        ), "Should save prediction YAML."
+        assert os.path.exists("output/results.csv"), (
+            "Should save prediction results."
+        )
+        assert os.path.exists("output/results.yaml"), (
+            "Should save prediction YAML."
+        )
 
         pred, out, probs = inference.predict_file("input/audio_0.npy")
         assert isinstance(pred, str), "Should return a prediction string."
@@ -98,21 +98,21 @@ class TestInference(BaseIndividualTempDir):
             sample_rate=16,
         )
         df = inference.predict_directory("input", "npy")
-        assert (
-            len(df) == 40
-        ), "Should predict 10 samples with 3 windows each and majority voting."
+        assert len(df) == 40, (
+            "Should predict 10 samples with 3 windows each and majority voting."
+        )
         assert all(
             c in df.columns
             for c in ["filename", "offset", "prediction", "output"]
         ), "Should have columns: audio, target, prediction."
         inference.save_prediction_results(df, "output")
         inference.save_prediction_yaml(df, "output")
-        assert os.path.exists(
-            "output/results.csv"
-        ), "Should save prediction results."
-        assert os.path.exists(
-            "output/results.yaml"
-        ), "Should save prediction YAML."
+        assert os.path.exists("output/results.csv"), (
+            "Should save prediction results."
+        )
+        assert os.path.exists("output/results.yaml"), (
+            "Should save prediction YAML."
+        )
 
         pred, out, probs = inference.predict_file("input/audio_0.npy")
         assert isinstance(pred, dict), "Should return a prediction dictionary"
@@ -125,17 +125,17 @@ class TestInference(BaseIndividualTempDir):
         inference = Inference("TestModel")
         df = inference.embed_directory("input", "npy")
         assert len(df) == 10, "Should embed 10 samples."
-        assert all(
-            c in df.columns for c in ["filename", "embedding"]
-        ), "Should have columns: audio, embedding."
+        assert all(c in df.columns for c in ["filename", "embedding"]), (
+            "Should have columns: audio, embedding."
+        )
         inference.save_embeddings(df, "output", "npy")
         assert all(
             os.path.isfile(f"output/audio_{i}.pt") for i in range(10)
         ), "Should save embeddings."
         emb = inference.embed_file("input/audio_0.npy")
-        assert isinstance(
-            emb, torch.Tensor
-        ), "Should return an embedding tensor."
+        assert isinstance(emb, torch.Tensor), (
+            "Should return an embedding tensor."
+        )
 
     def test_embed_sliding_window(self) -> None:
         self._mock_model_setup()
@@ -158,9 +158,9 @@ class TestInference(BaseIndividualTempDir):
         ]
         assert len(audio_embeddings) == 30, "Should save embeddings."
         emb = inference.embed_file("input/audio_0.npy")
-        assert isinstance(
-            emb, dict
-        ), "Should return a dictionary of embeddings."
+        assert isinstance(emb, dict), (
+            "Should return a dictionary of embeddings."
+        )
 
     def test_preprocessing(self) -> None:
         self._mock_model_setup()
@@ -180,12 +180,12 @@ class TestInference(BaseIndividualTempDir):
         ), "Should have columns: audio, target, prediction."
         inference.save_prediction_results(df, "output")
         inference.save_prediction_yaml(df, "output")
-        assert os.path.exists(
-            "output/results.csv"
-        ), "Should save prediction results."
-        assert os.path.exists(
-            "output/results.yaml"
-        ), "Should save prediction YAML."
+        assert os.path.exists("output/results.csv"), (
+            "Should save prediction results."
+        )
+        assert os.path.exists("output/results.yaml"), (
+            "Should save prediction YAML."
+        )
 
         pred, out, probs = inference.predict_file("input/audio_0.npy")
         assert isinstance(pred, str), "Should return a prediction string."

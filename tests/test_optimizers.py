@@ -45,9 +45,9 @@ class TestSAM:
             probabilities_fn=lambda x: x,
         )
 
-        assert str(original_state_dict) != str(
-            self.model.state_dict()
-        ), "Should not be equal"
+        assert str(original_state_dict) != str(self.model.state_dict()), (
+            "Should not be equal"
+        )
 
     def test_missing_closure(self) -> None:
         optimizer = SAM(
@@ -71,6 +71,6 @@ class TestSAM:
             lr=0.01,
         )
         optimizer.load_state_dict(state_dict)
-        assert str(optimizer.state_dict()) == str(
-            state_dict
-        ), "Should be equal"
+        assert str(optimizer.state_dict()) == str(state_dict), (
+            "Should be equal"
+        )

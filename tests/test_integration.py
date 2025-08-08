@@ -162,6 +162,6 @@ class TestCheckpointsIntegration(BaseIndividualTempDir):
         m2 = FFNN(7, 64, 64)
         self._load_state(m2, r2, "_initial")
         x = torch.randn(4, 64)
-        assert torch.allclose(
-            m1.embeddings(x), m2.embeddings(x)
-        ), "Should have same embeddings."
+        assert torch.allclose(m1.embeddings(x), m2.embeddings(x)), (
+            "Should have same embeddings."
+        )

@@ -84,8 +84,7 @@ class CreateScript(AbstractScript):
             raise CommandLineError(
                 parser=self.parser,
                 message=(
-                    "The flags -e/--empty and -a/--all "
-                    "are mutually exclusive."
+                    "The flags -e/--empty and -a/--all are mutually exclusive."
                 ),
             )
         if args.directories and (args.empty or args.all):

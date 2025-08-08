@@ -169,7 +169,7 @@ class ToyDataset(AbstractDataset):
 
         if self.task == "ml-classification":
             self.target_column = [
-                f"class_{i+1}" for i in range(self.num_targets)
+                f"class_{i + 1}" for i in range(self.num_targets)
             ]
             df = pd.DataFrame(
                 {
@@ -191,11 +191,11 @@ class ToyDataset(AbstractDataset):
                 }
             )
             df[self.target_column] = df[self.target_column].apply(
-                lambda x: f"class_{x+1}"
+                lambda x: f"class_{x + 1}"
             )
         elif self.task == "mt-regression":
             self.target_column = [
-                f"target_{i+1}" for i in range(self.num_targets)
+                f"target_{i + 1}" for i in range(self.num_targets)
             ]
             df = pd.DataFrame(
                 {

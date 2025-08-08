@@ -126,9 +126,9 @@ class TestAllAugmentations:
         else:
             x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
         x = DataItem(x, 0, 0)
-        assert torch.allclose(
-            x.features, instance(x).features
-        ), "Should not apply augmentation"
+        assert torch.allclose(x.features, instance(x).features), (
+            "Should not apply augmentation"
+        )
 
     @pytest.mark.parametrize(
         "augmentation, params, input_shape, output_shape",
@@ -193,9 +193,9 @@ class TestAllAugmentations:
     def test_unset_offset_generator_seed(self) -> None:
         aug = GaussianNoise(generator_seed=None)
         aug.offset_generator_seed(1)
-        assert (
-            aug.generator_seed is None
-        ), "Should not change the seed if it was not set."
+        assert aug.generator_seed is None, (
+            "Should not change the seed if it was not set."
+        )
 
 
 class TestAugmentationManagerPipeline:
@@ -230,20 +230,20 @@ class TestAugmentationManagerPipeline:
         am = AugmentationManager(**{f"{subset}_augmentation": config})
         augs = {}
         augs["train"], augs["dev"], augs["test"] = am.get_augmentations()
-        assert all(
-            isinstance(aug, SmartCompose) for aug in augs.values()
-        ), "Should return SmartCompose instances"
+        assert all(isinstance(aug, SmartCompose) for aug in augs.values()), (
+            "Should return SmartCompose instances"
+        )
         if config is None:
-            assert all(
-                not a.transforms for a in augs.values()
-            ), "All augmentations should be empty"
+            assert all(not a.transforms for a in augs.values()), (
+                "All augmentations should be empty"
+            )
         else:
-            assert (
-                len(augs.pop(subset).transforms) == 1
-            ), "Should have 1 augmentation"
-            assert all(
-                not a.transforms for a in augs.values()
-            ), "All other augmentations should be empty"
+            assert len(augs.pop(subset).transforms) == 1, (
+                "Should have 1 augmentation"
+            )
+            assert all(not a.transforms for a in augs.values()), (
+                "All other augmentations should be empty"
+            )
 
 
 class TestChoice:
@@ -267,13 +267,13 @@ class TestChoice:
             generator_seed=AUGMENTATION_SEED,
         )
         choice.offset_generator_seed(1)
-        assert (
-            choice.generator_seed == AUGMENTATION_SEED + 1
-        ), "Should offset the generator seed"
+        assert choice.generator_seed == AUGMENTATION_SEED + 1, (
+            "Should offset the generator seed"
+        )
         for c in choice.augmentation_choices:
-            assert (
-                c.generator_seed == AUGMENTATION_SEED + 1
-            ), "Should offset the generator seed of the choice"
+            assert c.generator_seed == AUGMENTATION_SEED + 1, (
+                "Should offset the generator seed of the choice"
+            )
 
 
 class TestSequential:
@@ -290,13 +290,13 @@ class TestSequential:
             generator_seed=AUGMENTATION_SEED,
         )
         seq.offset_generator_seed(1)
-        assert (
-            seq.generator_seed == AUGMENTATION_SEED + 1
-        ), "Should offset the generator seed"
+        assert seq.generator_seed == AUGMENTATION_SEED + 1, (
+            "Should offset the generator seed"
+        )
         for s in seq.augmentation_sequence:
-            assert (
-                s.generator_seed == AUGMENTATION_SEED + 1
-            ), "Should offset the generator seed of the sequence"
+            assert s.generator_seed == AUGMENTATION_SEED + 1, (
+                "Should offset the generator seed of the sequence"
+            )
 
 
 class TestBaseMixUpCutMix:
@@ -401,9 +401,9 @@ class TestSampleGaussianWhiteNoise:
 
         c4 = self._mock_snr_calculation(deepcopy(x1), 0, 10, g)
         y4 = aug(deepcopy(x1))
-        assert torch.allclose(
-            y4.features, c4.features
-        ), "Should be deterministic"
+        assert torch.allclose(y4.features, c4.features), (
+            "Should be deterministic"
+        )
 
     def _mock_snr_calculation(
         self,

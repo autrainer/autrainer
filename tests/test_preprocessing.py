@@ -223,6 +223,6 @@ class TestPreprocessing(BaseIndividualTempDir):
             for audio_file, numpy_file in zip(
                 df_audio[data.index_column], df_numpy[data.index_column]
             ):
-                assert audio_file == numpy_file.replace(
-                    "npy", "wav"
-                ), "Should match audio file path."
+                assert audio_file == numpy_file.replace("npy", "wav"), (
+                    "Should match audio file path."
+                )

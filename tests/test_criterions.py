@@ -108,13 +108,13 @@ class TestBalancedCrossEntropyLoss:
 
     def test_setup(self) -> None:
         criterion, weights = self._mock_criterion_setup()
-        assert (
-            criterion.weight is not None
-        ), "Should have calculated the weights"
+        assert criterion.weight is not None, (
+            "Should have calculated the weights"
+        )
 
-        assert torch.allclose(
-            criterion.weight, weights
-        ), "Should have calculated frequency-based weights"
+        assert torch.allclose(criterion.weight, weights), (
+            "Should have calculated frequency-based weights"
+        )
 
     def test_forward_dtype(self) -> None:
         criterion, _ = self._mock_criterion_setup()
@@ -176,13 +176,13 @@ class TestBalancedBCEWithLogitsLoss(TestBalancedCrossEntropyLoss):
 
     def test_setup(self) -> None:
         criterion, weights = self._mock_criterion_setup()
-        assert (
-            criterion.weights_buffer is not None
-        ), "Should have calculated the weights"
+        assert criterion.weights_buffer is not None, (
+            "Should have calculated the weights"
+        )
 
-        assert torch.allclose(
-            criterion.weights_buffer, weights
-        ), "Should have calculated frequency-based weights"
+        assert torch.allclose(criterion.weights_buffer, weights), (
+            "Should have calculated frequency-based weights"
+        )
 
     def test_invalid_frequency_setup(self) -> None:
         criterion = BalancedBCEWithLogitsLoss()
@@ -256,13 +256,13 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
 
     def test_setup(self) -> None:
         criterion, weights = self._mock_criterion_setup()
-        assert (
-            criterion.weights_buffer is not None
-        ), "Should have calculated the weights"
+        assert criterion.weights_buffer is not None, (
+            "Should have calculated the weights"
+        )
 
-        assert torch.allclose(
-            criterion.weights_buffer, weights
-        ), "Should have calculated frequency-based weights"
+        assert torch.allclose(criterion.weights_buffer, weights), (
+            "Should have calculated frequency-based weights"
+        )
 
     def test_invalid_task(self) -> None:
         criterion = WeightedMSELoss(target_weights=None)
