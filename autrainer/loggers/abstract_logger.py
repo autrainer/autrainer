@@ -44,9 +44,7 @@ def get_params_to_export(
         if isinstance(v, (dict, DictConfig)):
             cfg_id = v.get("id", None)
             if cfg_id is None and v.get("_target_", None):
-                raise KeyError(
-                    f"Configuration '{full_key}' is missing an id field."
-                )
+                raise KeyError(f"Configuration '{full_key}' is missing an id field.")
             if cfg_id == "None" or not v.keys():  # placeholder syntax
                 continue
             elif cfg_id is None:  # shorthand syntax
@@ -66,9 +64,7 @@ class AbstractLogger(ABC):
         run_name: str,
         metrics: List[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[
-            Union[str, Dict[str, str]]
-        ] = ExportConstants().ARTIFACTS,
+        artifacts: List[Union[str, Dict[str, str]]] = ExportConstants().ARTIFACTS,
     ) -> None:
         """Base class for loggers.
 
@@ -92,9 +88,7 @@ class AbstractLogger(ABC):
         }
         self.metrics_dict: Dict[str, AbstractMetric] = {}
         for metric in self.metrics:
-            self.best_metrics[f"{metric.name}.{metric.suffix}"] = (
-                metric.starting_metric
-            )
+            self.best_metrics[f"{metric.name}.{metric.suffix}"] = metric.starting_metric
             self.metrics_dict[metric.name] = metric
 
     def log_and_update_metrics(
@@ -135,9 +129,7 @@ class AbstractLogger(ABC):
                     self.best_metrics[k + ".min"] = v
             else:
                 metric = self.metrics_dict[k]
-                if metric.compare(
-                    v, self.best_metrics[f"{k}.{metric.suffix}"]
-                ):
+                if metric.compare(v, self.best_metrics[f"{k}.{metric.suffix}"]):
                     self.best_metrics[f"{k}.{metric.suffix}"] = v
 
     def setup(self) -> None:
@@ -202,9 +194,7 @@ class AbstractLogger(ABC):
     ) -> None:
         self.log_and_update_metrics(metrics, iteration)
 
-    def cb_on_test_end(
-        self, trainer: "ModularTaskTrainer", test_results: dict
-    ) -> None:
+    def cb_on_test_end(self, trainer: "ModularTaskTrainer", test_results: dict) -> None:
         self.log_and_update_metrics(test_results)
 
     def cb_on_train_end(self, trainer: "ModularTaskTrainer") -> None:

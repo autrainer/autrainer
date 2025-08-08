@@ -28,9 +28,7 @@ class BaseIndividualTempDir:
         request: pytest.FixtureRequest,
     ) -> Generator[None, None, None]:
         if hasattr(request.node, "callspec"):
-            persist_previous = request.node.callspec.params.get(
-                "reuse_temp_dir", False
-            )
+            persist_previous = request.node.callspec.params.get("reuse_temp_dir", False)
         else:
             persist_previous = False
 

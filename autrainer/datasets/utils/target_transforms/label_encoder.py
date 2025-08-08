@@ -14,9 +14,7 @@ class LabelEncoder(AbstractTargetTransform):
         """
         self.labels = sorted(labels)
         codes = range(len(self.labels))
-        self.inverse_map = {
-            code: label for code, label in zip(codes, self.labels)
-        }
+        self.inverse_map = {code: label for code, label in zip(codes, self.labels)}
         self.map = {label: code for code, label in zip(codes, self.labels)}
 
     def __len__(self) -> int:

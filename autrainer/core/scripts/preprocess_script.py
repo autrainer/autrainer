@@ -6,10 +6,7 @@ from omegaconf import DictConfig, OmegaConf
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
 
-from .abstract_preprocess_script import (
-    AbstractPreprocessScript,
-    PreprocessArgs,
-)
+from .abstract_preprocess_script import AbstractPreprocessScript, PreprocessArgs
 from .utils import (
     add_hydra_args_to_sys,
     catch_cli_errors,
@@ -178,9 +175,9 @@ class PreprocessScript(AbstractPreprocessScript):
             if cfg.dataset.get("features_subdir"):
                 try:
                     preprocessing_cfg = OmegaConf.to_container(
-                        hydra.compose(
-                            f"preprocessing/{cfg.dataset.features_subdir}"
-                        )["preprocessing"]
+                        hydra.compose(f"preprocessing/{cfg.dataset.features_subdir}")[
+                            "preprocessing"
+                        ]
                     )
                 except MissingConfigException:
                     pass
@@ -193,9 +190,7 @@ class PreprocessScript(AbstractPreprocessScript):
 
     def _assert_num_workers(self, num_workers: int) -> None:
         if num_workers < 0:
-            raise ValueError(
-                f"Number of workers '{num_workers}' must be >= 0."
-            )
+            raise ValueError(f"Number of workers '{num_workers}' must be >= 0.")
 
     def _preprocess_datasets(self) -> None:
         print("Preprocessing datasets...")
@@ -248,6 +243,4 @@ def preprocess(
         add_hydra_args_to_sys(override_kwargs, config_name, config_path)
         script = PreprocessScript()
         script.parser = MockParser()
-        script.main(
-            PreprocessArgs(cfg_launcher, num_workers, update_frequency)
-        )
+        script.main(PreprocessArgs(cfg_launcher, num_workers, update_frequency))

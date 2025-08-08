@@ -33,9 +33,9 @@ class WhisperBackbone(AbstractModel):
 
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
         ids = torch.stack([self.decoder_input_ids] * features.shape[0])
-        features = self.model(features, decoder_input_ids=ids)[
-            "last_hidden_state"
-        ][:, 0, :]
+        features = self.model(features, decoder_input_ids=ids)["last_hidden_state"][
+            :, 0, :
+        ]
         return features
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:

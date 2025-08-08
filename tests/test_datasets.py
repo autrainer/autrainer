@@ -94,9 +94,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
     ) -> None:
         if output_files is None:
             output_files = ["train", "dev", "test"]
-        dfs = [
-            pd.read_csv(os.path.join(path, f"{f}.csv")) for f in output_files
-        ]
+        dfs = [pd.read_csv(os.path.join(path, f"{f}.csv")) for f in output_files]
         for df in dfs:
             for filename in df[index_column]:
                 np.save(
@@ -247,15 +245,15 @@ class TestBaseDatasets(BaseIndividualTempDir):
             AbstractTargetTransform,
         ), "Should be an instance of AbstractTargetTransform."
 
-        assert isinstance(
-            data.train_dataset, torch.utils.data.Dataset
-        ), "Should be an instance of Dataset."
-        assert isinstance(
-            data.dev_dataset, torch.utils.data.Dataset
-        ), "Should be an instance of Dataset."
-        assert isinstance(
-            data.test_dataset, torch.utils.data.Dataset
-        ), "Should be an instance of Dataset."
+        assert isinstance(data.train_dataset, torch.utils.data.Dataset), (
+            "Should be an instance of Dataset."
+        )
+        assert isinstance(data.dev_dataset, torch.utils.data.Dataset), (
+            "Should be an instance of Dataset."
+        )
+        assert isinstance(data.test_dataset, torch.utils.data.Dataset), (
+            "Should be an instance of Dataset."
+        )
 
         assert len(data.train_dataset) == 10, "Should be 10."
         assert len(data.dev_dataset) == 10, "Should be 10."
@@ -264,15 +262,15 @@ class TestBaseDatasets(BaseIndividualTempDir):
         train_loader = data.create_train_loader(4)
         dev_loader = data.create_dev_loader(4)
         test_loader = data.create_test_loader(4)
-        assert isinstance(
-            train_loader, torch.utils.data.DataLoader
-        ), "Should be an instance of DataLoader."
-        assert isinstance(
-            dev_loader, torch.utils.data.DataLoader
-        ), "Should be an instance of DataLoader."
-        assert isinstance(
-            test_loader, torch.utils.data.DataLoader
-        ), "Should be an instance of DataLoader."
+        assert isinstance(train_loader, torch.utils.data.DataLoader), (
+            "Should be an instance of DataLoader."
+        )
+        assert isinstance(dev_loader, torch.utils.data.DataLoader), (
+            "Should be an instance of DataLoader."
+        )
+        assert isinstance(test_loader, torch.utils.data.DataLoader), (
+            "Should be an instance of DataLoader."
+        )
 
         for loader in [train_loader, dev_loader, test_loader]:
             x = next(iter(loader))
@@ -419,9 +417,9 @@ class TestDCASE2020Task1A(BaseIndividualTempDir):
     def _mock_dcase2020_columns(self, replace_targets: bool = False) -> None:
         for subset in ["train", "test"]:
             df = pd.read_csv(f"data/TestDataset/{subset}.csv")
-            df["location"] = [f"loc{i%5}" for i in range(len(df))]
-            df["city"] = [f"city{i%3}" for i in range(len(df))]
-            df["device"] = [f"device{i%2}" for i in range(len(df))]
+            df["location"] = [f"loc{i % 5}" for i in range(len(df))]
+            df["city"] = [f"city{i % 3}" for i in range(len(df))]
+            df["device"] = [f"device{i % 2}" for i in range(len(df))]
             if replace_targets:
                 df["target"] = self.targets
             df.to_csv(f"data/TestDataset/{subset}.csv", index=False)
@@ -483,7 +481,7 @@ class TestEmoDB(BaseIndividualTempDir):
             output_files=["metadata"],
         )
         df = pd.read_csv("data/TestDataset/metadata.csv")
-        df["speaker"] = [f"{i%3}" for i in range(len(df))]
+        df["speaker"] = [f"{i % 3}" for i in range(len(df))]
         df.to_csv("data/TestDataset/metadata.csv", index=False)
         data = EmoDB(
             **TestBaseDatasets._mock_dataset_kwargs(),
@@ -533,16 +531,13 @@ class TestMSPPodcast(BaseIndividualTempDir):
         kwargs = TestBaseDatasets._mock_dataset_kwargs()
         kwargs["metrics"] = [metric]
         kwargs["tracking_metric"] = metric
-        kwargs["target_column"] = (
-            target if isinstance(target, list) else [target]
-        )
+        kwargs["target_column"] = target if isinstance(target, list) else [target]
         data = MSPPodcast(**kwargs)
         assert len(data.train_dataset) == 4, "Should be 4."
         assert len(data.dev_dataset) == 3, "Should be 3."
         assert len(data.test_dataset) == 3, "Should be 3."
         assert data.test_dataset[0].target.shape == shape, (
-            f"Target shape should be {shape} "
-            f"but is {data.test_dataset[0].target.shape}"
+            f"Target shape should be {shape} but is {data.test_dataset[0].target.shape}"
         )
 
 

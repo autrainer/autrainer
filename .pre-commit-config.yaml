@@ -1,14 +1,14 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.2
+    rev: v0.12.8
     hooks:
       - id: ruff
-        args: [ --fix ]
+        args: [--fix]
       - id: ruff-format
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.4
     hooks:
-    - id: codespell
-      args: ["autrainer/", "autrainer-configurations/", "docs/source/"]
-      additional_dependencies:
-        - tomli
+      - id: codespell
+        args: ["autrainer/", "autrainer-configurations/", "docs/source/"]
+        additional_dependencies:
+          - tomli

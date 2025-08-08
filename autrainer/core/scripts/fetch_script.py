@@ -6,10 +6,7 @@ from omegaconf import DictConfig, OmegaConf
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
 
-from .abstract_preprocess_script import (
-    AbstractPreprocessScript,
-    PreprocessArgs,
-)
+from .abstract_preprocess_script import AbstractPreprocessScript, PreprocessArgs
 from .utils import (
     add_hydra_args_to_sys,
     catch_cli_errors,
@@ -44,9 +41,7 @@ class FetchScript(AbstractPreprocessScript):
         @autrainer.main("config")
         def main(cfg: DictConfig) -> None:
             if not self._id_in_dict(self.datasets, cfg.dataset.id):
-                self.datasets[cfg.dataset.id] = OmegaConf.to_container(
-                    cfg.dataset
-                )
+                self.datasets[cfg.dataset.id] = OmegaConf.to_container(cfg.dataset)
 
             if not self._id_in_dict(self.models, cfg.model.id):
                 self.models[cfg.model.id] = OmegaConf.to_container(cfg.model)

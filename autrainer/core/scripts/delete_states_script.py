@@ -79,9 +79,7 @@ class DeleteStatesScript(AbstractPostprocessScript):
     def _collect_state_paths(self, args: DeleteStatesArgs) -> List[str]:
         pattern = "**/*.pt"
         path = os.path.join(args.results_dir, args.experiment_id, "training")
-        return [
-            f for f in glob.glob(os.path.join(path, pattern), recursive=True)
-        ]
+        return [f for f in glob.glob(os.path.join(path, pattern), recursive=True)]
 
     def _filter_best_states(self, state_paths: List[str]) -> List[str]:
         return [f for f in state_paths if "_best" != self._get_iter_dir(f)]
@@ -92,9 +90,7 @@ class DeleteStatesScript(AbstractPostprocessScript):
         runs: List[str],
     ) -> List[str]:
         for run in runs:
-            state_paths = [
-                f for f in state_paths if run != self._get_run_name(f)
-            ]
+            state_paths = [f for f in state_paths if run != self._get_run_name(f)]
         return state_paths
 
     def _filter_iterations(
@@ -103,9 +99,7 @@ class DeleteStatesScript(AbstractPostprocessScript):
         iterations: List[int],
     ) -> List[str]:
         for iteration in iterations:
-            state_paths = [
-                f for f in state_paths if iteration != self._get_iter_num(f)
-            ]
+            state_paths = [f for f in state_paths if iteration != self._get_iter_num(f)]
         return state_paths
 
     def _get_iter_dir(self, state_path: str) -> str:
@@ -125,8 +119,7 @@ class DeleteStatesScript(AbstractPostprocessScript):
         print("\n".join(state_paths))
         print()
         response = input(
-            "Are you sure you want to delete "
-            f"{len(state_paths)} states? (y/n): "
+            f"Are you sure you want to delete {len(state_paths)} states? (y/n): "
         ).lower()
         return response in ["y", "yes"]
 

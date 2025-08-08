@@ -87,9 +87,7 @@ class TransformManager:
 
             combined.append(transform)
 
-        combined.extend(
-            t for t in dataset_transforms if self._get_key(t) not in seen
-        )
+        combined.extend(t for t in dataset_transforms if self._get_key(t) not in seen)
 
         return SmartCompose([self._instantiate(t) for t in combined])
 

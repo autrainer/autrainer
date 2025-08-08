@@ -28,12 +28,8 @@ class AbstractPostprocessScript(AbstractScript):
         self._assert_results_dir_exists(args)
         self._assert_experiment_id_exists(args)
 
-    def _assert_results_dir_exists(
-        self, args: AbstractPostprocessArgs
-    ) -> None:
-        if os.path.exists(args.results_dir) and os.path.isdir(
-            args.results_dir
-        ):
+    def _assert_results_dir_exists(self, args: AbstractPostprocessArgs) -> None:
+        if os.path.exists(args.results_dir) and os.path.isdir(args.results_dir):
             return
         raise CommandLineError(
             self.parser,
@@ -41,9 +37,7 @@ class AbstractPostprocessScript(AbstractScript):
             code=1,
         )
 
-    def _assert_experiment_id_exists(
-        self, args: AbstractPostprocessArgs
-    ) -> None:
+    def _assert_experiment_id_exists(self, args: AbstractPostprocessArgs) -> None:
         path = os.path.join(args.results_dir, args.experiment_id)
         if os.path.exists(path) and os.path.isdir(path):
             return

@@ -24,9 +24,7 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         """
         for m, M in zip(minimum, maximum):
             if not m < M:
-                raise ValueError(
-                    f"Minimum '{m}' must be less than maximum '{M}'."
-                )
+                raise ValueError(f"Minimum '{m}' must be less than maximum '{M}'.")
         self.target = target
         self.minimum = [float(m) for m in minimum]
         self._m = torch.Tensor(self.minimum)

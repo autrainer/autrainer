@@ -20,14 +20,8 @@ class AutrainerPathPlugin(SearchPathPlugin):
         )
         snapshot = ConfigDirSnapshot().create_snapshot_dir()
         if snapshot is not None:
-            search_path.append(
-                provider="autrainer-snapshot",
-                path=f"file://{snapshot}",
-            )
-        search_path.append(
-            provider="autrainer-configs",
-            path=f"file://{lib_path}",
-        )
+            search_path.append(provider="autrainer-snapshot", path=f"file://{snapshot}")
+        search_path.append(provider="autrainer-configs", path=f"file://{lib_path}")
 
 
 def add_current_directory_to_path() -> None:

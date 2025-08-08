@@ -32,14 +32,10 @@ class MLFlowLogger(AbstractLogger):
         run_name: str,
         metrics: List[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[
-            Union[str, Dict[str, str]]
-        ] = ExportConstants().ARTIFACTS,
+        artifacts: List[Union[str, Dict[str, str]]] = ExportConstants().ARTIFACTS,
         output_dir: str = "mlruns",
     ) -> None:
-        super().__init__(
-            exp_name, run_name, metrics, tracking_metric, artifacts
-        )
+        super().__init__(exp_name, run_name, metrics, tracking_metric, artifacts)
         output_dir = Path(output_dir)
         if not output_dir.is_absolute():
             output_dir = output_dir.absolute()

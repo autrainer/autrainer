@@ -101,9 +101,9 @@ class SAM(torch.optim.Optimizer):
 
     @torch.no_grad()
     def step(self, closure=None):
-        assert (
-            closure is not None
-        ), "Sharpness Aware Minimization requires closure, but it was not provided"
+        assert closure is not None, (
+            "Sharpness Aware Minimization requires closure, but it was not provided"
+        )
         # the closure should do a full forward-backward pass
         closure = torch.enable_grad()(closure)
 

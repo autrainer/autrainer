@@ -92,9 +92,7 @@ class ConfigurationsDirective(SphinxDirective):
         )
 
         config_files = [
-            f
-            for f in os.listdir(conf_dir)
-            if self._select_config(f, config, exact)
+            f for f in os.listdir(conf_dir) if self._select_config(f, config, exact)
         ]
         config_files = sorted(config_files, key=lambda x: (x.lower(), len(x)))
 
@@ -110,9 +108,7 @@ class ConfigurationsDirective(SphinxDirective):
 
             container_node = ConfigNode()
             container_node["caption"] = (
-                f"conf/{subdir}/{config_file}"
-                if subdir
-                else f"conf/{config_file}"
+                f"conf/{subdir}/{config_file}" if subdir else f"conf/{config_file}"
             )
             config_id = f"default-{config_file.replace('.yaml', '').lower()}"
             container_node["ids"].append(config_id)

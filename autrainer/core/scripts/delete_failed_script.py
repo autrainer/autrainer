@@ -34,8 +34,7 @@ class DeleteFailedScript(AbstractPostprocessScript):
             action="store_true",
             default=False,
             help=(
-                "Force deletion of failed runs without confirmation. "
-                "Defaults to False."
+                "Force deletion of failed runs without confirmation. Defaults to False."
             ),
         )
 
@@ -64,8 +63,7 @@ class DeleteFailedScript(AbstractPostprocessScript):
         print("\n".join(failed_runs))
         print()
         response = input(
-            "Are you sure you want to delete "
-            f"{len(failed_runs)} failed runs? (y/n): "
+            f"Are you sure you want to delete {len(failed_runs)} failed runs? (y/n): "
         ).lower()
         return response in ["y", "yes"]
 
@@ -101,10 +99,4 @@ def rm_failed(
     """
     script = DeleteFailedScript()
     script.parser = MockParser()
-    script.main(
-        DeleteFailedArgs(
-            results_dir,
-            experiment_id,
-            force,
-        )
-    )
+    script.main(DeleteFailedArgs(results_dir, experiment_id, force))

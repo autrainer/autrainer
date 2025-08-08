@@ -48,22 +48,15 @@ def assign_seeds(
         new_choices = []
         for choice in config["choices"]:
             choice = convert_shorthand(choice)
-            updated_choice, current_seed = assign_seeds(
-                choice, current_seed, increment
-            )
+            updated_choice, current_seed = assign_seeds(choice, current_seed, increment)
             new_choices.append(updated_choice)
         config["choices"] = new_choices
 
-    elif (
-        aug_name == "autrainer.augmentations.Sequential"
-        and "sequence" in config
-    ):
+    elif aug_name == "autrainer.augmentations.Sequential" and "sequence" in config:
         new_sequence = []
         for seq_aug in config["sequence"]:
             seq_aug = convert_shorthand(seq_aug)
-            updated_aug, current_seed = assign_seeds(
-                seq_aug, current_seed, increment
-            )
+            updated_aug, current_seed = assign_seeds(seq_aug, current_seed, increment)
             new_sequence.append(updated_aug)
         config["sequence"] = new_sequence
 

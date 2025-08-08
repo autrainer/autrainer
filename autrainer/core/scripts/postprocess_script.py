@@ -47,9 +47,7 @@ class PostprocessScript(AbstractPostprocessScript):
             nargs="+",
             action="append",
             help="Configurations to aggregate. One or more of:"
-            + "\n - ".join(
-                [""] + sorted(NamingConstants().VALID_AGGREGATIONS)
-            ),
+            + "\n - ".join([""] + sorted(NamingConstants().VALID_AGGREGATIONS)),
         )
 
     def main(self, args: PostprocessArgs) -> None:
@@ -67,10 +65,7 @@ class PostprocessScript(AbstractPostprocessScript):
                     raise CommandLineError(self.parser, m)
 
     def _summarize(self, args: PostprocessArgs) -> None:
-        from autrainer.postprocessing import (
-            AggregateGrid,
-            SummarizeGrid,
-        )
+        from autrainer.postprocessing import AggregateGrid, SummarizeGrid
 
         sg = SummarizeGrid(
             results_dir=args.results_dir,
@@ -119,11 +114,4 @@ def postprocess(
     """
     script = PostprocessScript()
     script.parser = MockParser()
-    script.main(
-        PostprocessArgs(
-            results_dir,
-            experiment_id,
-            max_runs,
-            aggregate,
-        )
-    )
+    script.main(PostprocessArgs(results_dir, experiment_id, max_runs, aggregate))

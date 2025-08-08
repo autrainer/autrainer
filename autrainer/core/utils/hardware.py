@@ -63,10 +63,7 @@ def get_gpu_info(device: torch.device) -> Optional[dict]:
         return None
 
     gpu = torch.cuda.get_device_properties(device)
-    return {
-        "name": gpu.name,
-        "memory_gb": round(gpu.total_memory / (1024**3)),
-    }
+    return {"name": gpu.name, "memory_gb": round(gpu.total_memory / (1024**3))}
 
 
 def get_system_info() -> dict:
@@ -75,17 +72,12 @@ def get_system_info() -> dict:
     Returns:
         Dictionary containing system information.
     """
-    s = {
-        "os": platform.system(),
-        "platform": platform.platform(),
-    }
+    s = {"os": platform.system(), "platform": platform.platform()}
     if os.environ.get("SLURMD_NODENAME"):
         s.update(
             {
                 "node": os.environ.get("SLURMD_NODENAME"),
-                "memory_gb": round(
-                    int(os.environ.get("SLURM_MEM_PER_NODE", 0)) / 1024
-                ),
+                "memory_gb": round(int(os.environ.get("SLURM_MEM_PER_NODE", 0)) / 1024),
                 "cpu_count": int(os.environ.get("SLURM_CPUS_PER_TASK", 0)),
             }
         )

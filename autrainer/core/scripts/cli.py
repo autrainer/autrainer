@@ -60,15 +60,9 @@ class CLI:
             action="version",
             version=f"%(prog)s {autrainer.__version__}",
         )
-        subparsers = parser.add_subparsers(
-            dest="command",
-            metavar="<command>",
-        )
+        subparsers = parser.add_subparsers(dest="command", metavar="<command>")
         for c in self.scripts:
-            p = subparsers.add_parser(
-                c.command,
-                help=c.description,
-            )
+            p = subparsers.add_parser(c.command, help=c.description)
             p = CLI._setup_subparser(p, c)
         return parser
 

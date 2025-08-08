@@ -268,10 +268,7 @@ class ModularTaskTrainer:
                 instance_of=AbstractFileHandler,
             )
             _preprocess_pipe = SmartCompose(
-                [
-                    autrainer.instantiate_shorthand(t)
-                    for t in _preprocess["pipeline"]
-                ]
+                [autrainer.instantiate_shorthand(t) for t in _preprocess["pipeline"]]
             )
 
         save_tasks = [
@@ -294,9 +291,7 @@ class ModularTaskTrainer:
         if self.cfg.get("continue_training", False):
             self.continue_training = ContinueTraining(
                 run_name=run_name or self.output_directory.name,
-                remove_continued_runs=self.cfg.get(
-                    "remove_continued_runs", False
-                ),
+                remove_continued_runs=self.cfg.get("remove_continued_runs", False),
             )
         else:
             self.continue_training = None
@@ -308,8 +303,7 @@ class ModularTaskTrainer:
                 autrainer.instantiate_shorthand(
                     config=logger,
                     instance_of=AbstractLogger,
-                    exp_name=experiment_id
-                    or self.output_directory.parent.parent.name,
+                    exp_name=experiment_id or self.output_directory.parent.parent.name,
                     run_name=run_name or self.output_directory.name,
                     metrics=self.data.metrics,
                     tracking_metric=self.data.tracking_metric,
@@ -376,26 +370,22 @@ class ModularTaskTrainer:
             The best value of the tracking metric.
         """
         # ? Allow optimizers to have custom step functions
-        custom_step = getattr(
-            self.optimizer, "custom_step", False
-        ) and callable(self.optimizer.custom_step)
+        custom_step = getattr(self.optimizer, "custom_step", False) and callable(
+            self.optimizer.custom_step
+        )
         self.train_step_fn = (
             self.optimizer.custom_step if custom_step else self._train_step
         )
 
         self._thread_manager.join()
-        self.callback_manager.callback(
-            position="cb_on_train_begin", trainer=self
-        )
+        self.callback_manager.callback(position="cb_on_train_begin", trainer=self)
 
         if self.cfg.training_type == "epoch":
             self.train_epochs()
         elif self.cfg.training_type == "step":
             self.train_steps()
         else:
-            raise ValueError(
-                f"Training type {self.cfg.training_type} not supported"
-            )
+            raise ValueError(f"Training type {self.cfg.training_type} not supported")
 
         # ? Score best model on test set
         self.bookkeeping.load_state(self.model, "model.pt", "_best")
@@ -429,9 +419,7 @@ class ModularTaskTrainer:
         )
         self.bookkeeping.log(
             format_results(
-                self.metrics.loc[self.best_iteration]
-                .drop("iteration")
-                .to_dict(),
+                self.metrics.loc[self.best_iteration].drop("iteration").to_dict(),
                 "Best",
                 self.cfg.training_type,
                 self.best_iteration,
@@ -454,12 +442,8 @@ class ModularTaskTrainer:
         self.plot_metrics.plot_run(self.metrics)
 
         self.bookkeeping.save_results_df(self.metrics, "metrics.csv")
-        self.callback_manager.callback(
-            position="cb_on_train_end", trainer=self
-        )
-        return self.metrics.loc[self.best_iteration][
-            self.data.tracking_metric.name
-        ]
+        self.callback_manager.callback(position="cb_on_train_end", trainer=self)
+        return self.metrics.loc[self.best_iteration][self.data.tracking_metric.name]
 
     def train_epochs(self):
         """Train the model for a fixed number of epochs."""
@@ -503,9 +487,7 @@ class ModularTaskTrainer:
                 if self.scheduler and self.scheduler_frequency == "batch":
                     self.scheduler.step()
                 if self.train_tracker:
-                    self.train_tracker.update(
-                        output, data.target, loss, data.index
-                    )
+                    self.train_tracker.update(output, data.target, loss, data.index)
                 self.callback_manager.callback(
                     position="cb_on_step_end",
                     trainer=self,
@@ -604,9 +586,7 @@ class ModularTaskTrainer:
             if self.scheduler and self.scheduler_frequency == "batch":
                 self.scheduler.step()
             if self.train_tracker:
-                self.train_tracker.update(
-                    output, data.target, loss, data.index
-                )
+                self.train_tracker.update(output, data.target, loss, data.index)
             self.callback_manager.callback(
                 position="cb_on_step_end",
                 trainer=self,
@@ -758,9 +738,7 @@ class ModularTaskTrainer:
             )
         else:
             logging_results = {
-                k: {"all": v}
-                for k, v in results.items()
-                if not k.endswith("loss")
+                k: {"all": v} for k, v in results.items() if not k.endswith("loss")
             }
         if dev_evaluation:
             logging_results["dev_loss"] = {"all": results["dev_loss"]}
@@ -781,27 +759,16 @@ class ModularTaskTrainer:
             self.max_dev_metric = results[self.data.tracking_metric.name]
             self.best_iteration = iteration
             self.bookkeeping.save_state(self.model, "model.pt", "_best")
-            self.bookkeeping.save_state(
-                self.optimizer, "optimizer.pt", "_best"
-            )
+            self.bookkeeping.save_state(self.optimizer, "optimizer.pt", "_best")
             if self.scheduler:
-                self.bookkeeping.save_state(
-                    self.scheduler, "scheduler.pt", "_best"
-                )
+                self.bookkeeping.save_state(self.scheduler, "scheduler.pt", "_best")
 
             # ? additionally save all best results
             tracker.save("_best", reset=False)
-            self.bookkeeping.save_results_dict(
-                logging_results, "dev.yaml", "_best"
-            )
+            self.bookkeeping.save_results_dict(logging_results, "dev.yaml", "_best")
 
-        if (
-            iteration % self.cfg.save_frequency == 0
-            or iteration == self.cfg.iterations
-        ):
-            self.bookkeeping.save_state(
-                self.model, "model.pt", iteration_folder
-            )
+        if iteration % self.cfg.save_frequency == 0 or iteration == self.cfg.iterations:
+            self.bookkeeping.save_state(self.model, "model.pt", iteration_folder)
             self.bookkeeping.save_state(
                 self.optimizer, "optimizer.pt", iteration_folder
             )
@@ -830,10 +797,7 @@ class ModularTaskTrainer:
         Returns:
             Dictionary containing the results on the dev or test set.
         """
-        pm = (
-            loader_kwargs.get("pin_memory", False)
-            and self.DEVICE.type == "cuda"
-        )
+        pm = loader_kwargs.get("pin_memory", False) and self.DEVICE.type == "cuda"
         with torch.no_grad():
             losses = 0
             for batch_idx, data in enumerate(

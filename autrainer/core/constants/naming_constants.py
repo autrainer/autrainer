@@ -20,9 +20,7 @@ class NamingConstants(AbstractConstants):
         "seed",
     ]
     _invalid_aggregations = ["training_type"]
-    _valid_aggregations = list(
-        set(_naming_convention) - set(_invalid_aggregations)
-    )
+    _valid_aggregations = list(set(_naming_convention) - set(_invalid_aggregations))
     _config_dirs = [
         "augmentation",
         "dataset",

@@ -73,9 +73,7 @@ def _solve_interpolation(pts, vals, order, eps: float = 1e-7) -> tuple:
 
 def _apply_interpolation(query_pts, pts, w, v, order):
     query_pts = query_pts.unsqueeze(0)
-    pairwise_dists = _cross_squared_distance_matrix(
-        query_pts.float(), pts.float()
-    )
+    pairwise_dists = _cross_squared_distance_matrix(query_pts.float(), pts.float())
     phi_pairwise_dists = _phi(pairwise_dists, order)
 
     rbf_term = torch.matmul(phi_pairwise_dists, w)
@@ -112,7 +110,10 @@ def _create_dense_flows(flattened_flows, height, width):
 
 
 def _interpolate_bilinear(
-    grid, query_points, name="interpolate_bilinear", indexing="ij"
+    grid,
+    query_points,
+    name="interpolate_bilinear",
+    indexing="ij",
 ):
     if indexing != "ij" and indexing != "xy":
         raise ValueError("Indexing mode must be 'ij' or 'xy'")
@@ -202,9 +203,7 @@ def _dense_image_warp(tensor, flow):
     b_grid = stacked_grid.unsqueeze(-1).permute(3, 1, 0, 2)
     query_points_on_grid = b_grid - flow
 
-    query_points_flattened = torch.reshape(
-        query_points_on_grid, [height * width, 2]
-    )
+    query_points_flattened = torch.reshape(query_points_on_grid, [height * width, 2])
 
     interpolated = _interpolate_bilinear(tensor, query_points_flattened)
     interpolated = torch.reshape(interpolated, [channels, height, width])

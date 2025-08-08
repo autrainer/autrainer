@@ -61,10 +61,7 @@ class Choice(AbstractAugmentation, audobject.Object):
             self.augmentation_choices.append(aug)
 
         self.augmentation_choices: List[AbstractAugmentation] = [
-            autrainer.instantiate_shorthand(
-                choice,
-                instance_of=AbstractAugmentation,
-            )
+            autrainer.instantiate_shorthand(choice, instance_of=AbstractAugmentation)
             for choice in self.augmentation_choices
         ]
         for aug in self.augmentation_choices:

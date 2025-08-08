@@ -273,9 +273,7 @@ class TimeWarp(AbstractAugmentation):
 
         # Destination
         w = (
-            2
-            * self.W
-            * torch.rand([1], dtype=torch.float, generator=self._generator)
+            2 * self.W * torch.rand([1], dtype=torch.float, generator=self._generator)
             - self.W
         )  # distance
         dest_ctr_pt_freq = src_ctr_pt_freq

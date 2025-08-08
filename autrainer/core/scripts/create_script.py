@@ -52,10 +52,7 @@ class CreateScript(AbstractScript):
             "-f",
             "--force",
             action="store_true",
-            help=(
-                "Force overwrite if the configuration directory "
-                "already exists."
-            ),
+            help=("Force overwrite if the configuration directory already exists."),
         )
 
     def main(self, args: CreateArgs) -> None:
@@ -83,10 +80,7 @@ class CreateScript(AbstractScript):
         if args.empty and args.all:
             raise CommandLineError(
                 parser=self.parser,
-                message=(
-                    "The flags -e/--empty and -a/--all "
-                    "are mutually exclusive."
-                ),
+                message=("The flags -e/--empty and -a/--all are mutually exclusive."),
             )
         if args.directories and (args.empty or args.all):
             raise CommandLineError(
@@ -104,8 +98,7 @@ class CreateScript(AbstractScript):
             raise CommandLineError(
                 parser=self.parser,
                 message=(
-                    "Directory 'conf' already exists. "
-                    "Use -f/--force to overwrite it."
+                    "Directory 'conf' already exists. Use -f/--force to overwrite it."
                 ),
                 code=1,
             )
@@ -116,13 +109,10 @@ class CreateScript(AbstractScript):
             directories.append("conf")
         elif args.all:
             directories.extend(
-                f"conf/{directory}"
-                for directory in NamingConstants().CONFIG_DIRS
+                f"conf/{directory}" for directory in NamingConstants().CONFIG_DIRS
             )
         else:
-            directories.extend(
-                f"conf/{directory}" for directory in args.directories
-            )
+            directories.extend(f"conf/{directory}" for directory in args.directories)
 
         for directory in directories:
             os.makedirs(directory, exist_ok=True)

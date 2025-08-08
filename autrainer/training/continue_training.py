@@ -31,9 +31,7 @@ class ContinueTraining:
 
         matches = {}
         for run in finished_runs:
-            metrics = os.path.join(
-                trainer.output_directory.parent, run, "metrics.csv"
-            )
+            metrics = os.path.join(trainer.output_directory.parent, run, "metrics.csv")
             if not os.path.exists(metrics):
                 continue
 
@@ -48,9 +46,7 @@ class ContinueTraining:
     def cb_on_train_end(self, trainer: "ModularTaskTrainer") -> None:
         if self.continued_run is None or not self.remove_continued_runs:
             return
-        shutil.rmtree(
-            os.path.join(trainer.output_directory.parent, self.continued_run)
-        )
+        shutil.rmtree(os.path.join(trainer.output_directory.parent, self.continued_run))
 
     def continue_training(self, trainer: ModularTaskTrainer, run: str) -> None:
         self.continued_run = run
@@ -63,10 +59,7 @@ class ContinueTraining:
     @staticmethod
     def _create_run_config(run: str) -> dict:
         run_values = run.split("_")
-        return {
-            n: v
-            for n, v in zip(NamingConstants().NAMING_CONVENTION, run_values)
-        }
+        return {n: v for n, v in zip(NamingConstants().NAMING_CONVENTION, run_values)}
 
     def _copy_dirs(self, trainer: ModularTaskTrainer, run: str) -> None:
         dirs = ["_best", "_initial"]
@@ -74,9 +67,7 @@ class ContinueTraining:
             shutil.rmtree(os.path.join(trainer.output_directory, d))
         iteration_folders = [
             f
-            for f in os.listdir(
-                os.path.join(trainer.output_directory.parent, run)
-            )
+            for f in os.listdir(os.path.join(trainer.output_directory.parent, run))
             if f.startswith(trainer.cfg.training_type)
         ]
         dirs += iteration_folders
@@ -112,13 +103,9 @@ class ContinueTraining:
         )
         trainer.bookkeeping.load_state(trainer.model, "model.pt", last_dir)
         trainer.model = trainer.model.to(trainer.DEVICE)
-        trainer.bookkeeping.load_state(
-            trainer.optimizer, "optimizer.pt", last_dir
-        )
+        trainer.bookkeeping.load_state(trainer.optimizer, "optimizer.pt", last_dir)
         if trainer.scheduler is not None:
-            trainer.bookkeeping.load_state(
-                trainer.scheduler, "scheduler.pt", last_dir
-            )
+            trainer.bookkeeping.load_state(trainer.scheduler, "scheduler.pt", last_dir)
 
     def _replay_loggers(self, trainer: ModularTaskTrainer) -> None:
         for logger in trainer.loggers:

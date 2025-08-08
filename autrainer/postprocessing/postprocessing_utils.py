@@ -29,9 +29,9 @@ def get_training_type(training_directory: str, runs: List[str]):
         path = os.path.join(training_directory, run, ".hydra", "config.yaml")
         config = DictConfig(load_yaml(path))
         training_types.append(config.training_type)
-    assert (
-        len(set(training_types)) == 1
-    ), f"Multiple training types found: {set(training_types)}"
+    assert len(set(training_types)) == 1, (
+        f"Multiple training types found: {set(training_types)}"
+    )
     return training_types[0]
 
 

@@ -33,9 +33,7 @@ class MLF1Macro(BaseAscendingMetric):
             The unitary score.
         """
         return float(
-            sklearn.metrics.f1_score(
-                y_true=y_true, y_pred=y_pred, average="binary"
-            )
+            sklearn.metrics.f1_score(y_true=y_true, y_pred=y_pred, average="binary")
         )
 
 
@@ -62,9 +60,7 @@ class MLF1Micro(BaseAscendingMetric):
             The unitary score.
         """
         return float(
-            sklearn.metrics.f1_score(
-                y_true=y_true, y_pred=y_pred, average="binary"
-            )
+            sklearn.metrics.f1_score(y_true=y_true, y_pred=y_pred, average="binary")
         )
 
 
@@ -91,7 +87,5 @@ class MLF1Weighted(BaseAscendingMetric):
             The unitary score.
         """
         return float(
-            sklearn.metrics.f1_score(
-                y_true=y_true, y_pred=y_pred, average="binary"
-            )
+            sklearn.metrics.f1_score(y_true=y_true, y_pred=y_pred, average="binary")
         )
