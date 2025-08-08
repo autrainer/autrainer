@@ -1,6 +1,6 @@
 from .callback_manager import CallbackManager, CallbackSignature
 from .outputs_tracker import OutputsTracker
-from .training import ModularTaskTrainer
+from .training import ModularTaskTrainer, Trainer
 
 
 __all__ = [
@@ -8,4 +8,5 @@ __all__ = [
     "CallbackSignature",
     "OutputsTracker",
     "ModularTaskTrainer",
+    "Trainer",
 ]
