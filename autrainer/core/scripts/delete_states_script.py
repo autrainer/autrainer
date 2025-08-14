@@ -79,10 +79,10 @@ class DeleteStatesScript(AbstractPostprocessScript):
     def _collect_state_paths(self, args: DeleteStatesArgs) -> List[str]:
         pattern = "**/*.pt"
         path = os.path.join(args.results_dir, args.experiment_id, "training")
-        return [f for f in glob.glob(os.path.join(path, pattern), recursive=True)]
+        return list(glob.glob(os.path.join(path, pattern), recursive=True))
 
     def _filter_best_states(self, state_paths: List[str]) -> List[str]:
-        return [f for f in state_paths if "_best" != self._get_iter_dir(f)]
+        return [f for f in state_paths if self._get_iter_dir(f) != "_best"]
 
     def _filter_runs(
         self,
@@ -128,7 +128,7 @@ class DeleteStatesScript(AbstractPostprocessScript):
             try:
                 os.remove(state_path)
                 print(f"Deleted: {state_path}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 print(f"Error deleting {state_path}: {e}")  # pragma: no cover
 
 

@@ -4,7 +4,6 @@ from typing import Dict, List, Optional
 import numpy as np
 import pandas as pd
 import torch
-import torch.nn.common_types
 
 from autrainer.metrics import AbstractMetric
 
@@ -94,7 +93,7 @@ def format_results(
     s = f"{results_type} results"
     s += f" at {training_type} {iteration}" if iteration else ""
     s += ":\n"
-    max_key_len = max([len(k) for k in results.keys()])
+    max_key_len = max([len(k) for k in results])
     s += "\n".join(
         [f"{(k + ':').ljust(max_key_len + 1)} {v:.4f}" for k, v in results.items()]
     )
@@ -201,9 +200,12 @@ def get_optimizer_params(
         for name, param in module.named_parameters(recurse=False):
             if not param.requires_grad:
                 continue
-            if isinstance(module, norm_classes) and not apply_to_norm:
-                no_decay.append(param)
-            elif name == "bias" and not apply_to_bias:
+            if (
+                isinstance(module, norm_classes)
+                and not apply_to_norm
+                or name == "bias"
+                and not apply_to_bias
+            ):
                 no_decay.append(param)
             else:
                 decay.append(param)

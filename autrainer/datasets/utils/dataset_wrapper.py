@@ -23,7 +23,7 @@ class DatasetWrapper(torch.utils.data.Dataset):
         file_type: Optional[str] = None,
         transform: Optional[SmartCompose] = None,
         target_transform: Optional[AbstractTargetTransform] = None,
-    ):
+    ) -> None:
         """Wrapper around torch.utils.data.Dataset.
 
         Args:

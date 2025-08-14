@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import torch
 
@@ -13,7 +13,7 @@ class AbstractAugmentation(AbstractTransform):
         order: int = 0,
         p: float = 1.0,
         generator_seed: Optional[int] = None,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Abstract class for an augmentation.
 

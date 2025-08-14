@@ -124,4 +124,4 @@ class MultiLabelEncoder(AbstractTargetTransform):
         Returns:
             Dictionary of labels and their probabilities.
         """
-        return {label: prob.item() for label, prob in zip(self.labels, x)}
+        return {label: prob.item() for label, prob in zip(self.labels, x, strict=False)}

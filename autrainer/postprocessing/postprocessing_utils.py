@@ -1,11 +1,11 @@
 import os
-from typing import List
+from typing import Any, Dict, List
 
 from omegaconf import DictConfig
 import yaml
 
 
-def get_run_names(training_directory: str):
+def get_run_names(training_directory: str) -> List[str]:
     run_names = []
     for dir in os.listdir(training_directory):
         if os.path.isdir(os.path.join(training_directory, dir)):
@@ -13,17 +13,17 @@ def get_run_names(training_directory: str):
     return run_names
 
 
-def load_yaml(path: str):
+def load_yaml(path: str) -> Dict[str, Any]:
     with open(path, "r") as f:
         return yaml.safe_load(f)
 
 
-def save_yaml(path: str, data: dict):
+def save_yaml(path: str, data: dict) -> None:
     with open(path, "w") as f:
         yaml.safe_dump(data, f)
 
 
-def get_training_type(training_directory: str, runs: List[str]):
+def get_training_type(training_directory: str, runs: List[str]) -> str:
     training_types = []
     for run in runs:
         path = os.path.join(training_directory, run, ".hydra", "config.yaml")
@@ -35,6 +35,6 @@ def get_training_type(training_directory: str, runs: List[str]):
     return training_types[0]
 
 
-def get_plotting_params(training_directory: str, run: str):
+def get_plotting_params(training_directory: str, run: str) -> DictConfig:
     path = os.path.join(training_directory, run, ".hydra", "config.yaml")
     return DictConfig(load_yaml(path)).plotting

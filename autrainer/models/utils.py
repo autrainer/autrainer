@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union
 import warnings
 
 import requests
@@ -45,23 +45,22 @@ def load_transfer_weights(model: torch.nn.Module, weights_link: str) -> None:
         )
 
 
-def init_layer(layer):
+def init_layer(layer: torch.nn.Module) -> None:
     """Initialize a Linear or Convolutional layer."""
     torch.nn.init.xavier_uniform_(layer.weight)
 
-    if hasattr(layer, "bias"):
-        if layer.bias is not None:
-            layer.bias.data.fill_(0.0)
+    if hasattr(layer, "bias") and layer.bias is not None:
+        layer.bias.data.fill_(0.0)
 
 
-def init_bn(bn):
+def init_bn(bn: torch.nn.modules.batchnorm._BatchNorm) -> None:
     """Initialize a Batchnorm layer."""
     bn.bias.data.fill_(0.0)
     bn.weight.data.fill_(1.0)
 
 
 class ConvBlock(torch.nn.Module):
-    def __init__(self, in_channels: int, out_channels: int):
+    def __init__(self, in_channels: int, out_channels: int) -> None:
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -89,13 +88,18 @@ class ConvBlock(torch.nn.Module):
 
         self.init_weight()
 
-    def init_weight(self):
+    def init_weight(self) -> None:
         init_layer(self.conv1)
         init_layer(self.conv2)
         init_bn(self.bn1)
         init_bn(self.bn2)
 
-    def forward(self, x, pool_size=(2, 2), pool_type="avg"):
+    def forward(
+        self,
+        x: torch.Tensor,
+        pool_size: Tuple[int, int] = (2, 2),
+        pool_type: str = "avg",
+    ) -> torch.Tensor:
         x = F.relu_(self.bn1(self.conv1(x)))
         x = F.relu_(self.bn2(self.conv2(x)))
         if pool_type == "max":

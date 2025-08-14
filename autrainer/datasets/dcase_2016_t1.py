@@ -203,7 +203,7 @@ class DCASE2016Task1(BaseClassificationDataset):
         folds[-1].drop(columns=["full_filename"], inplace=True)
 
         # save folds
-        for filename, fold in zip(fold_names, folds):
+        for filename, fold in zip(fold_names, folds, strict=False):
             fold.to_csv(
                 os.path.join(path, Path(filename).with_suffix(".csv")),
                 index=False,

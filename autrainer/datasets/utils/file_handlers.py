@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import audiofile
 import audobject
@@ -135,7 +135,7 @@ class AudioFileHandler(AbstractFileHandler):
     def __init__(
         self,
         target_sample_rate: Optional[int] = None,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Audio file handler with optional resampling.
 

@@ -2,7 +2,7 @@ from abc import ABC
 from typing import Any, Type
 
 
-class AbstractConstants(ABC):
+class AbstractConstants(ABC):  # noqa: B024
     """Abstract constants singleton class for managing the configurations of
     `autrainer`.
     """
@@ -10,7 +10,7 @@ class AbstractConstants(ABC):
     _name = "AbstractConstants"
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls: Type["AbstractConstants"]) -> "AbstractConstants":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance

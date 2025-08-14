@@ -1,4 +1,4 @@
-from typing import Callable, List, TypeVar
+from typing import Any, Callable, Dict, List, TypeVar
 
 import numpy as np
 import pandas as pd
@@ -116,8 +116,9 @@ class OutputsTracker:
         if reset:
             self.reset()
 
+    @staticmethod
     def check_saved(func: Callable[..., T]) -> Callable[..., T]:
-        def wrapper(self: "OutputsTracker", *args, **kwargs) -> T:
+        def wrapper(self: "OutputsTracker", *args: Any, **kwargs: Dict[str, Any]) -> T:
             if self._results_df is None:
                 raise ValueError("Results not saved yet.")
             return func(self, *args, **kwargs)
@@ -203,7 +204,7 @@ def init_trackers(
         List of initialized trackers.
     """
     trackers = []
-    for export, prefix in zip(exports, prefixes):
+    for export, prefix in zip(exports, prefixes, strict=False):
         trackers.append(
             OutputsTracker(
                 export=export,

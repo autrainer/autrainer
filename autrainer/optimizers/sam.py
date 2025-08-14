@@ -1,4 +1,4 @@
-from typing import Callable, Tuple
+from typing import Any, Callable, Dict, Tuple
 
 import torch
 
@@ -15,8 +15,8 @@ class SAM(torch.optim.Optimizer):
         base_optimizer: str,
         rho: float = 0.05,
         adaptive: bool = False,
-        **kwargs,
-    ):
+        **kwargs: Dict[str, Any],
+    ) -> None:
         """Sharpness Aware Minimization (SAM) optimizer.
 
         This implementation is adapted from the following repository:
@@ -53,7 +53,7 @@ class SAM(torch.optim.Optimizer):
         self.defaults.update(self.base_optimizer.defaults)
 
     @torch.no_grad()
-    def first_step(self, zero_grad=False):
+    def first_step(self, zero_grad: bool = False) -> None:
         grad_norm = self._grad_norm()
         for group in self.param_groups:
             scale = group["rho"] / (grad_norm + 1e-12)
@@ -71,22 +71,8 @@ class SAM(torch.optim.Optimizer):
         if zero_grad:
             self.zero_grad()
 
-    # @torch.no_grad()
-    # def first_step_uphill(self, zero_grad=False):
-    #     grad_norm = self._grad_norm()
-    #     for group in self.param_groups:
-    #         scale = group["rho"] / (grad_norm + 1e-12)
-
-    #         for p in group["params"]:
-    #             if p.grad is None: continue
-    #             self.state[p]["old_p"] = p.data.clone()
-    #             e_w = (torch.pow(p, 2) if group["adaptive"] else 1.0) * p.grad * scale.to(p)
-    #             p.add_(e_w)  # climb to the local maximum "w + e(w)"
-
-    #     if zero_grad: self.zero_grad()
-
     @torch.no_grad()
-    def second_step(self, zero_grad=False):
+    def second_step(self, zero_grad: bool = False) -> None:
         for group in self.param_groups:
             for p in group["params"]:
                 if p.grad is None:
@@ -100,7 +86,7 @@ class SAM(torch.optim.Optimizer):
             self.zero_grad()
 
     @torch.no_grad()
-    def step(self, closure=None):
+    def step(self, closure: Callable = None) -> None:
         assert closure is not None, (
             "Sharpness Aware Minimization requires closure, but it was not provided"
         )
@@ -111,10 +97,10 @@ class SAM(torch.optim.Optimizer):
         closure()
         self.second_step()
 
-    def _grad_norm(self):
+    def _grad_norm(self) -> torch.Tensor:
         # put everything on the same device, in case of model parallelism
         shared_device = self.param_groups[0]["params"][0].device
-        norm = torch.norm(
+        return torch.norm(
             torch.stack(
                 [
                     ((torch.abs(p) if group["adaptive"] else 1.0) * p.grad)
@@ -127,9 +113,8 @@ class SAM(torch.optim.Optimizer):
             ),
             p=2,
         )
-        return norm
 
-    def load_state_dict(self, state_dict):
+    def load_state_dict(self, state_dict: Dict[str, Any]) -> None:
         super().load_state_dict(state_dict)
         self.base_optimizer.param_groups = self.param_groups
 

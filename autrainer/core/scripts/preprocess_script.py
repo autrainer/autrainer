@@ -1,3 +1,4 @@
+import contextlib
 from dataclasses import dataclass
 from typing import Optional
 
@@ -28,7 +29,7 @@ def preprocess_main(
     preprocess: DictConfig,
     num_workers: int,
     update_frequency: int,
-):
+) -> None:
     from pathlib import Path
 
     import torch
@@ -173,14 +174,12 @@ class PreprocessScript(AbstractPreprocessScript):
             self.datasets[cfg.dataset.id] = OmegaConf.to_container(cfg.dataset)
             preprocessing_cfg = None
             if cfg.dataset.get("features_subdir"):
-                try:
+                with contextlib.suppress(MissingConfigException):
                     preprocessing_cfg = OmegaConf.to_container(
                         hydra.compose(f"preprocessing/{cfg.dataset.features_subdir}")[
                             "preprocessing"
                         ]
                     )
-                except MissingConfigException:
-                    pass
             self.preprocessing[cfg.dataset.id] = preprocessing_cfg
 
         check_invalid_config_path_arg(self.parser)
@@ -195,7 +194,7 @@ class PreprocessScript(AbstractPreprocessScript):
     def _preprocess_datasets(self) -> None:
         print("Preprocessing datasets...")
         for (name, dataset), preprocess in zip(
-            self.datasets.items(), self.preprocessing.values()
+            self.datasets.items(), self.preprocessing.values(), strict=False
         ):
             preprocess_main(
                 name=name,

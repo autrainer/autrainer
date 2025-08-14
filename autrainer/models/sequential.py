@@ -18,7 +18,7 @@ class Sequential(AbstractModel):
         time_pooling: bool = True,
         bidirectional: bool = False,
         transfer: Optional[Union[bool, str]] = None,
-    ):
+    ) -> None:
         assert_no_transfer_weights(self, transfer)
         super().__init__(
             output_dim=2 * hidden_size if bidirectional else hidden_size,
@@ -68,7 +68,7 @@ class SeqFFNN(AbstractModel):
         backbone_time_pooling: bool = True,
         backbone_bidirectional: bool = False,
         transfer: Optional[Union[bool, str]] = None,
-    ):
+    ) -> None:
         """Sequential model with FFNN frontend.
 
         Args:

@@ -69,7 +69,7 @@ class GroupGrid:
         run_paths, copy_states, mappings = self._resolve_aggregated_runs(
             run_paths, copy_states
         )
-        for run_path, copy_state in zip(run_paths, copy_states):
+        for run_path, copy_state in zip(run_paths, copy_states, strict=False):
             self._copy_run(experiment, run_path, copy_state)
         return mappings
 
@@ -105,7 +105,7 @@ class GroupGrid:
         expanded_paths = []
         expanded_states = []
         mappings = {}
-        for run_path, copy_state in zip(run_paths, copy_states):
+        for run_path, copy_state in zip(run_paths, copy_states, strict=False):
             mappings[os.path.basename(run_path)] = []
             for run in self._get_aggregated_runs(run_path):
                 path = os.path.join(

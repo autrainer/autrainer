@@ -2,7 +2,7 @@ from collections import defaultdict
 from copy import deepcopy
 import os
 import shutil
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from omegaconf import DictConfig, OmegaConf
 import pandas as pd
@@ -135,7 +135,7 @@ class AggregateGrid:
             aggregated[agg_key].append(run_name)
         return aggregated
 
-    def _aggregate_best(self, agg_name: str, run_list: list):
+    def _aggregate_best(self, agg_name: str, run_list: list) -> None:
         os.makedirs(
             os.path.join(self.output_directory, agg_name, "_best"),
             exist_ok=True,
@@ -146,13 +146,18 @@ class AggregateGrid:
             metrics,
         )
 
-    def _aggregate_test(self, agg_name: str, run_list: list):
+    def _aggregate_test(self, agg_name: str, run_list: list) -> None:
         path = os.path.join(self.output_directory, agg_name, "_test")
         os.makedirs(path, exist_ok=True)
         metrics = self._aggregate_yaml(run_list, "_test/test_holistic.yaml", "test")
         save_yaml(os.path.join(path, "test_holistic.yaml"), metrics)
 
-    def _aggregate_yaml(self, run_list: list, path: str, yaml_type: str):
+    def _aggregate_yaml(
+        self,
+        run_list: list,
+        path: str,
+        yaml_type: str,
+    ) -> Dict[str, Any]:
         assert yaml_type in ["dev", "test"]
         loss_type = "dev_loss" if yaml_type == "dev" else "loss"
         dfs = []
@@ -165,14 +170,14 @@ class AggregateGrid:
         df_std["type"] = df_std["type"].apply(lambda x: f"{x}.std")
         df = pd.concat([df_mean, df_std]).set_index(["type"])
         metrics = df.to_dict()
-        metrics[loss_type] = {k: v for k, v in metrics[loss_type].items() if "all" == k}
+        metrics[loss_type] = {k: v for k, v in metrics[loss_type].items() if k == "all"}
         if yaml_type == "dev":
             metrics["iteration"] = {
-                k: v for k, v in metrics["iteration"].items() if "all" == k
+                k: v for k, v in metrics["iteration"].items() if k == "all"
             }
         return metrics
 
-    def _aggregate_config(self, agg_name: str, run_list: list):
+    def _aggregate_config(self, agg_name: str, run_list: list) -> None:
         path = os.path.join(self.output_directory, agg_name, ".hydra")
         os.makedirs(path, exist_ok=True)
         runs = [
@@ -199,7 +204,7 @@ class AggregateGrid:
         if not isinstance(config[key], DictConfig):
             return "#"
 
-        for k in config[key].keys():
+        for k in config[key]:
             if not isinstance(config[key][k], DictConfig):
                 values = [r[key][k] for r in runs + [config]]
                 if len(set(values)) > 1:
@@ -211,7 +216,7 @@ class AggregateGrid:
 
         return config[key]
 
-    def _aggregate_timer(self, agg_name: str, run_list: list):
+    def _aggregate_timer(self, agg_name: str, run_list: list) -> None:
         mean_timer = {
             "train": {"mean_seconds": 0, "total_seconds": 0},
             "dev": {"mean_seconds": 0, "total_seconds": 0},
@@ -222,7 +227,7 @@ class AggregateGrid:
             for k, v in timers.items():
                 mean_timer[k]["mean_seconds"] += v["mean_seconds"]
                 mean_timer[k]["total_seconds"] += v["total_seconds"]
-        for k, v in mean_timer.items():
+        for v in mean_timer.values():
             v["mean_seconds"] /= len(run_list)
             v["mean"] = Timer.pretty_time(v["mean_seconds"])
             v["total_seconds"] /= len(run_list)
@@ -232,7 +237,7 @@ class AggregateGrid:
             mean_timer,
         )
 
-    def _aggregate_metrics(self, agg_name: str, run_list: list):
+    def _aggregate_metrics(self, agg_name: str, run_list: list) -> None:
         dfs = []
         for run in run_list:
             df = pd.read_csv(

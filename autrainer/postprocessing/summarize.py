@@ -131,13 +131,12 @@ class SummarizeGrid:
     def _find_metrics_to_plot(self) -> List[str]:
         summary_path = os.path.join(self.output_directory, "metrics.csv")
         df = pd.read_csv(summary_path)
-        plot_metrics = [
+        return [
             m
             for m in list(df.columns)
             if m in [fn.name for fn in self.metric_fns]
             or m in ["train_loss", "dev_loss"]
         ]
-        return plot_metrics
 
     def plot_metrics(self) -> None:
         """Plot the metrics of the grid search."""
@@ -216,9 +215,7 @@ class SummarizeGrid:
         path = os.path.join(
             self.training_directory, run_name, "_test", "test_holistic.yaml"
         )
-        test_dict = load_yaml(path)
-        test_dict = {prefix + k: v["all"] for k, v in test_dict.items()}
-        return test_dict
+        return {prefix + k: v["all"] for k, v in load_yaml(path).items()}
 
     def _read_times(self, run_name: str) -> dict:
         path = os.path.join(self.training_directory, run_name, "timer.yaml")

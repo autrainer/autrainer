@@ -137,7 +137,7 @@ class ToyDataset(AbstractDataset):
             test_transform=test_transform,
             stratify=None,
         )
-        self._mock_df  # required due to super().__init__ with placeholders
+        self._mock_df  # required due to super().__init__ with placeholders # noqa: B018
 
     @staticmethod
     def _assert_splits(dev_split: int, test_split: float) -> None:
@@ -241,21 +241,20 @@ class ToyDataset(AbstractDataset):
     def target_transform(self) -> AbstractTargetTransform:
         if self.task == "ml-classification":
             return MultiLabelEncoder(0.5, self.target_column)
-        elif self.task == "classification":
+        if self.task == "classification":
             return LabelEncoder(self.df_train[self.target_column].unique().tolist())
-        elif self.task == "mt-regression":
+        if self.task == "mt-regression":
             return MultiTargetMinMaxScaler(
                 target=self.target_column,
                 minimum=self.df_train[self.target_column].min().to_list(),
                 maximum=self.df_train[self.target_column].max().to_list(),
             )
-        elif self.task == "regression":
+        if self.task == "regression":
             return MinMaxScaler(
                 target=self.target_column,
                 minimum=self.df_train[self.target_column].min(),
                 maximum=self.df_train[self.target_column].max(),
             )
-        else:
-            raise ValueError(
-                f"Invalid task '{self.task}', must be in {TrainingConstants().TASKS}."
-            )
+        raise ValueError(
+            f"Invalid task '{self.task}', must be in {TrainingConstants().TASKS}."
+        )

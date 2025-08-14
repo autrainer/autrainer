@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Any, Dict
 
 import numpy as np
 import torch
@@ -32,7 +32,11 @@ class MSELoss(torch.nn.MSELoss):
 class WeightedMSELoss(MSELoss):
     weights_buffer: torch.Tensor
 
-    def __init__(self, target_weights: Dict[str, float], **kwargs) -> None:
+    def __init__(
+        self,
+        target_weights: Dict[str, float],
+        **kwargs: Dict[str, Any],
+    ) -> None:
         """Wrapper for `torch.nn.MSELoss` with manual target weights intended
         for multi-target regression tasks.
 

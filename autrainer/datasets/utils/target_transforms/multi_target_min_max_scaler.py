@@ -22,7 +22,7 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         Raises:
             ValueError: If minimum is not less than maximum.
         """
-        for m, M in zip(minimum, maximum):
+        for m, M in zip(minimum, maximum, strict=False):
             if not m < M:
                 raise ValueError(f"Minimum '{m}' must be less than maximum '{M}'.")
         self.target = target
@@ -108,7 +108,7 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         Returns:
             Average target value.
         """
-        return [sum(item) / len(item) for item in zip(*x)]
+        return [sum(item) / len(item) for item in zip(*x, strict=False)]
 
     def probabilities_to_dict(self, x: torch.Tensor) -> Dict[str, float]:
         """Convert a tensor of probabilities to a dictionary of targets and
@@ -120,4 +120,4 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         Returns:
             Dictionary of targets and their probabilities.
         """
-        return {label: prob.item() for label, prob in zip(self.target, x)}
+        return {label: prob.item() for label, prob in zip(self.target, x, strict=False)}

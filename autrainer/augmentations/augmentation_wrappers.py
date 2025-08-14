@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import torch
 
@@ -39,7 +39,7 @@ class AugmentationWrapper(AbstractAugmentation):
         generator_seed: Optional[int] = None,
         pass_index: bool = False,
         probability_attr: Optional[str] = None,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Wrapper around an AbstractAugmentation.
 
@@ -96,7 +96,7 @@ class TorchvisionAugmentation(AugmentationWrapper):
         order: int = 0,
         p: float = 1.0,
         generator_seed: Optional[int] = None,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Wrapper around torchvision.transforms.v2 transforms, which are
         specified by their class name and keyword arguments.
@@ -139,7 +139,7 @@ class TorchaudioAugmentation(AugmentationWrapper):
         order: int = 0,
         p: float = 1.0,
         generator_seed: Optional[int] = None,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Wrapper around torchaudio.transforms transforms, which are specified
         by their class name and keyword arguments.
@@ -185,7 +185,7 @@ class AlbumentationsAugmentation(AugmentationWrapper):
         order: int = 0,
         p: float = 1.0,
         generator_seed: Optional[int] = None,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Wrapper around albumentations transforms, which are specified by
         their class name and keyword arguments.
@@ -244,7 +244,7 @@ class AudiomentationsAugmentation(AugmentationWrapper):
         order: int = 0,
         p: float = 1.0,
         generator_seed: Optional[int] = None,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Wrapper around audiomentations transforms, which are specified
         by their class name and keyword arguments.
@@ -309,7 +309,7 @@ class TorchAudiomentationsAugmentation(AugmentationWrapper):
         order: int = 0,
         p: float = 1.0,
         generator_seed: Optional[int] = None,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Wrapper around torch_audiomentations transforms, which are specified
         by their class name and keyword arguments.

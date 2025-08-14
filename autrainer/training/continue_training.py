@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class ContinueTraining:
-    def __init__(self, run_name: str, remove_continued_runs: bool = False):
+    def __init__(self, run_name: str, remove_continued_runs: bool = False) -> None:
         self.run_name = run_name
         self.continued_run = None
         self.remove_continued_runs = remove_continued_runs
@@ -59,7 +59,7 @@ class ContinueTraining:
     @staticmethod
     def _create_run_config(run: str) -> dict:
         run_values = run.split("_")
-        return {n: v for n, v in zip(NamingConstants().NAMING_CONVENTION, run_values)}
+        return dict(zip(NamingConstants().NAMING_CONVENTION, run_values, strict=True))
 
     def _copy_dirs(self, trainer: ModularTaskTrainer, run: str) -> None:
         dirs = ["_best", "_initial"]

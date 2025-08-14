@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,7 +26,7 @@ class PlotMetrics(PlotBase):
         add_titles: bool,
         add_xlabels: bool,
         add_ylabels: bool,
-        rcParams: dict,
+        rcParams: Dict[str, Any],  # noqa: N803
         metric_fns: List[AbstractMetric],
     ) -> None:
         """Plot the metrics of one or multiple runs.
@@ -155,7 +155,7 @@ class PlotMetrics(PlotBase):
         subplots_by: int = 0,
         group_by: int = 1,
         split_subgroups: bool = True,
-    ):
+    ) -> None:
         """Plot aggregated bar plots for a metric.
 
         Generate a bar plots from the metrics_df, which are divided
@@ -192,10 +192,7 @@ class PlotMetrics(PlotBase):
                     # Use the shared prefix for subgroups
                     group_split = group.split("-")
                     group = group_split[0]
-                    if len(group_split) > 1:
-                        subgroup = group_split[1]
-                    else:
-                        subgroup = "None"
+                    subgroup = group_split[1] if len(group_split) > 1 else "None"
                 values = group_df[metric].dropna().astype(float).values
                 if values.size == 0:
                     continue
@@ -217,10 +214,7 @@ class PlotMetrics(PlotBase):
             figsize=(self.figsize[0], 0.5 * self.figsize[1] * num_subplots),
         )
         for i, (subplot) in enumerate(df["Subplot"]):
-            if num_subplots > 1:
-                ax_obj = ax[i]
-            else:
-                ax_obj = ax
+            ax_obj = ax[i] if num_subplots > 1 else ax
             plot_df = df[df["Subplot"] == subplot].reset_index(drop=True)
             bar_plot = sns.barplot(
                 data=plot_df,
@@ -241,7 +235,7 @@ class PlotMetrics(PlotBase):
                 )
             legend_labels = []
             for subgroup in df["Subgroup"].unique():
-                if subgroup in label_replacement_models.keys():
+                if subgroup in label_replacement_models:
                     legend_labels.append(label_replacement_models[subgroup])
                 else:
                     legend_labels.append(subgroup)
@@ -265,7 +259,7 @@ class PlotMetrics(PlotBase):
         metrics: pd.DataFrame,
         metrics_std: pd.DataFrame,
         max_runs: int,
-    ):
+    ) -> Tuple[pd.DataFrame, Optional[pd.DataFrame]]:
         if "loss" in metric:
             top_values = metrics.min()
             ascending_order = True

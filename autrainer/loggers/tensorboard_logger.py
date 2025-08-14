@@ -1,15 +1,11 @@
 import os
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 
-from autrainer.core.constants import ExportConstants
 from autrainer.metrics import AbstractMetric
 
-from .abstract_logger import (
-    AbstractLogger,
-    get_params_to_export,
-)
+from .abstract_logger import AbstractLogger, get_params_to_export
 from .fallback_logger import FallbackLogger
 
 
@@ -28,7 +24,7 @@ class TensorBoardLogger(AbstractLogger):
         run_name: str,
         metrics: List[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[Union[str, Dict[str, str]]] = ExportConstants().ARTIFACTS,
+        artifacts: List[Union[str, Dict[str, str]]] = None,
         output_dir: str = "runs",
     ) -> None:
         super().__init__(exp_name, run_name, metrics, tracking_metric, artifacts)
@@ -45,7 +41,7 @@ class TensorBoardLogger(AbstractLogger):
     def log_metrics(
         self,
         metrics: Dict[str, Union[int, float]],
-        iteration=None,
+        iteration: Optional[int] = None,
     ) -> None:
         for key, value in metrics.items():
             self.writer.add_scalar(key, value, iteration)

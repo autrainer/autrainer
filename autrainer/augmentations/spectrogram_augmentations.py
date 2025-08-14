@@ -214,7 +214,7 @@ class TimeWarp(AbstractAugmentation):
     def __init__(
         self,
         axis: int,
-        W: int = 10,
+        W: int = 10,  # noqa: N803
         order: int = 0,
         p: float = 1.0,
         generator_seed: Optional[int] = None,
@@ -304,7 +304,7 @@ class SpecAugment(AbstractAugmentation):
         self,
         time_mask: int = 10,
         freq_mask: int = 10,
-        W: int = 50,
+        W: int = 50,  # noqa: N803
         order: int = 0,
         p: float = 1.0,
         generator_seed: Optional[int] = None,
@@ -357,5 +357,4 @@ class SpecAugment(AbstractAugmentation):
     def apply(self, item: AbstractDataItem) -> AbstractDataItem:
         item = self._time_warp(item)
         item = self._freq_mask(item)
-        item = self._time_mask(item)
-        return item
+        return self._time_mask(item)

@@ -93,7 +93,7 @@ class SpectToImage(AbstractTransform):
         width: int,
         cmap: str = "magma",
         order: int = -90,
-    ):
+    ) -> None:
         """Convert a spectrogram in the range [0, 1] to a 3-channel uint8 image
         in the range [0, 255] using a specific colormap.
 
@@ -141,7 +141,7 @@ class PannMel(AbstractTransform):
         amin: float,
         top_db: int,
         order: int = -90,
-    ):
+    ) -> None:
         """Create a log-Mel spectrogram from an audio signal analogous to
         the Pretrained Audio Neural Networks (PANN) implementation.
 
@@ -269,15 +269,18 @@ class SquarePadCrop(AbstractTransform):
 class ScaleRange(AbstractTransform):
     def __init__(
         self,
-        range: List[float] = [0.0, 1.0],
+        range: List[float] = None,
         order: int = 90,
     ) -> None:
         """Scale a tensor to a specific target range.
 
         Args:
-            range: The range to scale the tensor to. Defaults to [0.0, 1.0].
+            range: The range to scale the tensor to. If None, it will be set to
+            [0.0, 1.0]. Defaults to None.
             order: The order of the transform in the pipeline. Defaults to 90.
         """
+        if range is None:
+            range = [0.0, 1.0]
         super().__init__(order=order)
         if len(range) != 2:
             raise ValueError(
@@ -345,7 +348,7 @@ class Normalize(AbstractTransform):
             1: (-1,),  # 1D tabular data: normalize along the feature axis
         }
 
-        for dim, axes in views.items():
+        for dim, axes in views.items():  # noqa: B007
             if item.features.ndim == dim:
                 break
         else:
@@ -401,6 +404,7 @@ class Standardizer(AbstractTransform):
     def _init_transform(self) -> Optional[AbstractTransform]:
         if self.mean and self.std:
             return Normalize(self.mean, self.std, self.order)
+        return None
 
     def _collect_data(self, data: "AbstractDataset") -> torch.Tensor:
         ds: DatasetWrapper = getattr(data, f"{self.subset}_dataset")
@@ -425,7 +429,7 @@ class Standardizer(AbstractTransform):
             2: (0,),  # 1D tabular data: normalize along the feature axis
         }
         collected = self._collect_data(data)
-        for dim, axes in views.items():
+        for dim, axes in views.items():  # noqa: B007
             if collected.ndim == dim:
                 break
         else:
@@ -483,7 +487,8 @@ class FeatureExtractor(AbstractTransform):
             warnings.warn(
                 f"{fe_class.__name__} "
                 "initialized with default values:\n"
-                f"{OmegaConf.to_yaml(extractor_dict)}"
+                f"{OmegaConf.to_yaml(extractor_dict)}",
+                stacklevel=2,
             )
 
         def extract_features(signal: np.ndarray) -> torch.Tensor:

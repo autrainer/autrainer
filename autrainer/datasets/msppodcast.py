@@ -121,7 +121,7 @@ class MSPPodcast(AbstractDataset):
         For more information on the data, see:
         https://doi.org/10.1109/TAFFC.2017.2736999
         """
-        return None
+        return
 
     @cached_property
     def _df(
@@ -141,17 +141,17 @@ class MSPPodcast(AbstractDataset):
         return df.reset_index(drop=True)
 
     @cached_property
-    def df_train(self):
+    def df_train(self) -> pd.DataFrame:
         return self._df.loc[self._df["Split_Set"] == "Train"].reset_index(drop=True)
 
     @cached_property
-    def df_dev(self):
+    def df_dev(self) -> pd.DataFrame:
         return self._df.loc[self._df["Split_Set"] == "Development"].reset_index(
             drop=True
         )
 
     @cached_property
-    def df_test(self):
+    def df_test(self) -> pd.DataFrame:
         return self._df.loc[self._df["Split_Set"] == "Test1"].reset_index(drop=True)
 
     @cached_property
@@ -165,18 +165,16 @@ class MSPPodcast(AbstractDataset):
         """
         if self.task == "classification":
             return LabelEncoder(self.df_train[self.target_column].unique().tolist())
-        elif self.task == "regression":
+        if self.task == "regression":
             if isinstance(self.target_column, list):
                 return MultiTargetMinMaxScaler(
                     target=self.target_column,
                     minimum=self.df_train[self.target_column].min().to_list(),
                     maximum=self.df_train[self.target_column].max().to_list(),
                 )
-            else:
-                return MinMaxScaler(
-                    target=self.target_column,
-                    minimum=self.df_train[self.target_column].min(),
-                    maximum=self.df_train[self.target_column].max(),
-                )
-        else:
-            raise NotImplementedError(f"{self.task} not supported for MSPPodcast")
+            return MinMaxScaler(
+                target=self.target_column,
+                minimum=self.df_train[self.target_column].min(),
+                maximum=self.df_train[self.target_column].max(),
+            )
+        raise NotImplementedError(f"{self.task} not supported for MSPPodcast")

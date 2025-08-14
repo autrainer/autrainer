@@ -331,7 +331,7 @@ class ModularTaskTrainer:
                 self.criterion,
                 *self.loggers,
                 *self.callbacks,
-                self.continue_training,  # has to be last as it might overwrite other callbacks
+                self.continue_training,  # has to be last as it might overwrite other callbacks  # noqa: E501
             ]
         )
 
@@ -445,7 +445,7 @@ class ModularTaskTrainer:
         self.callback_manager.callback(position="cb_on_train_end", trainer=self)
         return self.metrics.loc[self.best_iteration][self.data.tracking_metric.name]
 
-    def train_epochs(self):
+    def train_epochs(self) -> None:
         """Train the model for a fixed number of epochs."""
         train_loss = []
         pm = (
@@ -534,7 +534,7 @@ class ModularTaskTrainer:
                 iteration=epoch,
             )
 
-    def train_steps(self):
+    def train_steps(self) -> None:
         """Train the model for a fixed number of steps."""
         pbar = tqdm(
             total=self.cfg.eval_frequency,
@@ -671,7 +671,7 @@ class ModularTaskTrainer:
         dev_evaluation: bool = True,
         save_to: str = "dev",
         tracker: Optional[OutputsTracker] = None,
-    ) -> Dict[str, float]:
+    ) -> Optional[Dict[str, float]]:
         """Evaluate the model on the dev or test set.
 
         Args:
@@ -685,7 +685,8 @@ class ModularTaskTrainer:
             tracker: Tracker to save the outputs. Defaults to None.
 
         Returns:
-            Dictionary containing the evaluation results.
+            Dictionary containing the evaluation results if evaluating on the test set,
+            otherwise None.
         """
         cb_type = "val" if dev_evaluation else "test"
         kwargs = {"iteration": iteration} if dev_evaluation else {}
@@ -707,14 +708,12 @@ class ModularTaskTrainer:
         if dev_evaluation:
             results["dev_loss"] = results.pop("loss")
             # TODO: it's a bit ugly to filter like this
-            for key in list(set(self.metrics.columns) - set(["train_loss"])):
+            for key in list(set(self.metrics.columns) - {"train_loss"}):
                 self.metrics.loc[iteration, key] = results[key]
         else:
             test_results = {"test_loss": results["loss"]}
             # TODO: another ugly filter
-            for key in list(
-                set(self.metrics.columns) - set(["train_loss", "dev_loss"])
-            ):
+            for key in list(set(self.metrics.columns) - {"train_loss", "dev_loss"}):
                 test_results[f"test_{key}"] = results[key]
 
         if dev_evaluation:
@@ -777,6 +776,7 @@ class ModularTaskTrainer:
                     self.scheduler, "scheduler.pt", iteration_folder
                 )
         tracker.reset()
+        return None
 
     def _evaluate(
         self,

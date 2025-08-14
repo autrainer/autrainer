@@ -1,11 +1,12 @@
 import os
 import sys
-from typing import Optional
+from typing import Any, Callable, Optional
 
 import hydra
 from hydra.core.config_search_path import ConfigSearchPath
 from hydra.core.plugins import Plugins
 from hydra.plugins.search_path_plugin import SearchPathPlugin
+from hydra.types import TaskFunction
 
 import autrainer
 
@@ -34,7 +35,7 @@ def main(
     config_name: str,
     config_path: Optional[str] = None,
     version_base: Optional[str] = None,
-):
+) -> Callable[[TaskFunction], Any]:
     """Hydra main decorator with additional `autrainer` configs.
 
     The `conf` directory in the current working directory is always added to
@@ -50,9 +51,9 @@ def main(
         version_base: Hydra version base. Defaults to None.
     """
     if not any("jupyter" in arg or "ipykernel" in arg for arg in sys.argv):
-        import matplotlib
+        import matplotlib as mpl
 
-        matplotlib.use("Agg")  # TkAgg is not thread-safe
+        mpl.use("Agg")  # TkAgg is not thread-safe
 
     Plugins.instance().register(AutrainerPathPlugin)
     add_current_directory_to_path()

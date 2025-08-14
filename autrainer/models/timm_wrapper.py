@@ -1,4 +1,5 @@
 import logging
+from typing import Any, Dict
 
 import timm
 import torch
@@ -13,7 +14,7 @@ class TimmModel(AbstractModel):
         output_dim: int,
         timm_name: str,
         transfer: bool = False,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Wrapper for timm models.
 

@@ -130,7 +130,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
     def _assert_scene_category(scene_category: Optional[str]) -> None:
         if scene_category is None:
             return
-        if scene_category not in SCENE_CATEGORIES.keys():
+        if scene_category not in SCENE_CATEGORIES:
             raise ValueError(
                 f"Scene category '{scene_category}' must be one of "
                 f"{list(SCENE_CATEGORIES.keys())}."

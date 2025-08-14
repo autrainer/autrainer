@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from typing import TYPE_CHECKING, Dict, List, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 
@@ -47,7 +47,7 @@ def get_params_to_export(
                 raise KeyError(f"Configuration '{full_key}' is missing an id field.")
             if cfg_id == "None" or not v.keys():  # placeholder syntax
                 continue
-            elif cfg_id is None:  # shorthand syntax
+            if cfg_id is None:  # shorthand syntax
                 result[full_key] = next(iter(v.keys()))
             else:  # full syntax
                 result[full_key] = v.pop("id")
@@ -64,7 +64,7 @@ class AbstractLogger(ABC):
         run_name: str,
         metrics: List[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[Union[str, Dict[str, str]]] = ExportConstants().ARTIFACTS,
+        artifacts: List[Union[str, Dict[str, str]]] = None,
     ) -> None:
         """Base class for loggers.
 
@@ -73,14 +73,15 @@ class AbstractLogger(ABC):
             run_name: The name of the run.
             metrics: The metrics to log.
             tracking_metric: The metric to determine the best results.
-            artifacts: The artifacts to log. Defaults to
+            artifacts: The artifacts to log. If None, defaults to
                 :const:`~autrainer.core.constants.ExportConstants.ARTIFACTS`.
+                Defaults to None.
         """
         self.run_name = run_name
         self.exp_name = exp_name
         self.metrics = metrics
         self.tracking_metric = tracking_metric
-        self.artifacts = artifacts
+        self.artifacts = artifacts or ExportConstants().ARTIFACTS
         self.best_metrics = {
             "train_loss.min": float("inf"),
             "dev_loss.min": float("inf"),
@@ -132,7 +133,7 @@ class AbstractLogger(ABC):
                 if metric.compare(v, self.best_metrics[f"{k}.{metric.suffix}"]):
                     self.best_metrics[f"{k}.{metric.suffix}"] = v
 
-    def setup(self) -> None:
+    def setup(self) -> None:  # noqa: B027
         """Optional setup method called at the beginning of the run
         (`cb_on_train_begin`).
         """
@@ -149,7 +150,7 @@ class AbstractLogger(ABC):
     def log_metrics(
         self,
         metrics: Dict[str, Union[int, float]],
-        iteration=None,
+        iteration: Optional[int] = None,
     ) -> None:
         """Log the metrics for the given iteration.
 
@@ -180,7 +181,7 @@ class AbstractLogger(ABC):
                 directory to the artifact. Defaults to "".
         """
 
-    def end_run(self) -> None:
+    def end_run(self) -> None:  # noqa: B027
         """Optional end run method called at the end of the run
         (`cb_on_train_end`).
         """

@@ -180,8 +180,8 @@ class HubModelPath(AbstractModelPath):
                 repo_id,
                 revision=revision,
             )
-        except Exception:
-            raise ValueError(
+        except Exception:  # noqa: BLE001
+            raise ValueError(  # noqa: B904
                 f"Invalid hugging face repo id: '{repo_id}'"
                 + (f" or revision: '{revision}'" if revision else "")
             )

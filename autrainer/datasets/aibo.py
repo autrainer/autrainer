@@ -99,22 +99,19 @@ class AIBO(BaseClassificationDataset):
         df = self._load_df
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
-        df_train = df_train_dev.loc[df_train_dev["speaker"].isin(speakers[:-2])]
-        return df_train
+        return df_train_dev.loc[df_train_dev["speaker"].isin(speakers[:-2])]
 
     @cached_property
     def df_dev(self) -> pd.DataFrame:
         df = self._load_df
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
-        df_dev = df_train_dev.loc[df_train_dev["speaker"].isin(speakers[-2:])]
-        return df_dev
+        return df_train_dev.loc[df_train_dev["speaker"].isin(speakers[-2:])]
 
     @cached_property
     def df_test(self) -> pd.DataFrame:
         df = self._load_df
-        df_test = df.loc[df["school"] == "Mont"]
-        return df_test
+        return df.loc[df["school"] == "Mont"]
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover

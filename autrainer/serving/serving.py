@@ -1,7 +1,7 @@
 import glob
 import os
 import sys
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 import warnings
 
 import audobject
@@ -14,13 +14,13 @@ import yaml
 import autrainer
 from autrainer.core.structs import DataBatch, DataItem
 from autrainer.core.utils import set_device
-from autrainer.datasets.utils import (
-    AbstractFileHandler,
-    AbstractTargetTransform,
-)
-from autrainer.models import AbstractModel
 from autrainer.models.utils import create_model_inputs
 from autrainer.transforms import SmartCompose
+
+
+if TYPE_CHECKING:
+    from autrainer.datasets.utils import AbstractFileHandler, AbstractTargetTransform
+    from autrainer.models import AbstractModel
 
 
 class Inference:
@@ -150,7 +150,9 @@ class Inference:
                 continue
             prediction, output, probs = preds
             if isinstance(prediction, dict):
-                for (offset, pred), out in zip(prediction.items(), output.values()):
+                for (offset, pred), out in zip(
+                    prediction.items(), output.values(), strict=False
+                ):
                     records.append(
                         {
                             "filename": os.path.relpath(file, directory),
@@ -322,7 +324,7 @@ class Inference:
         """
         os.makedirs(output_dir, exist_ok=True)
 
-        def _create_output_name(row, offset: bool = False) -> str:
+        def _create_output_name(row: pd.Series, offset: bool = False) -> str:
             n = row["filename"].replace("." + input_extension, "")
             n += f"-{row['offset']}" if offset else ""
             return n + ".pt"
@@ -347,13 +349,17 @@ class Inference:
         try:
             if self._window_length and self._stride_length and self._sample_rate:
                 return window_fn(x)
-            else:
-                return fn(x)
-        except Exception as e:
+            return fn(x)
+        except Exception as e:  # noqa: BLE001
             tqdm.write(f"Error processing file '{file}': {e}")
             return None
 
-    def _collect_files(self, directory: str, extension: str, recursive: bool):
+    def _collect_files(
+        self,
+        directory: str,
+        extension: str,
+        recursive: bool,
+    ) -> List[str]:
         pattern = f"**/*.{extension}" if recursive else f"*.{extension}"
         return glob.glob(os.path.join(directory, pattern), recursive=True)
 
@@ -383,12 +389,11 @@ class Inference:
     def _embed(self, x: torch.Tensor) -> torch.Tensor:
         data = self._preprocess_file(x)
         with torch.inference_mode():
-            embedding = (
+            return (
                 self.model.embeddings(**create_model_inputs(self.model, data))
                 .cpu()
                 .squeeze()
             )
-        return embedding
 
     def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, int]:
         w_len = int(self._window_length * self._sample_rate)
@@ -418,7 +423,7 @@ class Inference:
         majority = self.target_transform.majority_vote(list(results.values()))
         results["majority"] = majority
         outputs["majority"] = torch.empty(0)
-        probs["majority"] = {k: None for k in prob.keys()}
+        probs["majority"] = dict.fromkeys(prob.keys())
         return results, outputs, probs
 
     def _embed_windowed(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
@@ -446,10 +451,9 @@ class Inference:
         )
 
     def __repr__(self) -> str:
-        s = (
+        return (
             f"File handler:\n{self.file_handler}"
             f"Data transform:\n{self.inference_transform}"
             f"Model:\n{self.model}"
             f"Label transform:\n{self.target_transform}"
         )
-        return s

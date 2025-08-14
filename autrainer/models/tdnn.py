@@ -67,8 +67,7 @@ class TDNNFFNN(AbstractModel):
         _device = features.device
         features = self.features(features.squeeze(1).cpu())
         features = features.to(_device)
-        embs = self.backbone(features).squeeze(1)
-        return embs
+        return self.backbone(features).squeeze(1)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         embs = self.embeddings(features)

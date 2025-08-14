@@ -192,13 +192,13 @@ class AudioSet(BaseMLClassificationDataset):
         they appear at all in the data or not.
         """
         if self.target_column is None:
-            unique_categories = set([x["name"] for x in self.ontology])
-            train_categories = set(
-                [x for y in self.df_train["categories"].values.tolist() for x in y]
-            )
-            dev_categories = set(
-                [x for y in self.df_dev["categories"].values.tolist() for x in y]
-            )
+            unique_categories = {x["name"] for x in self.ontology}
+            train_categories = {
+                x for y in self.df_train["categories"].values.tolist() for x in y
+            }
+            dev_categories = {
+                x for y in self.df_dev["categories"].values.tolist() for x in y
+            }
             self.target_column = list(
                 (
                     train_categories.intersection(dev_categories).intersection(
@@ -273,8 +273,7 @@ class AudioSet(BaseMLClassificationDataset):
             else:
                 order += [2]
         # Sort list `categories` by the list `order`
-        categories = [cat for _, cat in sorted(zip(order, categories))]
-        return categories
+        return [cat for _, cat in sorted(zip(order, categories, strict=True))]
 
     def _filter_by_categories(
         self,
@@ -300,7 +299,7 @@ class AudioSet(BaseMLClassificationDataset):
             # Remove rows that have an intersection of actual and desired IDs
             df = df.loc[
                 df.apply(
-                    lambda row: False if set(row["ids"]) & set(ids) else True,
+                    lambda row: not set(row["ids"]) & set(ids),
                     axis=1,
                 )
             ]
@@ -308,12 +307,11 @@ class AudioSet(BaseMLClassificationDataset):
             # Include rows that have an intersection of actual and desired IDs
             df = df.loc[
                 df.apply(
-                    lambda row: True if set(row["ids"]) & set(ids) else False,
+                    lambda row: bool(set(row["ids"]) & set(ids)),
                     axis=1,
                 )
             ]
-        df = df.reset_index(drop=True)
-        return df
+        return df.reset_index(drop=True)
 
     def _ids_for_categories(self, categories: List[str]) -> List[str]:
         r"""All IDs and child IDs for a given set of categories.
@@ -373,13 +371,13 @@ class AudioSet(BaseMLClassificationDataset):
         if self.exclude is not None:
             df = self._filter_by_categories(df, self.exclude, exclude_mode=True)
         df["categories"] = df["ids"].map(self._convert_ids_to_categories)
-        unique_categories = list(set([x["name"] for x in self.ontology]))
+        unique_categories = list({x["name"] for x in self.ontology})
         for c in unique_categories:
             df = pd.concat(
                 (
                     df,
                     df["categories"]
-                    .apply(lambda x: 1 if c in x else 0)
+                    .apply(lambda x: 1 if c in x else 0)  # noqa: B023
                     .to_frame(name=c),
                 ),
                 axis=1,

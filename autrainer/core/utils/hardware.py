@@ -2,7 +2,7 @@ import logging
 import os
 import platform
 import threading
-from typing import Callable, Optional
+from typing import Any, Callable, Optional, Type
 
 from omegaconf import OmegaConf
 import psutil
@@ -14,7 +14,7 @@ class ThreadManager:
 
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls: Type["ThreadManager"]) -> "ThreadManager":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialize()
@@ -24,7 +24,7 @@ class ThreadManager:
         self._threads = []
         self._lock = threading.Lock()
 
-    def spawn(self, target: Callable, *args) -> None:
+    def spawn(self, target: Callable, *args: Any) -> None:
         """Spawn and start a new thread for the target function.
 
         Args:
@@ -135,7 +135,7 @@ def set_device(device_name: str) -> torch.device:
         torch.tensor(1).to(device)
     except (RuntimeError, AssertionError):
         device = torch.device("cpu")
-        logging.warning(
-            f"Device '{device_name}' is not available. Falling back to CPU.",
+        logging.warning(  # noqa: LOG015
+            f"Device '{device_name}' is not available. Falling back to CPU.",  # noqa: G004
         )
     return device

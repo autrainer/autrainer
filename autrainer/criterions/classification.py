@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -51,7 +51,11 @@ class BalancedCrossEntropyLoss(CrossEntropyLoss):
 
 
 class WeightedCrossEntropyLoss(BalancedCrossEntropyLoss):
-    def __init__(self, class_weights: Dict[str, float], **kwargs) -> None:
+    def __init__(
+        self,
+        class_weights: Dict[str, float],
+        **kwargs: Dict[str, Any],
+    ) -> None:
         """Wrapper for `torch.nn.CrossEntropyLoss` with manual class weights.
 
         The class weights are automatically normalized to sum up to the number
@@ -105,7 +109,7 @@ class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
         self,
         weight: Optional[torch.Tensor] = None,
         reduction: str = "mean",
-    ):
+    ) -> None:
         """Balanced version of `torch.nn.BCEWithLogitsLoss`.
 
         `pos_weight` is not supported, as the weights are calculated based on
@@ -159,7 +163,11 @@ class BalancedBCEWithLogitsLoss(BCEWithLogitsLoss):
 
 
 class WeightedBCEWithLogitsLoss(BalancedBCEWithLogitsLoss):
-    def __init__(self, class_weights: Dict[str, float], **kwargs) -> None:
+    def __init__(
+        self,
+        class_weights: Dict[str, float],
+        **kwargs: Dict[str, Any],
+    ) -> None:
         """Wrapper for `torch.nn.BCEWithLogitsLoss` with manual class weights.
 
         The class weights are automatically normalized to sum up to the number

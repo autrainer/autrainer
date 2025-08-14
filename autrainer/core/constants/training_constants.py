@@ -26,7 +26,7 @@ class TrainingConstants(AbstractConstants):
         return self._tasks
 
     @TASKS.setter
-    def TASKS(self, tasks: List[str]):
+    def TASKS(self, tasks: List[str]) -> None:
         """Set the supported training tasks.
 
         Args:

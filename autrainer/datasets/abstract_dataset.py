@@ -362,7 +362,7 @@ class AbstractDataset(ABC):
         set_seed(seed + worker_id)
         transform.offset_generator_seed(worker_id)
 
-    @staticmethod
+    @staticmethod  # noqa: B027
     def download(path: str) -> None:
         """Download the dataset. Can be implemented by subclasses, but is not
         required.

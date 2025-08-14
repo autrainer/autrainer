@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import torch
 import torchvision
@@ -13,7 +13,7 @@ class TorchvisionModel(AbstractModel):
         output_dim: int,
         torchvision_name: str,
         transfer: bool = False,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Wrapper for torchvision models.
 
@@ -60,7 +60,7 @@ class TorchvisionModel(AbstractModel):
         """
         layers: List[Tuple[torch.nn.Module, str, torch.nn.Linear]] = []
 
-        def collect_layers(module: torch.nn.Module):
+        def collect_layers(module: torch.nn.Module) -> None:
             for name, layer in module.named_children():
                 if isinstance(layer, torch.nn.Linear):
                     layers.append((module, name, layer))

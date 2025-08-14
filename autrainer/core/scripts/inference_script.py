@@ -223,7 +223,7 @@ class InferenceScript(AbstractScript):
         try:
             return get_model_path(args.model, args.trust_remote)
         except ValueError as e:
-            raise CommandLineError(self.parser, str(e), code=1)
+            raise CommandLineError(self.parser, str(e), code=1)  # noqa: B904
 
     def _assert_checkpoint_exists(self, args: InferenceArgs) -> None:
         path = os.path.join(args.model, args.checkpoint, "model.pt")
