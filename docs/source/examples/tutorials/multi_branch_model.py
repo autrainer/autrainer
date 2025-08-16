@@ -4,7 +4,7 @@ from autrainer.models import AbstractModel
 
 
 class ToyMultiBranchModel(AbstractModel):
-    def __init__(self, input_dim: int, output_dim: int, hidden_dim: int):
+    def __init__(self, input_dim: int, output_dim: int, hidden_dim: int) -> None:
         super().__init__(output_dim, None)  # no transfer learning
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim

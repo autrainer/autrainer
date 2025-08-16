@@ -291,14 +291,14 @@ first create a new :class:`~autrainer.core.structs.DataItem` dataclass that incl
 .. literalinclude:: ../examples/tutorials/multi_branch_data.py
    :language: python
    :caption: multi_branch_data.py
-   :lines: 11-16
+   :lines: 12-17
 
 Next, override :class:`~autrainer.core.structs.AbstractDataBatch` to include the new :attr:`meta` parameter:
 
 .. literalinclude:: ../examples/tutorials/multi_branch_data.py
    :language: python
    :caption: multi_branch_data.py
-   :lines: 19-38
+   :lines: 20-39
 
 Following that, inherit from :class:`~autrainer.datasets.utils.DatasetWrapper` to create a :class:`torch.utils.data.Dataset`
 that iterates over your data and returns your custom :class:`~autrainer.core.structs.AbstractDataBatch`
@@ -307,7 +307,7 @@ that iterates over your data and returns your custom :class:`~autrainer.core.str
 .. literalinclude:: ../examples/tutorials/multi_branch_data.py
    :language: python
    :caption: multi_branch_data.py
-   :lines: 41-49
+   :lines: 42-50
 
 Subsequently, inherit from :class:`~autrainer.datasets.AbstractDataset` to create a dataset
 that instantiates your :class:`~autrainer.datasets.utils.DatasetWrapper`:
@@ -315,7 +315,7 @@ that instantiates your :class:`~autrainer.datasets.utils.DatasetWrapper`:
 .. literalinclude:: ../examples/tutorials/multi_branch_data.py
    :language: python
    :caption: multi_branch_data.py
-   :lines: 52-70
+   :lines: 53-71
 
 Next, create a :attr:`ToyMultiBranch-C.yaml` configuration file for the dataset in the :attr:`conf/dataset/` directory:
 
@@ -330,7 +330,7 @@ in its forward pass to access the :attr:`meta` parameter:
 .. literalinclude:: ../examples/tutorials/multi_branch_model.py
    :language: python
    :caption: multi_branch_model.py
-   :lines: 6-26
+   :lines: 6-20
 
 Next, create a :attr:`ToyMultiBranchModel.yaml` configuration file for the model in the :attr:`conf/model/` directory:
 
