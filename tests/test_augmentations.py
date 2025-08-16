@@ -102,7 +102,7 @@ AUGMENTATION_FIXTURES = [
 
 class TestAllAugmentations:
     @pytest.mark.parametrize(
-        "augmentation, params, input_shape, output_shape",
+        ("augmentation", "params", "input_shape", "output_shape"),
         AUGMENTATION_FIXTURES,
     )
     def test_probability(
@@ -112,9 +112,9 @@ class TestAllAugmentations:
         input_shape: Union[Tuple[int, int], Tuple[int, int, int]],
         output_shape: Union[Tuple[int, int], Tuple[int, int, int]],
     ) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"p must be in the range \[0, 1\]"):
             augmentation(**params, generator_seed=AUGMENTATION_SEED, p=1.1)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"p must be in the range \[0, 1\]"):
             augmentation(**params, generator_seed=AUGMENTATION_SEED, p=-0.1)
         instance = augmentation(
             **params,
@@ -131,7 +131,7 @@ class TestAllAugmentations:
         )
 
     @pytest.mark.parametrize(
-        "augmentation, params, input_shape, output_shape",
+        ("augmentation", "params", "input_shape", "output_shape"),
         AUGMENTATION_FIXTURES,
     )
     def test_deterministic(
@@ -158,7 +158,7 @@ class TestAllAugmentations:
         assert torch.allclose(y3, y4), "Should be deterministic"
 
     @pytest.mark.parametrize(
-        "augmentation, params, input_shape, output_shape",
+        ("augmentation", "params", "input_shape", "output_shape"),
         AUGMENTATION_FIXTURES,
     )
     def test_offset_generator_seed(
@@ -207,7 +207,7 @@ class TestAugmentationManagerPipeline:
     }
 
     @pytest.mark.parametrize(
-        "config, subset",
+        ("config", "subset"),
         [
             (None, "train"),
             (None, "dev"),
@@ -240,14 +240,14 @@ class TestAugmentationManagerPipeline:
 
 class TestChoice:
     def test_invalid_weights(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must have the same length"):
             Choice(
                 choices=["autrainer.augmentations.GaussianNoise"],
                 weights=[0.5, 0.5],
             )
 
     def test_invalid_collate_fn(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must not have a collate function"):
             Choice(choices=["autrainer.augmentations.CutMix"])
 
     def test_offset_generator_seed(self) -> None:
@@ -270,7 +270,7 @@ class TestChoice:
 
 class TestSequential:
     def test_invalid_collate_fn(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must not have a collate function"):
             Sequential(sequence=["autrainer.augmentations.CutMix"])
 
     def test_offset_generator_seed(self) -> None:
@@ -305,7 +305,7 @@ class TestBaseMixUpCutMix:
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_invalid_dataset(self, aug: Type[BaseMixUpCutMix]) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="requires more than 1 class"):
             aug().get_collate_fn(self.regression_dataset, default=DataBatch.collate)
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
@@ -362,7 +362,7 @@ class TestSampleGaussianWhiteNoise:
                 snr_df=os.path.join(self.temp_dir.name, "invalid.csv"),
                 snr_col="snr",
             )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="not found"):
             SampleGaussianWhiteNoise(
                 snr_df=self.temp_csv_path,
                 snr_col="invalid",
@@ -411,7 +411,7 @@ class TestSampleGaussianWhiteNoise:
 
 class TestTimeShift:
     def test_invalid_time_steps(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"must be \>\= 0"):
             TimeShift(time_steps=-1, axis=0)
 
     def test_identity(self) -> None:
@@ -428,7 +428,7 @@ class TestTimeShift:
 
 class TestTimeMask:
     def test_invalid_time_mask(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"must be \>\= 0"):
             TimeMask(time_mask=-1, axis=0)
 
     def test_identity(self) -> None:
@@ -445,7 +445,7 @@ class TestTimeMask:
 
 class TestFrequencyMask:
     def test_invalid_freq_mask(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"must be \>\= 0"):
             FrequencyMask(freq_mask=-1, axis=0)
 
     def test_identity(self) -> None:
@@ -499,7 +499,7 @@ PIPELINE_FIXTURES = [
 
 class TestAugmentationPipeline:
     @pytest.mark.parametrize(
-        "idx, seeds",
+        ("idx", "seeds"),
         [
             (0, [42, 43]),
             (1, [2, 42]),
@@ -512,7 +512,7 @@ class TestAugmentationPipeline:
         self._test_increment(idx, seeds, increment=True)
 
     @pytest.mark.parametrize(
-        "idx, seeds",
+        ("idx", "seeds"),
         [
             (0, [42, 42]),
             (1, [2, 42]),

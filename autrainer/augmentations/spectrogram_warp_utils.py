@@ -183,7 +183,11 @@ def _interpolate_bilinear(
     # work with only one channel
     flattened_grid = torch.reshape(grid[0], [height * width, 1])
 
-    def gather(y_coords: torch.Tensor, x_coords: torch.Tensor) -> torch.Tensor:
+    def gather(
+        y_coords: torch.Tensor,
+        x_coords: torch.Tensor,
+        name: str,  # FIXME: why is this unused but passed below?
+    ) -> torch.Tensor:
         linear_coordinates = y_coords * width + x_coords
         gathered_values = torch.gather(
             flattened_grid.t(), 1, linear_coordinates.unsqueeze(0)

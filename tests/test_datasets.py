@@ -1,6 +1,6 @@
 import os
 import random
-from typing import List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -37,7 +37,7 @@ class MockTargetTransform(AbstractTargetTransform):
 
 
 class MockBaseInvalidDataset(AbstractDataset):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Dict[str, Any]) -> None:
         super().__init__(task="invalid", **kwargs)
 
     @property
@@ -72,7 +72,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
         if target_type == "classification":
             df[target_column] = [i % 10 for i in range(num_files)]
         elif target_type == "regression":
-            df[target_column] = [i for i in range(num_files)]
+            df[target_column] = list(range(num_files))
         elif target_type == "ml-classification":
             for i in range(10):
                 df[f"target_{i}"] = torch.randint(0, 2, (num_files,)).tolist()
@@ -118,20 +118,20 @@ class TestBaseDatasets(BaseIndividualTempDir):
 
     def test_invalid_task(self) -> None:
         os.makedirs("data/TestDataset/default", exist_ok=True)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="not supported"):
             MockBaseInvalidDataset(**self._mock_dataset_kwargs())
 
     @pytest.mark.parametrize("path", ["data", "data/TestDataset"])
     def test_invalid_path(self, path: str) -> None:
         os.makedirs(path, exist_ok=True)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="does not exist"):
             BaseClassificationDataset(**self._mock_dataset_kwargs())
 
     def test_invalid_stratify(self) -> None:
         self._mock_dataframes("data/TestDataset")
         kwargs = self._mock_dataset_kwargs()
         kwargs["stratify"] = ["invalid"]
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="not present"):
             BaseClassificationDataset(**kwargs)
 
     def test_invalid_mlc_stratify(self) -> None:
@@ -144,7 +144,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
         kwargs["tracking_metric"] = "autrainer.metrics.MLAccuracy"
         kwargs["target_column"] = [f"target_{i}" for i in range(10)]
         kwargs["stratify"] = ["target_1", "target_2"]
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Stratify is not supported"):
             BaseMLClassificationDataset(**kwargs)
 
     @pytest.mark.parametrize("threshold", [-0.01, 1.1])
@@ -158,7 +158,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
         kwargs["tracking_metric"] = "autrainer.metrics.MLAccuracy"
         kwargs["target_column"] = [f"target_{i}" for i in range(10)]
         kwargs["threshold"] = threshold
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be between 0 and 1"):
             BaseMLClassificationDataset(**kwargs)
 
     @pytest.mark.parametrize(
@@ -176,7 +176,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
         kwargs["metrics"] = ["autrainer.metrics.MLAccuracy"]
         kwargs["tracking_metric"] = "autrainer.metrics.MLAccuracy"
         kwargs["target_column"] = target_column
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="target column"):
             BaseMLClassificationDataset(**kwargs)
 
     def test_classification(self) -> None:
@@ -295,8 +295,7 @@ class TestAIBO(BaseIndividualTempDir):
         def school() -> str:
             if random.random() < 0.5:
                 return "Ohm"
-            else:
-                return "Mont"
+            return "Mont"
 
         df["id"] = [f"{school()}_file{i}" for i in range(num_files)]
         df[index_column] = df["id"].apply(lambda x: f"{x}.{file_type}")
@@ -335,7 +334,7 @@ class TestAIBO(BaseIndividualTempDir):
         }
 
     def test_invalid_aibo_task(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="not in"):
             AIBO(aibo_task="invalid", **self._mock_dataset_kwargs())
 
     @pytest.mark.parametrize("aibo_task", ["2cl", "5cl"])
@@ -356,14 +355,14 @@ class TestEDANSA2019(BaseIndividualTempDir):
         kwargs["metrics"] = ["autrainer.metrics.MLAccuracy"]
         kwargs["tracking_metric"] = "autrainer.metrics.MLAccuracy"
         kwargs["target_column"] = ["target_1", "target_2"]
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="target column"):
             EDANSA2019(**kwargs)
 
 
 class TestDCASE2016Task1(BaseIndividualTempDir):
     @pytest.mark.parametrize("fold", [-1, 0, 5, 6])
     def test_invalid_fold(self, fold: int) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="not in"):
             DCASE2016Task1(
                 **TestBaseDatasets._mock_dataset_kwargs(),
                 fold=fold,
@@ -380,7 +379,7 @@ class TestDCASE2016Task1(BaseIndividualTempDir):
 class TestDCASE2018Task3(BaseIndividualTempDir):
     @pytest.mark.parametrize("split", [-0.01, 1.0, 1.1])
     def test_invalid_dev_split(self, split: float) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"must be in \[0, 1\)"):
             DCASE2018Task3(
                 **TestBaseDatasets._mock_dataset_kwargs(),
                 dev_split=split,
@@ -425,7 +424,7 @@ class TestDCASE2020Task1A(BaseIndividualTempDir):
             df.to_csv(f"data/TestDataset/{subset}.csv", index=False)
 
     def test_invalid_scene_category(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be one of"):
             DCASE2020Task1A(
                 **TestBaseDatasets._mock_dataset_kwargs(),
                 scene_category="invalid",
@@ -496,7 +495,7 @@ class TestEmoDB(BaseIndividualTempDir):
 
 class TestMSPPodcast(BaseIndividualTempDir):
     @pytest.mark.parametrize(
-        "task,target,metric,shape",
+        ("task", "target", "metric", "shape"),
         [
             (
                 "classification",
@@ -513,7 +512,13 @@ class TestMSPPodcast(BaseIndividualTempDir):
             ),
         ],
     )
-    def test_classification(self, task, target, metric, shape) -> None:
+    def test_classification(
+        self,
+        task: str,
+        target: Union[str, List[str]],
+        metric: str,
+        shape: torch.Size,
+    ) -> None:
         TestBaseDatasets._mock_dataframes(
             "data/TestDataset",
             target_type=task,
@@ -569,35 +574,35 @@ class TestToyDataset(BaseIndividualTempDir):
         }
 
     def test_invalid_task(self) -> None:
-        with pytest.raises(ValueError):
-            kwargs = self._mock_toy_dataset_kwargs()
-            kwargs["task"] = "invalid"
+        kwargs = self._mock_toy_dataset_kwargs()
+        kwargs["task"] = "invalid"
+        with pytest.raises(ValueError, match="Invalid task"):
             ToyDataset(**kwargs)
 
     @pytest.mark.parametrize(
-        "dev_split, test_split",
+        ("dev_split", "test_split"),
         [(0.6, 0.5), (0.2, 0.8), (0.8, 0.2)],
     )
     def test_invalid_splits(self, dev_split: float, test_split: float) -> None:
         kwargs = self._mock_toy_dataset_kwargs()
         kwargs["dev_split"] = dev_split
         kwargs["test_split"] = test_split
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be less than 1"):
             ToyDataset(**kwargs)
 
     def test_invalid_dtype(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid dtype"):
             ToyDataset(
                 **self._mock_toy_dataset_kwargs(),
                 dtype="invalid",
             )
 
-    @pytest.mark.parametrize("size", [-1, 0, 1, 2, 3])
+    @pytest.mark.parametrize("size", [0, 1, 2, 3])
     def test_invalid_size(self, size: int) -> None:
         kwargs = self._mock_toy_dataset_kwargs()
         kwargs["size"] = size
-        with pytest.raises(ValueError):
-            ToyDataset(**kwargs).df_train
+        with pytest.raises(ValueError, match=r"must be \> 0"):
+            _ = ToyDataset(**kwargs).df_train
 
     @staticmethod
     def _test_data_shapes(

@@ -16,7 +16,7 @@ from .utils import BaseIndividualTempDir
 
 
 class MockSqueezeFirstDim(AbstractTransform):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(0)
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:

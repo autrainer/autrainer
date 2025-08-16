@@ -14,7 +14,7 @@ from .utils import BaseIndividualTempDir
 
 class TestCLIIntegration(BaseIndividualTempDir):
     @pytest.mark.parametrize(
-        "dataset, model, train_type, iterations, reuse_temp_dir",
+        ("dataset", "model", "train_type", "iterations", "reuse_temp_dir"),
         [
             ("ToyTabular-C", "ToyFFNN", "epoch", 1, False),
             ("ToyTabular-C", "ToyFFNN", "epoch", 2, True),
@@ -147,6 +147,7 @@ class TestCheckpointsIntegration(BaseIndividualTempDir):
                     "dataset": "ToyTabular-C-7",
                     "model": "ToyFFNN-CKPT",
                     "scheduler": "StepLR",
+                    "device": "cpu",
                 }
             )
         run_dirs = [

@@ -3,7 +3,7 @@ import os
 import random
 import time
 
-import matplotlib
+import matplotlib as mpl
 import numpy as np
 from omegaconf import OmegaConf
 import pandas as pd
@@ -32,7 +32,7 @@ from autrainer.models import FFNN
 from .utils import BaseIndividualTempDir
 
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 
 
 class TestBookkeeping(BaseIndividualTempDir):
@@ -226,7 +226,7 @@ class TestTimer(BaseIndividualTempDir):
 
     def test_invalid_timer(self) -> None:
         timer = Timer(self.temp_dir, "test")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="not yet started"):
             timer.stop()
 
 
@@ -323,25 +323,28 @@ class TestExportConstants:
 
     @pytest.mark.parametrize("depth", [-1, "invalid"])
     def test_invalid_logging_depth(self, depth: int) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError,
+            match="Invalid type" if isinstance(depth, str) else "must be non-negative",
+        ):
             self.c.LOGGING_DEPTH = depth
 
     @pytest.mark.parametrize("depth", [1, 2, 3, 100])
     def test_logging_depth(self, depth: int) -> None:
         self.c.LOGGING_DEPTH = depth
-        assert ExportConstants().LOGGING_DEPTH == depth, (
+        assert depth == ExportConstants().LOGGING_DEPTH, (
             f"Should set logging depth to {depth}."
         )
 
     @pytest.mark.parametrize("ignore_params", ["invalid", [1, "param"]])
     def test_invalid_ignore_params(self, ignore_params: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.IGNORE_PARAMS = ignore_params
 
     @pytest.mark.parametrize("ignore_params", [[], ["param1", "param2"]])
     def test_ignore_params(self, ignore_params: list) -> None:
         self.c.IGNORE_PARAMS = ignore_params
-        assert ExportConstants().IGNORE_PARAMS == ignore_params, (
+        assert ignore_params == ExportConstants().IGNORE_PARAMS, (
             f"Should set ignore params to {ignore_params}."
         )
 
@@ -350,7 +353,7 @@ class TestExportConstants:
         [[1, "artifact"], ["artifact", {"invalid": 1}]],
     )
     def test_invalid_artifacts(self, artifacts: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.ARTIFACTS = artifacts
 
     @pytest.mark.parametrize(
@@ -359,7 +362,7 @@ class TestExportConstants:
     )
     def test_artifacts(self, artifacts: list) -> None:
         self.c.ARTIFACTS = artifacts
-        assert ExportConstants().ARTIFACTS == artifacts, (
+        assert artifacts == ExportConstants().ARTIFACTS, (
             f"Should set artifacts to {artifacts}."
         )
 
@@ -382,25 +385,25 @@ class TestNamingConstants:
 
     @pytest.mark.parametrize("config_dirs", ["invalid", [1, "invalid"]])
     def test_invalid_config_dirs(self, config_dirs: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.CONFIG_DIRS = config_dirs
 
     @pytest.mark.parametrize("config_dirs", [["dir1", "dir2"]])
     def test_config_dirs(self, config_dirs: list) -> None:
         self.c.CONFIG_DIRS = config_dirs
-        assert NamingConstants().CONFIG_DIRS == config_dirs, (
+        assert config_dirs == NamingConstants().CONFIG_DIRS, (
             f"Should set config dirs to {config_dirs}."
         )
 
     @pytest.mark.parametrize("naming_convention", ["invalid", [1, "invalid"]])
     def test_invalid_naming_convention(self, naming_convention: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.NAMING_CONVENTION = naming_convention
 
     @pytest.mark.parametrize("naming_convention", [["dir1", "dir2"]])
     def test_naming_convention(self, naming_convention: list) -> None:
         self.c.NAMING_CONVENTION = naming_convention
-        assert NamingConstants().NAMING_CONVENTION == naming_convention, (
+        assert naming_convention == NamingConstants().NAMING_CONVENTION, (
             f"Should set naming convention to {naming_convention}."
         )
 
@@ -409,7 +412,7 @@ class TestNamingConstants:
         ["invalid", [1, "invalid"]],
     )
     def test_invalid_valid_aggregations(self, valid_aggregations: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.VALID_AGGREGATIONS = valid_aggregations
 
     @pytest.mark.parametrize(
@@ -418,7 +421,7 @@ class TestNamingConstants:
     )
     def test_valid_aggregations(self, valid_aggregations: list) -> None:
         self.c.VALID_AGGREGATIONS = valid_aggregations
-        assert NamingConstants().VALID_AGGREGATIONS == valid_aggregations, (
+        assert valid_aggregations == NamingConstants().VALID_AGGREGATIONS, (
             f"Should set valid aggregations to {valid_aggregations}."
         )
 
@@ -427,7 +430,7 @@ class TestNamingConstants:
         ["invalid", [1, "invalid"]],
     )
     def test_invalid_invalid_aggregations(self, invalid_aggregations: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.INVALID_AGGREGATIONS = invalid_aggregations
 
     @pytest.mark.parametrize(
@@ -436,7 +439,7 @@ class TestNamingConstants:
     )
     def test_invalid_aggregations(self, invalid_aggregations: list) -> None:
         self.c.INVALID_AGGREGATIONS = invalid_aggregations
-        assert NamingConstants().INVALID_AGGREGATIONS == invalid_aggregations, (
+        assert invalid_aggregations == NamingConstants().INVALID_AGGREGATIONS, (
             f"Should set invalid aggregations to {invalid_aggregations}."
         )
 
@@ -453,10 +456,10 @@ class TestTrainingConstants:
 
     @pytest.mark.parametrize("tasks", ["invalid", [1, "invalid"]])
     def test_invalid_tasks(self, tasks: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.TASKS = tasks
 
     @pytest.mark.parametrize("tasks", [["task1", "task2"]])
     def test_tasks(self, tasks: list) -> None:
         self.c.TASKS = tasks
-        assert TrainingConstants().TASKS == tasks, f"Should set tasks to {tasks}."
+        assert tasks == TrainingConstants().TASKS, f"Should set tasks to {tasks}."

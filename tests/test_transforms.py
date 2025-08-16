@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Any, Dict, List, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Tuple, Type, Union
 import warnings
 
 import numpy as np
@@ -68,7 +68,7 @@ TRANSFORM_FIXTURES = [
 
 class TestAllTransforms:
     @pytest.mark.parametrize(
-        "transform, params, input_shape, output_shape",
+        ("transform", "params", "input_shape", "output_shape"),
         TRANSFORM_FIXTURES + AUGMENTATION_FIXTURES,
     )
     def test_output_shape(
@@ -140,7 +140,7 @@ class TestAnyToTensor:
         assert y.features.device == torch.device("cpu"), "Output should be on CPU"
 
     def test_wrong_input(self) -> None:
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="must be a 'torch.Tensor'"):
             AnyToTensor()(DataItem(0, 0, 0))
 
 
@@ -181,7 +181,7 @@ class TestPannMel:
 
 class TestResize:
     @pytest.mark.parametrize(
-        "height, width, expected",
+        ("height", "width", "expected"),
         [
             (64, "Any", (3, 64, 64)),
             ("Any", 128, (3, 128, 128)),
@@ -196,7 +196,7 @@ class TestResize:
     ) -> None:
         x = DataItem(torch.randn(3, 32, 32), 0, 0)
         if not expected:
-            with pytest.raises(ValueError):
+            with pytest.raises(ValueError, match="must be specified"):
                 Resize(height=height, width=width)
         else:
             r = Resize(height=height, width=width)
@@ -207,7 +207,7 @@ class TestResize:
 
 class TestSquarePadCrop:
     @pytest.mark.parametrize(
-        "mode, input_shape, expected",
+        ("mode", "input_shape", "expected"),
         [
             ("pad", (3, 32, 64), (3, 64, 64)),
             ("crop", (3, 128, 64), (3, 64, 64)),
@@ -222,7 +222,7 @@ class TestSquarePadCrop:
     ) -> None:
         x = DataItem(torch.randn(*input_shape), 0, 0)
         if not expected:
-            with pytest.raises(ValueError):
+            with pytest.raises(ValueError, match="Invalid mode"):
                 SquarePadCrop(mode=mode)
         else:
             assert SquarePadCrop(mode=mode)(x).features.shape == expected, (
@@ -253,9 +253,14 @@ class TestScaleRange:
         assert y.features.min() == 0, "Min value should be 0"
         assert y.features.max() == 0, "Max value should be 0"
 
-    @pytest.mark.parametrize("range", [(0, 0), (1, 2, 3)])
+    @pytest.mark.parametrize("range", [(0, 0), (-1.5, -1.5)])
     def test_range_invalid(self, range: Tuple[int, int]) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="lower bound of 'range' must be"):
+            ScaleRange(range)
+
+    @pytest.mark.parametrize("range", [(0,), (1, 2, 3)])
+    def test_range_len(self, range: Tuple[int, int]) -> None:
+        with pytest.raises(ValueError, match="Expected 'range' to be a list"):
             ScaleRange(range)
 
     def _test_range(self, x: torch.Tensor, range: Tuple[int, int]) -> None:
@@ -294,7 +299,7 @@ class TestNormalize:
         ],
     )
     def test_invalid_normalize(self, data: torch.Tensor) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Unsupported feature dimensions"):
             Normalize(mean=[0.0, 1.0], std=[1.0])(DataItem(data, 0, 0))
 
     @pytest.mark.parametrize(
@@ -317,7 +322,7 @@ class TestNormalize:
 
 class TestFeatureExtractor:
     @pytest.mark.parametrize(
-        "fe_type, fe_transfer, input_shape, expected",
+        ("fe_type", "fe_transfer", "input_shape", "expected"),
         [
             (
                 "AST",
@@ -354,19 +359,19 @@ class TestFeatureExtractor:
             "Output shape should match the expected shape"
         )
 
-    @pytest.mark.parametrize("fe_type, fe_transfer", [(None, None)])
+    @pytest.mark.parametrize(("fe_type", "fe_transfer"), [(None, None)])
     def test_invalid(
         self,
         fe_type: Union[str, None],
         fe_transfer: Union[str, None],
     ) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be provided"):
             FeatureExtractor(fe_type, fe_transfer)
 
 
 class TestOpenSMILE:
     @pytest.mark.parametrize(
-        "feature_set, functionals, lld_deltas, expected",
+        ("feature_set", "functionals", "lld_deltas", "expected"),
         [
             ("ComParE_2016", False, False, (65, 96)),
             ("ComParE_2016", False, True, (130, 96)),
@@ -420,11 +425,11 @@ class TestStandardizer:
 
     @pytest.mark.parametrize("subset", ["fizz", "buzz", "jazz"])
     def test_invalid_subset(self, subset: str) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid subset"):
             Standardizer(subset=subset)
 
     @pytest.mark.parametrize(
-        "mean, std",
+        ("mean", "std"),
         [
             ([0.0], [1.0]),
             ([0.0, 1.0, 2.0], [1.0, 2.0, 3.0]),
@@ -441,7 +446,7 @@ class TestStandardizer:
 
     def test_invalid_call(self) -> None:
         t = Standardizer()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="transform not initialized"):
             t(DataItem(torch.randn(3, 32, 32), 0, 0))
 
     def test_invalid_setup(self) -> None:
@@ -449,7 +454,7 @@ class TestStandardizer:
             [4, 3, 32, 32],
             SmartCompose([Standardizer()]),
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Unsupported data dimensions"):
             dataset.train_transform.setup(dataset)
 
     def test_setup(self) -> None:
@@ -518,7 +523,7 @@ class TestSmartCompose:
             SmartCompose([]) + 1
 
     @pytest.mark.parametrize(
-        "transforms, has_collate_fn",
+        ("transforms", "has_collate_fn"),
         [([CutMix()], True), ([AnyToTensor()], False)],
     )
     def test_collate_fn(
@@ -532,7 +537,7 @@ class TestSmartCompose:
             output_dim = 10
 
             @property
-            def default_collate_fn(x):
+            def default_collate_fn(self) -> Callable:
                 return DataBatch.collate
 
         assert sc.get_collate_fn(MockDataset()) is not None, (
@@ -622,7 +627,7 @@ class TestTransformManager:
         )
 
     @pytest.mark.parametrize(
-        "sub1, sub2, count",
+        ("sub1", "sub2", "count"),
         [
             ("base", "base", 2),
             ("base", "train", 3),
@@ -663,7 +668,7 @@ class TestTransformManager:
         assert len(train.transforms) == count, "Transforms should be combined"
 
     @pytest.mark.parametrize(
-        "sub1, sub2, count",
+        ("sub1", "sub2", "count"),
         [
             ("base", "base", 1),
             ("base", "train", 2),
@@ -694,7 +699,7 @@ class TestTransformManager:
         assert len(train.transforms) == count, "Should remove the transform."
 
     @pytest.mark.parametrize(
-        "sub1, sub2, count",
+        ("sub1", "sub2", "count"),
         [
             ("base", "base", 3),
             ("base", "train", 4),
@@ -741,7 +746,7 @@ class TestTransformManager:
         assert len(train.transforms) == count, "Transforms should be combined."
 
     @pytest.mark.parametrize(
-        "sub1, sub2, count",
+        ("sub1", "sub2", "count"),
         [
             ("base", "base", 2),
             ("base", "train", 3),
@@ -783,7 +788,7 @@ class TestTransformManager:
         assert len(train.transforms) == count, "Normalize@Tag should be removed."
 
     @pytest.mark.parametrize(
-        "model_type, dataset_type, valid",
+        ("model_type", "dataset_type", "valid"),
         [
             ("image", "image", True),
             ("grayscale", "grayscale", True),
@@ -809,5 +814,5 @@ class TestTransformManager:
         if valid:
             tm._match_model_dataset()
         else:
-            with pytest.raises(ValueError):
+            with pytest.raises(ValueError, match="does not match"):
                 tm._match_model_dataset()

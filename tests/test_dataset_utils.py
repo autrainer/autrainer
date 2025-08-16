@@ -21,7 +21,7 @@ from .utils import BaseIndividualTempDir
 class TestAudioFileHandler(BaseIndividualTempDir):
     def test_invalid_save(self) -> None:
         handler = AudioFileHandler()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="sample rate has to be specified"):
             handler.save("audio.wav", torch.randn(1, 16000))
 
     def test_file_handler(self) -> None:
@@ -68,7 +68,7 @@ class TestAllFileHandlers(BaseIndividualTempDir):
 
 
 def _all_close_dict(a: dict, b: dict) -> bool:
-    for key in a.keys():
+    for key in a:
         if not torch.allclose(torch.tensor([a[key]]), torch.tensor([b[key]])):
             return False
     return True
@@ -79,9 +79,9 @@ class TestMinMaxScaler:
         scaler = MinMaxScaler("target", 0, 1)
         assert len(scaler) == 1, "Should have a single target."
 
-    @pytest.mark.parametrize("minimum, maximum", [(1, 0), (0, 0), (1, 1)])
+    @pytest.mark.parametrize(("minimum", "maximum"), [(1, 0), (0, 0), (1, 1)])
     def test_invalid_min_max(self, minimum: float, maximum: float) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be less than maximum"):
             MinMaxScaler("target", minimum, maximum)
 
     @pytest.mark.parametrize("x", [0, 1, 0.5, 10, -1, -0.5, -10])
@@ -93,7 +93,8 @@ class TestMinMaxScaler:
         scaler = MinMaxScaler("target", 0, 1)
         x = torch.Tensor([[0.1], [0.9], [0.6], [0.4], [0.5]])
         probs = scaler.probabilities_training(x)
-        assert torch.all(probs >= 0) and torch.all(probs <= 1), "Should be in [0, 1]."
+        assert torch.all(probs >= 0), "Should be in [0, 1]."
+        assert torch.all(probs <= 1), "Should be in [0, 1]."
 
     def test_probabilities_predict(self) -> None:
         scaler = MinMaxScaler("target", 0, 1)
@@ -124,7 +125,7 @@ class TestMultiTargetMinMaxScaler:
         assert len(scaler) == 3, "Should have three targets."
 
     @pytest.mark.parametrize(
-        "minimum, maximum",
+        ("minimum", "maximum"),
         [
             ([1, 0, 0], [0, 0, 0]),
             ([0, 1, 0], [0, 0, 0]),
@@ -132,12 +133,8 @@ class TestMultiTargetMinMaxScaler:
             ([0, 1, 0], [1, 1, 1]),
         ],
     )
-    def test_invalid_min_max(
-        self,
-        minimum: List[float],
-        maximum: List[float],
-    ) -> None:
-        with pytest.raises(ValueError):
+    def test_invalid_min_max(self, minimum: List[float], maximum: List[float]) -> None:
+        with pytest.raises(ValueError, match="must be less than maximum"):
             MultiTargetMinMaxScaler(self.targets, minimum, maximum)
 
     @pytest.mark.parametrize("x", [[0, 1, 0.5], [10, -1, -0.5], [-10, 0, 0.5]])
@@ -149,7 +146,8 @@ class TestMultiTargetMinMaxScaler:
         scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
         x = torch.Tensor([[0.1, 0.9, 0.6], [0.9, 0.1, 0.6]])
         probs = scaler.probabilities_training(x)
-        assert torch.all(probs >= 0) and torch.all(probs <= 1), "Should be in [0, 1]."
+        assert torch.all(probs >= 0), "Should be in [0, 1]."
+        assert torch.all(probs <= 1), "Should be in [0, 1]."
 
     def test_probabilities_predict(self) -> None:
         scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
@@ -184,7 +182,7 @@ class TestMultiLabelEncoder:
 
     @pytest.mark.parametrize("threshold", [-1, -0.01, 1.1, 2])
     def test_invalid_threshold(self, threshold: float) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be between 0 and 1"):
             MultiLabelEncoder(threshold, self.labels)
 
     @pytest.mark.parametrize("labels", [[1, 0, 1], ["fizz", "jazz"]])

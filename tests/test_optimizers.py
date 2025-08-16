@@ -16,7 +16,7 @@ class TestSAM:
         cls.base_optimizer = "torch.optim.SGD"
 
     def test_rho_invalid(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="should be non-negative"):
             SAM(
                 params=self.model.parameters(),
                 base_optimizer=self.base_optimizer,

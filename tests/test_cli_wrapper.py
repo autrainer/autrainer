@@ -29,9 +29,8 @@ class TestMainEntryPoint(BaseIndividualTempDir):
             stderr=subprocess.PIPE,
             text=True,
         )
-        assert result.returncode == 0 and result.stderr == "", (
-            "Should return 0 and no error message."
-        )
+        assert result.returncode == 0, "Should return 0."
+        assert result.stderr == "", "Should not return an error message."
 
     def test_no_command(self) -> None:
         result = subprocess.run(
@@ -68,7 +67,7 @@ class TestCLICreate(BaseIndividualTempDir):
             autrainer.cli.create(["invalid"])
 
     @pytest.mark.parametrize(
-        "dirs, empty, all",
+        ("dirs", "empty", "all"),
         [
             (None, True, True),
             (["model"], False, True),
@@ -142,7 +141,7 @@ class TestCLIList(BaseIndividualTempDir):
             autrainer.cli.list("model", local_only=True)
 
     @pytest.mark.parametrize(
-        "local_only, global_only",
+        ("local_only", "global_only"),
         [(True, False), (False, True), (True, True)],
     )
     def test_local_global_configs(
@@ -292,21 +291,8 @@ class TestCLIInference(BaseIndividualTempDir):
         ],
     )
     def test_invalid_model(self, model: str) -> None:
-        #! debug: match if starts with only with "Invalid"
         with pytest.raises(CommandLineError, match="Invalid"):
             autrainer.cli.inference(model=model, input="", output="")
-
-        # autrainer.cli.inference(model=model, input="", output="")
-        # _, err = capfd.readouterr()
-        # if model.startswith("hf:"):
-        #     assert (
-        #         "Invalid hugging face repo id" in err
-        #         or "Invalid hugging face path format" in err
-        #     ), "Should print error."
-        # else:
-        #     assert (
-        #         "Invalid local model directory" in err
-        #     ), "Should print error."
 
     def test_invalid_input(self) -> None:
         self._mock_model()
@@ -410,7 +396,7 @@ class BaseCLIRemove(BaseIndividualTempDir):
 
 class TestCLIRmFailed(BaseCLIRemove):
     @pytest.mark.parametrize(
-        "names, successful",
+        ("names", "successful"),
         [
             (["run1", "run2", "run3"], [False, False, False]),
             (["run1", "run2", "run3"], [False, True, False]),
@@ -418,14 +404,14 @@ class TestCLIRmFailed(BaseCLIRemove):
         ],
     )
     def test_rm_failed(self, names: List[str], successful: List[bool]) -> None:
-        for name, success in zip(names, successful):
+        for name, success in zip(names, successful, strict=False):
             if success:
                 self._mock_successful_run(name)
             else:
                 self._mock_unsuccessful_run(name)
         with patch("builtins.input", return_value="y"):
             autrainer.cli.rm_failed("results", "default")
-        for name, success in zip(names, successful):
+        for name, success in zip(names, successful, strict=False):
             assert os.path.exists(f"results/default/training/{name}") == success, (
                 "Should remove unsuccessful runs."
             )
@@ -479,7 +465,7 @@ class TestCLIRmStates(BaseCLIRemove):
                 f"results/default/training/{names[0]}/{state}/model.pt"
             ), "Should keep states for specified runs."
 
-    @pytest.mark.parametrize("names, keep_it", [(["run1", "run2", "run3"], 2)])
+    @pytest.mark.parametrize(("names", "keep_it"), [(["run1", "run2", "run3"], 2)])
     def test_delete_keep_iterations(self, names: List[str], keep_it: int) -> None:
         for name in names:
             self._mock_successful_run(name)

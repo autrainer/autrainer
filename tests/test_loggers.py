@@ -55,10 +55,9 @@ class TestMLFlowLogger(BaseIndividualTempDir):
 
     @staticmethod
     def _file_exists(name: str, log_type: str) -> bool:
-        for root, dirs, files in os.walk("mlruns"):
-            if log_type in root:
-                if name in files:
-                    return True
+        for root, _, files in os.walk("mlruns"):
+            if log_type in root and name in files:
+                return True
         return False
 
     def test_setup_and_multiple_runs(self) -> None:

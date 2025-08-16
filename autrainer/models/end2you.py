@@ -33,7 +33,7 @@ class Base(torch.nn.Module):
         maxpool_layers_args: dict,
         conv_op: Optional[Type[torch.nn.Module]] = None,
         max_pool_op: Optional[Type[torch.nn.Module]] = None,
-        activation: Optional[torch.nn.Module] = None,
+        activation: Optional[Type[torch.nn.Module]] = None,
         normalize: bool = False,
     ) -> None:
         """Audio model.
@@ -46,7 +46,7 @@ class Base(torch.nn.Module):
             max_pool_op: Max pooling operation to use. If None, defaults to
                 torch.nn.MaxPool1d. Defaults to None.
             activ_fn: Activation function to use. If None, defaults to
-                torch.nn.LeakyReLU(). Defaults to None.
+                torch.nn.LeakyReLU. Defaults to None.
             normalize: Whether to use batch normalization. Defaults to False.
         """
 
@@ -55,15 +55,17 @@ class Base(torch.nn.Module):
         self.maxpool_layers_args = maxpool_layers_args
         self.conv_op = conv_op or torch.nn.Conv1d
         self.max_pool_op = max_pool_op or torch.nn.MaxPool1d
-        self.activation = activation or torch.nn.LeakyReLU()
+        self.activation = activation or torch.nn.LeakyReLU
         self.normalize = normalize
 
         network_layers = torch.nn.ModuleList()
         for conv_args, mp_args in zip(
-            *[conv_layers_args.values(), maxpool_layers_args.values()], strict=False
+            *[conv_layers_args.values(), maxpool_layers_args.values()], strict=True
         ):
-            network_layers.extend([self._conv_block(conv_args, activation, normalize)])
-            network_layers.extend([max_pool_op(**mp_args)])
+            network_layers.extend(
+                [self._conv_block(conv_args, self.activation(), self.normalize)]
+            )
+            network_layers.append(self.max_pool_op(**mp_args))
 
         self.network = torch.nn.Sequential(*network_layers)
         self.reset_parameters()
@@ -247,7 +249,7 @@ class Zhao19(torch.nn.Module):
             conv_args,
             maxpool_args,
             normalize=True,
-            activation=torch.nn.ELU(),
+            activation=torch.nn.ELU,
         )
 
         return audio_model, out_channels[-1]

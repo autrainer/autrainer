@@ -156,12 +156,16 @@ class ExtractLayerEmbeddings:
         _flatten_layers(model, layers)
         if len(layers) < 2:
             raise ValueError("Model must have at least two layers.")
-        idx = max(
+        linears = [
             idx
             for idx, layer in enumerate(layers)
             if isinstance(layer, torch.nn.Linear)
-        )
-        return layers[idx - 1]
+        ]
+        if not linears:
+            raise ValueError(
+                "Cannot extract embeddings as model does not contain a linear layer."
+            )
+        return layers[max(linears) - 1]
 
     def _hook(
         self,

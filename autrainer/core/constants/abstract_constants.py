@@ -10,7 +10,7 @@ class AbstractConstants(ABC):  # noqa: B024
     _name = "AbstractConstants"
     _instance = None
 
-    def __new__(cls: Type["AbstractConstants"]) -> "AbstractConstants":
+    def __new__(cls):  # noqa: ANN204
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
