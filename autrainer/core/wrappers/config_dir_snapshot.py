@@ -72,8 +72,8 @@ class ConfigDirSnapshot(Callback):
         try:
             if self._temp_dir and self._temp_dir.is_dir():
                 shutil.rmtree(self._temp_dir)
-        except Exception as e:
-            logging.warning(f"Failed to remove temp config dir: {e}")
+        except Exception as e:  # noqa: BLE001
+            logging.warning(f"Failed to remove temp config dir: {e}")  # noqa: G004, LOG015
         finally:
             self._temp_dir = None  # always try to reset the temp dir
 

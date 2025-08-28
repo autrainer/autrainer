@@ -11,16 +11,12 @@ from .utils import (
 
 
 class TestModelConfigurations:
-    @pytest.mark.parametrize("name, config", load_configurations("model"))
+    @pytest.mark.parametrize(("name", "config"), load_configurations("model"))
     def test_configurations(self, name: str, config: Dict[str, Any]) -> None:
         assert config.get("id"), f"{name}: Missing ID in configuration"
         assert config.get("_target_"), f"{name}: Missing target"
-        assert config.get(
-            "transform"
-        ), f"{name}: Missing transform configuration"
-        assert config["transform"].get(
-            "type"
-        ), f"{name}: Missing transform type"
+        assert config.get("transform"), f"{name}: Missing transform configuration"
+        assert config["transform"].get("type"), f"{name}: Missing transform type"
         assert config["transform"]["type"] in [
             "image",
             "grayscale",

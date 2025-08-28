@@ -49,7 +49,7 @@ class ZipDownloadManager:
             for future in as_completed(futures):
                 try:
                     future.result()
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     print(f"Error downloading or extracting file: {e}")
 
         print()
@@ -67,7 +67,7 @@ class ZipDownloadManager:
             print("All files already exist, skipping extraction.")
             return
         print(f"Extracting {len(self.files)} files to '{self.path}' ...")
-        for filename in self.files.keys():
+        for filename in self.files:
             self._extract_zip(self.path / filename, self.path)
 
     def _check_exist(self, check_exist: Optional[List[str]] = None) -> bool:
@@ -97,7 +97,7 @@ class ZipDownloadManager:
                 pbar.update(size)
 
     def _extract_zip(self, zip_path: Path, extract_to: Path) -> None:
-        if not zip_path.suffix == ".zip":
+        if zip_path.suffix != ".zip":
             return
         with ZipFile(zip_path, "r") as z:
             z.extractall(extract_to)

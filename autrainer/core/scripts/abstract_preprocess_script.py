@@ -43,7 +43,4 @@ class AbstractPreprocessScript(AbstractScript):
 
     @staticmethod
     def _id_in_dict(d: dict, id: str) -> bool:
-        for v in d.values():
-            if v["id"] == id:
-                return True
-        return False
+        return any(v["id"] == id for v in d.values())

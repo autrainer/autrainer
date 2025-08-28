@@ -1,13 +1,13 @@
 import datetime
 import os
 import sys
-from typing import Any
+from typing import Any, Dict, List
 
 from sphinx.application import Sphinx
 import toml
 
 
-def build_authors(authors):
+def build_authors(authors: List[Dict[str, Any]]) -> str:
     return ", ".join([a["name"] for a in authors])
 
 
@@ -86,10 +86,10 @@ def set_custom_title(
     templatename: str,
     context: dict,
     doctree: Any,
-):
+) -> None:
     if pagename == app.config.master_doc:
         context["title"] = f"{project} — {description}"
 
 
-def setup(app: Sphinx):
+def setup(app: Sphinx) -> None:
     app.connect("html-page-context", set_custom_title)

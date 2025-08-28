@@ -14,7 +14,7 @@ from .utils import BaseIndividualTempDir
 
 class TestCLIIntegration(BaseIndividualTempDir):
     @pytest.mark.parametrize(
-        "dataset, model, train_type, iterations, reuse_temp_dir",
+        ("dataset", "model", "train_type", "iterations", "reuse_temp_dir"),
         [
             ("ToyTabular-C", "ToyFFNN", "epoch", 1, False),
             ("ToyTabular-C", "ToyFFNN", "epoch", 2, True),
@@ -147,6 +147,7 @@ class TestCheckpointsIntegration(BaseIndividualTempDir):
                     "dataset": "ToyTabular-C-7",
                     "model": "ToyFFNN-CKPT",
                     "scheduler": "StepLR",
+                    "device": "cpu",
                 }
             )
         run_dirs = [
@@ -162,6 +163,6 @@ class TestCheckpointsIntegration(BaseIndividualTempDir):
         m2 = FFNN(7, 64, 64)
         self._load_state(m2, r2, "_initial")
         x = torch.randn(4, 64)
-        assert torch.allclose(
-            m1.embeddings(x), m2.embeddings(x)
-        ), "Should have same embeddings."
+        assert torch.allclose(m1.embeddings(x), m2.embeddings(x)), (
+            "Should have same embeddings."
+        )

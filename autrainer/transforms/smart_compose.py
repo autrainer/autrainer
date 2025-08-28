@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 import audobject
 from torchvision import transforms as T
@@ -13,7 +13,11 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class SmartCompose(T.Compose, audobject.Object):
-    def __init__(self, transforms: List[AbstractTransform], **kwargs) -> None:
+    def __init__(
+        self,
+        transforms: List[AbstractTransform],
+        **kwargs: Dict[str, Any],
+    ) -> None:
         """SmartCompose wrapper for torchvision.transforms.Compose, which
         allows for simple composition of transforms by adding them together.
         Transforms are automatically sorted by their order attribute if present.

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import audiofile
 import audobject
@@ -135,7 +135,7 @@ class AudioFileHandler(AbstractFileHandler):
     def __init__(
         self,
         target_sample_rate: Optional[int] = None,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Audio file handler with optional resampling.
 
@@ -164,10 +164,7 @@ class AudioFileHandler(AbstractFileHandler):
             Loaded audio file as a tensor.
         """
         x, sr = audiofile.read(file, always_2d=True)
-        if (
-            self.target_sample_rate is not None
-            and sr != self.target_sample_rate
-        ):
+        if self.target_sample_rate is not None and sr != self.target_sample_rate:
             resample = torchaudio.transforms.Resample(
                 sr,
                 self.target_sample_rate,

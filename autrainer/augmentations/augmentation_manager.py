@@ -47,8 +47,5 @@ class AugmentationManager:
     ) -> SmartCompose:
         if augmentation is None:
             return SmartCompose([])
-        pipeline = autrainer.instantiate(
-            augmentation,
-            instance_of=AugmentationPipeline,
-        )
+        pipeline = autrainer.instantiate(augmentation, instance_of=AugmentationPipeline)
         return pipeline.create_pipeline()

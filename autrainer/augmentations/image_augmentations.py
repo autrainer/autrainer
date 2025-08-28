@@ -46,11 +46,11 @@ class BaseMixUpCutMix(AbstractAugmentation):
     ) -> Callable:
         if data.output_dim <= 1:
             raise ValueError(
-                f"{self.augmentation_class.__name__} "
-                "requires more than 1 class."
+                f"{self.augmentation_class.__name__} requires more than 1 class."
             )
         self.augmentation = self.augmentation_class(
-            num_classes=data.output_dim, alpha=self.alpha
+            num_classes=data.output_dim,
+            alpha=self.alpha,
         )
 
         def _collate_fn(batch: List[AbstractDataItem]) -> AbstractDataBatch:
@@ -64,7 +64,8 @@ class BaseMixUpCutMix(AbstractAugmentation):
                 batched.target = results[1]
                 return batched
             batched.target = torch.nn.functional.one_hot(
-                batched.target, data.output_dim
+                batched.target,
+                data.output_dim,
             ).float()
             return batched
 
@@ -154,9 +155,7 @@ class SampleGaussianWhiteNoise(AbstractAugmentation):
         self.sample_seed = sample_seed
         df = pd.read_csv(self.snr_df)
         if self.snr_col not in df.columns:
-            raise ValueError(
-                f"Column {self.snr_col} not found in {self.snr_df}."
-            )
+            raise ValueError(f"Column {self.snr_col} not found in {self.snr_df}.")
         self.snr = df[self.snr_col]
         self._generator = torch.Generator()
 

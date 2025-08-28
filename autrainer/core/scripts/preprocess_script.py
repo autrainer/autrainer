@@ -1,3 +1,4 @@
+import contextlib
 from dataclasses import dataclass
 from typing import Optional
 
@@ -6,10 +7,7 @@ from omegaconf import DictConfig, OmegaConf
 import autrainer
 from autrainer.core.scripts.abstract_script import MockParser
 
-from .abstract_preprocess_script import (
-    AbstractPreprocessScript,
-    PreprocessArgs,
-)
+from .abstract_preprocess_script import AbstractPreprocessScript, PreprocessArgs
 from .utils import (
     add_hydra_args_to_sys,
     catch_cli_errors,
@@ -31,7 +29,7 @@ def preprocess_main(
     preprocess: DictConfig,
     num_workers: int,
     update_frequency: int,
-):
+) -> None:
     from pathlib import Path
 
     import torch
@@ -176,14 +174,12 @@ class PreprocessScript(AbstractPreprocessScript):
             self.datasets[cfg.dataset.id] = OmegaConf.to_container(cfg.dataset)
             preprocessing_cfg = None
             if cfg.dataset.get("features_subdir"):
-                try:
+                with contextlib.suppress(MissingConfigException):
                     preprocessing_cfg = OmegaConf.to_container(
-                        hydra.compose(
-                            f"preprocessing/{cfg.dataset.features_subdir}"
-                        )["preprocessing"]
+                        hydra.compose(f"preprocessing/{cfg.dataset.features_subdir}")[
+                            "preprocessing"
+                        ]
                     )
-                except MissingConfigException:
-                    pass
             self.preprocessing[cfg.dataset.id] = preprocessing_cfg
 
         check_invalid_config_path_arg(self.parser)
@@ -193,14 +189,12 @@ class PreprocessScript(AbstractPreprocessScript):
 
     def _assert_num_workers(self, num_workers: int) -> None:
         if num_workers < 0:
-            raise ValueError(
-                f"Number of workers '{num_workers}' must be >= 0."
-            )
+            raise ValueError(f"Number of workers '{num_workers}' must be >= 0.")
 
     def _preprocess_datasets(self) -> None:
         print("Preprocessing datasets...")
         for (name, dataset), preprocess in zip(
-            self.datasets.items(), self.preprocessing.values()
+            self.datasets.items(), self.preprocessing.values(), strict=False
         ):
             preprocess_main(
                 name=name,
@@ -248,6 +242,4 @@ def preprocess(
         add_hydra_args_to_sys(override_kwargs, config_name, config_path)
         script = PreprocessScript()
         script.parser = MockParser()
-        script.main(
-            PreprocessArgs(cfg_launcher, num_workers, update_frequency)
-        )
+        script.main(PreprocessArgs(cfg_launcher, num_workers, update_frequency))

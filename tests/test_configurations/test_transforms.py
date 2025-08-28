@@ -14,7 +14,7 @@ AUG_PATH = "autrainer.augmentations.AugmentationPipeline"
 
 class TestTransformConfigurations:
     @pytest.mark.parametrize(
-        "name, config",
+        ("name", "config"),
         load_configurations("preprocessing"),
     )
     def test_preprocesing_configurations(
@@ -29,7 +29,7 @@ class TestTransformConfigurations:
             self._assert_transform(p, name)
 
     @pytest.mark.parametrize(
-        "name, config",
+        ("name", "config"),
         load_configurations("augmentation"),
     )
     def test_augmentation_configurations(

@@ -37,9 +37,7 @@ class Bookkeeping:
         for handler in self.logger.handlers:
             if isinstance(handler, logging.StreamHandler):
                 handler.setFormatter(
-                    logging.Formatter(
-                        "[%(asctime)s][%(levelname)s]\n%(message)s\n"
-                    )
+                    logging.Formatter("[%(asctime)s][%(levelname)s]\n%(message)s\n")
                 )
 
     def _setup_logger(self, fp: Optional[str] = None) -> None:
@@ -166,9 +164,7 @@ class Bookkeeping:
             torch.optim.lr_scheduler.LRScheduler,
         )
         if not isinstance(obj, _i):
-            raise TypeError(
-                f"save_state of type {type(obj)} is not supported."
-            )
+            raise TypeError(f"save_state of type {type(obj)} is not supported.")
 
         os.makedirs(os.path.join(self.output_directory, path), exist_ok=True)
         torch.save(obj.state_dict(), p)
@@ -203,9 +199,7 @@ class Bookkeeping:
             torch.optim.lr_scheduler.LRScheduler,
         )
         if not isinstance(obj, _i):
-            raise TypeError(
-                f"load_state of type {type(obj)} is not supported."
-            )
+            raise TypeError(f"load_state of type {type(obj)} is not supported.")
 
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=UserWarning)
@@ -229,9 +223,7 @@ class Bookkeeping:
             TypeError: If the object type is not supported.
         """
         if not isinstance(obj, audobject.Object):
-            raise TypeError(
-                f"save_audobject of type {type(obj)} is not supported."
-            )
+            raise TypeError(f"save_audobject of type {type(obj)} is not supported.")
         os.makedirs(os.path.join(self.output_directory, path), exist_ok=True)
         obj.to_yaml(os.path.join(self.output_directory, path, filename))
 
@@ -257,7 +249,10 @@ class Bookkeeping:
             yaml.dump(results_dict, f)
 
     def save_results_df(
-        self, results_df: pd.DataFrame, filename: str, path: str = ""
+        self,
+        results_df: pd.DataFrame,
+        filename: str,
+        path: str = "",
     ) -> None:
         """Save a results DataFrame to disk.
 
@@ -272,7 +267,10 @@ class Bookkeeping:
         )
 
     def save_results_np(
-        self, results_np: np.ndarray, filename: str, path: str = ""
+        self,
+        results_np: np.ndarray,
+        filename: str,
+        path: str = "",
     ) -> None:
         """Save a results numpy array to disk.
 
@@ -282,9 +280,7 @@ class Bookkeeping:
             path: Subdirectory to save the results to. Defaults to "".
         """
         os.makedirs(os.path.join(self.output_directory, path), exist_ok=True)
-        np.save(
-            os.path.join(self.output_directory, path, filename), results_np
-        )
+        np.save(os.path.join(self.output_directory, path, filename), results_np)
 
     def save_best_results(
         self,

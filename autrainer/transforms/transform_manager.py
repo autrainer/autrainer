@@ -81,15 +81,13 @@ class TransformManager:
             seen.add(key)
 
             # allow the model to remove a transform by setting it to None
-            # e.g. autrainer.transforms.Normalize: null
+            # e.g., autrainer.transforms.Normalize: null
             if isinstance(transform, dict) and transform[key] is None:
                 continue
 
             combined.append(transform)
 
-        combined.extend(
-            t for t in dataset_transforms if self._get_key(t) not in seen
-        )
+        combined.extend(t for t in dataset_transforms if self._get_key(t) not in seen)
 
         return SmartCompose([self._instantiate(t) for t in combined])
 

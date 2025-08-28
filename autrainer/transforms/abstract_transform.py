@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict
 
 import audobject
 
@@ -6,7 +7,7 @@ from autrainer.core.structs import AbstractDataItem
 
 
 class AbstractTransform(ABC, audobject.Object):
-    def __init__(self, order: int = 0, **kwargs) -> None:
+    def __init__(self, order: int = 0, **kwargs: Dict[str, Any]) -> None:
         """Abstract class for a transform.
 
         Args:

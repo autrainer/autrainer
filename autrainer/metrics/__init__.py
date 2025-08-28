@@ -1,8 +1,4 @@
-from .abstract_metric import (
-    AbstractMetric,
-    BaseAscendingMetric,
-    BaseDescendingMetric,
-)
+from .abstract_metric import AbstractMetric, BaseAscendingMetric, BaseDescendingMetric
 from .classification import F1, UAR, Accuracy
 from .multi_label_classification import (
     MLAccuracy,

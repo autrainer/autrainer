@@ -2,7 +2,7 @@ import logging
 import os
 import platform
 import threading
-from typing import Callable, Optional
+from typing import Any, Callable, Optional, Type
 
 from omegaconf import OmegaConf
 import psutil
@@ -14,7 +14,7 @@ class ThreadManager:
 
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls: Type["ThreadManager"]) -> "ThreadManager":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialize()
@@ -24,7 +24,7 @@ class ThreadManager:
         self._threads = []
         self._lock = threading.Lock()
 
-    def spawn(self, target: Callable, *args) -> None:
+    def spawn(self, target: Callable, *args: Any) -> None:
         """Spawn and start a new thread for the target function.
 
         Args:
@@ -63,10 +63,7 @@ def get_gpu_info(device: torch.device) -> Optional[dict]:
         return None
 
     gpu = torch.cuda.get_device_properties(device)
-    return {
-        "name": gpu.name,
-        "memory_gb": round(gpu.total_memory / (1024**3)),
-    }
+    return {"name": gpu.name, "memory_gb": round(gpu.total_memory / (1024**3))}
 
 
 def get_system_info() -> dict:
@@ -75,17 +72,12 @@ def get_system_info() -> dict:
     Returns:
         Dictionary containing system information.
     """
-    s = {
-        "os": platform.system(),
-        "platform": platform.platform(),
-    }
+    s = {"os": platform.system(), "platform": platform.platform()}
     if os.environ.get("SLURMD_NODENAME"):
         s.update(
             {
                 "node": os.environ.get("SLURMD_NODENAME"),
-                "memory_gb": round(
-                    int(os.environ.get("SLURM_MEM_PER_NODE", 0)) / 1024
-                ),
+                "memory_gb": round(int(os.environ.get("SLURM_MEM_PER_NODE", 0)) / 1024),
                 "cpu_count": int(os.environ.get("SLURM_CPUS_PER_TASK", 0)),
             }
         )
@@ -143,7 +135,7 @@ def set_device(device_name: str) -> torch.device:
         torch.tensor(1).to(device)
     except (RuntimeError, AssertionError):
         device = torch.device("cpu")
-        logging.warning(
-            f"Device '{device_name}' is not available. Falling back to CPU.",
+        logging.warning(  # noqa: LOG015
+            f"Device '{device_name}' is not available. Falling back to CPU.",  # noqa: G004
         )
     return device

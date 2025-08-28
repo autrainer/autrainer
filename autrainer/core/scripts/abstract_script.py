@@ -32,7 +32,7 @@ class AbstractScript(ABC):
         epilog: str = "",
         dataclass: Optional[Type[T]] = None,
         unknown_args: bool = False,
-    ):
+    ) -> None:
         self.command = command
         self.description = description
         self.extended_description = extended_description
@@ -48,7 +48,7 @@ class AbstractScript(ABC):
         """
         self.parser = parser
 
-    def add_arguments(self) -> None:
+    def add_arguments(self) -> None:  # noqa: B027
         """Add arguments to the parser."""
 
     def run(self, args: Dict[str, Any], unknown: List[str]) -> None:
@@ -120,8 +120,8 @@ class AbstractScript(ABC):
 
 
 class MockParser:
-    def add_argument(self, *args, **kwargs) -> None:
+    def add_argument(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
         pass
 
-    def print_help(self, *args, **kwargs) -> None:
+    def print_help(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
         pass

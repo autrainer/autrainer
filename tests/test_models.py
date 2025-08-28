@@ -60,7 +60,7 @@ MODEL_FIXTURES = [
 
 class TestAllModels:
     @pytest.mark.parametrize(
-        "model_class, model_kwargs, input_shape",
+        ("model_class", "model_kwargs", "input_shape"),
         MODEL_FIXTURES,
     )
     def test_model(
@@ -90,7 +90,7 @@ class TestAllModels:
 
     @pytest.mark.xfail(raises=ValueError)
     @pytest.mark.parametrize(
-        "model_class, model_kwargs",
+        ("model_class", "model_kwargs"),
         [
             (AudioRNNModel, {"model_name": "emo18"}),
             (FFNN, {"input_size": 64, "hidden_size": 128}),
@@ -115,7 +115,7 @@ class TestAllModels:
 
 class TestCnn10Cnn14:
     @pytest.mark.parametrize(
-        "cls, expected",
+        ("cls", "expected"),
         [(Cnn10, (1, 8, 10)), (Cnn14, (1, 4, 10))],
     )
     def test_segmentwise(
@@ -127,7 +127,7 @@ class TestCnn10Cnn14:
         TestAllModels._test_model(model, (1, 128, 64), expected=expected)
 
     def test_invalid_link(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Failed to download"):
             Cnn10(
                 output_dim=10,
                 transfer="https://zenodo.org/records/invalid.pt",
@@ -136,7 +136,7 @@ class TestCnn10Cnn14:
 
 class TestAudioRNNModel:
     @pytest.mark.parametrize(
-        "model_name, cell",
+        ("model_name", "cell"),
         [
             ("emo18", "LSTM"),
             ("zhao19", "LSTM"),
@@ -156,11 +156,11 @@ class TestLEAFNet:
         TestAllModels._test_model(model, (16000,))
 
     def test_invalid_mode(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="'interspeech' and 'speech_brain'"):
             LEAFNet(output_dim=10, mode="invalid")
 
     def test_invalid_efficientnet(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Only EfficientNet models"):
             LEAFNet(output_dim=10, efficientnet_type="resnet18")
 
     @pytest.mark.parametrize(
@@ -172,7 +172,7 @@ class TestLEAFNet:
         TestAllModels._test_model(model, (16000,))
 
     def test_invalid_initialization(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="got initialization"):
             LEAFNet(output_dim=10, initialization="invalid")
 
 
@@ -187,7 +187,7 @@ class TestSeqFFNN:
         }
 
     @pytest.mark.parametrize(
-        "cell, bidirectional",
+        ("cell", "bidirectional"),
         [
             ("LSTM", False),
             ("GRU", False),
@@ -233,14 +233,14 @@ class TestExtractLayerEmbeddings:
             torch.nn.Conv2d(32, 64, 3),
             torch.nn.ReLU(),
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="model does not contain a linear layer"):
             ExtractLayerEmbeddings(model)
 
     def test_invalid_module_length(self) -> None:
         model = torch.nn.Sequential(
             torch.nn.Linear(64, 10),
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must have at least two layers"):
             ExtractLayerEmbeddings(model)
 
     def test_embedding_hook(self) -> None:
@@ -264,14 +264,14 @@ class TestWrongArgumentModel:
     @pytest.mark.xfail(raises=NameError)
     def test_wrong_arguments(self) -> None:
         class Foo(AbstractModel):
-            def __init__(self, output_dim):
+            def __init__(self, output_dim: int) -> None:
                 super().__init__(output_dim, None)
 
-            def embeddings(self, x):
+            def embeddings(self, x: torch.Tensor) -> torch.Tensor:
                 return super().embeddings(x)
 
-            def forward(self, x):
+            def forward(self, x: torch.Tensor) -> torch.Tensor:
                 return x
 
         bar = Foo(1)
-        bar.inputs
+        bar.inputs  # noqa: B018

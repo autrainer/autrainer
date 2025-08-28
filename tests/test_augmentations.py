@@ -102,7 +102,7 @@ AUGMENTATION_FIXTURES = [
 
 class TestAllAugmentations:
     @pytest.mark.parametrize(
-        "augmentation, params, input_shape, output_shape",
+        ("augmentation", "params", "input_shape", "output_shape"),
         AUGMENTATION_FIXTURES,
     )
     def test_probability(
@@ -112,9 +112,9 @@ class TestAllAugmentations:
         input_shape: Union[Tuple[int, int], Tuple[int, int, int]],
         output_shape: Union[Tuple[int, int], Tuple[int, int, int]],
     ) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"p must be in the range \[0, 1\]"):
             augmentation(**params, generator_seed=AUGMENTATION_SEED, p=1.1)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"p must be in the range \[0, 1\]"):
             augmentation(**params, generator_seed=AUGMENTATION_SEED, p=-0.1)
         instance = augmentation(
             **params,
@@ -126,12 +126,12 @@ class TestAllAugmentations:
         else:
             x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
         x = DataItem(x, 0, 0)
-        assert torch.allclose(
-            x.features, instance(x).features
-        ), "Should not apply augmentation"
+        assert torch.allclose(x.features, instance(x).features), (
+            "Should not apply augmentation"
+        )
 
     @pytest.mark.parametrize(
-        "augmentation, params, input_shape, output_shape",
+        ("augmentation", "params", "input_shape", "output_shape"),
         AUGMENTATION_FIXTURES,
     )
     def test_deterministic(
@@ -158,7 +158,7 @@ class TestAllAugmentations:
         assert torch.allclose(y3, y4), "Should be deterministic"
 
     @pytest.mark.parametrize(
-        "augmentation, params, input_shape, output_shape",
+        ("augmentation", "params", "input_shape", "output_shape"),
         AUGMENTATION_FIXTURES,
     )
     def test_offset_generator_seed(
@@ -174,12 +174,8 @@ class TestAllAugmentations:
             else:
                 x = torch.randint(0, 255, input_shape, dtype=torch.uint8)
             x = DataItem(x, 0, 0)
-            aug1 = augmentation(
-                **params, generator_seed=AUGMENTATION_SEED + 1, p=0.5
-            )
-            aug2 = augmentation(
-                **params, generator_seed=AUGMENTATION_SEED, p=0.5
-            )
+            aug1 = augmentation(**params, generator_seed=AUGMENTATION_SEED + 1, p=0.5)
+            aug2 = augmentation(**params, generator_seed=AUGMENTATION_SEED, p=0.5)
             aug2.offset_generator_seed(1)
             if hasattr(aug1, "_deterministic") and not aug1._deterministic:
                 return  # Skip if known to be non-deterministic
@@ -193,9 +189,9 @@ class TestAllAugmentations:
     def test_unset_offset_generator_seed(self) -> None:
         aug = GaussianNoise(generator_seed=None)
         aug.offset_generator_seed(1)
-        assert (
-            aug.generator_seed is None
-        ), "Should not change the seed if it was not set."
+        assert aug.generator_seed is None, (
+            "Should not change the seed if it was not set."
+        )
 
 
 class TestAugmentationManagerPipeline:
@@ -211,7 +207,7 @@ class TestAugmentationManagerPipeline:
     }
 
     @pytest.mark.parametrize(
-        "config, subset",
+        ("config", "subset"),
         [
             (None, "train"),
             (None, "dev"),
@@ -224,38 +220,34 @@ class TestAugmentationManagerPipeline:
             (DictConfig(pipline_cfg2), "test"),
         ],
     )
-    def test_creation(
-        self, config: Union[DictConfig, Dict, None], subset: str
-    ) -> None:
+    def test_creation(self, config: Union[DictConfig, Dict, None], subset: str) -> None:
         am = AugmentationManager(**{f"{subset}_augmentation": config})
         augs = {}
         augs["train"], augs["dev"], augs["test"] = am.get_augmentations()
-        assert all(
-            isinstance(aug, SmartCompose) for aug in augs.values()
-        ), "Should return SmartCompose instances"
+        assert all(isinstance(aug, SmartCompose) for aug in augs.values()), (
+            "Should return SmartCompose instances"
+        )
         if config is None:
-            assert all(
-                not a.transforms for a in augs.values()
-            ), "All augmentations should be empty"
+            assert all(not a.transforms for a in augs.values()), (
+                "All augmentations should be empty"
+            )
         else:
-            assert (
-                len(augs.pop(subset).transforms) == 1
-            ), "Should have 1 augmentation"
-            assert all(
-                not a.transforms for a in augs.values()
-            ), "All other augmentations should be empty"
+            assert len(augs.pop(subset).transforms) == 1, "Should have 1 augmentation"
+            assert all(not a.transforms for a in augs.values()), (
+                "All other augmentations should be empty"
+            )
 
 
 class TestChoice:
     def test_invalid_weights(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must have the same length"):
             Choice(
                 choices=["autrainer.augmentations.GaussianNoise"],
                 weights=[0.5, 0.5],
             )
 
     def test_invalid_collate_fn(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must not have a collate function"):
             Choice(choices=["autrainer.augmentations.CutMix"])
 
     def test_offset_generator_seed(self) -> None:
@@ -267,18 +259,18 @@ class TestChoice:
             generator_seed=AUGMENTATION_SEED,
         )
         choice.offset_generator_seed(1)
-        assert (
-            choice.generator_seed == AUGMENTATION_SEED + 1
-        ), "Should offset the generator seed"
+        assert choice.generator_seed == AUGMENTATION_SEED + 1, (
+            "Should offset the generator seed"
+        )
         for c in choice.augmentation_choices:
-            assert (
-                c.generator_seed == AUGMENTATION_SEED + 1
-            ), "Should offset the generator seed of the choice"
+            assert c.generator_seed == AUGMENTATION_SEED + 1, (
+                "Should offset the generator seed of the choice"
+            )
 
 
 class TestSequential:
     def test_invalid_collate_fn(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must not have a collate function"):
             Sequential(sequence=["autrainer.augmentations.CutMix"])
 
     def test_offset_generator_seed(self) -> None:
@@ -290,13 +282,13 @@ class TestSequential:
             generator_seed=AUGMENTATION_SEED,
         )
         seq.offset_generator_seed(1)
-        assert (
-            seq.generator_seed == AUGMENTATION_SEED + 1
-        ), "Should offset the generator seed"
+        assert seq.generator_seed == AUGMENTATION_SEED + 1, (
+            "Should offset the generator seed"
+        )
         for s in seq.augmentation_sequence:
-            assert (
-                s.generator_seed == AUGMENTATION_SEED + 1
-            ), "Should offset the generator seed of the sequence"
+            assert s.generator_seed == AUGMENTATION_SEED + 1, (
+                "Should offset the generator seed of the sequence"
+            )
 
 
 class TestBaseMixUpCutMix:
@@ -313,17 +305,13 @@ class TestBaseMixUpCutMix:
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_invalid_dataset(self, aug: Type[BaseMixUpCutMix]) -> None:
-        with pytest.raises(ValueError):
-            aug().get_collate_fn(
-                self.regression_dataset, default=DataBatch.collate
-            )
+        with pytest.raises(ValueError, match="requires more than 1 class"):
+            aug().get_collate_fn(self.regression_dataset, default=DataBatch.collate)
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
     def test_collate_fn(self, aug: Type[BaseMixUpCutMix]) -> None:
         self._test_collate(
-            aug().get_collate_fn(
-                self.classification_dataset, default=DataBatch.collate
-            )
+            aug().get_collate_fn(self.classification_dataset, default=DataBatch.collate)
         )
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
@@ -374,7 +362,7 @@ class TestSampleGaussianWhiteNoise:
                 snr_df=os.path.join(self.temp_dir.name, "invalid.csv"),
                 snr_col="snr",
             )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="not found"):
             SampleGaussianWhiteNoise(
                 snr_df=self.temp_csv_path,
                 snr_col="invalid",
@@ -401,9 +389,7 @@ class TestSampleGaussianWhiteNoise:
 
         c4 = self._mock_snr_calculation(deepcopy(x1), 0, 10, g)
         y4 = aug(deepcopy(x1))
-        assert torch.allclose(
-            y4.features, c4.features
-        ), "Should be deterministic"
+        assert torch.allclose(y4.features, c4.features), "Should be deterministic"
 
     def _mock_snr_calculation(
         self,
@@ -425,7 +411,7 @@ class TestSampleGaussianWhiteNoise:
 
 class TestTimeShift:
     def test_invalid_time_steps(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"must be \>\= 0"):
             TimeShift(time_steps=-1, axis=0)
 
     def test_identity(self) -> None:
@@ -442,7 +428,7 @@ class TestTimeShift:
 
 class TestTimeMask:
     def test_invalid_time_mask(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"must be \>\= 0"):
             TimeMask(time_mask=-1, axis=0)
 
     def test_identity(self) -> None:
@@ -459,7 +445,7 @@ class TestTimeMask:
 
 class TestFrequencyMask:
     def test_invalid_freq_mask(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"must be \>\= 0"):
             FrequencyMask(freq_mask=-1, axis=0)
 
     def test_identity(self) -> None:
@@ -513,7 +499,7 @@ PIPELINE_FIXTURES = [
 
 class TestAugmentationPipeline:
     @pytest.mark.parametrize(
-        "idx, seeds",
+        ("idx", "seeds"),
         [
             (0, [42, 43]),
             (1, [2, 42]),
@@ -526,7 +512,7 @@ class TestAugmentationPipeline:
         self._test_increment(idx, seeds, increment=True)
 
     @pytest.mark.parametrize(
-        "idx, seeds",
+        ("idx", "seeds"),
         [
             (0, [42, 42]),
             (1, [2, 42]),

@@ -1,33 +1,36 @@
+from typing import Tuple
+
 import torch
 import torchvision.transforms.functional as F
 
 
-def _get_flat_grid_locations(height, width, device):
+def _get_flat_grid_locations(
+    height: int,
+    width: int,
+    device: torch.device,
+) -> torch.Tensor:
     y_range = torch.linspace(0, height - 1, height, device=device)
     x_range = torch.linspace(0, width - 1, width, device=device)
     y_grid, x_grid = torch.meshgrid(y_range, x_range, indexing="ij")
     return torch.stack((y_grid, x_grid), -1).reshape([height * width, 2])
 
 
-def _phi(r, order):
+def _phi(r: torch.Tensor, order: int) -> torch.Tensor:
     EPSILON = torch.tensor(1e-10, device=r.device)
     if order == 1:
-        r = torch.max(r, EPSILON)
-        r = torch.sqrt(r)
-        return r
-    elif order == 2:
+        return torch.sqrt(torch.max(r, EPSILON))
+    if order == 2:
         return 0.5 * r * torch.log(torch.max(r, EPSILON))
-    elif order == 4:
+    if order == 4:
         return 0.5 * torch.square(r) * torch.log(torch.max(r, EPSILON))
-    elif order % 2 == 0:
+    if order % 2 == 0:
         r = torch.max(r, EPSILON)
         return 0.5 * torch.pow(r, 0.5 * order) * torch.log(r)
-    else:
-        r = torch.max(r, EPSILON)
-        return torch.pow(r, 0.5 * order)
+    r = torch.max(r, EPSILON)
+    return torch.pow(r, 0.5 * order)
 
 
-def _cross_squared_distance_matrix(x, y):
+def _cross_squared_distance_matrix(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
     x_norm_squared = torch.sum(torch.mul(x, x))
     y_norm_squared = torch.sum(torch.mul(y, y))
 
@@ -38,9 +41,14 @@ def _cross_squared_distance_matrix(x, y):
     return squared_dists.float()
 
 
-def _solve_interpolation(pts, vals, order, eps: float = 1e-7) -> tuple:
+def _solve_interpolation(
+    pts: torch.Tensor,
+    vals: torch.Tensor,
+    order: int,
+    eps: float = 1e-7,
+) -> Tuple[torch.Tensor, torch.Tensor]:
     device = pts.device
-    channels, n, d = F.get_dimensions(pts)
+    _, n, d = F.get_dimensions(pts)
     k = vals.shape[-1]
 
     c = pts[0]
@@ -50,7 +58,7 @@ def _solve_interpolation(pts, vals, order, eps: float = 1e-7) -> tuple:
     ones = torch.ones(n, dtype=pts.dtype, device=device).view([n, 1])  # [n ,1]
     matrix_b = torch.cat((c, ones), -1).float()  # [n , d + 1]
 
-    # [n + d + 1, n]
+    # [n + d + 1, n]  # noqa: ERA001
     left_block = torch.cat((matrix_a, torch.transpose(matrix_b, 1, 0)), 0)
 
     num_b_cols = matrix_b.shape[-1]
@@ -71,11 +79,15 @@ def _solve_interpolation(pts, vals, order, eps: float = 1e-7) -> tuple:
         return None, None
 
 
-def _apply_interpolation(query_pts, pts, w, v, order):
+def _apply_interpolation(
+    query_pts: torch.Tensor,
+    pts: torch.Tensor,
+    w: torch.Tensor,
+    v: torch.Tensor,
+    order: int,
+) -> torch.Tensor:
     query_pts = query_pts.unsqueeze(0)
-    pairwise_dists = _cross_squared_distance_matrix(
-        query_pts.float(), pts.float()
-    )
+    pairwise_dists = _cross_squared_distance_matrix(query_pts.float(), pts.float())
     phi_pairwise_dists = _phi(pairwise_dists, order)
 
     rbf_term = torch.matmul(phi_pairwise_dists, w)
@@ -88,11 +100,11 @@ def _apply_interpolation(query_pts, pts, w, v, order):
 
 
 def _interpolate_spline(
-    pts,
-    vals,
-    query_pts,
-    order,
-    regularization_weight=0.0,
+    pts: torch.Tensor,
+    vals: torch.Tensor,
+    query_pts: torch.Tensor,
+    order: int,
+    regularization_weight: float = 0.0,
 ) -> torch.Tensor:
     # First, fit the spline to the observed data.
     w, v = _solve_interpolation(pts, vals, order, regularization_weight)
@@ -101,19 +113,24 @@ def _interpolate_spline(
         return None
 
     # Then, evaluate the spline at the query locations.
-    query_values = _apply_interpolation(query_pts, pts, w, v, order)
-
-    return query_values
+    return _apply_interpolation(query_pts, pts, w, v, order)
 
 
-def _create_dense_flows(flattened_flows, height, width):
+def _create_dense_flows(
+    flattened_flows: torch.Tensor,
+    height: int,
+    width: int,
+) -> torch.Tensor:
     # possibly .view
     return torch.reshape(flattened_flows, [height, width, 2])
 
 
 def _interpolate_bilinear(
-    grid, query_points, name="interpolate_bilinear", indexing="ij"
-):
+    grid: torch.Tensor,
+    query_points: torch.Tensor,
+    name: str = "interpolate_bilinear",
+    indexing: str = "ij",
+) -> torch.Tensor:
     if indexing != "ij" and indexing != "xy":
         raise ValueError("Indexing mode must be 'ij' or 'xy'")
 
@@ -166,7 +183,11 @@ def _interpolate_bilinear(
     # work with only one channel
     flattened_grid = torch.reshape(grid[0], [height * width, 1])
 
-    def gather(y_coords, x_coords, name):
+    def gather(
+        y_coords: torch.Tensor,
+        x_coords: torch.Tensor,
+        name: str,  # FIXME: why is this unused but passed below?
+    ) -> torch.Tensor:
         linear_coordinates = y_coords * width + x_coords
         gathered_values = torch.gather(
             flattened_grid.t(), 1, linear_coordinates.unsqueeze(0)
@@ -183,12 +204,10 @@ def _interpolate_bilinear(
     interp_bottom = alphas[1] * (bottom_right - bottom_left) + bottom_left
     interp = alphas[0] * (interp_bottom - interp_top) + interp_top
 
-    interp = interp.repeat(channels, 1, 1)
-
-    return interp
+    return interp.repeat(channels, 1, 1)
 
 
-def _dense_image_warp(tensor, flow):
+def _dense_image_warp(tensor: torch.Tensor, flow: torch.Tensor) -> torch.Tensor:
     channels, height, width = F.get_dimensions(tensor)
     device = tensor.device
 
@@ -202,23 +221,19 @@ def _dense_image_warp(tensor, flow):
     b_grid = stacked_grid.unsqueeze(-1).permute(3, 1, 0, 2)
     query_points_on_grid = b_grid - flow
 
-    query_points_flattened = torch.reshape(
-        query_points_on_grid, [height * width, 2]
-    )
+    query_points_flattened = torch.reshape(query_points_on_grid, [height * width, 2])
 
     interpolated = _interpolate_bilinear(tensor, query_points_flattened)
-    interpolated = torch.reshape(interpolated, [channels, height, width])
-
-    return interpolated
+    return torch.reshape(interpolated, [channels, height, width])
 
 
 def _sparse_image_warp(
-    tensor,
-    src_ctr_pt_locations,
-    dest_ctr_pt_locations,
-    order=2,
-    regularization_weight=0.0,
-):
+    tensor: torch.Tensor,
+    src_ctr_pt_locations: torch.Tensor,
+    dest_ctr_pt_locations: torch.Tensor,
+    order: int = 2,
+    regularization_weight: float = 0.0,
+) -> Tuple[torch.Tensor, torch.Tensor]:
     device = tensor.device
     control_point_flows = dest_ctr_pt_locations - src_ctr_pt_locations
 

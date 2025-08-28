@@ -14,27 +14,26 @@ Adapted to match coding styles of current repo:
 
 """
 
-from typing import Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Type, Union
 
 import numpy as np
 import torch
-import torch.nn as nn
 
 from .abstract_model import AbstractModel
 from .sequential import Sequential
 from .utils import assert_no_transfer_weights
 
 
-class Base(nn.Module):
+class Base(torch.nn.Module):
     """Base class to build convolutional neural network model."""
 
     def __init__(
         self,
         conv_layers_args: dict,
         maxpool_layers_args: dict,
-        conv_op: nn = nn.Conv1d,
-        max_pool_op: nn = nn.MaxPool1d,
-        activ_fn: nn = nn.LeakyReLU(),
+        conv_op: Optional[Type[torch.nn.Module]] = None,
+        max_pool_op: Optional[Type[torch.nn.Module]] = None,
+        activation: Optional[Type[torch.nn.Module]] = None,
         normalize: bool = False,
     ) -> None:
         """Audio model.
@@ -42,32 +41,33 @@ class Base(nn.Module):
         Args:
             conv_layers_args: Parameters of convolutions layers.
             maxpool_layers_args: Parameters of max pool layer layers.
-            conv_op: Convolution operation to use. Defaults to torch.nn.Conv1d.
-            max_pool_op: Max pooling operation to use.
-                Defaults to torch.nn.MaxPool1d.
-            activ_fn: Activation function to use.
-                Defaults to torch.nn.LeakyReLU().
+            conv_op: Convolution operation to use. If None, defaults to torch.nn.Conv1d.
+                Defaults to None.
+            max_pool_op: Max pooling operation to use. If None, defaults to
+                torch.nn.MaxPool1d. Defaults to None.
+            activ_fn: Activation function to use. If None, defaults to
+                torch.nn.LeakyReLU. Defaults to None.
             normalize: Whether to use batch normalization. Defaults to False.
         """
 
         super().__init__()
         self.conv_layers_args = conv_layers_args
         self.maxpool_layers_args = maxpool_layers_args
-        self.conv_op = conv_op
-        self.max_pool_op = max_pool_op
-        self.activ_fn = activ_fn
+        self.conv_op = conv_op or torch.nn.Conv1d
+        self.max_pool_op = max_pool_op or torch.nn.MaxPool1d
+        self.activation = activation or torch.nn.LeakyReLU
         self.normalize = normalize
 
-        network_layers = nn.ModuleList()
+        network_layers = torch.nn.ModuleList()
         for conv_args, mp_args in zip(
-            *[conv_layers_args.values(), maxpool_layers_args.values()]
+            *[conv_layers_args.values(), maxpool_layers_args.values()], strict=True
         ):
             network_layers.extend(
-                [self._conv_block(conv_args, activ_fn, normalize)]
+                [self._conv_block(conv_args, self.activation(), self.normalize)]
             )
-            network_layers.extend([max_pool_op(**mp_args)])
+            network_layers.append(self.max_pool_op(**mp_args))
 
-        self.network = nn.Sequential(*network_layers)
+        self.network = torch.nn.Sequential(*network_layers)
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
@@ -75,7 +75,7 @@ class Base(nn.Module):
         for m in list(self.modules()):
             self._init_weights(m)
 
-    def _init_weights(self, m: nn.Module) -> None:
+    def _init_weights(self, m: torch.nn.Module) -> None:
         """Helper method to initialize the parameters of the model
         with Kaiming uniform initialization.
 
@@ -83,15 +83,15 @@ class Base(nn.Module):
             m: Module to initialize.
         """
 
-        if isinstance(m, nn.Conv1d) or isinstance(m, nn.Linear):
-            nn.init.kaiming_uniform_(m.weight)
-            nn.init.zeros_(m.bias)
-        if isinstance(m, nn.LSTM):
+        if isinstance(m, (torch.nn.Conv1d, torch.nn.Linear)):
+            torch.nn.init.kaiming_uniform_(m.weight)
+            torch.nn.init.zeros_(m.bias)
+        if isinstance(m, torch.nn.LSTM):
             for name, param in m.named_parameters():
                 if "bias" in name:
-                    nn.init.zeros_(param)
+                    torch.nn.init.zeros_(param)
                 elif "weight" in name:
-                    nn.init.kaiming_uniform_(param)
+                    torch.nn.init.kaiming_uniform_(param)
 
     @classmethod
     def _num_out_features(
@@ -112,16 +112,13 @@ class Base(nn.Module):
         """
 
         layer_input = input_size
-        for i, (conv_arg, mp_arg) in enumerate(
-            zip(*[conv_args.values(), mp_args.values()])
+        for conv_arg, mp_arg in zip(
+            *[conv_args.values(), mp_args.values()],
+            strict=True,
         ):
             # number of features in the convolution output
             layer_input = np.floor(
-                (
-                    layer_input
-                    - conv_arg["kernel_size"]
-                    + 2 * conv_arg["padding"]
-                )
+                (layer_input - conv_arg["kernel_size"] + 2 * conv_arg["padding"])
                 / conv_arg["stride"]
                 + 1
             )
@@ -135,25 +132,24 @@ class Base(nn.Module):
     def _conv_block(
         self,
         conv_args: dict,
-        activ_fn: nn,
+        activ_fn: torch.nn.Module,
         normalize: bool = False,
-    ) -> nn.Module:
+    ) -> torch.nn.Module:
         """Convolution block.
 
         Args:
             conv_args: Parameters of convolution layer.
-            activ_fn: Activation function to use. Defaults to
-                torch.nn.LeakyReLU().
+            activ_fn: Activation function to use.
             normalize: Whether to use batch normalization. Defaults to False.
         """
 
-        layer = nn.ModuleList([self.conv_op(**conv_args)])
+        layer = torch.nn.ModuleList([self.conv_op(**conv_args)])
 
         if normalize:
-            layer.append(nn.BatchNorm1d(conv_args["out_channels"]))
+            layer.append(torch.nn.BatchNorm1d(conv_args["out_channels"]))
 
         layer.append(activ_fn)
-        return nn.Sequential(*layer)
+        return torch.nn.Sequential(*layer)
 
     def embeddings(self, x: torch.Tensor) -> torch.Tensor:
         return self.network(x)
@@ -162,7 +158,7 @@ class Base(nn.Module):
         return self.embeddings(x)
 
 
-class Emo18(nn.Module):
+class Emo18(torch.nn.Module):
     def __init__(self) -> None:
         """Speech emotion recognition model proposed in:
         https://doi.org/10.1109/ICASSP.2018.8462677
@@ -171,12 +167,12 @@ class Emo18(nn.Module):
         super().__init__()
         self.model, self.num_features = self.build_audio_model()
 
-    def build_audio_model(self) -> Tuple[nn.Module, int]:
+    def build_audio_model(self) -> Tuple[torch.nn.Module, int]:
         """Build the audio model: 3 blocks of convolution + max-pooling."""
 
         out_channels = [64, 128, 256]
         in_channels = [1]
-        in_channels.extend([x for x in out_channels[:-1]])
+        in_channels.extend(list(out_channels[:-1]))
         kernel_size = [8, 6, 6]
         stride = [1, 1, 1]
         padding = ((np.array(kernel_size) - 1) // 2).tolist()
@@ -201,11 +197,7 @@ class Emo18(nn.Module):
         }
 
         audio_model = Base(conv_args, maxpool_args, normalize=True)
-        # conv_red_size = Base._num_out_features(
-        #     input_size, conv_args, maxpool_args)
         num_layers = len(in_channels) - 1
-        # num_out_features = conv_red_size * \
-        #     conv_args[f"layer{num_layers}"]["out_channels"]
 
         num_out_features = conv_args[f"layer{num_layers}"]["out_channels"]
 
@@ -215,7 +207,7 @@ class Emo18(nn.Module):
         return self.model(x)
 
 
-class Zhao19(nn.Module):
+class Zhao19(torch.nn.Module):
     def __init__(self) -> None:
         """Speech emotion recognition model proposed in:
         https://doi.org/10.1016/j.bspc.2018.08.035
@@ -224,12 +216,12 @@ class Zhao19(nn.Module):
         super().__init__()
         self.model, self.num_features = self.build_audio_model()
 
-    def build_audio_model(self) -> Tuple[nn.Module, int]:
+    def build_audio_model(self) -> Tuple[torch.nn.Module, int]:
         """Build the audio model: 3 blocks of convolution + max-pooling."""
 
         out_channels = [64, 64, 128, 128]
         in_channels = [1]
-        in_channels.extend([x for x in out_channels[:-1]])
+        in_channels.extend(list(out_channels[:-1]))
         kernel_size = [3, 3, 3, 3]
         stride = [1, 1, 1, 1]
         padding = ((np.array(kernel_size) - 1) // 2).tolist()
@@ -254,7 +246,10 @@ class Zhao19(nn.Module):
         }
 
         audio_model = Base(
-            conv_args, maxpool_args, normalize=True, activ_fn=nn.ELU()
+            conv_args,
+            maxpool_args,
+            normalize=True,
+            activation=torch.nn.ELU,
         )
 
         return audio_model, out_channels[-1]
@@ -263,13 +258,13 @@ class Zhao19(nn.Module):
         return self.model(x)
 
 
-class AudioModel(nn.Module):
+class AudioModel(torch.nn.Module):
     def __init__(
         self,
         model_name: str,
-        *args,
-        **kwargs,
-    ):
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
         """Audio network model.
 
         Args:
@@ -284,7 +279,7 @@ class AudioModel(nn.Module):
         self.model = self.model(*args, **kwargs)
         self.num_features = self.model.num_features
 
-    def _get_model(self, model_name: str) -> nn.Module:
+    def _get_model(self, model_name: str) -> torch.nn.Module:
         """Factory method to choose audio model."""
 
         return {"emo18": Emo18, "zhao19": Zhao19}[model_name]
@@ -338,7 +333,7 @@ class AudioRNNModel(AbstractModel):
             time_pooling=True,
             bidirectional=bidirectional,
         )
-        self.linear = nn.Linear(self.rnn.hidden_size, self.output_dim)
+        self.linear = torch.nn.Linear(self.rnn.hidden_size, self.output_dim)
 
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
         batch_size, seq_length, t = features.shape
@@ -346,9 +341,7 @@ class AudioRNNModel(AbstractModel):
         audio_out = self.audio_model(features)
         audio_out = audio_out.transpose(1, 2)
 
-        rnn_out = self.rnn(audio_out)
-
-        return rnn_out
+        return self.rnn(audio_out)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         """
@@ -356,5 +349,4 @@ class AudioRNNModel(AbstractModel):
             features ((torch.Tensor) - BS x S x 1 x T)
         """
         rnn_out = self.embeddings(features)
-        output = self.linear(rnn_out)
-        return output
+        return self.linear(rnn_out)

@@ -3,7 +3,7 @@ import os
 import random
 import time
 
-import matplotlib
+import matplotlib as mpl
 import numpy as np
 from omegaconf import OmegaConf
 import pandas as pd
@@ -32,7 +32,7 @@ from autrainer.models import FFNN
 from .utils import BaseIndividualTempDir
 
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 
 
 class TestBookkeeping(BaseIndividualTempDir):
@@ -68,9 +68,9 @@ class TestBookkeeping(BaseIndividualTempDir):
     def test_create_folder(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
         bookkeeping.create_folder("folder")
-        assert os.path.isdir(
-            os.path.join(self.temp_dir, "folder")
-        ), "Should create folder."
+        assert os.path.isdir(os.path.join(self.temp_dir, "folder")), (
+            "Should create folder."
+        )
 
     def test_save_model_summary(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
@@ -82,29 +82,29 @@ class TestBookkeeping(BaseIndividualTempDir):
             torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
             "summary.txt",
         )
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "summary.txt")
-        ), "Should save model summary txt."
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "summary.yaml")
-        ), "Should save model summary YAML."
+        assert os.path.isfile(os.path.join(self.temp_dir, "summary.txt")), (
+            "Should save model summary txt."
+        )
+        assert os.path.isfile(os.path.join(self.temp_dir, "summary.yaml")), (
+            "Should save model summary YAML."
+        )
 
     def test_save_state_dict(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
         bookkeeping.save_state(model, "model.pt")
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "model.pt")
-        ), "Should save model state dict."
+        assert os.path.isfile(os.path.join(self.temp_dir, "model.pt")), (
+            "Should save model state dict."
+        )
 
     def test_save_invalid_state_dict(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
         model = "not a model"
         with pytest.raises(TypeError):
             bookkeeping.save_state(model, "model.pt")
-        assert not os.path.isfile(
-            os.path.join(self.temp_dir, "model.pt")
-        ), "Should not save model state dict."
+        assert not os.path.isfile(os.path.join(self.temp_dir, "model.pt")), (
+            "Should not save model state dict."
+        )
 
     def test_load_state_dict(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
@@ -112,9 +112,9 @@ class TestBookkeeping(BaseIndividualTempDir):
         bookkeeping.save_state(model1, "model.pt")
         model2 = FFNN(output_dim=10, input_size=64, hidden_size=64)
         bookkeeping.load_state(model2, "model.pt")
-        assert str(model1.state_dict()) == str(
-            model2.state_dict()
-        ), "Should load model state dict."
+        assert str(model1.state_dict()) == str(model2.state_dict()), (
+            "Should load model state dict."
+        )
 
     def test_load_invalid_state_dict(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
@@ -134,26 +134,26 @@ class TestBookkeeping(BaseIndividualTempDir):
         bookkeeping = Bookkeeping(self.temp_dir)
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
         bookkeeping.save_audobject(model, "model.yaml")
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "model.yaml")
-        ), "Should save model audobject YAML."
+        assert os.path.isfile(os.path.join(self.temp_dir, "model.yaml")), (
+            "Should save model audobject YAML."
+        )
 
     def test_save_invalid_audobject(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
         model = "not a model"
         with pytest.raises(TypeError):
             bookkeeping.save_audobject(model, "model.yaml")
-        assert not os.path.isfile(
-            os.path.join(self.temp_dir, "model.yaml")
-        ), "Should not save model audobject YAML."
+        assert not os.path.isfile(os.path.join(self.temp_dir, "model.yaml")), (
+            "Should not save model audobject YAML."
+        )
 
     def test_save_results_dict(self) -> None:
         bookkeeping = Bookkeeping(self.temp_dir)
         results = {"loss": 0.1, "accuracy": 0.9}
         bookkeeping.save_results_dict(results, "results.yaml")
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "results.yaml")
-        ), "Should save results dict YAML."
+        assert os.path.isfile(os.path.join(self.temp_dir, "results.yaml")), (
+            "Should save results dict YAML."
+        )
         loaded = OmegaConf.load(os.path.join(self.temp_dir, "results.yaml"))
         loaded = OmegaConf.to_container(loaded)
         assert results == loaded, "Should save and load results dict YAML."
@@ -162,9 +162,9 @@ class TestBookkeeping(BaseIndividualTempDir):
         bookkeeping = Bookkeeping(self.temp_dir)
         results = pd.DataFrame({"loss": [0.1], "accuracy": [0.9]})
         bookkeeping.save_results_df(results, "results.csv")
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "results.csv")
-        ), "Should save results dict CSV."
+        assert os.path.isfile(os.path.join(self.temp_dir, "results.csv")), (
+            "Should save results dict CSV."
+        )
         loaded = pd.read_csv(os.path.join(self.temp_dir, "results.csv"))
         assert results.equals(loaded), "Should save and load results dict CSV."
 
@@ -172,9 +172,9 @@ class TestBookkeeping(BaseIndividualTempDir):
         bookkeeping = Bookkeeping(self.temp_dir)
         results = np.array([[0.1, 0.9]])
         bookkeeping.save_results_np(results, "results.npy")
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "results.npy")
-        ), "Should save results dict NPY."
+        assert os.path.isfile(os.path.join(self.temp_dir, "results.npy")), (
+            "Should save results dict NPY."
+        )
         loaded = np.load(os.path.join(self.temp_dir, "results.npy"))
         (
             np.testing.assert_array_equal(results, loaded),
@@ -198,19 +198,15 @@ class TestBookkeeping(BaseIndividualTempDir):
             metric_fns=metrics,
             tracking_metric_fn=tracking_metric,
         )
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "best_results.yaml")
-        ), "Should save best results dict YAML."
-        loaded = OmegaConf.load(
-            os.path.join(self.temp_dir, "best_results.yaml")
+        assert os.path.isfile(os.path.join(self.temp_dir, "best_results.yaml")), (
+            "Should save best results dict YAML."
         )
+        loaded = OmegaConf.load(os.path.join(self.temp_dir, "best_results.yaml"))
         loaded = OmegaConf.to_container(loaded)
         assert loaded.get("best_iteration") == 1, "Should save best iteration."
         assert loaded.get("accuracy") == 0.99, "Should save best accuracy."
         assert loaded.get("uar") == 0.9, "Should save best UAR."
-        assert (
-            loaded.get("train_loss_min") == 0.01
-        ), "Should save best train loss."
+        assert loaded.get("train_loss_min") == 0.01, "Should save best train loss."
 
 
 class TestTimer(BaseIndividualTempDir):
@@ -224,22 +220,20 @@ class TestTimer(BaseIndividualTempDir):
         assert timer.get_mean_seconds(), "Should get mean time in seconds."
         assert timer.get_total_seconds(), "Should get total time in seconds."
         assert timer.pretty_time(1), "Should convert seconds to pretty string."
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "timer.yaml")
-        ), "Should save timer."
+        assert os.path.isfile(os.path.join(self.temp_dir, "timer.yaml")), (
+            "Should save timer."
+        )
 
     def test_invalid_timer(self) -> None:
         timer = Timer(self.temp_dir, "test")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="not yet started"):
             timer.stop()
 
 
 class TestHardware(BaseIndividualTempDir):
     @classmethod
     def setup_class(cls) -> None:
-        cls.device = torch.device(
-            "cuda:0" if torch.cuda.is_available() else "cpu"
-        )
+        cls.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def test_get_hardware_info(self) -> dict:
         hardware_info = get_hardware_info(self.device)
@@ -247,9 +241,9 @@ class TestHardware(BaseIndividualTempDir):
 
     def test_save_hardware_info(self) -> None:
         save_hardware_info(self.temp_dir, device=self.device)
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "hardware.yaml")
-        ), "Should save hardware info."
+        assert os.path.isfile(os.path.join(self.temp_dir, "hardware.yaml")), (
+            "Should save hardware info."
+        )
 
     def test_set_device(self) -> torch.device:
         if torch.cuda.is_available():
@@ -263,8 +257,7 @@ class TestHardware(BaseIndividualTempDir):
             device = set_device("invalid")
         assert device.type == "cpu", "Should fall back to CPU."
         assert (
-            "Device 'invalid' is not available. Falling back to CPU."
-            in caplog.text
+            "Device 'invalid' is not available. Falling back to CPU." in caplog.text
         ), "Should log warning."
 
 
@@ -283,9 +276,9 @@ class TestThreadManager:
 class TestSaveRequirements(BaseIndividualTempDir):
     def test_save_requirements(self) -> None:
         save_requirements(self.temp_dir)
-        assert os.path.isfile(
-            os.path.join(self.temp_dir, "requirements.txt")
-        ), "Should save requirements."
+        assert os.path.isfile(os.path.join(self.temp_dir, "requirements.txt")), (
+            "Should save requirements."
+        )
 
 
 class TestSetSeed:
@@ -300,12 +293,8 @@ class TestSetSeed:
         assert torch.initial_seed() == seed, "Should set Torch seed."
         if torch.cuda.is_available():
             assert torch.cuda.initial_seed() == seed, "Should set Cuda seed."
-            assert (
-                torch.backends.cudnn.deterministic
-            ), "Should be deterministic."
-            assert (
-                not torch.backends.cudnn.benchmark
-            ), "Should disable benchmark."
+            assert torch.backends.cudnn.deterministic, "Should be deterministic."
+            assert not torch.backends.cudnn.benchmark, "Should disable benchmark."
 
 
 class TestSilence:
@@ -334,34 +323,37 @@ class TestExportConstants:
 
     @pytest.mark.parametrize("depth", [-1, "invalid"])
     def test_invalid_logging_depth(self, depth: int) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError,
+            match="Invalid type" if isinstance(depth, str) else "must be non-negative",
+        ):
             self.c.LOGGING_DEPTH = depth
 
     @pytest.mark.parametrize("depth", [1, 2, 3, 100])
     def test_logging_depth(self, depth: int) -> None:
         self.c.LOGGING_DEPTH = depth
-        assert (
-            ExportConstants().LOGGING_DEPTH == depth
-        ), f"Should set logging depth to {depth}."
+        assert depth == ExportConstants().LOGGING_DEPTH, (
+            f"Should set logging depth to {depth}."
+        )
 
     @pytest.mark.parametrize("ignore_params", ["invalid", [1, "param"]])
     def test_invalid_ignore_params(self, ignore_params: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.IGNORE_PARAMS = ignore_params
 
     @pytest.mark.parametrize("ignore_params", [[], ["param1", "param2"]])
     def test_ignore_params(self, ignore_params: list) -> None:
         self.c.IGNORE_PARAMS = ignore_params
-        assert (
-            ExportConstants().IGNORE_PARAMS == ignore_params
-        ), f"Should set ignore params to {ignore_params}."
+        assert ignore_params == ExportConstants().IGNORE_PARAMS, (
+            f"Should set ignore params to {ignore_params}."
+        )
 
     @pytest.mark.parametrize(
         "artifacts",
         [[1, "artifact"], ["artifact", {"invalid": 1}]],
     )
     def test_invalid_artifacts(self, artifacts: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.ARTIFACTS = artifacts
 
     @pytest.mark.parametrize(
@@ -370,9 +362,9 @@ class TestExportConstants:
     )
     def test_artifacts(self, artifacts: list) -> None:
         self.c.ARTIFACTS = artifacts
-        assert (
-            ExportConstants().ARTIFACTS == artifacts
-        ), f"Should set artifacts to {artifacts}."
+        assert artifacts == ExportConstants().ARTIFACTS, (
+            f"Should set artifacts to {artifacts}."
+        )
 
 
 class TestNamingConstants:
@@ -393,36 +385,34 @@ class TestNamingConstants:
 
     @pytest.mark.parametrize("config_dirs", ["invalid", [1, "invalid"]])
     def test_invalid_config_dirs(self, config_dirs: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.CONFIG_DIRS = config_dirs
 
     @pytest.mark.parametrize("config_dirs", [["dir1", "dir2"]])
     def test_config_dirs(self, config_dirs: list) -> None:
         self.c.CONFIG_DIRS = config_dirs
-        assert (
-            NamingConstants().CONFIG_DIRS == config_dirs
-        ), f"Should set config dirs to {config_dirs}."
+        assert config_dirs == NamingConstants().CONFIG_DIRS, (
+            f"Should set config dirs to {config_dirs}."
+        )
 
     @pytest.mark.parametrize("naming_convention", ["invalid", [1, "invalid"]])
     def test_invalid_naming_convention(self, naming_convention: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.NAMING_CONVENTION = naming_convention
 
     @pytest.mark.parametrize("naming_convention", [["dir1", "dir2"]])
     def test_naming_convention(self, naming_convention: list) -> None:
         self.c.NAMING_CONVENTION = naming_convention
-        assert (
-            NamingConstants().NAMING_CONVENTION == naming_convention
-        ), f"Should set naming convention to {naming_convention}."
+        assert naming_convention == NamingConstants().NAMING_CONVENTION, (
+            f"Should set naming convention to {naming_convention}."
+        )
 
     @pytest.mark.parametrize(
         "valid_aggregations",
         ["invalid", [1, "invalid"]],
     )
-    def test_invalid_valid_aggregations(
-        self, valid_aggregations: list
-    ) -> None:
-        with pytest.raises(ValueError):
+    def test_invalid_valid_aggregations(self, valid_aggregations: list) -> None:
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.VALID_AGGREGATIONS = valid_aggregations
 
     @pytest.mark.parametrize(
@@ -431,18 +421,16 @@ class TestNamingConstants:
     )
     def test_valid_aggregations(self, valid_aggregations: list) -> None:
         self.c.VALID_AGGREGATIONS = valid_aggregations
-        assert (
-            NamingConstants().VALID_AGGREGATIONS == valid_aggregations
-        ), f"Should set valid aggregations to {valid_aggregations}."
+        assert valid_aggregations == NamingConstants().VALID_AGGREGATIONS, (
+            f"Should set valid aggregations to {valid_aggregations}."
+        )
 
     @pytest.mark.parametrize(
         "invalid_aggregations",
         ["invalid", [1, "invalid"]],
     )
-    def test_invalid_invalid_aggregations(
-        self, invalid_aggregations: list
-    ) -> None:
-        with pytest.raises(ValueError):
+    def test_invalid_invalid_aggregations(self, invalid_aggregations: list) -> None:
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.INVALID_AGGREGATIONS = invalid_aggregations
 
     @pytest.mark.parametrize(
@@ -451,9 +439,9 @@ class TestNamingConstants:
     )
     def test_invalid_aggregations(self, invalid_aggregations: list) -> None:
         self.c.INVALID_AGGREGATIONS = invalid_aggregations
-        assert (
-            NamingConstants().INVALID_AGGREGATIONS == invalid_aggregations
-        ), f"Should set invalid aggregations to {invalid_aggregations}."
+        assert invalid_aggregations == NamingConstants().INVALID_AGGREGATIONS, (
+            f"Should set invalid aggregations to {invalid_aggregations}."
+        )
 
 
 class TestTrainingConstants:
@@ -468,12 +456,10 @@ class TestTrainingConstants:
 
     @pytest.mark.parametrize("tasks", ["invalid", [1, "invalid"]])
     def test_invalid_tasks(self, tasks: list) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid type"):
             self.c.TASKS = tasks
 
     @pytest.mark.parametrize("tasks", [["task1", "task2"]])
     def test_tasks(self, tasks: list) -> None:
         self.c.TASKS = tasks
-        assert (
-            TrainingConstants().TASKS == tasks
-        ), f"Should set tasks to {tasks}."
+        assert tasks == TrainingConstants().TASKS, f"Should set tasks to {tasks}."

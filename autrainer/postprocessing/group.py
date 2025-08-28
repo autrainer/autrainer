@@ -69,7 +69,7 @@ class GroupGrid:
         run_paths, copy_states, mappings = self._resolve_aggregated_runs(
             run_paths, copy_states
         )
-        for run_path, copy_state in zip(run_paths, copy_states):
+        for run_path, copy_state in zip(run_paths, copy_states, strict=False):
             self._copy_run(experiment, run_path, copy_state)
         return mappings
 
@@ -105,7 +105,7 @@ class GroupGrid:
         expanded_paths = []
         expanded_states = []
         mappings = {}
-        for run_path, copy_state in zip(run_paths, copy_states):
+        for run_path, copy_state in zip(run_paths, copy_states, strict=False):
             mappings[os.path.basename(run_path)] = []
             for run in self._get_aggregated_runs(run_path):
                 path = os.path.join(
@@ -122,18 +122,16 @@ class GroupGrid:
             return [os.path.basename(run_path)]
         return load_yaml(os.path.join(run_path, "runs.yaml"))
 
-    def _copy_run(
-        self, experiment: str, run_path: str, copy_state: bool
-    ) -> None:
+    def _copy_run(self, experiment: str, run_path: str, copy_state: bool) -> None:
         dst = os.path.join(
             self.results_dir,
             experiment,
             "training",
             os.path.basename(run_path),
         )
-        if os.path.exists(
-            os.path.join(dst, "metrics.csv")
-        ) or not os.path.exists(run_path):
+        if os.path.exists(os.path.join(dst, "metrics.csv")) or not os.path.exists(
+            run_path
+        ):
             return
         ignore = None if copy_state else shutil.ignore_patterns("*.pt")
         shutil.copytree(

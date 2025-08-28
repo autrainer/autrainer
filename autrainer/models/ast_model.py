@@ -57,5 +57,4 @@ class ASTModel(AbstractModel):
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         x = self.embeddings(features)
-        x = self.out(x)
-        return x
+        return self.out(x)

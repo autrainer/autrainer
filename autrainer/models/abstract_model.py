@@ -24,8 +24,8 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         super().__init__()
         self.output_dim = output_dim
         self.transfer = transfer
-        self.inputs  # precompute and verify inputs
-        self.embedding_inputs  # precompute and verify embedding inputs
+        self.inputs  # precompute and verify inputs  # noqa: B018
+        self.embedding_inputs  # precompute and verify embedding inputs  # noqa: B018
 
     @abstractmethod
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:

@@ -1,5 +1,5 @@
 import logging
-from typing import List, Type
+from typing import Any, Dict, List, Type
 
 import numpy as np
 import numpy.testing
@@ -62,16 +62,14 @@ class TestAllMetrics:
         np.testing.assert_almost_equal(m(truth, pred), res, 2)
 
     @pytest.mark.parametrize("cls", [Accuracy, F1, UAR, CCC, MAE, MSE, PCC])
-    def test_classification_regression_metrics(
-        self, cls: Type[AbstractMetric]
-    ) -> None:
+    def test_classification_regression_metrics(self, cls: Type[AbstractMetric]) -> None:
         self._test_metric(cls())
         self._test_metric_invalid(cls())
         self._test_starting_metric(cls())
         self._test_comparisons(cls())
 
     @pytest.mark.parametrize(
-        "cls,truth,pred,res",
+        ("cls", "truth", "pred", "res"),
         [
             (
                 MLAccuracy,
@@ -164,7 +162,16 @@ class TestAllMetrics:
             )
 
     @pytest.mark.parametrize(
-        "targets,predictions,indices,metrics,groundtruth,target_column,stratify,results",
+        (
+            "targets",
+            "predictions",
+            "indices",
+            "metrics",
+            "groundtruth",
+            "target_column",
+            "stratify",
+            "results",
+        ),
         [
             (
                 np.array([0, 1, 2, 3, 4]),
@@ -210,15 +217,15 @@ class TestAllMetrics:
     )
     def test_disaggregated_evaluation(
         self,
-        targets,
-        predictions,
-        indices,
-        metrics,
-        groundtruth,
-        target_column,
-        stratify,
-        results,
-    ):
+        targets: np.ndarray,
+        predictions: np.ndarray,
+        indices: np.ndarray,
+        metrics: List[AbstractMetric],
+        groundtruth: pd.DataFrame,
+        target_column: str,
+        stratify: List[str],
+        results: Dict[str, Any],
+    ) -> None:
         res = disaggregated_evaluation(
             targets=targets,
             predictions=predictions,

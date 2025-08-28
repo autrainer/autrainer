@@ -2,7 +2,7 @@ from collections import defaultdict
 from copy import deepcopy
 import os
 import shutil
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from omegaconf import DictConfig, OmegaConf
 import pandas as pd
@@ -78,9 +78,7 @@ class AggregateGrid:
             shutil.rmtree(self.output_directory)
         os.makedirs(self.output_directory, exist_ok=True)
         self.run_names = get_run_names(self.training_directory)
-        self.training_type = get_training_type(
-            self.training_directory, self.run_names
-        )
+        self.training_type = get_training_type(self.training_directory, self.run_names)
         self.run_names.sort()
         if self.plot_params is None:
             self.plot_params = get_plotting_params(
@@ -126,9 +124,7 @@ class AggregateGrid:
 
     def _aggregate_run_names(self, over: list) -> dict:
         self._check_if_valid_aggregation(over)
-        param_dict = {
-            p: i for i, p in enumerate(NamingConstants().NAMING_CONVENTION)
-        }
+        param_dict = {p: i for i, p in enumerate(NamingConstants().NAMING_CONVENTION)}
         over_idxs = [param_dict[p] for p in over]
         aggregated = defaultdict(list)
         for run_name in self.run_names:
@@ -139,7 +135,7 @@ class AggregateGrid:
             aggregated[agg_key].append(run_name)
         return aggregated
 
-    def _aggregate_best(self, agg_name: str, run_list: list):
+    def _aggregate_best(self, agg_name: str, run_list: list) -> None:
         os.makedirs(
             os.path.join(self.output_directory, agg_name, "_best"),
             exist_ok=True,
@@ -150,22 +146,23 @@ class AggregateGrid:
             metrics,
         )
 
-    def _aggregate_test(self, agg_name: str, run_list: list):
+    def _aggregate_test(self, agg_name: str, run_list: list) -> None:
         path = os.path.join(self.output_directory, agg_name, "_test")
         os.makedirs(path, exist_ok=True)
-        metrics = self._aggregate_yaml(
-            run_list, "_test/test_holistic.yaml", "test"
-        )
+        metrics = self._aggregate_yaml(run_list, "_test/test_holistic.yaml", "test")
         save_yaml(os.path.join(path, "test_holistic.yaml"), metrics)
 
-    def _aggregate_yaml(self, run_list: list, path: str, yaml_type: str):
+    def _aggregate_yaml(
+        self,
+        run_list: list,
+        path: str,
+        yaml_type: str,
+    ) -> Dict[str, Any]:
         assert yaml_type in ["dev", "test"]
         loss_type = "dev_loss" if yaml_type == "dev" else "loss"
         dfs = []
         for run in run_list:
-            metrics = load_yaml(
-                os.path.join(self.training_directory, run, path)
-            )
+            metrics = load_yaml(os.path.join(self.training_directory, run, path))
             dfs.append(pd.DataFrame(metrics))
         df = pd.concat(dfs, keys=run_list, names=["run", "type"])
         df_mean = df.groupby(level="type").mean().reset_index()
@@ -173,23 +170,19 @@ class AggregateGrid:
         df_std["type"] = df_std["type"].apply(lambda x: f"{x}.std")
         df = pd.concat([df_mean, df_std]).set_index(["type"])
         metrics = df.to_dict()
-        metrics[loss_type] = {
-            k: v for k, v in metrics[loss_type].items() if "all" == k
-        }
+        metrics[loss_type] = {k: v for k, v in metrics[loss_type].items() if k == "all"}
         if yaml_type == "dev":
             metrics["iteration"] = {
-                k: v for k, v in metrics["iteration"].items() if "all" == k
+                k: v for k, v in metrics["iteration"].items() if k == "all"
             }
         return metrics
 
-    def _aggregate_config(self, agg_name: str, run_list: list):
+    def _aggregate_config(self, agg_name: str, run_list: list) -> None:
         path = os.path.join(self.output_directory, agg_name, ".hydra")
         os.makedirs(path, exist_ok=True)
         runs = [
             OmegaConf.load(
-                os.path.join(
-                    self.training_directory, r, ".hydra", "config.yaml"
-                )
+                os.path.join(self.training_directory, r, ".hydra", "config.yaml")
             )
             for r in run_list
         ]
@@ -197,9 +190,7 @@ class AggregateGrid:
         if self.aggregated_dict is None:
             for key in self.aggregate_list:
                 config[key] = self._replace_differing_values(config, runs, key)
-        save_yaml(
-            os.path.join(path, "config.yaml"), OmegaConf.to_container(config)
-        )
+        save_yaml(os.path.join(path, "config.yaml"), OmegaConf.to_container(config))
 
     def _replace_differing_values(
         self,
@@ -213,7 +204,7 @@ class AggregateGrid:
         if not isinstance(config[key], DictConfig):
             return "#"
 
-        for k in config[key].keys():
+        for k in config[key]:
             if not isinstance(config[key][k], DictConfig):
                 values = [r[key][k] for r in runs + [config]]
                 if len(set(values)) > 1:
@@ -225,20 +216,18 @@ class AggregateGrid:
 
         return config[key]
 
-    def _aggregate_timer(self, agg_name: str, run_list: list):
+    def _aggregate_timer(self, agg_name: str, run_list: list) -> None:
         mean_timer = {
             "train": {"mean_seconds": 0, "total_seconds": 0},
             "dev": {"mean_seconds": 0, "total_seconds": 0},
             "test": {"mean_seconds": 0, "total_seconds": 0},
         }
         for run in run_list:
-            timers = load_yaml(
-                os.path.join(self.training_directory, run, "timer.yaml")
-            )
+            timers = load_yaml(os.path.join(self.training_directory, run, "timer.yaml"))
             for k, v in timers.items():
                 mean_timer[k]["mean_seconds"] += v["mean_seconds"]
                 mean_timer[k]["total_seconds"] += v["total_seconds"]
-        for k, v in mean_timer.items():
+        for v in mean_timer.values():
             v["mean_seconds"] /= len(run_list)
             v["mean"] = Timer.pretty_time(v["mean_seconds"])
             v["total_seconds"] /= len(run_list)
@@ -248,7 +237,7 @@ class AggregateGrid:
             mean_timer,
         )
 
-    def _aggregate_metrics(self, agg_name: str, run_list: list):
+    def _aggregate_metrics(self, agg_name: str, run_list: list) -> None:
         dfs = []
         for run in run_list:
             df = pd.read_csv(
@@ -257,9 +246,7 @@ class AggregateGrid:
             )
             dfs.append(df)
         cfg = OmegaConf.load(
-            os.path.join(
-                self.output_directory, agg_name, ".hydra", "config.yaml"
-            )
+            os.path.join(self.output_directory, agg_name, ".hydra", "config.yaml")
         )
         if isinstance(cfg.dataset.metrics, str):
             raise ValueError(
@@ -305,13 +292,9 @@ class AggregateGrid:
                     tracking_metric=tracking_metric,
                 )
             )
-        timers = load_yaml(
-            os.path.join(self.output_directory, agg_name, "timer.yaml")
-        )
+        timers = load_yaml(os.path.join(self.output_directory, agg_name, "timer.yaml"))
         test_metrics = load_yaml(
-            os.path.join(
-                self.output_directory, agg_name, "_test", "test_holistic.yaml"
-            )
+            os.path.join(self.output_directory, agg_name, "_test", "test_holistic.yaml")
         )
         for logger in loggers:
             logger.setup()
@@ -325,13 +308,9 @@ class AggregateGrid:
             )
             for iteration in df.index:
                 metrics = df.loc[iteration].to_dict()
-                metrics = {
-                    k: v for k, v in metrics.items() if not k.endswith(".std")
-                }
+                metrics = {k: v for k, v in metrics.items() if not k.endswith(".std")}
                 logger.log_metrics(metrics, iteration)
-            logger.log_metrics(
-                {"test_" + k: v["all"] for k, v in test_metrics.items()}
-            )
+            logger.log_metrics({"test_" + k: v["all"] for k, v in test_metrics.items()})
             logger.log_artifact(
                 os.path.join(agg_name, ".hydra", "config.yaml"),
                 self.output_directory,

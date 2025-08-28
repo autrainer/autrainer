@@ -26,7 +26,7 @@ class FallbackLogger(AbstractLogger):
             return
         log = logging.getLogger(__name__)
         log.warning(
-            f"Requested logger '{requested_logger}' not available. "
+            f"Requested logger '{requested_logger}' not available. "  # noqa: G004
             "Install the required extras with "
             f"'pip install autrainer[{extras}]'."
         )
@@ -42,7 +42,7 @@ class FallbackLogger(AbstractLogger):
     def log_metrics(
         self,
         metrics: Dict[str, Union[int, float]],
-        iteration=None,
+        iteration: Optional[int] = None,
     ) -> None:
         pass
 

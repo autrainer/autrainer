@@ -1,6 +1,6 @@
 from enum import Enum
 import logging
-from typing import Dict, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Optional, Type, TypeVar, Union
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -35,7 +35,7 @@ def instantiate(
     instance_of: Optional[Type[T]] = None,
     convert: Optional[HydraConvertEnum] = None,
     recursive: bool = False,
-    **kwargs,
+    **kwargs: Dict[str, Any],
 ) -> T:
     """Instantiate an object from a configuration Dict or DictConfig.
 
@@ -70,9 +70,7 @@ def instantiate(
     if config.get("_target_") == "None":
         return None
     if not config.get("_convert_"):
-        config["_convert_"] = (
-            convert.value if convert else HydraConvertEnum.ALL.value
-        )
+        config["_convert_"] = convert.value if convert else HydraConvertEnum.ALL.value
     if not config.get("_recursive_"):
         config["_recursive_"] = recursive
     config.pop("id", None)
@@ -93,7 +91,7 @@ def instantiate_shorthand(
     instance_of: Optional[Type[T]] = None,
     convert: Optional[HydraConvertEnum] = None,
     recursive: bool = False,
-    **kwargs,
+    **kwargs: Dict[str, Any],
 ) -> T:
     """Instantiate an object from a shorthand configuration.
 
@@ -121,7 +119,7 @@ def instantiate_shorthand(
         The instantiated object.
     """
 
-    def _instantiate(c: dict):
+    def _instantiate(c: Dict[str, Any]) -> T:
         return instantiate(c, instance_of, convert, recursive, **kwargs)
 
     if config is None or not config:

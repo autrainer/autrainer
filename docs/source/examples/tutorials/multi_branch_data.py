@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Callable
 
 import pandas as pd
 import torch
@@ -66,5 +67,5 @@ class ToyMultiBranchData(ToyDataset):
         )
 
     @property
-    def default_collate_fn(self):
+    def default_collate_fn(self) -> Callable:
         return DataBatchMulti.collate
