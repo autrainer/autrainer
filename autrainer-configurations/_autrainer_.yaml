@@ -8,7 +8,6 @@ defaults:
   - plotting: Default
   - /hydra/callbacks:
       - ConfigDirSnapshot
-  - override hydra/sweeper: autrainer_filter_sweeper
 
 training_type: epoch
 eval_frequency: 1
@@ -26,16 +25,3 @@ save_test_outputs: true
 hydra:
   output_subdir: null
   mode: MULTIRUN
-  sweep:
-    dir: ${results_dir}/${experiment_id}/training/
-    subdir: "\
-      ${dataset.id}_\
-      ${model.id}_\
-      ${optimizer.id}_\
-      ${learning_rate}_\
-      ${batch_size}_\
-      ${training_type}_\
-      ${iterations}_\
-      ${scheduler.id}_\
-      ${augmentation.id}_\
-      ${seed}"
