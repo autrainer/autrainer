@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -95,7 +95,7 @@ class FetchScript(AbstractPreprocessScript):
 
 @catch_cli_errors
 def fetch(
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: Optional[Dict[str, Any]] = None,
     cfg_launcher: bool = False,
     config_name: str = "config",
     config_path: Optional[str] = None,

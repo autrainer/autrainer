@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -34,14 +34,14 @@ class TrainScript(AbstractScript):
 
             import hydra
 
-            from autrainer.core.filters import TrainFilter
+            from autrainer.core.filters import BaseFilter
 
             OmegaConf.set_struct(cfg, False)
             OmegaConf.resolve(cfg)
             output_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
 
             # ? Skip if run exists and return best tracking metric
-            if TrainFilter(cfg, output_dir).filter():
+            if BaseFilter(cfg, output_dir).filter():
                 import autrainer
                 from autrainer.core.utils import Bookkeeping
                 from autrainer.metrics import AbstractMetric
@@ -65,9 +65,9 @@ class TrainScript(AbstractScript):
             os.makedirs(os.path.dirname(cfg_path), exist_ok=True)
             OmegaConf.save(cfg, cfg_path)
 
-            from autrainer.training import ModularTaskTrainer
+            from autrainer.training import Trainer
 
-            trainer = ModularTaskTrainer(cfg=cfg, output_directory=output_dir)
+            trainer = Trainer(cfg=cfg, output_directory=output_dir)
             return trainer.train()
 
         check_invalid_config_path_arg(self.parser)
@@ -76,7 +76,7 @@ class TrainScript(AbstractScript):
 
 @catch_cli_errors
 def train(
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: Optional[Dict[str, Any]] = None,
     config_name: str = "config",
     config_path: Optional[str] = None,
 ) -> None:

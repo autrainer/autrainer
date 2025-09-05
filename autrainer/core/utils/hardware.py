@@ -2,7 +2,7 @@ import logging
 import os
 import platform
 import threading
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable, Dict, Optional, Type
 
 from omegaconf import OmegaConf
 import psutil
@@ -50,7 +50,7 @@ class ThreadManager:
                 return
 
 
-def get_gpu_info(device: torch.device) -> Optional[dict]:
+def get_gpu_info(device: torch.device) -> Optional[Dict[str, Any]]:
     """Get GPU information of the current system.
 
     Args:
