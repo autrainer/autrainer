@@ -48,6 +48,8 @@ class Timer:
         Returns:
             Mean time in seconds.
         """
+        if not self.time_log:
+            return 0.0
         return sum(self.time_log) / len(self.time_log)
 
     def get_total_seconds(self) -> float:
