@@ -8,6 +8,7 @@ from autrainer.core.scripts import (
     CreateScript,
     DeleteFailedScript,
     DeleteStatesScript,
+    EvalScript,
     FetchScript,
     GroupScript,
     InferenceScript,
@@ -36,6 +37,8 @@ class CLI:
             PreprocessScript(),
             # training
             TrainScript(),
+            # evaluation
+            EvalScript(),
             # inference
             InferenceScript(),
             # postprocessing
