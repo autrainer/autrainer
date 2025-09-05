@@ -1,4 +1,7 @@
-from .filters import EvalFilter, TrainFilter
+from .filters import BaseFilter, EvalFilter
 
 
-__all__ = ["EvalFilter", "TrainFilter"]
+__all__ = [
+    "BaseFilter",
+    "EvalFilter",
+]

@@ -13,6 +13,6 @@ class EvalFilter(AbstractFilter):
         return not os.path.exists(os.path.join(training_dir, run, "metrics.csv"))
 
 
-class TrainFilter(AbstractFilter):
+class BaseFilter(AbstractFilter):
     def filter(self) -> bool:
         return os.path.exists(os.path.join(self.directory, "metrics.csv"))
