@@ -1,0 +1,19 @@
+defaults:
+  - _autrainer_eval_
+  - _self_
+
+results_dir: results
+experiment_id: default
+iterations: 5
+
+hydra:
+  sweeper:
+    params:
+      +seed: 1
+      +batch_size: 32
+      +learning_rate: 0.001
+      dataset: ToyTabular-C
+      model: ToyFFNN
+      optimizer: Adam
+      dataset@evaluation: ToyTabular-C
+      +checkpoint: best
