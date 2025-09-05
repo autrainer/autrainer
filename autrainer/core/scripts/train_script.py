@@ -34,12 +34,14 @@ class TrainScript(AbstractScript):
 
             import hydra
 
+            from autrainer.core.filters import TrainFilter
+
             OmegaConf.set_struct(cfg, False)
             OmegaConf.resolve(cfg)
             output_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
 
             # ? Skip if run exists and return best tracking metric
-            if os.path.exists(os.path.join(output_dir, "metrics.csv")):
+            if TrainFilter(cfg, output_dir).filter():
                 import autrainer
                 from autrainer.core.utils import Bookkeeping
                 from autrainer.metrics import AbstractMetric
