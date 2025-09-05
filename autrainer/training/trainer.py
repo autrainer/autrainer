@@ -1,7 +1,7 @@
 from copy import deepcopy
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Callable, List, Tuple
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -31,9 +31,9 @@ from autrainer.transforms import SmartCompose, TransformManager
 
 from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
+from .evaluation import Evaluator
 from .outputs_tracker import OutputsTracker, init_trackers
 from .utils import (
-    disaggregated_evaluation,
     format_results,
     get_optimizer_params,
     load_pretrained_model_state,
@@ -41,13 +41,14 @@ from .utils import (
 )
 
 
-class ModularTaskTrainer:
+class Trainer:
     def __init__(
         self,
         cfg: DictConfig,
         output_directory: str,
         experiment_id: str = None,
         run_name: str = None,
+        save_initial_states: bool = True,
     ) -> None:
         """Trainer managing the training of a model given a configuration.
 
@@ -59,6 +60,8 @@ class ModularTaskTrainer:
                 directory. Defaults to None.
             run_name: Run name for the run. If None, the name is automatically
                 set based on the output directory. Defaults to None.
+            save_initial_states: Whether to save the initial model, optimizer,
+                and scheduler states. Defaults to True.
         """
         self._thread_manager = ThreadManager()
         self._cfg = cfg
@@ -249,8 +252,9 @@ class ModularTaskTrainer:
             (self.optimizer, "optimizer.pt", "_best"),
             (self.scheduler, "scheduler.pt", "_best"),
         ]
-        for task in save_tasks:
-            self._thread_manager.spawn(self.bookkeeping.save_state, *task)
+        if save_initial_states:
+            for task in save_tasks:
+                self._thread_manager.spawn(self.bookkeeping.save_state, *task)
 
         # ? Load and Save Preprocessing Pipeline if specified
         _preprocess_pipe = SmartCompose([])
@@ -360,6 +364,9 @@ class ModularTaskTrainer:
         else:
             self.train_tracker = None
 
+        # ? Create Evaluator
+        self.evaluator = Evaluator()
+
     def train(self) -> float:
         """Train the model.
 
@@ -393,22 +400,7 @@ class ModularTaskTrainer:
         self.model.to(self.DEVICE)
         self.model.eval()
         self.bookkeeping.create_folder("_test")
-        self.test_timer.start()
-        test_results = self.evaluate(
-            -1,
-            "_test",
-            self.test_loader,
-            self.data.df_test,
-            dev_evaluation=False,
-            save_to="test_holistic",
-            tracker=self.test_tracker,
-        )
-        self.test_timer.stop()
-        self.callback_manager.callback(
-            position="cb_on_test_end",
-            trainer=self,
-            test_results=test_results,
-        )
+        self.evaluator.test(self)
         self.metrics["iteration"] = self.metrics.index
         self.bookkeeping.save_best_results(
             self.metrics,
@@ -423,13 +415,6 @@ class ModularTaskTrainer:
                 "Best",
                 self.cfg.training_type,
                 self.best_iteration,
-            )
-        )
-        self.bookkeeping.log(
-            format_results(
-                test_results,
-                "Test",
-                self.cfg.training_type,
             )
         )
 
@@ -461,6 +446,7 @@ class ModularTaskTrainer:
             self.bookkeeping.create_folder(epoch_folder)
             self.model.train()
             self.model.to(self.DEVICE)
+            data: AbstractDataBatch
             for batch_idx, data in enumerate(
                 tqdm(
                     self.train_loader,
@@ -504,21 +490,7 @@ class ModularTaskTrainer:
                     self.train_tracker.save(epoch_folder)
                 train_loss = sum(train_loss) / len(train_loss)
                 self.metrics.loc[epoch, "train_loss"] = train_loss
-                self.dev_timer.start()
-                self.evaluate(
-                    epoch,
-                    epoch_folder,
-                    self.dev_loader,
-                    self.data.df_dev,
-                    tracker=self.dev_tracker,
-                )
-                self.dev_timer.stop()
-                self.callback_manager.callback(
-                    position="cb_on_val_end",
-                    trainer=self,
-                    iteration=epoch,
-                    val_results=self.metrics.loc[epoch].to_dict(),
-                )
+                self.evaluator.dev(self, epoch)
                 self.callback_manager.callback(
                     position="cb_on_iteration_end",
                     trainer=self,
@@ -552,6 +524,7 @@ class ModularTaskTrainer:
             and self.DEVICE.type == "cuda"
         )
         self.train_timer.start()
+        data: AbstractDataBatch
         while step < self.cfg.iterations:
             step += 1
             pbar.update(1)
@@ -605,21 +578,7 @@ class ModularTaskTrainer:
                     self.train_tracker.save(step_folder)
                 train_loss = sum(train_loss) / len(train_loss)
                 self.metrics.loc[step, "train_loss"] = train_loss
-                self.dev_timer.start()
-                self.evaluate(
-                    step,
-                    step_folder,
-                    self.dev_loader,
-                    self.data.df_dev,
-                    tracker=self.dev_tracker,
-                )
-                self.dev_timer.stop()
-                self.callback_manager.callback(
-                    position="cb_on_val_end",
-                    trainer=self,
-                    iteration=step,
-                    val_results=self.metrics.loc[step].to_dict(),
-                )
+                self.evaluator.dev(self, step)
                 self.callback_manager.callback(
                     position="cb_on_iteration_end",
                     trainer=self,
@@ -661,180 +620,6 @@ class ModularTaskTrainer:
         loss.mean().backward()
         self.optimizer.step()
         return loss, output
-
-    def evaluate(
-        self,
-        iteration: int,
-        iteration_folder: str,
-        loader: torch.utils.data.DataLoader,
-        df: pd.DataFrame,
-        dev_evaluation: bool = True,
-        save_to: str = "dev",
-        tracker: Optional[OutputsTracker] = None,
-    ) -> Optional[Dict[str, float]]:
-        """Evaluate the model on the dev or test set.
-
-        Args:
-            iteration: Current iteration.
-            iteration_folder: Folder to save the results to.
-            loader: Dataloader to evaluate on.
-            df: Groundtruth dataframe.
-            dev_evaluation: Whether to evaluate on the dev set.
-                Defaults to True.
-            save_to: Prefix to save the results to. Defaults to "dev".
-            tracker: Tracker to save the outputs. Defaults to None.
-
-        Returns:
-            Dictionary containing the evaluation results if evaluating on the test set,
-            otherwise None.
-        """
-        cb_type = "val" if dev_evaluation else "test"
-        kwargs = {"iteration": iteration} if dev_evaluation else {}
-        self.callback_manager.callback(
-            position=f"cb_on_{cb_type}_begin",
-            trainer=self,
-            **kwargs,
-        )
-        self.model.eval()
-        self.model.to(self.DEVICE)
-        lk = self._loader_kwargs["dev" if dev_evaluation else "test"]
-        results = self._evaluate(
-            loader=loader,
-            tracker=tracker,
-            iteration_folder=iteration_folder,
-            loader_kwargs=lk,
-            cb_type=cb_type,
-        )
-        if dev_evaluation:
-            results["dev_loss"] = results.pop("loss")
-            # TODO: it's a bit ugly to filter like this
-            for key in list(set(self.metrics.columns) - {"train_loss"}):
-                self.metrics.loc[iteration, key] = results[key]
-        else:
-            test_results = {"test_loss": results["loss"]}
-            # TODO: another ugly filter
-            for key in list(set(self.metrics.columns) - {"train_loss", "dev_loss"}):
-                test_results[f"test_{key}"] = results[key]
-
-        if dev_evaluation:
-            self.bookkeeping.log(
-                format_results(
-                    self.metrics.loc[iteration].to_dict(),
-                    "Dev",
-                    self.cfg.training_type,
-                    iteration,
-                )
-            )
-        if self.data.stratify or isinstance(self.data.target_column, list):
-            logging_results = disaggregated_evaluation(
-                targets=tracker.targets,
-                predictions=tracker.predictions,
-                indices=tracker.indices,
-                groundtruth=df,
-                metrics=self.data.metrics,
-                target_column=self.data.target_column,
-                stratify=self.data.stratify,
-            )
-        else:
-            logging_results = {
-                k: {"all": v} for k, v in results.items() if not k.endswith("loss")
-            }
-        if dev_evaluation:
-            logging_results["dev_loss"] = {"all": results["dev_loss"]}
-            logging_results["iteration"] = iteration
-        else:
-            logging_results["loss"] = {"all": results["loss"]}
-
-        self.bookkeeping.save_results_dict(
-            logging_results, save_to + ".yaml", iteration_folder
-        )
-
-        if not dev_evaluation:
-            return test_results
-
-        if self.data.tracking_metric.compare(
-            results[self.data.tracking_metric.name], self.max_dev_metric
-        ):
-            self.max_dev_metric = results[self.data.tracking_metric.name]
-            self.best_iteration = iteration
-            self.bookkeeping.save_state(self.model, "model.pt", "_best")
-            self.bookkeeping.save_state(self.optimizer, "optimizer.pt", "_best")
-            if self.scheduler:
-                self.bookkeeping.save_state(self.scheduler, "scheduler.pt", "_best")
-
-            # ? additionally save all best results
-            tracker.save("_best", reset=False)
-            self.bookkeeping.save_results_dict(logging_results, "dev.yaml", "_best")
-
-        if iteration % self.cfg.save_frequency == 0 or iteration == self.cfg.iterations:
-            self.bookkeeping.save_state(self.model, "model.pt", iteration_folder)
-            self.bookkeeping.save_state(
-                self.optimizer, "optimizer.pt", iteration_folder
-            )
-            if self.scheduler:
-                self.bookkeeping.save_state(
-                    self.scheduler, "scheduler.pt", iteration_folder
-                )
-        tracker.reset()
-        return None
-
-    def _evaluate(
-        self,
-        loader: torch.utils.data.DataLoader,
-        tracker: OutputsTracker,
-        iteration_folder: str,
-        loader_kwargs: Dict[str, Any],
-        cb_type: str = "val",
-    ) -> Dict[str, float]:
-        """Evaluate the model on the dev or test set.
-
-        Args:
-            loader: Dataloader to evaluate on.
-            tracker: Tracker to save the outputs.
-            iteration_folder: Iteration folder to save the results to.
-            cb_type: Callback type. Defaults to "val".
-
-        Returns:
-            Dictionary containing the results on the dev or test set.
-        """
-        pm = loader_kwargs.get("pin_memory", False) and self.DEVICE.type == "cuda"
-        with torch.no_grad():
-            losses = 0
-            for batch_idx, data in enumerate(
-                tqdm(
-                    loader,
-                    desc="Evaluate" if cb_type == "val" else "Test",
-                    disable=self.disable_progress_bar,
-                )
-            ):
-                self.callback_manager.callback(
-                    position=f"cb_on_{cb_type}_step_begin",
-                    trainer=self,
-                    batch_idx=batch_idx,
-                )
-                data.to(self.DEVICE, non_blocking=pm)
-                output = self.model(**create_model_inputs(self.model, data))
-                loss = self.criterion(
-                    self.data.target_transform.probabilities_training(output),
-                    data.target,
-                )
-                reduced_loss = loss.mean().item()
-                losses += reduced_loss
-                tracker.update(output, data.target, loss, data.index)
-                self.callback_manager.callback(
-                    position=f"cb_on_{cb_type}_step_end",
-                    trainer=self,
-                    batch_idx=batch_idx,
-                    loss=reduced_loss,
-                )
-            losses /= len(loader)
-        tracker.save(iteration_folder, reset=False)
-        results = {
-            "loss": losses,
-        }
-        for metric in self.data.metrics:
-            results[metric.name] = metric(tracker.targets, tracker.predictions)
-        return results
 
     @property
     def cfg(self) -> DictConfig:

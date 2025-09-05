@@ -10,7 +10,7 @@ from autrainer.metrics import AbstractMetric
 
 
 if TYPE_CHECKING:
-    from autrainer.training import ModularTaskTrainer  # pragma: no cover
+    from autrainer.training import Trainer  # pragma: no cover
 
 
 def get_params_to_export(
@@ -182,23 +182,21 @@ class AbstractLogger(ABC):
         """
 
     def end_run(self) -> None:  # noqa: B027
-        """Optional end run method called at the end of the run
-        (`cb_on_train_end`).
-        """
+        """Optional end run method called at the end of the run (`cb_on_train_end`)."""
 
-    def cb_on_train_begin(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_train_begin(self, trainer: "Trainer") -> None:
         self.setup()
         self.log_params(trainer.cfg)
 
     def cb_on_iteration_end(
-        self, trainer: "ModularTaskTrainer", iteration: int, metrics: dict
+        self, trainer: "Trainer", iteration: int, metrics: dict
     ) -> None:
         self.log_and_update_metrics(metrics, iteration)
 
-    def cb_on_test_end(self, trainer: "ModularTaskTrainer", test_results: dict) -> None:
+    def cb_on_test_end(self, trainer: "Trainer", test_results: dict) -> None:
         self.log_and_update_metrics(test_results)
 
-    def cb_on_train_end(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_train_end(self, trainer: "Trainer") -> None:
         self.log_timers(
             {
                 "time." + t.timer_type + ".mean": Timer.pretty_time(

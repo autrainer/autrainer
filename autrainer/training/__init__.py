@@ -1,11 +1,13 @@
 from .callback_manager import CallbackManager, CallbackSignature
+from .evaluation import Evaluator
 from .outputs_tracker import OutputsTracker
-from .training import ModularTaskTrainer
+from .trainer import Trainer
 
 
 __all__ = [
     "CallbackManager",
     "CallbackSignature",
+    "Evaluator",
+    "Trainer",
     "OutputsTracker",
-    "ModularTaskTrainer",
 ]

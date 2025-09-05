@@ -45,13 +45,13 @@ file and imported in the :ref:`main configuration <main_configuration>` file.
 Trainer
 -------
 
-:class:`~autrainer.training.ModularTaskTrainer` manages the training process.
+:class:`~autrainer.training.Trainer` manages the training process.
 It instantiates the model, dataset, criterion, optimizer, scheduler, and callbacks, and trains the model on the dataset.
 It also logs the training process and saves the model, optimizer, and scheduler states at the end of each epoch.
 
 The :attr:`cfg` of the trainer is the composed main configuration file (e.g., :file:`conf/config.yaml`) for each training configuration in the sweep.
 
-.. autoclass:: autrainer.training.ModularTaskTrainer
+.. autoclass:: autrainer.training.Trainer
    :members: train
 
 

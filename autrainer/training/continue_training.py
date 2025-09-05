@@ -14,7 +14,7 @@ from autrainer.postprocessing.postprocessing_utils import (
 
 
 if TYPE_CHECKING:
-    from .training import ModularTaskTrainer  # pragma: no cover
+    from .trainer import Trainer  # pragma: no cover
 
 
 class ContinueTraining:
@@ -23,7 +23,7 @@ class ContinueTraining:
         self.continued_run = None
         self.remove_continued_runs = remove_continued_runs
 
-    def cb_on_train_begin(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_train_begin(self, trainer: "Trainer") -> None:
         finished_runs = get_run_names(trainer.output_directory.parent)
 
         current_cfg = self._create_run_config(self.run_name)
@@ -43,12 +43,12 @@ class ContinueTraining:
             return
         self.continue_training(trainer, max(matches, key=matches.get))
 
-    def cb_on_train_end(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_train_end(self, trainer: "Trainer") -> None:
         if self.continued_run is None or not self.remove_continued_runs:
             return
         shutil.rmtree(os.path.join(trainer.output_directory.parent, self.continued_run))
 
-    def continue_training(self, trainer: ModularTaskTrainer, run: str) -> None:
+    def continue_training(self, trainer: Trainer, run: str) -> None:
         self.continued_run = run
         self._copy_dirs(trainer, run)
         self._init_metrics(trainer, run)
@@ -61,7 +61,7 @@ class ContinueTraining:
         run_values = run.split("_")
         return dict(zip(NamingConstants().NAMING_CONVENTION, run_values, strict=True))
 
-    def _copy_dirs(self, trainer: ModularTaskTrainer, run: str) -> None:
+    def _copy_dirs(self, trainer: Trainer, run: str) -> None:
         dirs = ["_best", "_initial"]
         for d in dirs:
             shutil.rmtree(os.path.join(trainer.output_directory, d))
@@ -77,7 +77,7 @@ class ContinueTraining:
                 os.path.join(trainer.output_directory, dir),
             )
 
-    def _init_metrics(self, trainer: ModularTaskTrainer, run: str) -> None:
+    def _init_metrics(self, trainer: Trainer, run: str) -> None:
         trainer.metrics = pd.read_csv(
             os.path.join(trainer.output_directory.parent, run, "metrics.csv"),
             index_col="iteration",
@@ -87,7 +87,7 @@ class ContinueTraining:
         trainer.max_dev_metric = m.get_best(trainer.metrics[m.name])
         trainer.best_iteration = m.get_best_pos(trainer.metrics[m.name])
 
-    def _init_timers(self, trainer: ModularTaskTrainer, run: str) -> None:
+    def _init_timers(self, trainer: Trainer, run: str) -> None:
         timers = load_yaml(
             os.path.join(trainer.output_directory.parent, run, "timer.yaml")
         )
@@ -95,7 +95,7 @@ class ContinueTraining:
         trainer.dev_timer.time_log.append(timers["dev"]["total_seconds"])
         trainer.test_timer.time_log.append(timers["test"]["total_seconds"])
 
-    def _init_states(self, trainer: ModularTaskTrainer) -> None:
+    def _init_states(self, trainer: Trainer) -> None:
         last_iteration = int(trainer.metrics.index.max())
         last_dir = os.path.join(
             trainer.output_directory,
@@ -107,7 +107,7 @@ class ContinueTraining:
         if trainer.scheduler is not None:
             trainer.bookkeeping.load_state(trainer.scheduler, "scheduler.pt", last_dir)
 
-    def _replay_loggers(self, trainer: ModularTaskTrainer) -> None:
+    def _replay_loggers(self, trainer: Trainer) -> None:
         for logger in trainer.loggers:
             for iteration in trainer.metrics.index:
                 logger.log_and_update_metrics(
