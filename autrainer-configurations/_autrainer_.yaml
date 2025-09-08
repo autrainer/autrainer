@@ -8,6 +8,7 @@ defaults:
   - plotting: Default
   - /hydra/callbacks:
       - ConfigDirSnapshot
+  - override hydra/sweeper: AutrainerFilterSweeper
 
 training_type: epoch
 eval_frequency: 1

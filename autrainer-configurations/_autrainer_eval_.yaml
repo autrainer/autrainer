@@ -2,7 +2,6 @@ defaults:
   - _autrainer_
   - _self_
   - dataset@evaluation: ToyTabular-C
-  - override hydra/sweeper: AutrainerEvalFilterSweeper
 
 hydra:
   sweep:

@@ -1,7 +1,6 @@
 defaults:
   - _autrainer_
   - _self_
-  - override hydra/sweeper: AutrainerTrainFilterSweeper
 
 hydra:
   sweep:

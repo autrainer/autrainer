@@ -2,4 +2,4 @@
 _target_: hydra_plugins.filter.FilterSweeper
 max_batch_size: null
 filters:
-  - autrainer.core.filters.BaseFilter
+  - autrainer.core.filters.AlreadyRun

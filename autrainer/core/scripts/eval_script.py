@@ -87,14 +87,14 @@ class EvalScript(AbstractScript):
         def main(cfg: DictConfig) -> float:
             import hydra
 
-            from autrainer.core.filters import EvalFilter
+            from autrainer.core.filters import AlreadyRun
 
             OmegaConf.set_struct(cfg, False)
             OmegaConf.resolve(cfg)
             output_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
 
-            # ? Skip if run exists or base run is missing
-            if EvalFilter(cfg, output_dir).filter():
+            # ? Skip if run exists and return best tracking metric
+            if AlreadyRun(cfg, output_dir).filter():
                 import autrainer
                 from autrainer.core.utils import Bookkeeping
                 from autrainer.metrics import AbstractMetric
