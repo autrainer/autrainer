@@ -2,12 +2,10 @@ import os
 from typing import Any, Dict, Optional
 
 from omegaconf import DictConfig, OmegaConf
-import yaml
 
 import autrainer
 
 from .abstract_script import AbstractScript, MockParser
-from .command_line_error import CommandLineError
 from .utils import (
     add_hydra_args_to_sys,
     catch_cli_errors,
@@ -30,58 +28,6 @@ class EvalScript(AbstractScript):
             unknown_args=True,
         )
 
-    def _assert_valid_checkpoint(self, cfg: DictConfig) -> None:
-        valid = {"best", "last"}
-        if isinstance(cfg.checkpoint, int) or cfg.checkpoint in valid:
-            return
-        msg = f"Checkpoint '{cfg.checkpoint}' must be an iteration or in '{valid}'."
-        raise CommandLineError(self.parser, msg, code=1)
-
-    def _get_base_run_dir(self, output_dir: str) -> str:
-        training_dir = os.path.join(
-            os.path.dirname(os.path.dirname(output_dir)),
-            "training",
-        )
-        run = os.path.basename(output_dir).split("_", 2)[-1]
-        return os.path.join(training_dir, run)
-
-    def _create_cp(self, cfg: DictConfig, output_dir: str) -> int:
-        def _find_cp(cfg: DictConfig, base_run: str) -> Optional[int]:
-            if cfg.checkpoint == "best":
-                if not os.path.exists(os.path.join(base_run, "_best", "dev.yaml")):
-                    return None
-                with open(os.path.join(base_run, "_best", "dev.yaml")) as f:
-                    return int(yaml.safe_load(f)["iteration"])
-            if cfg.checkpoint == "last":
-                cps = os.listdir(base_run)
-                if not any(d.startswith(f"{cfg.training_type}_") for d in cps):
-                    return None
-                return max(
-                    int(d.split("_")[-1])
-                    for d in os.listdir(base_run)
-                    if d.startswith(f"{cfg.training_type}_")
-                )
-            return int(cfg.checkpoint)
-
-        base_run = self._get_base_run_dir(output_dir)
-        cp = _find_cp(cfg, base_run)
-        if cp is None:
-            run = os.path.basename(base_run)
-            msg = f"Checkpoint '{cfg.checkpoint}' does not exist for run '{run}'."
-            raise CommandLineError(self.parser, msg, code=1)
-        return cp
-
-    def _assert_base_state_exists(self, cfg: DictConfig, output_dir: str) -> None:
-        cp = self._create_cp(cfg, output_dir)
-        base_run = self._get_base_run_dir(output_dir)
-        if os.path.exists(
-            os.path.join(base_run, f"{cfg.training_type}_{cp}", "model.pt")
-        ):
-            return
-        run = os.path.basename(base_run)
-        msg = f"Checkpoint '{cp}' does not exist for run '{run}'."
-        raise CommandLineError(self.parser, msg, code=1)
-
     def main(self, args: dict) -> None:
         @autrainer.main("eval")
         def main(cfg: DictConfig) -> float:
@@ -99,9 +45,8 @@ class EvalScript(AbstractScript):
                 from autrainer.core.utils import Bookkeeping
                 from autrainer.metrics import AbstractMetric
 
-                cp = self._create_cp(cfg, output_dir)
                 dev_metrics = OmegaConf.load(
-                    os.path.join(output_dir, f"{cfg.training_type}_{cp}", "dev.yaml")
+                    os.path.join(output_dir, "_best", "dev.yaml")
                 )
                 tracking_metric = autrainer.instantiate_shorthand(
                     config=cfg.evaluation.tracking_metric,
@@ -114,9 +59,6 @@ class EvalScript(AbstractScript):
 
                 return best_metric
 
-            self._assert_valid_checkpoint(cfg)
-            self._assert_base_state_exists(cfg, output_dir)
-
             # ? Save cfg to output directory
             cfg_path = os.path.join(output_dir, ".hydra", "config.yaml")
             os.makedirs(os.path.dirname(cfg_path), exist_ok=True)
@@ -124,7 +66,6 @@ class EvalScript(AbstractScript):
 
             from autrainer.training.evaluation import EvalOnlyTrainer
 
-            cfg.checkpoint = self._create_cp(cfg, output_dir)  # patch checkpoint
             eval_trainer = EvalOnlyTrainer(cfg, output_dir)
             return eval_trainer.eval()
 

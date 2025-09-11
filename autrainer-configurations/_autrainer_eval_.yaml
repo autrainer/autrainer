@@ -1,21 +1,12 @@
 defaults:
   - _autrainer_
   - _self_
-  - dataset@evaluation: ToyTabular-C
+  - override hydra/sweeper: AutrainerEvalFilterSweeper
+
+batch_size: 32
+seed: 1
 
 hydra:
   sweep:
     dir: ${results_dir}/${experiment_id}/evaluation/
-    subdir: "\
-      ${evaluation.id}_\
-      ${checkpoint}_\
-      ${dataset.id}_\
-      ${model.id}_\
-      ${optimizer.id}_\
-      ${learning_rate}_\
-      ${batch_size}_\
-      ${training_type}_\
-      ${iterations}_\
-      ${scheduler.id}_\
-      ${augmentation.id}_\
-      ${seed}"
+    subdir: ${dataset.id}_${model.id}
