@@ -44,7 +44,7 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
         data = self.df.iloc[index]["features"].clone()
         target = self.df.iloc[index][self.target_column]
         if isinstance(target, pd.Series):
-            target = target.values
+            target = target.to_numpy(dtype=self.dtype)
         it = DataItem(features=data, target=target, index=index)
         if self.transform:
             it = self.transform(it)
@@ -241,12 +241,12 @@ class ToyDataset(AbstractDataset):
     @cached_property
     def target_transform(self) -> AbstractTargetTransform:
         if self.task == "ml-classification":
-            return MultiLabelEncoder(0.5, self.target_column)
+            return MultiLabelEncoder(0.5, list(self.target_column))
         if self.task == "classification":
             return LabelEncoder(self.df_train[self.target_column].unique().tolist())
         if self.task == "mt-regression":
             return MultiTargetMinMaxScaler(
-                target=self.target_column,
+                target=list(self.target_column),
                 minimum=self.df_train[self.target_column].min().to_list(),
                 maximum=self.df_train[self.target_column].max().to_list(),
             )
