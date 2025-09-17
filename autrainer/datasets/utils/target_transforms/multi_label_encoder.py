@@ -18,9 +18,7 @@ class MultiLabelEncoder(AbstractTargetTransform):
             ValueError: If threshold is not between 0 and 1.
         """
         if not 0 <= threshold <= 1:
-            raise ValueError(
-                f"Threshold '{threshold}' must be between 0 and 1."
-            )
+            raise ValueError(f"Threshold '{threshold}' must be between 0 and 1.")
         self.threshold = threshold
         self.labels = labels
 
@@ -89,9 +87,7 @@ class MultiLabelEncoder(AbstractTargetTransform):
         """
         return torch.sigmoid(x)
 
-    def predict_inference(
-        self, x: torch.Tensor
-    ) -> Union[List[List[int]], List[int]]:
+    def predict_inference(self, x: torch.Tensor) -> Union[List[List[int]], List[int]]:
         """Get the encoded predictions from a batch of model output
         probabilities by thresholding the probabilities.
 
@@ -128,4 +124,4 @@ class MultiLabelEncoder(AbstractTargetTransform):
         Returns:
             Dictionary of labels and their probabilities.
         """
-        return {label: prob.item() for label, prob in zip(self.labels, x)}
+        return {label: prob.item() for label, prob in zip(self.labels, x, strict=False)}

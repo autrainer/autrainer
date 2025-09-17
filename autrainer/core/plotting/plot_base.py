@@ -3,6 +3,7 @@ import logging
 import os
 import pickle
 import shutil
+from typing import Any, Dict
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -15,11 +16,11 @@ try:
 except ImportError:
     LATEX_AVAILABLE = False
 
-    def escape(x):
+    def escape(x: str) -> str:
         return x
 
 
-class PlotBase(ABC):
+class PlotBase(ABC):  # noqa: B024
     def __init__(
         self,
         output_directory: str,
@@ -34,7 +35,7 @@ class PlotBase(ABC):
         add_titles: bool,
         add_xlabels: bool,
         add_ylabels: bool,
-        rcParams: dict,
+        rcParams: Dict[str, Any],  # noqa: N803
     ) -> None:
         """Base class for plotting.
 
@@ -140,11 +141,10 @@ class PlotBase(ABC):
         self._apply_to_labels(fig, escape)
 
     def _replace_none(self, fig: plt.Figure) -> None:
-        def process_label(label):
+        def process_label(label: str) -> str:
             parts = label.split("_")
             parts = [part if part != "None" else "~" for part in parts]
-            parts = "_".join(parts).replace("_~", "~").replace("~_", "~")
-            return parts
+            return "_".join(parts).replace("_~", "~").replace("~_", "~")
 
         self._apply_to_labels(fig, process_label)
 

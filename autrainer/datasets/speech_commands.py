@@ -97,7 +97,7 @@ class SpeechCommands(BaseClassificationDataset):
             folder_in_archive=_version,
         )
 
-        for subset, df_name in zip(subsets, df_names):
+        for subset, df_name in zip(subsets, df_names, strict=False):
             dataset = datasets.SPEECHCOMMANDS(
                 root=path,
                 subset=subset,

@@ -10,7 +10,7 @@ from .ffnn import FFNN
 class W2V2Backbone(AbstractModel):
     def __init__(
         self,
-        model_name,
+        model_name: str,
         freeze_extractor: bool = True,
         time_pooling: bool = True,
         transfer: bool = False,

@@ -133,15 +133,10 @@ class AbstractDataset(ABC):
 
     def _assert_stratify(self) -> None:
         if self.task == "ml-classification" and self.stratify:
-            raise ValueError(
-                "Stratify is not supported for 'ml-classification' tasks."
-            )
+            raise ValueError("Stratify is not supported for 'ml-classification' tasks.")
 
         for column in self.stratify:
-            if (
-                column not in self.df_dev.columns
-                or column not in self.df_test.columns
-            ):
+            if column not in self.df_dev.columns or column not in self.df_test.columns:
                 raise ValueError(
                     f"Stratify column '{column}' is not present in "
                     "the development or test dataframes."
@@ -367,7 +362,7 @@ class AbstractDataset(ABC):
         set_seed(seed + worker_id)
         transform.offset_generator_seed(worker_id)
 
-    @staticmethod
+    @staticmethod  # noqa: B027
     def download(path: str) -> None:
         """Download the dataset. Can be implemented by subclasses, but is not
         required.
@@ -442,9 +437,7 @@ class BaseClassificationDataset(AbstractDataset):
 
     @cached_property
     def target_transform(self) -> LabelEncoder:
-        return LabelEncoder(
-            self.df_train[self.target_column].unique().tolist()
-        )
+        return LabelEncoder(self.df_train[self.target_column].unique().tolist())
 
     @staticmethod
     def _assert_dev_split(dev_split: float) -> None:
@@ -528,9 +521,7 @@ class BaseMLClassificationDataset(AbstractDataset):
     @staticmethod
     def _assert_threshold(threshold: float) -> None:
         if not 0 <= threshold <= 1:
-            raise ValueError(
-                f"Threshold '{threshold}' must be between 0 and 1."
-            )
+            raise ValueError(f"Threshold '{threshold}' must be between 0 and 1.")
 
     def _assert_target_column(self, allowed_columns: List[str]) -> None:
         if isinstance(self.target_column, str):

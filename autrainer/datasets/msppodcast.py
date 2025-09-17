@@ -80,9 +80,7 @@ class MSPPodcast(AbstractDataset):
                 ["A", "H", "N", "S"] 4-class problem found in literature.
                 Defaults to None.
         """
-        task = (
-            "classification" if target_column == "EmoClass" else "regression"
-        )
+        task = "classification" if target_column == "EmoClass" else "regression"
         self.categories = categories
         super().__init__(
             task=task,
@@ -123,7 +121,7 @@ class MSPPodcast(AbstractDataset):
         For more information on the data, see:
         https://doi.org/10.1109/TAFFC.2017.2736999
         """
-        return None
+        return
 
     @cached_property
     def _df(
@@ -137,30 +135,24 @@ class MSPPodcast(AbstractDataset):
         Returns:
             Dataframes for training, development, and testing.
         """
-        df = pd.read_csv(
-            os.path.join(self.path, "Labels", "labels_consensus.csv")
-        )
+        df = pd.read_csv(os.path.join(self.path, "Labels", "labels_consensus.csv"))
         if self.categories is not None:
             df = df.loc[df["EmoClass"].isin(self.categories)]
         return df.reset_index(drop=True)
 
     @cached_property
-    def df_train(self):
-        return self._df.loc[self._df["Split_Set"] == "Train"].reset_index(
+    def df_train(self) -> pd.DataFrame:
+        return self._df.loc[self._df["Split_Set"] == "Train"].reset_index(drop=True)
+
+    @cached_property
+    def df_dev(self) -> pd.DataFrame:
+        return self._df.loc[self._df["Split_Set"] == "Development"].reset_index(
             drop=True
         )
 
     @cached_property
-    def df_dev(self):
-        return self._df.loc[
-            self._df["Split_Set"] == "Development"
-        ].reset_index(drop=True)
-
-    @cached_property
-    def df_test(self):
-        return self._df.loc[self._df["Split_Set"] == "Test1"].reset_index(
-            drop=True
-        )
+    def df_test(self) -> pd.DataFrame:
+        return self._df.loc[self._df["Split_Set"] == "Test1"].reset_index(drop=True)
 
     @cached_property
     def target_transform(self) -> AbstractTargetTransform:
@@ -172,23 +164,17 @@ class MSPPodcast(AbstractDataset):
             Target transform.
         """
         if self.task == "classification":
-            return LabelEncoder(
-                self.df_train[self.target_column].unique().tolist()
-            )
-        elif self.task == "regression":
+            return LabelEncoder(self.df_train[self.target_column].unique().tolist())
+        if self.task == "regression":
             if isinstance(self.target_column, list):
                 return MultiTargetMinMaxScaler(
                     target=self.target_column,
                     minimum=self.df_train[self.target_column].min().to_list(),
                     maximum=self.df_train[self.target_column].max().to_list(),
                 )
-            else:
-                return MinMaxScaler(
-                    target=self.target_column,
-                    minimum=self.df_train[self.target_column].min(),
-                    maximum=self.df_train[self.target_column].max(),
-                )
-        else:
-            raise NotImplementedError(
-                f"{self.task} not supported for MSPPodcast"
+            return MinMaxScaler(
+                target=self.target_column,
+                minimum=self.df_train[self.target_column].min(),
+                maximum=self.df_train[self.target_column].max(),
             )
+        raise NotImplementedError(f"{self.task} not supported for MSPPodcast")

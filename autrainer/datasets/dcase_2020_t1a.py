@@ -105,7 +105,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
         """
         self._assert_dev_split(dev_split)
         self.dev_split = dev_split
-        self.dev_split_seed = dev_split_seed or seed
+        self.dev_split_seed = dev_split_seed if dev_split_seed is not None else seed
         self._assert_scene_category(scene_category)
         self.scene_category = scene_category
         self.exclude_cities = exclude_cities
@@ -130,7 +130,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
     def _assert_scene_category(scene_category: Optional[str]) -> None:
         if scene_category is None:
             return
-        if scene_category not in SCENE_CATEGORIES.keys():
+        if scene_category not in SCENE_CATEGORIES:
             raise ValueError(
                 f"Scene category '{scene_category}' must be one of "
                 f"{list(SCENE_CATEGORIES.keys())}."
@@ -148,9 +148,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
         df_dev = self._filter_df_by_category(df_dev, self.scene_category)
 
         if self.exclude_cities is not None:
-            df_train = df_train.loc[
-                ~df_train["city"].isin(self.exclude_cities)
-            ]
+            df_train = df_train.loc[~df_train["city"].isin(self.exclude_cities)]
 
         return df_train, df_dev
 
@@ -234,9 +232,7 @@ class DCASE2020Task1A(BaseClassificationDataset):
             df["city"] = df["filename"].apply(lambda x: x.split("-")[1])
             df["location"] = df["filename"].apply(lambda x: x.split("-")[2])
             df["segment"] = df["filename"].apply(lambda x: x.split("-")[3])
-            df["device"] = df["filename"].apply(
-                lambda x: x.split("-")[4].split(".")[0]
-            )
+            df["device"] = df["filename"].apply(lambda x: x.split("-")[4].split(".")[0])
             return df
 
         out_path = os.path.join(path, "default")

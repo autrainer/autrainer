@@ -2,6 +2,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 from docutils import nodes
+from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
 from sphinx.util.docutils import SphinxDirective
 from sphinx.writers.html import HTML5Translator
@@ -26,22 +27,52 @@ class ConfigurationsDirective(SphinxDirective):
     option_spec = {
         "subdir": str,
         "configs": str,
-        "headline": lambda _: True,
-        "exact": lambda _: True,
+        "headline": directives.flag,
+        "exact": directives.flag,
     }
 
     def run(self) -> List[ConfigNode]:
+        """Collects and renders YAML configuration files.
+
+        Options:
+            subdir: Relative subdirectory to `autrainer-configurations/`.
+                If None, uses the root directory. Defaults to None.
+            configs: Space-separated list of configuration file names or `*`
+                to include all configurations. If None, no configurations are
+                included. Defaults to None.
+            headline: If set, adds a headline for each configuration.
+                Defaults to False.
+            exact: If set, matches the configuration file names exactly instead
+                of a prefix match. Defaults to False.
+
+        Returns:
+            A list of Sphinx nodes displaying the matched config files as
+            literal blocks.
+        """
         subdir = self.options.get("subdir", None)
         configs = self.options.get("configs", None)
-        headline = self.options.get("headline", False)
-        exact = self.options.get("exact", False)
+        headline = "headline" in self.options
+        exact = "exact" in self.options
 
         if configs is None:
             return []
 
         content = []
-        for config in configs.split():
-            content.extend(self._generate(subdir, config, headline, exact))
+        if configs.strip() == "*":
+            subdir_path = os.path.join(
+                self.env.srcdir,
+                f"../../autrainer-configurations/{subdir or ''}",
+            )
+            config_files = [
+                f[:-5]  # remove ".yaml"
+                for f in os.listdir(os.path.abspath(subdir_path))
+                if f.endswith(".yaml")
+            ]
+            for config in sorted(config_files):
+                content.extend(self._generate(subdir, config, headline, exact))
+        else:
+            for config in configs.split():
+                content.extend(self._generate(subdir, config, headline, exact))
 
         return content
 
@@ -61,9 +92,7 @@ class ConfigurationsDirective(SphinxDirective):
         )
 
         config_files = [
-            f
-            for f in os.listdir(conf_dir)
-            if self._select_config(f, config, exact)
+            f for f in os.listdir(conf_dir) if self._select_config(f, config, exact)
         ]
         config_files = sorted(config_files, key=lambda x: (x.lower(), len(x)))
 
@@ -79,9 +108,7 @@ class ConfigurationsDirective(SphinxDirective):
 
             container_node = ConfigNode()
             container_node["caption"] = (
-                f"conf/{subdir}/{config_file}"
-                if subdir
-                else f"conf/{config_file}"
+                f"conf/{subdir}/{config_file}" if subdir else f"conf/{config_file}"
             )
             config_id = f"default-{config_file.replace('.yaml', '').lower()}"
             container_node["ids"].append(config_id)

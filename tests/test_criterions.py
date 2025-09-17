@@ -103,18 +103,16 @@ class TestBalancedCrossEntropyLoss:
         criterion = BalancedCrossEntropyLoss()
         dataset = MockClassificationDataset()
         dataset.df_train = pd.DataFrame({"target": [0, 1, 1, 2, 2, 2, 3, 0]})
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="weighting requires a non-zero frequency"):
             criterion.setup(dataset)
 
     def test_setup(self) -> None:
         criterion, weights = self._mock_criterion_setup()
-        assert (
-            criterion.weight is not None
-        ), "Should have calculated the weights"
+        assert criterion.weight is not None, "Should have calculated the weights"
 
-        assert torch.allclose(
-            criterion.weight, weights
-        ), "Should have calculated frequency-based weights"
+        assert torch.allclose(criterion.weight, weights), (
+            "Should have calculated frequency-based weights"
+        )
 
     def test_forward_dtype(self) -> None:
         criterion, _ = self._mock_criterion_setup()
@@ -143,7 +141,7 @@ class TestWeightedCrossEntropyLoss(TestBalancedCrossEntropyLoss):
         return criterion, weights
 
     def test_invalid_frequency_setup(self) -> None:
-        criterion = criterion = WeightedCrossEntropyLoss(
+        criterion = WeightedCrossEntropyLoss(
             class_weights={
                 "target1": 1,
                 "target2": 2,
@@ -152,12 +150,12 @@ class TestWeightedCrossEntropyLoss(TestBalancedCrossEntropyLoss):
                 "target5": 0,
             }
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="weighting requires a non-zero frequency"):
             criterion.setup(MockClassificationDataset())
 
     def test_missing_target_weight(self) -> None:
         criterion = WeightedCrossEntropyLoss(class_weights={"target1": 1})
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Missing class weight for label"):
             criterion.setup(MockClassificationDataset())
 
 
@@ -176,19 +174,19 @@ class TestBalancedBCEWithLogitsLoss(TestBalancedCrossEntropyLoss):
 
     def test_setup(self) -> None:
         criterion, weights = self._mock_criterion_setup()
-        assert (
-            criterion.weights_buffer is not None
-        ), "Should have calculated the weights"
+        assert criterion.weights_buffer is not None, (
+            "Should have calculated the weights"
+        )
 
-        assert torch.allclose(
-            criterion.weights_buffer, weights
-        ), "Should have calculated frequency-based weights"
+        assert torch.allclose(criterion.weights_buffer, weights), (
+            "Should have calculated frequency-based weights"
+        )
 
     def test_invalid_frequency_setup(self) -> None:
         criterion = BalancedBCEWithLogitsLoss()
         dataset = MockMLClassificationDataset()
         dataset.target_transform.labels += ["target6"]
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="6 columns passed, passed data had 5"):
             criterion.setup(dataset)
 
     def test_forward_dtype(self) -> None:
@@ -227,12 +225,12 @@ class TestWeightedBCEWithLogitsLoss(TestBalancedBCEWithLogitsLoss):
                 "target5": 0,
             }
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="weighting requires a non-zero frequency"):
             criterion.setup(MockMLClassificationDataset())
 
     def test_missing_target_weight(self) -> None:
         criterion = WeightedBCEWithLogitsLoss(class_weights={"target1": 1})
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Missing class weight for label"):
             criterion.setup(MockMLClassificationDataset())
 
 
@@ -256,17 +254,17 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
 
     def test_setup(self) -> None:
         criterion, weights = self._mock_criterion_setup()
-        assert (
-            criterion.weights_buffer is not None
-        ), "Should have calculated the weights"
+        assert criterion.weights_buffer is not None, (
+            "Should have calculated the weights"
+        )
 
-        assert torch.allclose(
-            criterion.weights_buffer, weights
-        ), "Should have calculated frequency-based weights"
+        assert torch.allclose(criterion.weights_buffer, weights), (
+            "Should have calculated frequency-based weights"
+        )
 
     def test_invalid_task(self) -> None:
         criterion = WeightedMSELoss(target_weights=None)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="multi-target regression"):
             criterion.setup(MockClassificationDataset())
 
     def test_invalid_frequency_setup(self) -> None:
@@ -279,12 +277,12 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
                 "target5": 0,
             }
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="weighting requires a non-zero frequency"):
             criterion.setup(MockMTRegressionDataset())
 
     def test_missing_target_weight(self) -> None:
         criterion = WeightedMSELoss(target_weights={"target1": 1})
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Missing target weight for target"):
             criterion.setup(MockMTRegressionDataset())
 
     def test_forward_dtype(self) -> None:
@@ -297,7 +295,7 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
 
 class TestLossForward:
     @pytest.mark.parametrize(
-        "cls, y",
+        ("cls", "y"),
         [
             (CrossEntropyLoss, torch.randint(0, 5, (10,), dtype=torch.long)),
             (
@@ -311,9 +309,7 @@ class TestLossForward:
             (MSELoss, torch.rand(10, 5)),
         ],
     )
-    def test_forward_dtype(
-        self, cls: Type[CrossEntropyLoss], y: torch.Tensor
-    ) -> None:
+    def test_forward_dtype(self, cls: Type[CrossEntropyLoss], y: torch.Tensor) -> None:
         x = torch.rand(10, 5)
         loss = cls()(x, y)
         assert isinstance(loss, torch.Tensor), "Should return a torch.Tensor"

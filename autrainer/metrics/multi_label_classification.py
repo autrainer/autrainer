@@ -5,13 +5,13 @@ from .abstract_metric import BaseAscendingMetric
 
 
 class MLAccuracy(BaseAscendingMetric):
-    def __init__(self):
+    def __init__(self) -> None:
         """Accuracy metric using `sklearn.metrics.accuracy_score`."""
         super().__init__(name="ml-accuracy", fn=sklearn.metrics.accuracy_score)
 
 
 class MLF1Macro(BaseAscendingMetric):
-    def __init__(self):
+    def __init__(self) -> None:
         """F1 macro metric using `sklearn.metrics.f1_score`."""
         super().__init__(
             name="ml-f1-macro",
@@ -33,14 +33,12 @@ class MLF1Macro(BaseAscendingMetric):
             The unitary score.
         """
         return float(
-            sklearn.metrics.f1_score(
-                y_true=y_true, y_pred=y_pred, average="binary"
-            )
+            sklearn.metrics.f1_score(y_true=y_true, y_pred=y_pred, average="binary")
         )
 
 
 class MLF1Micro(BaseAscendingMetric):
-    def __init__(self):
+    def __init__(self) -> None:
         """F1 micro metric using `sklearn.metrics.f1_score`."""
         super().__init__(
             name="ml-f1-micro",
@@ -62,14 +60,12 @@ class MLF1Micro(BaseAscendingMetric):
             The unitary score.
         """
         return float(
-            sklearn.metrics.f1_score(
-                y_true=y_true, y_pred=y_pred, average="binary"
-            )
+            sklearn.metrics.f1_score(y_true=y_true, y_pred=y_pred, average="binary")
         )
 
 
 class MLF1Weighted(BaseAscendingMetric):
-    def __init__(self):
+    def __init__(self) -> None:
         """F1 weighted metric using `sklearn.metrics.f1_score`."""
         super().__init__(
             name="ml-f1-weighted",
@@ -91,7 +87,5 @@ class MLF1Weighted(BaseAscendingMetric):
             The unitary score.
         """
         return float(
-            sklearn.metrics.f1_score(
-                y_true=y_true, y_pred=y_pred, average="binary"
-            )
+            sklearn.metrics.f1_score(y_true=y_true, y_pred=y_pred, average="binary")
         )

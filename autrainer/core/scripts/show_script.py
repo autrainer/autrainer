@@ -83,10 +83,7 @@ class ShowScript(AbstractScript):
 
     def _assert_config_exists(self, path: str, args: ShowArgs) -> None:
         if not os.path.exists(path):
-            m = (
-                f"No global configuration '{args.config}' found "
-                f"for '{args.directory}'."
-            )
+            m = f"No global configuration '{args.config}' found for '{args.directory}'."
             raise CommandLineError(self.parser, m, code=1)
 
     def _show_configuration(self, path: str) -> None:

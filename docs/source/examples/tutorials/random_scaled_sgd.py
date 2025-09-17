@@ -1,4 +1,4 @@
-from typing import Callable, Tuple
+from typing import Any, Callable, Dict, Tuple
 
 import torch
 
@@ -13,8 +13,8 @@ class RandomScaledSGD(torch.optim.Optimizer):
         scaling_factor: float = 0.01,
         p: float = 1.0,
         generator_seed: int = None,
-        *args,
-        **kwargs,
+        *args: Any,
+        **kwargs: Dict[str, Any],
     ) -> None:
         """Randomized Scaled SGD optimizer. Randomly scales the learning rate.
 

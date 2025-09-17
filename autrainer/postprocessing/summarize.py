@@ -131,13 +131,12 @@ class SummarizeGrid:
     def _find_metrics_to_plot(self) -> List[str]:
         summary_path = os.path.join(self.output_directory, "metrics.csv")
         df = pd.read_csv(summary_path)
-        plot_metrics = [
+        return [
             m
             for m in list(df.columns)
             if m in [fn.name for fn in self.metric_fns]
             or m in ["train_loss", "dev_loss"]
         ]
-        return plot_metrics
 
     def plot_metrics(self) -> None:
         """Plot the metrics of the grid search."""
@@ -152,9 +151,7 @@ class SummarizeGrid:
             metrics_list = []
             metrics_std_list = []
             for n in self.run_names:
-                metrics_path = os.path.join(
-                    self.training_directory, n, "metrics.csv"
-                )
+                metrics_path = os.path.join(self.training_directory, n, "metrics.csv")
                 df = pd.read_csv(metrics_path, index_col="iteration")
                 if metric not in df.columns:
                     continue
@@ -168,9 +165,7 @@ class SummarizeGrid:
 
             metrics_df = pd.concat(metrics_list, axis=1)
             metrics_std_df = (
-                pd.concat(metrics_std_list, axis=1)
-                if metrics_std_list
-                else None
+                pd.concat(metrics_std_list, axis=1) if metrics_std_list else None
             )
             plotter.plot_metric(
                 metrics_df, metric, metrics_std_df, max_runs=self.max_runs_plot
@@ -189,9 +184,7 @@ class SummarizeGrid:
 
         # Iterate over each CSV file and build up metrics dataframe
         for n in self.run_names:
-            metrics_path = os.path.join(
-                self.training_directory, n, "metrics.csv"
-            )
+            metrics_path = os.path.join(self.training_directory, n, "metrics.csv")
             df = pd.read_csv(metrics_path)
             last_row = df.iloc[-1:]
             run_details = n.split("_")
@@ -202,9 +195,7 @@ class SummarizeGrid:
             plotter.plot_aggregated_bars(metrics_df, metric)
 
     def _read_metrics(self, run_name: str) -> dict:
-        metrics_path = os.path.join(
-            self.training_directory, run_name, "metrics.csv"
-        )
+        metrics_path = os.path.join(self.training_directory, run_name, "metrics.csv")
         config_path = os.path.join(
             self.training_directory, run_name, ".hydra", "config.yaml"
         )
@@ -224,9 +215,7 @@ class SummarizeGrid:
         path = os.path.join(
             self.training_directory, run_name, "_test", "test_holistic.yaml"
         )
-        test_dict = load_yaml(path)
-        test_dict = {prefix + k: v["all"] for k, v in test_dict.items()}
-        return test_dict
+        return {prefix + k: v["all"] for k, v in load_yaml(path).items()}
 
     def _read_times(self, run_name: str) -> dict:
         path = os.path.join(self.training_directory, run_name, "timer.yaml")

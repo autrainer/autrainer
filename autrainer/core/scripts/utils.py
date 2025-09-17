@@ -126,8 +126,7 @@ def add_hydra_args_to_sys(
         sys.argv.extend(["-cp", config_path])
     if override_kwargs is not None:
         sys.argv.extend(
-            f"{k}={v}"
-            for k, v in encode_override_kwargs(override_kwargs).items()
+            f"{k}={v}" for k, v in encode_override_kwargs(override_kwargs).items()
         )
 
 

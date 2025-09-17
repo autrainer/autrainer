@@ -39,7 +39,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         if target_type == "classification":
             df[target_column] = [i % 10 for i in range(num_files)]
         elif target_type == "regression":
-            df[target_column] = [i for i in range(num_files)]
+            df[target_column] = list(range(num_files))
         elif target_type in ["ml-classification", "mt-regression"]:
             for i in range(10):
                 df[f"target_{i}"] = torch.randint(0, 2, (num_files,)).tolist()
@@ -61,9 +61,7 @@ class TestPreprocessing(BaseIndividualTempDir):
     ) -> None:
         if output_files is None:
             output_files = ["train", "dev", "test"]
-        dfs = [
-            pd.read_csv(os.path.join(path, f"{f}.csv")) for f in output_files
-        ]
+        dfs = [pd.read_csv(os.path.join(path, f"{f}.csv")) for f in output_files]
         for df in dfs:
             for filename in df[index_column]:
                 filepath = os.path.join(path, features_subdir, filename)
@@ -92,7 +90,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         }
 
     @pytest.mark.parametrize(
-        "preprocess,sampling_rate,features_path",
+        ("preprocess", "sampling_rate", "features_path"),
         [
             (
                 {
@@ -181,9 +179,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         dataset_args["_target_"] = target
         dataset_args["features_subdir"] = "log_mel_16k"
         dataset_args["file_type"] = "npy"
-        dataset_args["file_handler"] = (
-            "autrainer.datasets.utils.NumpyFileHandler"
-        )
+        dataset_args["file_handler"] = "autrainer.datasets.utils.NumpyFileHandler"
 
         preprocess_main(
             name="TestDataset",
@@ -198,9 +194,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         dataset_args.pop("_recursive_")
         dataset_args["features_path"] = features_path
         dataset_args["file_type"] = "npy"
-        dataset_args["file_handler"] = (
-            "autrainer.datasets.utils.NumpyFileHandler"
-        )
+        dataset_args["file_handler"] = "autrainer.datasets.utils.NumpyFileHandler"
         dataset_args["features_subdir"] = "log_mel_16k"
 
         _mel = preprocess["pipeline"][-1]["autrainer.transforms.PannMel"]
@@ -219,10 +213,11 @@ class TestPreprocessing(BaseIndividualTempDir):
         for df_audio, df_numpy in zip(
             (df_train_audio, df_dev_audio, df_test_audio),
             (data.df_train, data.df_dev, data.df_test),
+            strict=False,
         ):
             for audio_file, numpy_file in zip(
-                df_audio[data.index_column], df_numpy[data.index_column]
+                df_audio[data.index_column], df_numpy[data.index_column], strict=False
             ):
-                assert audio_file == numpy_file.replace(
-                    "npy", "wav"
-                ), "Should match audio file path."
+                assert audio_file == numpy_file.replace("npy", "wav"), (
+                    "Should match audio file path."
+                )

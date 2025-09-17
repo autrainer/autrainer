@@ -1,17 +1,13 @@
 import os
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 import warnings
 
 from omegaconf import DictConfig
 
-from autrainer.core.constants import ExportConstants
 from autrainer.metrics import AbstractMetric
 
-from .abstract_logger import (
-    AbstractLogger,
-    get_params_to_export,
-)
+from .abstract_logger import AbstractLogger, get_params_to_export
 from .fallback_logger import FallbackLogger
 
 
@@ -32,14 +28,10 @@ class MLFlowLogger(AbstractLogger):
         run_name: str,
         metrics: List[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[
-            Union[str, Dict[str, str]]
-        ] = ExportConstants().ARTIFACTS,
+        artifacts: List[Union[str, Dict[str, str]]] = None,
         output_dir: str = "mlruns",
     ) -> None:
-        super().__init__(
-            exp_name, run_name, metrics, tracking_metric, artifacts
-        )
+        super().__init__(exp_name, run_name, metrics, tracking_metric, artifacts)
         output_dir = Path(output_dir)
         if not output_dir.is_absolute():
             output_dir = output_dir.absolute()
@@ -64,8 +56,7 @@ class MLFlowLogger(AbstractLogger):
 
     def _get_or_create_run(self) -> "mlflow.ActiveRun":
         self._delete_run_if_exists(self.run_name)
-        run = mlflow.start_run(run_name=self.run_name)
-        return run
+        return mlflow.start_run(run_name=self.run_name)
 
     def _delete_run_if_exists(self, run_name: str) -> None:
         client = mlflow.MlflowClient()
@@ -84,7 +75,7 @@ class MLFlowLogger(AbstractLogger):
     def log_metrics(
         self,
         metrics: Dict[str, Union[int, float]],
-        iteration=None,
+        iteration: Optional[int] = None,
     ) -> None:
         mlflow.log_metrics(metrics, step=iteration)
 

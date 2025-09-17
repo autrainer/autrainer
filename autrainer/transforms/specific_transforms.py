@@ -93,7 +93,7 @@ class SpectToImage(AbstractTransform):
         width: int,
         cmap: str = "magma",
         order: int = -90,
-    ):
+    ) -> None:
         """Convert a spectrogram in the range [0, 1] to a 3-channel uint8 image
         in the range [0, 255] using a specific colormap.
 
@@ -141,7 +141,7 @@ class PannMel(AbstractTransform):
         amin: float,
         top_db: int,
         order: int = -90,
-    ):
+    ) -> None:
         """Create a log-Mel spectrogram from an audio signal analogous to
         the Pretrained Audio Neural Networks (PANN) implementation.
 
@@ -220,9 +220,7 @@ class Resize(AbstractTransform):
         self.antialias = antialias
         self.interpolation = interpolation
         if self.width == "Any" and self.height == "Any":
-            raise ValueError(
-                "At least one of 'height' or 'width' must be specified."
-            )
+            raise ValueError("At least one of 'height' or 'width' must be specified.")
         if self.height == "Any":
             self._size = self.width
         elif self.width == "Any":
@@ -231,9 +229,7 @@ class Resize(AbstractTransform):
             self._size = (self.height, self.width)
         self._resize = T.Resize(
             size=self._size,
-            interpolation=getattr(
-                T.InterpolationMode, self.interpolation.upper()
-            ),
+            interpolation=getattr(T.InterpolationMode, self.interpolation.upper()),
             antialias=self.antialias,
         )
 
@@ -273,15 +269,18 @@ class SquarePadCrop(AbstractTransform):
 class ScaleRange(AbstractTransform):
     def __init__(
         self,
-        range: List[float] = [0.0, 1.0],
+        range: List[float] = None,
         order: int = 90,
     ) -> None:
         """Scale a tensor to a specific target range.
 
         Args:
-            range: The range to scale the tensor to. Defaults to [0.0, 1.0].
+            range: The range to scale the tensor to. If None, it will be set to
+            [0.0, 1.0]. Defaults to None.
             order: The order of the transform in the pipeline. Defaults to 90.
         """
+        if range is None:
+            range = [0.0, 1.0]
         super().__init__(order=order)
         if len(range) != 2:
             raise ValueError(
@@ -349,13 +348,11 @@ class Normalize(AbstractTransform):
             1: (-1,),  # 1D tabular data: normalize along the feature axis
         }
 
-        for dim, axes in views.items():
+        for dim, axes in views.items():  # noqa: B007
             if item.features.ndim == dim:
                 break
         else:
-            raise ValueError(
-                f"Unsupported feature dimensions: {item.features.shape}"
-            )
+            raise ValueError(f"Unsupported feature dimensions: {item.features.shape}")
 
         mean, std = self._mean.view(*axes), self._std.view(*axes)
         item.features = item.features.to(torch.float32).sub(mean).div(std)
@@ -401,13 +398,13 @@ class Standardizer(AbstractTransform):
     def _validate_subset(self, subset: str) -> None:
         if subset not in {"train", "dev", "test"}:
             raise ValueError(
-                f"Invalid subset '{subset}'. Must be one of 'train', 'dev', "
-                "or 'test'."
+                f"Invalid subset '{subset}'. Must be one of 'train', 'dev', or 'test'."
             )
 
     def _init_transform(self) -> Optional[AbstractTransform]:
         if self.mean and self.std:
             return Normalize(self.mean, self.std, self.order)
+        return None
 
     def _collect_data(self, data: "AbstractDataset") -> torch.Tensor:
         ds: DatasetWrapper = getattr(data, f"{self.subset}_dataset")
@@ -432,7 +429,7 @@ class Standardizer(AbstractTransform):
             2: (0,),  # 1D tabular data: normalize along the feature axis
         }
         collected = self._collect_data(data)
-        for dim, axes in views.items():
+        for dim, axes in views.items():  # noqa: B007
             if collected.ndim == dim:
                 break
         else:
@@ -475,9 +472,7 @@ class FeatureExtractor(AbstractTransform):
         """
         super().__init__(order=order)
         if fe_type is None and fe_transfer is None:
-            raise ValueError(
-                "Either 'fe_type' or 'fe_transfer' must be provided."
-            )
+            raise ValueError("Either 'fe_type' or 'fe_transfer' must be provided.")
         self.fe_type = fe_type
         self.fe_transfer = fe_transfer
         self.sampling_rate = sampling_rate
@@ -488,13 +483,12 @@ class FeatureExtractor(AbstractTransform):
             feature_extractor = fe_class.from_pretrained(self.fe_transfer)
         else:
             feature_extractor = fe_class()
-            extractor_dict = {
-                k: repr(v) for k, v in feature_extractor.__dict__.items()
-            }
+            extractor_dict = {k: repr(v) for k, v in feature_extractor.__dict__.items()}
             warnings.warn(
                 f"{fe_class.__name__} "
                 "initialized with default values:\n"
-                f"{OmegaConf.to_yaml(extractor_dict)}"
+                f"{OmegaConf.to_yaml(extractor_dict)}",
+                stacklevel=2,
             )
 
         def extract_features(signal: np.ndarray) -> torch.Tensor:
@@ -540,9 +534,7 @@ class Expand(AbstractTransform):
         self.size = size
         self.method = method
         self.axis = axis
-        self._expand = AT.Expand(
-            size=self.size, method=self.method, axis=self.axis
-        )
+        self._expand = AT.Expand(size=self.size, method=self.method, axis=self.axis)
         self._to_tensor = AnyToTensor()
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
@@ -675,9 +667,7 @@ class Resample(AbstractTransform):
         self.current_sr = current_sr
         self.target_sr = target_sr
         super().__init__(order=order)
-        self._resample = TT.Resample(
-            orig_freq=self.current_sr, new_freq=self.target_sr
-        )
+        self._resample = TT.Resample(orig_freq=self.current_sr, new_freq=self.target_sr)
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
         item.features = self._resample(item.features)
@@ -690,6 +680,7 @@ class OpenSMILE(AbstractTransform):
         feature_set: str,
         sample_rate: int,
         functionals: bool = False,
+        lld_deltas: bool = False,
         order: int = -80,
     ) -> None:
         """Extract features from an audio signal using openSMILE.
@@ -698,10 +689,23 @@ class OpenSMILE(AbstractTransform):
         To install the required extras, run:
         'pip install autrainer[opensmile]'.
 
+        .. warning::
+            Setting `lld_deltas` to `True`
+            will extract and concatenate
+            :py:attr:`opensmile.FeatureLevel.LowLevelDescriptors_Deltas` to the
+            :py:attr:`opensmile.FeatureLevel.LowLevelDescriptors` features.
+            However, :py:mod:`opensmile` returns *longer* sequences
+            for the delta features. To match to the original length,
+            we drop the first and last frame of the delta features.
+            This may result in misalignment, as we are not sure
+            how padding is handled in :py:mod:`opensmile`.
+
         Args:
             feature_set: The feature set to use.
             sample_rate: The sample rate of the audio signal.
             functionals: Whether to use functionals. Defaults to False.
+            lld_deltas: Whether to additionally compute deltas. Only relevant
+                for LLDs. Defaults to False.
             order: The order of the transform in the pipeline. Defaults to -80.
 
         Raises:
@@ -716,6 +720,8 @@ class OpenSMILE(AbstractTransform):
         self.feature_set = feature_set
         self.sample_rate = sample_rate
         self.functionals = functionals
+        self.lld_deltas = lld_deltas
+        self.smile_de = None
         if self.functionals:
             self.smile = opensmile.Smile(self.feature_set)
         else:
@@ -723,8 +729,18 @@ class OpenSMILE(AbstractTransform):
                 self.feature_set,
                 feature_level=opensmile.FeatureLevel.LowLevelDescriptors,
             )
+            if self.lld_deltas and self.feature_set != "eGeMAPSv02":
+                self.smile_de = opensmile.Smile(
+                    self.feature_set,
+                    feature_level=opensmile.FeatureLevel.LowLevelDescriptors_Deltas,
+                )
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
         it = self.smile.process_signal(item.features, self.sample_rate)
-        item.features = torch.from_numpy(self.smile.to_numpy(it)).squeeze()
+        feats = torch.from_numpy(self.smile.to_numpy(it)).squeeze()
+        if self.smile_de is not None:
+            data_de = self.smile_de.process_signal(item.features, self.sample_rate)
+            data_de = torch.from_numpy(self.smile.to_numpy(data_de)).squeeze()[:, 1:-1]
+            feats = torch.cat((feats, data_de), axis=-2)
+        item.features = feats
         return item

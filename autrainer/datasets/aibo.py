@@ -84,9 +84,7 @@ class AIBO(BaseClassificationDataset):
     @cached_property
     def _load_df(self) -> pd.DataFrame:
         df = pd.read_csv(
-            os.path.join(
-                self.path, f"chunk_labels_{self.aibo_task}_corpus.txt"
-            ),
+            os.path.join(self.path, f"chunk_labels_{self.aibo_task}_corpus.txt"),
             header=None,
             sep=" ",
         )
@@ -101,24 +99,19 @@ class AIBO(BaseClassificationDataset):
         df = self._load_df
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
-        df_train = df_train_dev.loc[
-            df_train_dev["speaker"].isin(speakers[:-2])
-        ]
-        return df_train
+        return df_train_dev.loc[df_train_dev["speaker"].isin(speakers[:-2])]
 
     @cached_property
     def df_dev(self) -> pd.DataFrame:
         df = self._load_df
         df_train_dev = df.loc[df["school"] == "Ohm"]
         speakers = sorted(df_train_dev["speaker"].unique())
-        df_dev = df_train_dev.loc[df_train_dev["speaker"].isin(speakers[-2:])]
-        return df_dev
+        return df_train_dev.loc[df_train_dev["speaker"].isin(speakers[-2:])]
 
     @cached_property
     def df_test(self) -> pd.DataFrame:
         df = self._load_df
-        df_test = df.loc[df["school"] == "Mont"]
-        return df_test
+        return df.loc[df["school"] == "Mont"]
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover
@@ -145,9 +138,7 @@ class AIBO(BaseClassificationDataset):
         """
         if not os.path.isfile(
             os.path.join(path, "chunk_labels_2cl_corpus.txt")
-            or os.path.isfile(
-                os.path.join(path, "chunk_labels_5cl_corpus.txt")
-            )
+            or os.path.isfile(os.path.join(path, "chunk_labels_5cl_corpus.txt"))
         ):
             raise ValueError(
                 f"File 'chunk_labels_2cl_corpus.txt' or "

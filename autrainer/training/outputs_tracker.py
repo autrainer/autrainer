@@ -1,4 +1,4 @@
-from typing import Callable, List, TypeVar
+from typing import Any, Callable, Dict, List, TypeVar
 
 import numpy as np
 import pandas as pd
@@ -37,9 +37,7 @@ class OutputsTracker:
         """Reset the tracker. Clears all the stored data accumulated over a
         single iteration.
         """
-        self._outputs = torch.zeros(
-            (0, self._data.output_dim), dtype=torch.float32
-        )
+        self._outputs = torch.zeros((0, self._data.output_dim), dtype=torch.float32)
         self._targets = torch.zeros(
             0, dtype=torch.long
         )  # automatic type promotion in case of float targets
@@ -92,9 +90,9 @@ class OutputsTracker:
         )
         self._results_df = pd.DataFrame(index=results["indices"])
         self._results_df["predictions"] = self._predictions
-        self._results_df["predictions"] = self._results_df[
-            "predictions"
-        ].apply(self._data.target_transform.decode)
+        self._results_df["predictions"] = self._results_df["predictions"].apply(
+            self._data.target_transform.decode
+        )
         _probs_df = pd.DataFrame(
             index=results["indices"],
             data=(
@@ -118,8 +116,9 @@ class OutputsTracker:
         if reset:
             self.reset()
 
+    @staticmethod
     def check_saved(func: Callable[..., T]) -> Callable[..., T]:
-        def wrapper(self: "OutputsTracker", *args, **kwargs) -> T:
+        def wrapper(self: "OutputsTracker", *args: Any, **kwargs: Dict[str, Any]) -> T:
             if self._results_df is None:
                 raise ValueError("Results not saved yet.")
             return func(self, *args, **kwargs)
@@ -205,7 +204,7 @@ def init_trackers(
         List of initialized trackers.
     """
     trackers = []
-    for export, prefix in zip(exports, prefixes):
+    for export, prefix in zip(exports, prefixes, strict=False):
         trackers.append(
             OutputsTracker(
                 export=export,

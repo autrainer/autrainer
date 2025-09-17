@@ -33,9 +33,7 @@ class TDNNFFNN(AbstractModel):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=FutureWarning)
             if transfer:  # pragma: no cover
-                checkpoint_dir = os.path.join(
-                    torch.hub.get_dir(), "speechbrain"
-                )
+                checkpoint_dir = os.path.join(torch.hub.get_dir(), "speechbrain")
                 os.makedirs(checkpoint_dir, exist_ok=True)
                 from speechbrain.inference.classifiers import EncoderClassifier
 
@@ -69,8 +67,7 @@ class TDNNFFNN(AbstractModel):
         _device = features.device
         features = self.features(features.squeeze(1).cpu())
         features = features.to(_device)
-        embs = self.backbone(features).squeeze(1)
-        return embs
+        return self.backbone(features).squeeze(1)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         embs = self.embeddings(features)

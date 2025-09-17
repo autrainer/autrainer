@@ -1,16 +1,20 @@
 from abc import ABC, abstractmethod
 import functools
 import logging
-from typing import Callable, Union
+from typing import Any, Callable, Dict, ParamSpec, TypeVar, Union
 import warnings
 
 import numpy as np
 import pandas as pd
 
 
-def ignore_runtime_warning(func):
+P = ParamSpec("P")
+R = TypeVar("R")
+
+
+def ignore_runtime_warning(func: Callable[P, R]) -> Callable[P, R]:
     @functools.wraps(func)
-    def wrapper_ignore_warning(*args, **kwargs):
+    def wrapper_ignore_warning(*args: P.args, **kwargs: P.kwargs) -> R:
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=RuntimeWarning)
             return func(*args, **kwargs)
@@ -41,7 +45,7 @@ class AbstractMetric(ABC):
         self.logger = logging.getLogger(__name__)
 
     @ignore_runtime_warning
-    def __call__(self, *args, **kwargs) -> float:
+    def __call__(self, *args: Any, **kwargs: Dict[str, Any]) -> float:
         """Compute the metric.
 
         Args:
@@ -55,13 +59,13 @@ class AbstractMetric(ABC):
             score = self.fn(*args, **kwargs, **self.fn_kwargs)
         except ValueError as e:
             self.logger.warning(
-                f"Error computing {self.name} metric due to: {e}. "
+                f"Error computing {self.name} metric due to: {e}. "  # noqa: G004
                 f"Defaulting to fallback value of {self.fallback}."
             )
             return self.fallback
         if np.isnan(score):
             self.logger.warning(
-                f"Error computing {self.name} metric as score is NaN. "
+                f"Error computi'ng {self.name} metric as score is NaN. "  # noqa: G004
                 f"Defaulting to fallback value of {self.fallback}."
             )
             return self.fallback
@@ -111,7 +115,7 @@ class AbstractMetric(ABC):
 
     @staticmethod
     @abstractmethod
-    def compare(a: Union[int, float], b: Union[int, float]) -> bool:
+    def compare(a: float, b: float) -> bool:
         """Compare two scores and return True if the first score is better.
 
         Args:
@@ -159,7 +163,8 @@ class BaseAscendingMetric(AbstractMetric):
                 the fallback value is set to -1e32. Defaults to None.
             **fn_kwargs: Additional keyword arguments to pass to the function.
         """
-        super().__init__(name, fn, fallback or -1e32, **fn_kwargs)
+        fallback = fallback if fallback is not None else -1e32
+        super().__init__(name, fn, fallback, **fn_kwargs)
 
     @property
     def starting_metric(self) -> float:
@@ -190,7 +195,7 @@ class BaseAscendingMetric(AbstractMetric):
         return int(a.argmax())
 
     @staticmethod
-    def compare(a: Union[int, float], b: Union[int, float]) -> bool:
+    def compare(a: float, b: float) -> bool:
         return a > b
 
 
@@ -211,7 +216,8 @@ class BaseDescendingMetric(AbstractMetric):
                 the fallback value is set to 1e32. Defaults to None.
             **fn_kwargs: Additional keyword arguments to pass to the function.
         """
-        super().__init__(name, fn, fallback or 1e32, **fn_kwargs)
+        fallback = fallback if fallback is not None else -1e32
+        super().__init__(name, fn, fallback, **fn_kwargs)
 
     @property
     def starting_metric(self) -> float:
@@ -242,5 +248,5 @@ class BaseDescendingMetric(AbstractMetric):
         return int(a.argmin())
 
     @staticmethod
-    def compare(a: Union[int, float], b: Union[int, float]) -> bool:
+    def compare(a: float, b: float) -> bool:
         return a < b

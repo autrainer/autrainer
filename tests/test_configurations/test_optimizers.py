@@ -10,7 +10,7 @@ from .utils import (
 
 
 class TestOptimizerConfigurations:
-    @pytest.mark.parametrize("name, config", load_configurations("optimizer"))
+    @pytest.mark.parametrize(("name", "config"), load_configurations("optimizer"))
     def test_configurations(self, name: str, config: Dict[str, Any]) -> None:
         assert config.get("id"), f"{name}: Missing ID in configuration"
         assert config.get("_target_"), f"{name}: Missing target"

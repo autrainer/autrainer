@@ -50,10 +50,7 @@ class Sequential(AbstractAugmentation, audobject.Object):
             self.augmentation_sequence.append(aug)
 
         self.augmentation_sequence: List[AbstractAugmentation] = [
-            autrainer.instantiate_shorthand(
-                aug,
-                instance_of=AbstractAugmentation,
-            )
+            autrainer.instantiate_shorthand(aug, instance_of=AbstractAugmentation)
             for aug in self.augmentation_sequence
         ]
         for aug in self.augmentation_sequence:

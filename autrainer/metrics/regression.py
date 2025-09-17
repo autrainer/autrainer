@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Any, Callable, Dict
 
 import audmetric
 import numpy as np
@@ -10,7 +10,7 @@ def _mean_metric(
     y_true: np.ndarray,
     y_pred: np.ndarray,
     metric_fn: Callable,
-    **kwargs,
+    **kwargs: Dict[str, Any],
 ) -> float:
     """Calculate the mean of a metric for each target if multi-target arrays
     are given. If single-target arrays are given, the metric is calculated
@@ -35,7 +35,7 @@ def _mean_metric(
 
 
 class MSE(BaseDescendingMetric):
-    def __init__(self):
+    def __init__(self) -> None:
         """Mean squared error metric using `audmetric.mean_squared_error`
         for (multi-target) regression. The metric is calculated for each
         target separately and the mean is returned.
@@ -48,7 +48,7 @@ class MSE(BaseDescendingMetric):
 
 
 class MAE(BaseDescendingMetric):
-    def __init__(self):
+    def __init__(self) -> None:
         """Mean absolute error metric using `audmetric.mean_absolute_error`
         for (multi-target) regression. The metric is calculated for each
         target separately and the mean is returned.
@@ -61,7 +61,7 @@ class MAE(BaseDescendingMetric):
 
 
 class PCC(BaseAscendingMetric):
-    def __init__(self):
+    def __init__(self) -> None:
         """Pearson correlation coefficient metric using
         `audmetric.pearson_cc` for (multi-target) regression. The metric is
         calculated for each target separately and the mean is returned.
@@ -74,7 +74,7 @@ class PCC(BaseAscendingMetric):
 
 
 class CCC(BaseAscendingMetric):
-    def __init__(self):
+    def __init__(self) -> None:
         """Concordance correlation coefficient metric using
         `audmetric.concordance_cc` for (multi-target) regression. The metric is
         calculated for each target separately and the mean is returned.

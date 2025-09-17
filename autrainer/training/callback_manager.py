@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 
 if TYPE_CHECKING:
@@ -248,7 +248,7 @@ class CallbackSignature:
 
 
 class CallbackManager:
-    def __init__(self):
+    def __init__(self) -> None:
         self.callbacks = {cb: [] for cb in CALLBACK_FUNCTIONS}
 
     def register(self, obj: Optional[object] = None) -> None:
@@ -264,7 +264,7 @@ class CallbackManager:
         for obj in objs:
             self.register(obj)
 
-    def callback(self, position: str, **kwargs) -> None:
+    def callback(self, position: str, **kwargs: Dict[str, Any]) -> None:
         if position not in self.callbacks:
             raise ValueError(f"Callback position {position} not found.")
         for cb in self.callbacks[position]:

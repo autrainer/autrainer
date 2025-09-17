@@ -76,7 +76,7 @@ class DCASE2018Task3(BaseClassificationDataset):
         """
         self._assert_dev_split(dev_split)
         self.dev_split = dev_split
-        self.dev_split_seed = dev_split_seed or seed
+        self.dev_split_seed = dev_split_seed if dev_split_seed is not None else seed
         super().__init__(
             path=path,
             features_subdir=features_subdir,
@@ -163,9 +163,7 @@ class DCASE2018Task3(BaseClassificationDataset):
         # process dataframes
         ff1010_path = os.path.join(path, "ff1010bird_metadata_2018.csv")
         birdvox_path = os.path.join(path, "BirdVoxDCASE20k_csvpublic.csv")
-        warblrb_path = os.path.join(
-            path, "warblrb10k_public_metadata_2018.csv"
-        )
+        warblrb_path = os.path.join(path, "warblrb10k_public_metadata_2018.csv")
         df_ff1010 = pd.read_csv(ff1010_path).rename(
             columns={"itemid": "filename", "datasetid": "dataset"}
         )

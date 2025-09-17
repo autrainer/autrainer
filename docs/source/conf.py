@@ -1,14 +1,14 @@
 import datetime
 import os
 import sys
-from typing import Any
+from typing import Any, Dict, List
 
 from sphinx.application import Sphinx
 import toml
 
 
-def build_authors(authors):
-    return ", ".join([a.split(" <")[0] for a in authors])
+def build_authors(authors: List[Dict[str, Any]]) -> str:
+    return ", ".join([a["name"] for a in authors])
 
 
 pyroject = toml.load("../../pyproject.toml")
@@ -16,11 +16,11 @@ pyroject = toml.load("../../pyproject.toml")
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.append(os.path.abspath("../extensions"))
 
-project = pyroject["tool"]["poetry"]["name"]
-description = pyroject["tool"]["poetry"]["description"]
-author = build_authors(pyroject["tool"]["poetry"]["authors"])
+project = pyroject["project"]["name"]
+description = pyroject["project"]["description"]
+author = build_authors(pyroject["project"]["authors"])
 copyright = f"{datetime.datetime.now().year} (MIT) {author}"
-release = pyroject["tool"]["poetry"]["version"]
+release = pyroject["project"]["version"]
 
 
 extensions = [
@@ -32,10 +32,15 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "sphinxarg.ext",
+    "sphinx.ext.intersphinx",
     "sphinxcontrib.jquery",
     "sphinx_hydra_configurations",
     "sphinx_lexers",
 ]
+
+intersphinx_mapping = {
+    "opensmile": ("https://audeering.github.io/opensmile-python/", None),
+}
 
 master_doc = "index"
 html_theme = "pydata_sphinx_theme"
@@ -81,10 +86,10 @@ def set_custom_title(
     templatename: str,
     context: dict,
     doctree: Any,
-):
+) -> None:
     if pagename == app.config.master_doc:
         context["title"] = f"{project} — {description}"
 
 
-def setup(app: Sphinx):
+def setup(app: Sphinx) -> None:
     app.connect("html-page-context", set_custom_title)

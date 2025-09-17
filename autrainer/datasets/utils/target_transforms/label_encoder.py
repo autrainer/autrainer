@@ -14,10 +14,10 @@ class LabelEncoder(AbstractTargetTransform):
         """
         self.labels = sorted(labels)
         codes = range(len(self.labels))
-        self.inverse_map = {
-            code: label for code, label in zip(codes, self.labels)
+        self.inverse_map = dict(zip(codes, self.labels, strict=False))
+        self.map = {
+            label: code for code, label in zip(codes, self.labels, strict=False)
         }
-        self.map = {label: code for code, label in zip(codes, self.labels)}
 
     def __len__(self) -> int:
         """Get the number of unique target labels.

@@ -10,11 +10,6 @@ from .abstract_model import AbstractModel
 from .timm_wrapper import TimmModel
 
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=FutureWarning)
-    from speechbrain.lobes.features import Leaf as LeafSb
-
-
 class LEAFNet(AbstractModel):
     def __init__(
         self,
@@ -98,6 +93,10 @@ class LEAFNet(AbstractModel):
             )
 
         elif mode == "speech_brain":
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=FutureWarning)
+                from speechbrain.lobes.features import Leaf as LeafSb
+
             self.leaf = LeafSb(
                 out_channels=leaf_filters,
                 in_channels=1,
@@ -132,13 +131,12 @@ class LEAFNet(AbstractModel):
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         x = self.leaf(features)
         x = x.unsqueeze(1)
-        x = self.classifier(x)
-        return x
+        return self.classifier(x)
 
     def _initialise_filterbank(self) -> None:
         if self.initialization == "mel":
             return
-        elif self.initialization == "linear-constant":
+        if self.initialization == "linear-constant":
             center_frequencies = torch.linspace(
                 self.min_freq, self.max_freq, self.leaf_filters
             )
@@ -195,20 +193,16 @@ class LEAFNet(AbstractModel):
         if self.mode == "interspeech":
             center_freqs_param = "filterbank.center_freqs"
             bandwith_param = "filterbank.bandwidths"
-            self.leaf.state_dict()[center_freqs_param].copy_(
-                center_frequencies
-            )
+            self.leaf.state_dict()[center_freqs_param].copy_(center_frequencies)
             self.leaf.state_dict()[bandwith_param].copy_(bandwidths)
         elif self.mode == "speech_brain":
             filterbank_param = "complex_conv.kernel"
-            self.leaf.state_dict()[filterbank_param][:, 0].copy_(
-                center_frequencies
-            )
+            self.leaf.state_dict()[filterbank_param][:, 0].copy_(center_frequencies)
             self.leaf.state_dict()[filterbank_param][:, 1].copy_(bandwidths)
 
 
 def hz_to_bark(
-    f: Union[int, float, np.ndarray],
+    f: Union[float, np.ndarray],
 ) -> Union[int, float, np.ndarray]:
     """Convert frequency from Hz to Bark scale according to Traunmüller.
 
@@ -218,12 +212,11 @@ def hz_to_bark(
     Returns:
         Frequency in Bark.
     """
-    b = 26.81 * f / (1960 + f) - 0.53
-    return b
+    return 26.81 * f / (1960 + f) - 0.53
 
 
 def bark_to_hz(
-    b: Union[int, float, np.ndarray],
+    b: Union[float, np.ndarray],
 ) -> Union[int, float, np.ndarray]:
     """Approximate conversion from Bark to Hz (inverse of the above).
     Ajdusted centers for reconversion according to Traunmüller.
@@ -240,13 +233,12 @@ def bark_to_hz(
     z_2 = z_2[z_2 <= 20.1]
     z_3 = b[b > 20.1] + 0.22 * (b[b > 20.1] - 20.1)
     z = np.hstack((z_1, z_2, z_3))
-    f = 1960 * (z + 0.53) / (26.28 - z)
-    return f  # 600 * np.sinh(z / 6)
+    return 1960 * (z + 0.53) / (26.28 - z)  # 600 * np.sinh(z / 6)
 
 
 def bark_scale_filterbank(
-    min_freq: Union[int, float],
-    max_freq: Union[int, float],
+    min_freq: float,
+    max_freq: float,
     num_bands: int,
 ) -> Tuple[torch.Tensor, torch.Tensor]:
     """Calculate center frequencies and bandwidths for a Bark scale filterbank.
@@ -383,9 +375,7 @@ class GaborFilterbank(nn.Module):
         )
         self.center_freqs = nn.Parameter(center_freqs)
         self.bandwidths = nn.Parameter(bandwidths)
-        self.pooling_widths = nn.Parameter(
-            torch.full((n_filters,), float(pool_init))
-        )
+        self.pooling_widths = nn.Parameter(torch.full((n_filters,), float(pool_init)))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # compute filters
@@ -400,19 +390,16 @@ class GaborFilterbank(nn.Module):
         x = x**2
         x = x[:, : self.n_filters] + x[:, self.n_filters :]
         # compute pooling windows
-        pooling_widths = self.pooling_widths.clamp(
-            min=2.0 / self.pool_size, max=0.5
-        )
+        pooling_widths = self.pooling_widths.clamp(min=2.0 / self.pool_size, max=0.5)
         windows = gauss_windows(self.pool_size, pooling_widths).unsqueeze(1)
         # apply temporal pooling
-        x = F.conv1d(
+        return F.conv1d(
             x,
             windows,
             stride=self.pool_stride,
             padding=self.filter_size // 2,
             groups=self.n_filters,
         )
-        return x
 
 
 class PCEN(nn.Module):
@@ -494,7 +481,7 @@ class PCEN(nn.Module):
         smoother = torch.stack(smoother, -1)
 
         # stable reformulation due to Vincent Lostanlen; original formula was:
-        # return (input / (self.eps + smoother)**alpha + delta)**r - delta**r
+        # (input / (self.eps + smoother)**alpha + delta)**r - delta**r  # noqa: ERA001
         smoother = torch.exp(
             -alpha * (torch.log(self.eps) + torch.log1p(smoother / self.eps))
         )
@@ -565,5 +552,4 @@ class LeafIs(nn.Module):
         while x.ndim < 3:
             x = x[:, np.newaxis]
         x = self.filterbank(x)
-        x = self.compression(x)
-        return x
+        return self.compression(x)

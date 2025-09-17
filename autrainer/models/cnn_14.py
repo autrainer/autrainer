@@ -79,8 +79,7 @@ class Cnn14(AbstractModel):
 
         if self.segmentwise:
             return self.segmentwise_path(x)
-        else:
-            return self.clipwise_path(x)
+        return self.clipwise_path(x)
 
     def segmentwise_path(self, x: torch.Tensor) -> torch.Tensor:
         x1 = F.max_pool1d(x, kernel_size=3, stride=1, padding=1)
@@ -89,21 +88,18 @@ class Cnn14(AbstractModel):
         x = F.dropout(x, p=0.5, training=self.training)
         x = x.transpose(1, 2)
         x = F.relu_(self.fc1(x))
-        x = F.dropout(x, p=0.5, training=self.training)
-        return x
+        return F.dropout(x, p=0.5, training=self.training)
 
     def clipwise_path(self, x: torch.Tensor) -> torch.Tensor:
         (x1, _) = torch.max(x, dim=2)
         x2 = torch.mean(x, dim=2)
         x = x1 + x2
 
-        x = F.relu_(self.fc1(x))
-        return x
+        return F.relu_(self.fc1(x))
 
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
         return self.get_embedding(features)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         x = self.embeddings(features)
-        x = self.out(x)
-        return x
+        return self.out(x)

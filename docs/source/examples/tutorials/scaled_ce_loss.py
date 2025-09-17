@@ -1,8 +1,15 @@
+from typing import Any, Dict
+
 import torch
 
 
 class ScaledCrossEntropyLoss(torch.nn.CrossEntropyLoss):
-    def __init__(self, scaling_factor: float = 1.0, *args, **kwargs):
+    def __init__(
+        self,
+        scaling_factor: float = 1.0,
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
         """Cross entropy loss with a scaling factor.
 
         Args:
