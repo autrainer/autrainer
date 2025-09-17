@@ -105,7 +105,9 @@ class DCASE2020Task1A(BaseClassificationDataset):
         """
         self._assert_dev_split(dev_split)
         self.dev_split = dev_split
-        self.dev_split_seed = dev_split_seed or seed
+        self.dev_split_seed = (
+            dev_split_seed if dev_split_seed is not None else seed
+        )
         self._assert_scene_category(scene_category)
         self.scene_category = scene_category
         self.exclude_cities = exclude_cities

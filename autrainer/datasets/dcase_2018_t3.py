@@ -76,7 +76,9 @@ class DCASE2018Task3(BaseClassificationDataset):
         """
         self._assert_dev_split(dev_split)
         self.dev_split = dev_split
-        self.dev_split_seed = dev_split_seed or seed
+        self.dev_split_seed = (
+            dev_split_seed if dev_split_seed is not None else seed
+        )
         super().__init__(
             path=path,
             features_subdir=features_subdir,
