@@ -25,5 +25,11 @@ jobs:
         run: uv sync --locked --all-extras --all-groups
       - name: Run pre-commit
         run: uv run pre-commit run --all-files
+      - name: Build Docs
+        run: uv run sphinx-build -b html docs/source docs/build
+      - name: Check README rendering
+        run: |
+          uv build
+          uv run twine check dist/*
       - name: Run tests
         run: uv run pytest tests
