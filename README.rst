@@ -1,4 +1,4 @@
-.. image:: https://autrainer.github.io/autrainer/_images/logo_banner.png
+.. image:: https://autrainer.github.io/autrainer/_static/logo_banner.png
     :alt: autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks
     :align: center
 
