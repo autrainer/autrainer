@@ -31,19 +31,19 @@ Next, install `autrainer` using `pip`.
 
 .. note::
 
-   If you are using Windows, make sure that PyTorch (along with :attr:`torchvision` and :attr:`torchaudio`) version 2.0 or higher is installed beforehand.
+   If you are using Windows, make sure that PyTorch (along with ``torchvision`` and ``torchaudio``) version 2.0 or higher is installed beforehand.
    For installation instructions, refer to the `PyTorch documentation <https://pytorch.org/get-started/locally/>`_.
 
 
 The following optional dependencies can be installed to enable additional features:
 
-* :attr:`latex` for LaTeX plotting (requires a LaTeX installation).
-* :attr:`mlflow` for `MLflow <https://mlflow.org/>`_ logging.
-* :attr:`tensorboard` for `TensorBoard <https://www.tensorflow.org/tensorboard>`_ logging.
-* :attr:`opensmile` for audio feature extraction with `openSMILE <https://audeering.com/opensmile/>`_.
-* :attr:`albumentations` for image augmentations with `Albumentations <https://albumentations.ai/>`_.
-* :attr:`audiomentations` for audio augmentations with `audiomentations <https://github.com/iver56/audiomentations>`_.
-* :attr:`torch-audiomentations` for audio augmentations with `torch-audiomentations <https://github.com/asteroid-team/torch-audiomentations>`_.
+* ``latex`` for LaTeX plotting (requires a LaTeX installation).
+* ``mlflow`` for `MLflow <https://mlflow.org/>`_ logging.
+* ``tensorboard`` for `TensorBoard <https://www.tensorflow.org/tensorboard>`_ logging.
+* ``opensmile`` for audio feature extraction with `openSMILE <https://audeering.com/opensmile/>`_.
+* ``albumentations`` for image augmentations with `Albumentations <https://albumentations.ai/>`_.
+* ``audiomentations`` for audio augmentations with `audiomentations <https://github.com/iver56/audiomentations>`_.
+* ``torch-audiomentations`` for audio augmentations with `torch-audiomentations <https://github.com/asteroid-team/torch-audiomentations>`_.
 
 .. code-block:: pip
 
