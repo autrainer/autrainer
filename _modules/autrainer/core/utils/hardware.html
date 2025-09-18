@@ -39,14 +39,14 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/core/utils/hardware';</script>
-    <script src="../../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -357,7 +357,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">OmegaConf</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span>
@@ -369,7 +369,7 @@ document.write(`
 
     <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;ThreadManager&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;ThreadManager&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
@@ -379,7 +379,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Spawn and start a new thread for the target function.</span>
 
 <span class="sd">        Args:</span>
@@ -418,10 +418,7 @@ document.write(`
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="n">gpu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_properties</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">gpu</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="s2">&quot;memory_gb&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">gpu</span><span class="o">.</span><span class="n">total_memory</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)),</span>
-    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">gpu</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;memory_gb&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">gpu</span><span class="o">.</span><span class="n">total_memory</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">))}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_system_info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -430,17 +427,12 @@ document.write(`
 <span class="sd">    Returns:</span>
 <span class="sd">        Dictionary containing system information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;os&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">(),</span>
-        <span class="s2">&quot;platform&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">(),</span>
-    <span class="p">}</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;os&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">(),</span> <span class="s2">&quot;platform&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">()}</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SLURMD_NODENAME&quot;</span><span class="p">):</span>
         <span class="n">s</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SLURMD_NODENAME&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;memory_gb&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span>
-                    <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SLURM_MEM_PER_NODE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1024</span>
-                <span class="p">),</span>
+                <span class="s2">&quot;memory_gb&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SLURM_MEM_PER_NODE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">),</span>
                 <span class="s2">&quot;cpu_count&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SLURM_CPUS_PER_TASK&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
             <span class="p">}</span>
         <span class="p">)</span>
@@ -504,8 +496,8 @@ document.write(`
         <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">):</span>
         <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Device &#39;</span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&#39; is not available. Falling back to CPU.&quot;</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>  <span class="c1"># noqa: LOG015</span>
+            <span class="sa">f</span><span class="s2">&quot;Device &#39;</span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&#39; is not available. Falling back to CPU.&quot;</span><span class="p">,</span>  <span class="c1"># noqa: G004</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">device</span>
 </pre></div>

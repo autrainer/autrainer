@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/datasets/audioset';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -549,21 +549,13 @@ document.write(`
 <span class="sd">        they appear at all in the data or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">unique_categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">])</span>
-            <span class="n">train_categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">x</span>
-                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
-            <span class="n">dev_categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">x</span>
-                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_dev</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
+            <span class="n">unique_categories</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">}</span>
+            <span class="n">train_categories</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">x</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y</span>
+            <span class="p">}</span>
+            <span class="n">dev_categories</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">x</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_dev</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y</span>
+            <span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">train_categories</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">dev_categories</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span>
@@ -638,8 +630,7 @@ document.write(`
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">order</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="c1"># Sort list `categories` by the list `order`</span>
-        <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">cat</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">cat</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">categories</span><span class="p">))]</span>
-        <span class="k">return</span> <span class="n">categories</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">cat</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">cat</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">categories</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">))]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_filter_by_categories</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -665,7 +656,7 @@ document.write(`
             <span class="c1"># Remove rows that have an intersection of actual and desired IDs</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-                    <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="k">else</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span>
                     <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">]</span>
@@ -673,12 +664,11 @@ document.write(`
             <span class="c1"># Include rows that have an intersection of actual and desired IDs</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-                    <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)),</span>
                     <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">]</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">df</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_ids_for_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">categories</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;All IDs and child IDs for a given set of categories.</span>
@@ -691,9 +681,7 @@ document.write(`
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ids</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">category_ids</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">x</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">categories</span>
-        <span class="p">]</span>
+        <span class="n">category_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">category_id</span> <span class="ow">in</span> <span class="n">category_ids</span><span class="p">:</span>
             <span class="n">ids</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_ids</span><span class="p">(</span><span class="n">category_id</span><span class="p">)</span>
         <span class="c1"># Remove duplicates</span>
@@ -710,9 +698,7 @@ document.write(`
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">parent_id</span><span class="p">]</span>
-        <span class="n">child_ids</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">x</span><span class="p">[</span><span class="s2">&quot;child_ids&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">parent_id</span>
-        <span class="p">]</span>
+        <span class="n">child_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;child_ids&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">parent_id</span><span class="p">]</span>
         <span class="n">child_ids</span> <span class="o">=</span> <span class="n">flatten_list</span><span class="p">(</span><span class="n">child_ids</span><span class="p">)</span>
         <span class="c1"># Add all subcategories</span>
         <span class="k">for</span> <span class="n">child_id</span> <span class="ow">in</span> <span class="n">child_ids</span><span class="p">:</span>
@@ -742,17 +728,15 @@ document.write(`
             <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_by_categories</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">include</span><span class="p">)</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_parent_ids</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_by_categories</span><span class="p">(</span>
-                <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span> <span class="n">exclude_mode</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_by_categories</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span> <span class="n">exclude_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_ids_to_categories</span><span class="p">)</span>
-        <span class="n">unique_categories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">]))</span>
+        <span class="n">unique_categories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">})</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">unique_categories</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">df</span><span class="p">,</span>
                     <span class="n">df</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span>
-                    <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># noqa: B023</span>
                     <span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">c</span><span class="p">),</span>
                 <span class="p">),</span>
                 <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -774,9 +758,7 @@ document.write(`
             <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_to_classes</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">relative_path</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">relative_path</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
         <span class="n">orig_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">df</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>

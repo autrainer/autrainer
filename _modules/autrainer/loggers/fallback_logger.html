@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/loggers/fallback_logger';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -383,7 +383,7 @@ document.write(`
             <span class="k">return</span>
         <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Requested logger &#39;</span><span class="si">{</span><span class="n">requested_logger</span><span class="si">}</span><span class="s2">&#39; not available. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Requested logger &#39;</span><span class="si">{</span><span class="n">requested_logger</span><span class="si">}</span><span class="s2">&#39; not available. &quot;</span>  <span class="c1"># noqa: G004</span>
             <span class="s2">&quot;Install the required extras with &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;&#39;pip install autrainer[</span><span class="si">{</span><span class="n">extras</span><span class="si">}</span><span class="s2">]&#39;.&quot;</span>
         <span class="p">)</span>
@@ -399,7 +399,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-        <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">iteration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 

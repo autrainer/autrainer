@@ -39,14 +39,14 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/core/scripts/fetch_script';</script>
-    <script src="../../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -361,10 +361,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">autrainer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.scripts.abstract_script</span><span class="w"> </span><span class="kn">import</span> <span class="n">MockParser</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_preprocess_script</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AbstractPreprocessScript</span><span class="p">,</span>
-    <span class="n">PreprocessArgs</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_preprocess_script</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractPreprocessScript</span><span class="p">,</span> <span class="n">PreprocessArgs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">add_hydra_args_to_sys</span><span class="p">,</span>
     <span class="n">catch_cli_errors</span><span class="p">,</span>
@@ -399,9 +396,7 @@ document.write(`
         <span class="nd">@autrainer</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">)</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_in_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span>
-                    <span class="n">cfg</span><span class="o">.</span><span class="n">dataset</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_in_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>

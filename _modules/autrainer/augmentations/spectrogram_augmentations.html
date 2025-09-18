@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/augmentations/spectrogram_augmentations';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -583,7 +583,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">W</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">W</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>  <span class="c1"># noqa: N803</span>
         <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">generator_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -642,9 +642,7 @@ document.write(`
 
         <span class="c1"># Destination</span>
         <span class="n">w</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="mi">2</span>
-            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span>
-            <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_generator</span><span class="p">)</span>
+            <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_generator</span><span class="p">)</span>
             <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span>
         <span class="p">)</span>  <span class="c1"># distance</span>
         <span class="n">dest_ctr_pt_freq</span> <span class="o">=</span> <span class="n">src_ctr_pt_freq</span>
@@ -678,7 +676,7 @@ document.write(`
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">time_mask</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">freq_mask</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">W</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="n">W</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>  <span class="c1"># noqa: N803</span>
         <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">generator_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -731,8 +729,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">AbstractDataItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractDataItem</span><span class="p">:</span>
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_warp</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_freq_mask</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_mask</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">item</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_mask</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
 </pre></div>
 

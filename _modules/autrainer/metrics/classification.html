@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/metrics/classification';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -361,7 +361,7 @@ document.write(`
 <div class="viewcode-block" id="Accuracy">
 <a class="viewcode-back" href="../../../modules/metrics.html#autrainer.metrics.Accuracy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Accuracy</span><span class="p">(</span><span class="n">BaseAscendingMetric</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Accuracy metric using `audmetric.accuracy`.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">audmetric</span><span class="o">.</span><span class="n">accuracy</span><span class="p">)</span></div>
 
@@ -370,7 +370,7 @@ document.write(`
 <div class="viewcode-block" id="UAR">
 <a class="viewcode-back" href="../../../modules/metrics.html#autrainer.metrics.UAR">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UAR</span><span class="p">(</span><span class="n">BaseAscendingMetric</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Unweighted average recall metric using</span>
 <span class="sd">        `audmetric.unweighted_average_recall`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -381,7 +381,7 @@ document.write(`
 <div class="viewcode-block" id="F1">
 <a class="viewcode-back" href="../../../modules/metrics.html#autrainer.metrics.F1">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">F1</span><span class="p">(</span><span class="n">BaseAscendingMetric</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;F1 metric using `audmetric.unweighted_average_fscore`.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">audmetric</span><span class="o">.</span><span class="n">unweighted_average_fscore</span><span class="p">)</span></div>
 

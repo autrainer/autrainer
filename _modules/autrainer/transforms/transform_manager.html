@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/transforms/transform_manager';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -441,15 +441,13 @@ document.write(`
             <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
             <span class="c1"># allow the model to remove a transform by setting it to None</span>
-            <span class="c1"># e.g. autrainer.transforms.Normalize: null</span>
+            <span class="c1"># e.g., autrainer.transforms.Normalize: null</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">transform</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="n">combined</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
 
-        <span class="n">combined</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-            <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">dataset_transforms</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span>
-        <span class="p">)</span>
+        <span class="n">combined</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">dataset_transforms</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">SmartCompose</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">combined</span><span class="p">])</span>
 

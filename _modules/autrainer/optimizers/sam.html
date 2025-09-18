@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/optimizers/sam';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -353,7 +353,7 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for autrainer.optimizers.sam</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
@@ -372,8 +372,8 @@ document.write(`
         <span class="n">base_optimizer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">rho</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
         <span class="n">adaptive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sharpness Aware Minimization (SAM) optimizer.</span>
 
 <span class="sd">        This implementation is adapted from the following repository:</span>
@@ -410,7 +410,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_optimizer</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span>
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">first_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">first_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">grad_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grad_norm</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">:</span>
             <span class="n">scale</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;rho&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">grad_norm</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
@@ -428,22 +428,8 @@ document.write(`
         <span class="k">if</span> <span class="n">zero_grad</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
 
-    <span class="c1"># @torch.no_grad()</span>
-    <span class="c1"># def first_step_uphill(self, zero_grad=False):</span>
-    <span class="c1">#     grad_norm = self._grad_norm()</span>
-    <span class="c1">#     for group in self.param_groups:</span>
-    <span class="c1">#         scale = group[&quot;rho&quot;] / (grad_norm + 1e-12)</span>
-
-    <span class="c1">#         for p in group[&quot;params&quot;]:</span>
-    <span class="c1">#             if p.grad is None: continue</span>
-    <span class="c1">#             self.state[p][&quot;old_p&quot;] = p.data.clone()</span>
-    <span class="c1">#             e_w = (torch.pow(p, 2) if group[&quot;adaptive&quot;] else 1.0) * p.grad * scale.to(p)</span>
-    <span class="c1">#             p.add_(e_w)  # climb to the local maximum &quot;w + e(w)&quot;</span>
-
-    <span class="c1">#     if zero_grad: self.zero_grad()</span>
-
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">second_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">second_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -457,10 +443,10 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">closure</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">closure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">),</span> <span class="s2">&quot;Sharpness Aware Minimization requires closure, but it was not provided&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">closure</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">closure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;Sharpness Aware Minimization requires closure, but it was not provided&quot;</span>
+        <span class="p">)</span>
         <span class="c1"># the closure should do a full forward-backward pass</span>
         <span class="n">closure</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">enable_grad</span><span class="p">()(</span><span class="n">closure</span><span class="p">)</span>
 
@@ -468,10 +454,10 @@ document.write(`
         <span class="n">closure</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">second_step</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_grad_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grad_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="c1"># put everything on the same device, in case of model parallelism</span>
         <span class="n">shared_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span>
-        <span class="n">norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="p">((</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;adaptive&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
@@ -484,9 +470,8 @@ document.write(`
             <span class="p">),</span>
             <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">norm</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_optimizer</span><span class="o">.</span><span class="n">param_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span>
 

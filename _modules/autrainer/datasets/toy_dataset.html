@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/datasets/toy_dataset';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -464,8 +464,7 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">task</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TrainingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">TASKS</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Invalid task &#39;</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;must be in </span><span class="si">{</span><span class="n">TrainingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">TASKS</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid task &#39;</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">&#39;, must be in </span><span class="si">{</span><span class="n">TrainingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">TASKS</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_targets</span> <span class="o">=</span> <span class="n">num_targets</span>
@@ -495,7 +494,7 @@ document.write(`
             <span class="n">test_transform</span><span class="o">=</span><span class="n">test_transform</span><span class="p">,</span>
             <span class="n">stratify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mock_df</span>  <span class="c1"># required due to super().__init__ with placeholders</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mock_df</span>  <span class="c1"># required due to super().__init__ with placeholders # noqa: B018</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_assert_splits</span><span class="p">(</span><span class="n">dev_split</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">test_split</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -525,15 +524,11 @@ document.write(`
         <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;ml-classification&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;class_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_targets</span><span class="p">)</span>
-            <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;class_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_targets</span><span class="p">)]</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="o">**</span><span class="p">{</span>
-                        <span class="n">col</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
-                        <span class="p">)</span>
+                        <span class="n">col</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
                         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span>
                     <span class="p">}</span>
                 <span class="p">}</span>
@@ -541,19 +536,13 @@ document.write(`
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span> <span class="o">=</span> <span class="s2">&quot;target&quot;</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span>
-                        <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_targets</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span>
-                    <span class="p">)</span>
-                <span class="p">}</span>
+                <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_targets</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)}</span>
             <span class="p">)</span>
             <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;class_</span><span class="si">{</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;class_</span><span class="si">{</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;mt-regression&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;target_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_targets</span><span class="p">)</span>
-            <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;target_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_targets</span><span class="p">)]</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="o">**</span><span class="p">{</span>
@@ -567,8 +556,7 @@ document.write(`
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,))})</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Invalid task &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;must be in </span><span class="si">{</span><span class="n">TrainingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">TASKS</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid task &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">&#39;, must be in </span><span class="si">{</span><span class="n">TrainingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">TASKS</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">df</span>
@@ -581,9 +569,7 @@ document.write(`
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">df_dev</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="n">train_size</span><span class="p">,</span> <span class="n">dev_size</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_sizes</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reset_index</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_mock_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">train_size</span> <span class="p">:</span> <span class="n">train_size</span> <span class="o">+</span> <span class="n">dev_size</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reset_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mock_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">train_size</span> <span class="p">:</span> <span class="n">train_size</span> <span class="o">+</span> <span class="n">dev_size</span><span class="p">])</span>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">df_test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -591,11 +577,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reset_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mock_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">dev_size</span> <span class="p">:])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index_column</span><span class="p">])</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index_column</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_init_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -616,27 +598,23 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">target_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractTargetTransform</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;ml-classification&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">MultiLabelEncoder</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">LabelEncoder</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;mt-regression&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">LabelEncoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;mt-regression&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">MultiTargetMinMaxScaler</span><span class="p">(</span>
                 <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
                 <span class="n">minimum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
                 <span class="n">maximum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;regression&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;regression&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">MinMaxScaler</span><span class="p">(</span>
                 <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
                 <span class="n">minimum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
                 <span class="n">maximum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Invalid task &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;must be in </span><span class="si">{</span><span class="n">TrainingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">TASKS</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid task &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">&#39;, must be in </span><span class="si">{</span><span class="n">TrainingConstants</span><span class="p">()</span><span class="o">.</span><span class="n">TASKS</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span></div>
 
 </pre></div>
 

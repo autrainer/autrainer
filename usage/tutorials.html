@@ -40,14 +40,14 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'usage/tutorials';</script>
-    <script src="../_static/external_links.js?v=919ee35f"></script>
+    <script src="../_static/external_links.js?v=36097e0a"></script>
     <script src="../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -688,25 +688,32 @@ the <code class="xref py py-meth docutils literal notranslate"><span class="pre"
 with an additional scaling factor:</p>
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text">scaled_ce_loss.py</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="k">class</span><span class="w"> </span><span class="nc">ScaledCrossEntropyLoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">):</span>
-<span class="linenos"> 5</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="linenos"> 6</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Cross entropy loss with a scaling factor.</span>
-<span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="sd">        Args:</span>
-<span class="linenos"> 9</span><span class="sd">            scaling_factor: Scaling factor for the loss.</span>
-<span class="linenos">10</span><span class="sd">            *args: Positional arguments passed to `torch.nn.CrossEntropyLoss`.</span>
-<span class="linenos">11</span><span class="sd">            **kwargs: Keyword arguments passed to `torch.nn.CrossEntropyLoss`.</span>
-<span class="linenos">12</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">13</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="linenos">14</span>        <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">scaling_factor</span>
-<span class="linenos">15</span>
-<span class="linenos">16</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="linenos">17</span>        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-<span class="linenos">18</span>            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
-<span class="linenos">19</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span> <span class="o">*</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="k">class</span><span class="w"> </span><span class="nc">ScaledCrossEntropyLoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">):</span>
+<span class="linenos"> 7</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos"> 8</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos"> 9</span>        <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="linenos">10</span>        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="linenos">11</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="linenos">12</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Cross entropy loss with a scaling factor.</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="sd">        Args:</span>
+<span class="linenos">16</span><span class="sd">            scaling_factor: Scaling factor for the loss.</span>
+<span class="linenos">17</span><span class="sd">            *args: Positional arguments passed to `torch.nn.CrossEntropyLoss`.</span>
+<span class="linenos">18</span><span class="sd">            **kwargs: Keyword arguments passed to `torch.nn.CrossEntropyLoss`.</span>
+<span class="linenos">19</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">20</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="linenos">21</span>        <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">scaling_factor</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="linenos">24</span>        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<span class="linenos">25</span>            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+<span class="linenos">26</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span> <span class="o">*</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -899,7 +906,7 @@ that instantiates your <a class="reference internal" href="../modules/dataset_ut
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">default_collate_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default_collate_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">DataBatchMulti</span><span class="o">.</span><span class="n">collate</span>
 </pre></div>
 </div>
@@ -934,7 +941,7 @@ in its forward pass to access the <code class="xref py py-attr docutils literal 
 <div class="literal-block-wrapper docutils container" id="id20">
 <div class="code-block-caption"><span class="caption-text">multi_branch_model.py</span><a class="headerlink" href="#id20" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ToyMultiBranchModel</span><span class="p">(</span><span class="n">AbstractModel</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># no transfer learning</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_dim</span> <span class="o">=</span> <span class="n">input_dim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
@@ -943,16 +950,10 @@ in its forward pass to access the <code class="xref py py-attr docutils literal 
         <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dim</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">linear1</span><span class="p">(</span><span class="n">features</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span><span class="p">(</span><span class="n">meta</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
-        <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">linear1</span><span class="p">(</span><span class="n">features</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span><span class="p">(</span><span class="n">meta</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -980,7 +981,7 @@ in its forward pass to access the <code class="xref py py-attr docutils literal 
 with an additional randomly scaled learning rate using a <a class="reference internal" href="../modules/optimizers.html#optimizer-custom-step"><span class="std std-ref">custom step function</span></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id22">
 <div class="code-block-caption"><span class="caption-text">random_scaled_sgd.py</span><a class="headerlink" href="#id22" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="linenos"> 4</span>
@@ -995,8 +996,8 @@ with an additional randomly scaled learning rate using a <a class="reference int
 <span class="linenos">13</span>        <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
 <span class="linenos">14</span>        <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
 <span class="linenos">15</span>        <span class="n">generator_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="linenos">16</span>        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-<span class="linenos">17</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="linenos">16</span>        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="linenos">17</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
 <span class="linenos">18</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">19</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Randomized Scaled SGD optimizer. Randomly scales the learning rate.</span>
 <span class="linenos">20</span>
@@ -1435,64 +1436,56 @@ and <a class="reference internal" href="../modules/loggers.html#autrainer.logger
 <div class="literal-block-wrapper docutils container" id="id35">
 <div class="code-block-caption"><span class="caption-text">wandb_logger.py</span><a class="headerlink" href="#id35" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
 <span class="linenos"> 5</span><span class="kn">import</span><span class="w"> </span><span class="nn">wandb</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExportConstants</span>
-<span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-<span class="linenos"> 9</span>    <span class="n">AbstractLogger</span><span class="p">,</span>
-<span class="linenos">10</span>    <span class="n">get_params_to_export</span><span class="p">,</span>
-<span class="linenos">11</span><span class="p">)</span>
-<span class="linenos">12</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
-<span class="linenos">13</span>
-<span class="linenos">14</span>
-<span class="linenos">15</span><span class="k">class</span><span class="w"> </span><span class="nc">WandBLogger</span><span class="p">(</span><span class="n">AbstractLogger</span><span class="p">):</span>
-<span class="linenos">16</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<span class="linenos">17</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">18</span>        <span class="n">exp_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="linenos">19</span>        <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="linenos">20</span>        <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractMetric</span><span class="p">],</span>
-<span class="linenos">21</span>        <span class="n">tracking_metric</span><span class="p">:</span> <span class="n">AbstractMetric</span><span class="p">,</span>
-<span class="linenos">22</span>        <span class="n">artifacts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
-<span class="linenos">23</span>            <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
-<span class="linenos">24</span>        <span class="p">]</span> <span class="o">=</span> <span class="n">ExportConstants</span><span class="p">()</span><span class="o">.</span><span class="n">ARTIFACTS</span><span class="p">,</span>
-<span class="linenos">25</span>        <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wandb&quot;</span><span class="p">,</span>
-<span class="linenos">26</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">27</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-<span class="linenos">28</span>            <span class="n">exp_name</span><span class="p">,</span> <span class="n">run_name</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">tracking_metric</span><span class="p">,</span> <span class="n">artifacts</span>
-<span class="linenos">29</span>        <span class="p">)</span>
-<span class="linenos">30</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
-<span class="linenos">31</span>            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">output_dir</span><span class="p">)</span>
-<span class="linenos">32</span>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">33</span>        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractLogger</span><span class="p">,</span> <span class="n">get_params_to_export</span>
+<span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="k">class</span><span class="w"> </span><span class="nc">WandBLogger</span><span class="p">(</span><span class="n">AbstractLogger</span><span class="p">):</span>
+<span class="linenos">12</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="linenos">13</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">14</span>        <span class="n">exp_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="linenos">15</span>        <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="linenos">16</span>        <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractMetric</span><span class="p">],</span>
+<span class="linenos">17</span>        <span class="n">tracking_metric</span><span class="p">:</span> <span class="n">AbstractMetric</span><span class="p">,</span>
+<span class="linenos">18</span>        <span class="n">artifacts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="linenos">19</span>        <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wandb&quot;</span><span class="p">,</span>
+<span class="linenos">20</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">21</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">exp_name</span><span class="p">,</span> <span class="n">run_name</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">tracking_metric</span><span class="p">,</span> <span class="n">artifacts</span><span class="p">)</span>
+<span class="linenos">22</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+<span class="linenos">23</span>            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">output_dir</span><span class="p">)</span>
+<span class="linenos">24</span>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">25</span>        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">28</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+<span class="linenos">29</span>            <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span><span class="p">,</span>
+<span class="linenos">30</span>            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_name</span><span class="p">,</span>
+<span class="linenos">31</span>            <span class="n">config</span><span class="o">=</span><span class="n">get_params_to_export</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
+<span class="linenos">32</span>            <span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+<span class="linenos">33</span>        <span class="p">)</span>
 <span class="linenos">34</span>
-<span class="linenos">35</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">36</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
-<span class="linenos">37</span>            <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span><span class="p">,</span>
-<span class="linenos">38</span>            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_name</span><span class="p">,</span>
-<span class="linenos">39</span>            <span class="n">config</span><span class="o">=</span><span class="n">get_params_to_export</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
-<span class="linenos">40</span>            <span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
-<span class="linenos">41</span>        <span class="p">)</span>
-<span class="linenos">42</span>
-<span class="linenos">43</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
-<span class="linenos">44</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">45</span>        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-<span class="linenos">46</span>        <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="linenos">47</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">48</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">iteration</span><span class="p">)</span>
+<span class="linenos">35</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
+<span class="linenos">36</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">37</span>        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+<span class="linenos">38</span>        <span class="n">iteration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="linenos">39</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">40</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">iteration</span><span class="p">)</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_timers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">43</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">timers</span><span class="p">)</span>
+<span class="linenos">44</span>
+<span class="linenos">45</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">46</span>        <span class="n">artifact</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">Artifact</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>
+<span class="linenos">47</span>        <span class="n">artifact</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+<span class="linenos">48</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
 <span class="linenos">49</span>
-<span class="linenos">50</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_timers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">51</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">timers</span><span class="p">)</span>
-<span class="linenos">52</span>
-<span class="linenos">53</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">54</span>        <span class="n">artifact</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">Artifact</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>
-<span class="linenos">55</span>        <span class="n">artifact</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-<span class="linenos">56</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
-<span class="linenos">57</span>
-<span class="linenos">58</span>    <span class="k">def</span><span class="w"> </span><span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">59</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+<span class="linenos">50</span>    <span class="k">def</span><span class="w"> </span><span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">51</span>        <span class="n">wandb</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

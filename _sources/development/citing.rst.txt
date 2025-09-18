@@ -7,6 +7,18 @@ Publication
 -----------
 
 The formal publication describing `autrainer` will be available soon.
+For now, we kindly appreciate a citation to our `arxiv preprint <https://arxiv.org/abs/2412.11943>`_:
+
+.. code-block:: bibtex
+
+    @article{Rampp24-AAM,
+        title={autrainer: A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks},
+        author={Rampp, Simon and Triantafyllopoulos, Andreas and Milling, Manuel and Schuller, Bj{\"o}rn W},
+        journal={arXiv preprint arXiv:2412.11943},
+        year={2024}
+    }
+
+
 
 
 Authors

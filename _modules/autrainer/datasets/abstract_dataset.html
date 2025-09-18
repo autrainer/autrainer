@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/datasets/abstract_dataset';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -490,15 +490,10 @@ document.write(`
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_assert_stratify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;ml-classification&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">stratify</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Stratify is not supported for &#39;ml-classification&#39; tasks.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Stratify is not supported for &#39;ml-classification&#39; tasks.&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stratify</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_dev</span><span class="o">.</span><span class="n">columns</span>
-                <span class="ow">or</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_test</span><span class="o">.</span><span class="n">columns</span>
-            <span class="p">):</span>
+            <span class="k">if</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_dev</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_test</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Stratify column &#39;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">&#39; is not present in &quot;</span>
                     <span class="s2">&quot;the development or test dataframes.&quot;</span>
@@ -726,7 +721,7 @@ document.write(`
 
 <div class="viewcode-block" id="AbstractDataset.download">
 <a class="viewcode-back" href="../../../modules/datasets.html#autrainer.datasets.AbstractDataset.download">[docs]</a>
-    <span class="nd">@staticmethod</span>
+    <span class="nd">@staticmethod</span>  <span class="c1"># noqa: B027</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the dataset. Can be implemented by subclasses, but is not</span>
 <span class="sd">        required.</span>
@@ -805,9 +800,7 @@ document.write(`
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">target_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LabelEncoder</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">LabelEncoder</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">LabelEncoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_assert_dev_split</span><span class="p">(</span><span class="n">dev_split</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -894,9 +887,7 @@ document.write(`
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_assert_threshold</span><span class="p">(</span><span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Threshold &#39;</span><span class="si">{</span><span class="n">threshold</span><span class="si">}</span><span class="s2">&#39; must be between 0 and 1.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Threshold &#39;</span><span class="si">{</span><span class="n">threshold</span><span class="si">}</span><span class="s2">&#39; must be between 0 and 1.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_assert_target_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allowed_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>

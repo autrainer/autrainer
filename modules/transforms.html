@@ -40,14 +40,14 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'modules/transforms';</script>
-    <script src="../_static/external_links.js?v=919ee35f"></script>
+    <script src="../_static/external_links.js?v=36097e0a"></script>
     <script src="../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -709,7 +709,7 @@ specified will be used.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>transforms</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#autrainer.transforms.AbstractTransform" title="autrainer.transforms.abstract_transform.AbstractTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTransform</span></code></a>]</span>) – List of transforms to compose.</p></li>
-<li><p><strong>**kwargs</strong> – Additional keyword arguments to pass to
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – Additional keyword arguments to pass to
 torchvision.transforms.Compose.</p></li>
 </ul>
 </dd>
@@ -808,7 +808,7 @@ worker index.</p>
 later in the pipeline. If multiple transforms have the same
 order, they are applied in the order they were added to the
 pipeline. Defaults to 0.</p></li>
-<li><p><strong>kwargs</strong> – Additional keyword arguments to store in the object.</p></li>
+<li><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – Additional keyword arguments to store in the object.</p></li>
 </ul>
 </dd>
 </dl>
@@ -944,17 +944,31 @@ the range [0.0, 1.0].</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.transforms.OpenSMILE">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">OpenSMILE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">functionals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#OpenSMILE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.OpenSMILE" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">OpenSMILE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">functionals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lld_deltas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#OpenSMILE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.OpenSMILE" title="Link to this definition">#</a></dt>
 <dd><p>Extract features from an audio signal using openSMILE.</p>
 <p>The openSMILE library must be installed to use this transform.
 To install the required extras, run:
 ‘pip install autrainer[opensmile]’.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Setting <cite>lld_deltas</cite> to <cite>True</cite>
+will extract and concatenate
+<a class="reference external" href="https://audeering.github.io/opensmile-python/api/opensmile.FeatureLevel.html#opensmile.FeatureLevel.LowLevelDescriptors_Deltas" title="(in opensmile vv2.6.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">opensmile.FeatureLevel.LowLevelDescriptors_Deltas</span></code></a> to the
+<a class="reference external" href="https://audeering.github.io/opensmile-python/api/opensmile.FeatureLevel.html#opensmile.FeatureLevel.LowLevelDescriptors" title="(in opensmile vv2.6.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">opensmile.FeatureLevel.LowLevelDescriptors</span></code></a> features.
+However, <a class="reference external" href="https://audeering.github.io/opensmile-python/api/opensmile.html#module-opensmile" title="(in opensmile vv2.6.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opensmile</span></code></a> returns <em>longer</em> sequences
+for the delta features. To match to the original length,
+we drop the first and last frame of the delta features.
+This may result in misalignment, as we are not sure
+how padding is handled in <a class="reference external" href="https://audeering.github.io/opensmile-python/api/opensmile.html#module-opensmile" title="(in opensmile vv2.6.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opensmile</span></code></a>.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>feature_set</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The feature set to use.</p></li>
 <li><p><strong>sample_rate</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The sample rate of the audio signal.</p></li>
 <li><p><strong>functionals</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to use functionals. Defaults to False.</p></li>
+<li><p><strong>lld_deltas</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to additionally compute deltas. Only relevant
+for LLDs. Defaults to False.</p></li>
 <li><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the transform in the pipeline. Defaults to -80.</p></li>
 </ul>
 </dd>
@@ -1083,12 +1097,14 @@ Y = 0.2989 * R + 0.587 * G + 0.114 * B.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="autrainer.transforms.ScaleRange">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">ScaleRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#ScaleRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.ScaleRange" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.transforms.</span></span><span class="sig-name descname"><span class="pre">ScaleRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/transforms/specific_transforms.html#ScaleRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.transforms.ScaleRange" title="Link to this definition">#</a></dt>
 <dd><p>Scale a tensor to a specific target range.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>range</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – The range to scale the tensor to. Defaults to [0.0, 1.0].</p></li>
+<li><p><strong>range</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]</span>) – The range to scale the tensor to. If None, it will be set to</p></li>
+<li><p><strong>[</strong><strong>0.0</strong></p></li>
+<li><p><strong>None.</strong> (<em>1.0</em><em>]</em><em>. Defaults to</em>)</p></li>
 <li><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the transform in the pipeline. Defaults to 90.</p></li>
 </ul>
 </dd>

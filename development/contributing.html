@@ -40,14 +40,14 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'development/contributing';</script>
-    <script src="../_static/external_links.js?v=919ee35f"></script>
+    <script src="../_static/external_links.js?v=36097e0a"></script>
     <script src="../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -360,15 +360,21 @@ document.write(`
 If you would like to contribute to <cite>autrainer</cite>, please open an issue or a pull request on the <a class="reference external" href="https://github.com/autrainer/autrainer">GitHub repository</a>.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>To install <cite>autrainer</cite>, first ensure that PyTorch (along with torchvision and torchaudio) version 2.0 or higher is installed.
-For installation instructions, refer to the <a class="reference external" href="https://pytorch.org/get-started/locally/">PyTorch website</a>.</p>
 <p>It is recommended to install <cite>autrainer</cite> within a virtual environment.
 To create a new virtual environment, refer to the <a class="reference external" href="https://docs.python.org/3/library/venv.html">Python venv documentation</a>.</p>
-<p>To set up <cite>autrainer</cite> for development, start by cloning the repository and then install the development dependencies with <cite>poetry</cite>:</p>
+<p>To set up <cite>autrainer</cite> for development, start by cloning the repository
+and then install the development dependencies with <a class="reference external" href="https://docs.astral.sh/uv/">uv</a>:</p>
 <div class="highlight-extended notranslate"><div class="highlight"><pre><span></span><span class="k">git</span> clone <span class="k">git</span>@github.com:autrainer/autrainer.git
 <span class="k">cd</span> autrainer
-<span class="k">poetry</span> install <span class="o">--all-extras</span>
+<span class="k">uv</span> sync <span class="o">--all-extras</span> <span class="o">--all-groups</span> <span class="o">--inexact</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are using Windows, make sure that PyTorch (along with <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchvision</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchaudio</span></code>) version 2.0 or higher is installed beforehand.
+For installation instructions, refer to the <a class="reference external" href="https://pytorch.org/get-started/locally/">PyTorch documentation</a>.</p>
+<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">--inexact</span></code> flag allows for manual installation of a specific PyTorch version prior to syncing dependencies.
+This is necessary because <cite>autrainer</cite> does not pin a PyTorch version for Windows to not conflict with different CUDA versions.</p>
 </div>
 </section>
 <section id="conventions">
@@ -385,7 +391,7 @@ To install the pre-commit hooks, run the following command:</p>
 <h2>Tests<a class="headerlink" href="#tests" title="Link to this heading">#</a></h2>
 <p>We use <a class="reference external" href="https://docs.pytest.org/en/stable/">pytest</a> for testing.
 To run the tests, use the following command:</p>
-<div class="highlight-extended notranslate"><div class="highlight"><pre><span></span><span class="k">pytest</span> tests
+<div class="highlight-extended notranslate"><div class="highlight"><pre><span></span><span class="k">pytest</span>
 </pre></div>
 </div>
 </section>

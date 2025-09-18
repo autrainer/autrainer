@@ -197,8 +197,8 @@ Spectrogram Augmentations
 
 .. _augmentation_collate:
 
-Augmentations with Collate Functions
-------------------------------------
+Collate Functions
+-----------------
 
 For augmentations that require a collate function, an optional :attr:`get_collate_fn` method can be implemented.
 This method is used to retrieve the collate function from the augmentation if it is present.

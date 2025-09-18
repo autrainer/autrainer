@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/loggers/abstract_logger';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -355,7 +355,7 @@ document.write(`
   <h1>Source code for autrainer.loggers.abstract_logger</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
 
@@ -399,12 +399,10 @@ document.write(`
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">)):</span>
             <span class="n">cfg_id</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cfg_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_target_&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Configuration &#39;</span><span class="si">{</span><span class="n">full_key</span><span class="si">}</span><span class="s2">&#39; is missing an id field.&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Configuration &#39;</span><span class="si">{</span><span class="n">full_key</span><span class="si">}</span><span class="s2">&#39; is missing an id field.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cfg_id</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># placeholder syntax</span>
                 <span class="k">continue</span>
-            <span class="k">elif</span> <span class="n">cfg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># shorthand syntax</span>
+            <span class="k">if</span> <span class="n">cfg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># shorthand syntax</span>
                 <span class="n">result</span><span class="p">[</span><span class="n">full_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># full syntax</span>
                 <span class="n">result</span><span class="p">[</span><span class="n">full_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
@@ -423,9 +421,7 @@ document.write(`
         <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractMetric</span><span class="p">],</span>
         <span class="n">tracking_metric</span><span class="p">:</span> <span class="n">AbstractMetric</span><span class="p">,</span>
-        <span class="n">artifacts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
-            <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="n">ExportConstants</span><span class="p">()</span><span class="o">.</span><span class="n">ARTIFACTS</span><span class="p">,</span>
+        <span class="n">artifacts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Base class for loggers.</span>
 
@@ -434,14 +430,15 @@ document.write(`
 <span class="sd">            run_name: The name of the run.</span>
 <span class="sd">            metrics: The metrics to log.</span>
 <span class="sd">            tracking_metric: The metric to determine the best results.</span>
-<span class="sd">            artifacts: The artifacts to log. Defaults to</span>
+<span class="sd">            artifacts: The artifacts to log. If None, defaults to</span>
 <span class="sd">                :const:`~autrainer.core.constants.ExportConstants.ARTIFACTS`.</span>
+<span class="sd">                Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_name</span> <span class="o">=</span> <span class="n">run_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span> <span class="o">=</span> <span class="n">exp_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracking_metric</span> <span class="o">=</span> <span class="n">tracking_metric</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span> <span class="o">=</span> <span class="n">artifacts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span> <span class="o">=</span> <span class="n">artifacts</span> <span class="ow">or</span> <span class="n">ExportConstants</span><span class="p">()</span><span class="o">.</span><span class="n">ARTIFACTS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_metrics</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;train_loss.min&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
             <span class="s2">&quot;dev_loss.min&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
@@ -449,9 +446,7 @@ document.write(`
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AbstractMetric</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">best_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">metric</span><span class="o">.</span><span class="n">starting_metric</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">best_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">starting_metric</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">metrics_dict</span><span class="p">[</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric</span>
 
 <div class="viewcode-block" id="AbstractLogger.log_and_update_metrics">
@@ -495,14 +490,12 @@ document.write(`
                     <span class="bp">self</span><span class="o">.</span><span class="n">best_metrics</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="s2">&quot;.min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">metric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">metric</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span>
-                    <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-                <span class="p">):</span>
+                <span class="k">if</span> <span class="n">metric</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">best_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 <div class="viewcode-block" id="AbstractLogger.setup">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.setup">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: B027</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional setup method called at the beginning of the run</span>
 <span class="sd">        (`cb_on_train_begin`).</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
@@ -525,7 +518,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-        <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">iteration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log the metrics for the given iteration.</span>
 
@@ -565,7 +558,7 @@ document.write(`
 
 <div class="viewcode-block" id="AbstractLogger.end_run">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.end_run">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: B027</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional end run method called at the end of the run</span>
 <span class="sd">        (`cb_on_train_end`).</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
@@ -580,9 +573,7 @@ document.write(`
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_and_update_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_test_end</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">,</span> <span class="n">test_results</span><span class="p">:</span> <span class="nb">dict</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_test_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">,</span> <span class="n">test_results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_and_update_metrics</span><span class="p">(</span><span class="n">test_results</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_train_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

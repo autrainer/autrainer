@@ -40,14 +40,14 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../_static/documentation_options.js?v=486e5634"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'modules/core';</script>
-    <script src="../_static/external_links.js?v=919ee35f"></script>
+    <script src="../_static/external_links.js?v=36097e0a"></script>
     <script src="../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -378,6 +378,9 @@ search path. Defaults to None.</p></li>
 <li><p><strong>version_base</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Hydra version base. Defaults to None.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]], <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -405,7 +408,7 @@ attribute. If None, uses HydraConvertEnum.ALL. Defaults to None.</p></li>
 <li><p><strong>recursive</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to recursively instantiate objects. Recursive is
 only used if the config does not have a <cite>_recursive_</cite> field.
 Defaults to False.</p></li>
-<li><p><strong>**kwargs</strong> – Additional keyword arguments to pass to the object.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – Additional keyword arguments to pass to the object.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -444,7 +447,7 @@ attribute. If None, uses HydraConvertEnum.ALL. Defaults to None.</p></li>
 <li><p><strong>recursive</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to recursively instantiate objects. Recursive is
 only used if the config does not have a <cite>_recursive_</cite> field.
 Defaults to False.</p></li>
-<li><p><strong>**kwargs</strong> – Additional keyword arguments to pass to the object.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – Additional keyword arguments to pass to the object.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -1033,7 +1036,7 @@ To install all necessary dependencies, run:
 <li><p><strong>add_titles</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to add titles to plots.</p></li>
 <li><p><strong>add_xlabels</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to add x-labels to plots.</p></li>
 <li><p><strong>add_ylabels</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to add y-labels to plots.</p></li>
-<li><p><strong>rcParams</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span>) – Additional Matplotlib rcParams to set.</p></li>
+<li><p><strong>rcParams</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – Additional Matplotlib rcParams to set.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1080,7 +1083,7 @@ To install all necessary dependencies, run:
 <li><p><strong>add_titles</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to add titles to plots.</p></li>
 <li><p><strong>add_xlabels</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to add x-labels to plots.</p></li>
 <li><p><strong>add_ylabels</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to add y-labels to plots.</p></li>
-<li><p><strong>rcParams</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span>) – Additional Matplotlib rcParams to set.</p></li>
+<li><p><strong>rcParams</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – Additional Matplotlib rcParams to set.</p></li>
 <li><p><strong>metric_fns</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="metrics.html#autrainer.metrics.AbstractMetric" title="autrainer.metrics.abstract_metric.AbstractMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMetric</span></code></a>]</span>) – List of metrics to use for plotting.</p></li>
 </ul>
 </dd>
@@ -1168,6 +1171,9 @@ standard deviation is shown as error bars.</p>
 <li><p><strong>group_by</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Column to group the data by.</p></li>
 <li><p><strong>split_subgroups</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to split subgroups.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>

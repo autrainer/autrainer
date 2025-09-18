@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/training/training';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -390,6 +390,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">disaggregated_evaluation</span><span class="p">,</span>
     <span class="n">format_results</span><span class="p">,</span>
+    <span class="n">get_optimizer_params</span><span class="p">,</span>
     <span class="n">load_pretrained_model_state</span><span class="p">,</span>
     <span class="n">load_pretrained_optim_state</span><span class="p">,</span>
 <span class="p">)</span>
@@ -524,10 +525,15 @@ document.write(`
         <span class="p">)</span>
 
         <span class="c1"># ? Load Optimizer</span>
+        <span class="n">optimizer_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span>
+        <span class="n">_wd</span> <span class="o">=</span> <span class="n">optimizer_cfg</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;weight_decay&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">_wd_bias</span> <span class="o">=</span> <span class="n">optimizer_cfg</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;apply_weight_decay_to_bias&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">_wd_norm</span> <span class="o">=</span> <span class="n">optimizer_cfg</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;apply_weight_decay_to_norm&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="n">optimizer_cfg</span><span class="p">,</span>
             <span class="n">instance_of</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">get_optimizer_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">_wd</span><span class="p">,</span> <span class="n">_wd_bias</span><span class="p">,</span> <span class="n">_wd_norm</span><span class="p">),</span>
             <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">optimizer_checkpoint</span><span class="p">:</span>
@@ -619,10 +625,7 @@ document.write(`
                 <span class="n">instance_of</span><span class="o">=</span><span class="n">AbstractFileHandler</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">_preprocess_pipe</span> <span class="o">=</span> <span class="n">SmartCompose</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_preprocess</span><span class="p">[</span><span class="s2">&quot;pipeline&quot;</span><span class="p">]</span>
-                <span class="p">]</span>
+                <span class="p">[</span><span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_preprocess</span><span class="p">[</span><span class="s2">&quot;pipeline&quot;</span><span class="p">]]</span>
             <span class="p">)</span>
 
         <span class="n">save_tasks</span> <span class="o">=</span> <span class="p">[</span>
@@ -645,9 +648,7 @@ document.write(`
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;continue_training&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span> <span class="o">=</span> <span class="n">ContinueTraining</span><span class="p">(</span>
                 <span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="n">remove_continued_runs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="s2">&quot;remove_continued_runs&quot;</span><span class="p">,</span> <span class="kc">False</span>
-                <span class="p">),</span>
+                <span class="n">remove_continued_runs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;remove_continued_runs&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span> <span class="o">=</span> <span class="kc">None</span>
@@ -659,8 +660,7 @@ document.write(`
                 <span class="n">autrainer</span><span class="o">.</span><span class="n">instantiate_shorthand</span><span class="p">(</span>
                     <span class="n">config</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
                     <span class="n">instance_of</span><span class="o">=</span><span class="n">AbstractLogger</span><span class="p">,</span>
-                    <span class="n">exp_name</span><span class="o">=</span><span class="n">experiment_id</span>
-                    <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">exp_name</span><span class="o">=</span><span class="n">experiment_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
                     <span class="n">tracking_metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tracking_metric</span><span class="p">,</span>
@@ -688,7 +688,7 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
                 <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">,</span>
                 <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span><span class="p">,</span>  <span class="c1"># has to be last as it might overwrite other callbacks</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span><span class="p">,</span>  <span class="c1"># has to be last as it might overwrite other callbacks  # noqa: E501</span>
             <span class="p">]</span>
         <span class="p">)</span>
 
@@ -729,26 +729,22 @@ document.write(`
 <span class="sd">            The best value of the tracking metric.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># ? Allow optimizers to have custom step functions</span>
-        <span class="n">custom_step</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;custom_step&quot;</span><span class="p">,</span> <span class="kc">False</span>
-        <span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">custom_step</span><span class="p">)</span>
+        <span class="n">custom_step</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;custom_step&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">custom_step</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_step_fn</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">custom_step</span> <span class="k">if</span> <span class="n">custom_step</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_step</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread_manager</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_train_begin&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_train_begin&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span> <span class="o">==</span> <span class="s2">&quot;epoch&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">train_epochs</span><span class="p">()</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span> <span class="o">==</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">train_steps</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Training type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span><span class="si">}</span><span class="s2"> not supported&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
 
         <span class="c1"># ? Score best model on test set</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">)</span>
@@ -782,9 +778,7 @@ document.write(`
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
             <span class="n">format_results</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span><span class="p">]</span>
-                <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
                 <span class="s2">&quot;Best&quot;</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span><span class="p">,</span>
@@ -807,15 +801,11 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_metrics</span><span class="o">.</span><span class="n">plot_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_results_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="s2">&quot;metrics.csv&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_train_end&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span><span class="p">][</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tracking_metric</span><span class="o">.</span><span class="n">name</span>
-        <span class="p">]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_train_end&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tracking_metric</span><span class="o">.</span><span class="n">name</span><span class="p">]</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">train_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model for a fixed number of epochs.&quot;&quot;&quot;</span>
         <span class="n">train_loss</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">pm</span> <span class="o">=</span> <span class="p">(</span>
@@ -857,9 +847,7 @@ document.write(`
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;batch&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                        <span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span>
-                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                     <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_end&quot;</span><span class="p">,</span>
                     <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
@@ -906,7 +894,7 @@ document.write(`
                 <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">train_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model for a fixed number of steps.&quot;&quot;&quot;</span>
         <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
             <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span><span class="p">,</span>
@@ -958,9 +946,7 @@ document.write(`
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;batch&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                    <span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                 <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_end&quot;</span><span class="p">,</span>
                 <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
@@ -1045,7 +1031,7 @@ document.write(`
         <span class="n">dev_evaluation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">save_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span>
         <span class="n">tracker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OutputsTracker</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the model on the dev or test set.</span>
 
 <span class="sd">        Args:</span>
@@ -1059,7 +1045,8 @@ document.write(`
 <span class="sd">            tracker: Tracker to save the outputs. Defaults to None.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Dictionary containing the evaluation results.</span>
+<span class="sd">            Dictionary containing the evaluation results if evaluating on the test set,</span>
+<span class="sd">            otherwise None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cb_type</span> <span class="o">=</span> <span class="s2">&quot;val&quot;</span> <span class="k">if</span> <span class="n">dev_evaluation</span> <span class="k">else</span> <span class="s2">&quot;test&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;iteration&quot;</span><span class="p">:</span> <span class="n">iteration</span><span class="p">}</span> <span class="k">if</span> <span class="n">dev_evaluation</span> <span class="k">else</span> <span class="p">{}</span>
@@ -1081,14 +1068,12 @@ document.write(`
         <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
             <span class="n">results</span><span class="p">[</span><span class="s2">&quot;dev_loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">)</span>
             <span class="c1"># TODO: it&#39;s a bit ugly to filter like this</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;train_loss&quot;</span><span class="p">])):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;train_loss&quot;</span><span class="p">}):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">iteration</span><span class="p">,</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">test_results</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test_loss&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]}</span>
             <span class="c1"># TODO: another ugly filter</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span>
-                <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;train_loss&quot;</span><span class="p">,</span> <span class="s2">&quot;dev_loss&quot;</span><span class="p">])</span>
-            <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;train_loss&quot;</span><span class="p">,</span> <span class="s2">&quot;dev_loss&quot;</span><span class="p">}):</span>
                 <span class="n">test_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;test_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
@@ -1112,9 +1097,7 @@ document.write(`
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_results</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">k</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">)</span>
+                <span class="n">k</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">)</span>
             <span class="p">}</span>
         <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
             <span class="n">logging_results</span><span class="p">[</span><span class="s2">&quot;dev_loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;dev_loss&quot;</span><span class="p">]}</span>
@@ -1135,27 +1118,16 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">max_dev_metric</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tracking_metric</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span> <span class="o">=</span> <span class="n">iteration</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;optimizer.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;optimizer.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="s2">&quot;scheduler.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="s2">&quot;scheduler.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">)</span>
 
             <span class="c1"># ? additionally save all best results</span>
             <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;_best&quot;</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_results_dict</span><span class="p">(</span>
-                <span class="n">logging_results</span><span class="p">,</span> <span class="s2">&quot;dev.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_results_dict</span><span class="p">(</span><span class="n">logging_results</span><span class="p">,</span> <span class="s2">&quot;dev.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;_best&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">iteration</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">save_frequency</span> <span class="o">==</span> <span class="mi">0</span>
-            <span class="ow">or</span> <span class="n">iteration</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">iterations</span>
-        <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="n">iteration_folder</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">iteration</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">save_frequency</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">iteration</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">iterations</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="n">iteration_folder</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;optimizer.pt&quot;</span><span class="p">,</span> <span class="n">iteration_folder</span>
             <span class="p">)</span>
@@ -1164,6 +1136,7 @@ document.write(`
                     <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="s2">&quot;scheduler.pt&quot;</span><span class="p">,</span> <span class="n">iteration_folder</span>
                 <span class="p">)</span>
         <span class="n">tracker</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1184,10 +1157,7 @@ document.write(`
 <span class="sd">        Returns:</span>
 <span class="sd">            Dictionary containing the results on the dev or test set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pm</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">loader_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pin_memory&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span>
-        <span class="p">)</span>
+        <span class="n">pm</span> <span class="o">=</span> <span class="n">loader_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pin_memory&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
             <span class="n">losses</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>

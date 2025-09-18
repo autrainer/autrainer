@@ -39,14 +39,14 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/core/scripts/delete_failed_script';</script>
-    <script src="../../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -389,8 +389,7 @@ document.write(`
             <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-                <span class="s2">&quot;Force deletion of failed runs without confirmation. &quot;</span>
-                <span class="s2">&quot;Defaults to False.&quot;</span>
+                <span class="s2">&quot;Force deletion of failed runs without confirmation. Defaults to False.&quot;</span>
             <span class="p">),</span>
         <span class="p">)</span>
 
@@ -419,8 +418,7 @@ document.write(`
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failed_runs</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
-            <span class="s2">&quot;Are you sure you want to delete &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">failed_runs</span><span class="p">)</span><span class="si">}</span><span class="s2"> failed runs? (y/n): &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Are you sure you want to delete </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">failed_runs</span><span class="p">)</span><span class="si">}</span><span class="s2"> failed runs? (y/n): &quot;</span>
         <span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">response</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">]</span>
 
@@ -458,13 +456,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">script</span> <span class="o">=</span> <span class="n">DeleteFailedScript</span><span class="p">()</span>
     <span class="n">script</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">MockParser</span><span class="p">()</span>
-    <span class="n">script</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
-        <span class="n">DeleteFailedArgs</span><span class="p">(</span>
-            <span class="n">results_dir</span><span class="p">,</span>
-            <span class="n">experiment_id</span><span class="p">,</span>
-            <span class="n">force</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
+    <span class="n">script</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">DeleteFailedArgs</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">,</span> <span class="n">force</span><span class="p">))</span></div>
 
 </pre></div>
 

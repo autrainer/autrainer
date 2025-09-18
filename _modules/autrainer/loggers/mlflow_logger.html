@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/loggers/mlflow_logger';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -355,18 +355,14 @@ document.write(`
   <h1>Source code for autrainer.loggers.mlflow_logger</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExportConstants</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_logger</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AbstractLogger</span><span class="p">,</span>
-    <span class="n">get_params_to_export</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractLogger</span><span class="p">,</span> <span class="n">get_params_to_export</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.fallback_logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">FallbackLogger</span>
 
 
@@ -389,14 +385,10 @@ document.write(`
         <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractMetric</span><span class="p">],</span>
         <span class="n">tracking_metric</span><span class="p">:</span> <span class="n">AbstractMetric</span><span class="p">,</span>
-        <span class="n">artifacts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
-            <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="n">ExportConstants</span><span class="p">()</span><span class="o">.</span><span class="n">ARTIFACTS</span><span class="p">,</span>
+        <span class="n">artifacts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mlruns&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">exp_name</span><span class="p">,</span> <span class="n">run_name</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">tracking_metric</span><span class="p">,</span> <span class="n">artifacts</span>
-        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">exp_name</span><span class="p">,</span> <span class="n">run_name</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">tracking_metric</span><span class="p">,</span> <span class="n">artifacts</span><span class="p">)</span>
         <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">output_dir</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
             <span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
@@ -421,8 +413,7 @@ document.write(`
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_or_create_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;mlflow.ActiveRun&quot;</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_delete_run_if_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_name</span><span class="p">)</span>
-        <span class="n">run</span> <span class="o">=</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">run</span>
+        <span class="k">return</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_delete_run_if_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">client</span> <span class="o">=</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">MlflowClient</span><span class="p">()</span>
@@ -441,7 +432,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-        <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">iteration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">mlflow</span><span class="o">.</span><span class="n">log_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">iteration</span><span class="p">)</span>
 

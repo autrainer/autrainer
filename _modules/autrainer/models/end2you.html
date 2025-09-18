@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/models/end2you';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -369,27 +369,26 @@ document.write(`
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.abstract_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.sequential</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_no_transfer_weights</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class to build convolutional neural network model.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">conv_layers_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">maxpool_layers_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-        <span class="n">conv_op</span><span class="p">:</span> <span class="n">nn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">,</span>
-        <span class="n">max_pool_op</span><span class="p">:</span> <span class="n">nn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool1d</span><span class="p">,</span>
-        <span class="n">activ_fn</span><span class="p">:</span> <span class="n">nn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(),</span>
+        <span class="n">conv_op</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_pool_op</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">activation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Audio model.</span>
@@ -397,32 +396,33 @@ document.write(`
 <span class="sd">        Args:</span>
 <span class="sd">            conv_layers_args: Parameters of convolutions layers.</span>
 <span class="sd">            maxpool_layers_args: Parameters of max pool layer layers.</span>
-<span class="sd">            conv_op: Convolution operation to use. Defaults to torch.nn.Conv1d.</span>
-<span class="sd">            max_pool_op: Max pooling operation to use.</span>
-<span class="sd">                Defaults to torch.nn.MaxPool1d.</span>
-<span class="sd">            activ_fn: Activation function to use.</span>
-<span class="sd">                Defaults to torch.nn.LeakyReLU().</span>
+<span class="sd">            conv_op: Convolution operation to use. If None, defaults to torch.nn.Conv1d.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">            max_pool_op: Max pooling operation to use. If None, defaults to</span>
+<span class="sd">                torch.nn.MaxPool1d. Defaults to None.</span>
+<span class="sd">            activ_fn: Activation function to use. If None, defaults to</span>
+<span class="sd">                torch.nn.LeakyReLU. Defaults to None.</span>
 <span class="sd">            normalize: Whether to use batch normalization. Defaults to False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conv_layers_args</span> <span class="o">=</span> <span class="n">conv_layers_args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxpool_layers_args</span> <span class="o">=</span> <span class="n">maxpool_layers_args</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv_op</span> <span class="o">=</span> <span class="n">conv_op</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_pool_op</span> <span class="o">=</span> <span class="n">max_pool_op</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">activ_fn</span> <span class="o">=</span> <span class="n">activ_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv_op</span> <span class="o">=</span> <span class="n">conv_op</span> <span class="ow">or</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_pool_op</span> <span class="o">=</span> <span class="n">max_pool_op</span> <span class="ow">or</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MaxPool1d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span> <span class="ow">or</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span> <span class="o">=</span> <span class="n">normalize</span>
 
-        <span class="n">network_layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="n">network_layers</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">conv_args</span><span class="p">,</span> <span class="n">mp_args</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-            <span class="o">*</span><span class="p">[</span><span class="n">conv_layers_args</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">maxpool_layers_args</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+            <span class="o">*</span><span class="p">[</span><span class="n">conv_layers_args</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">maxpool_layers_args</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">):</span>
             <span class="n">network_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_conv_block</span><span class="p">(</span><span class="n">conv_args</span><span class="p">,</span> <span class="n">activ_fn</span><span class="p">,</span> <span class="n">normalize</span><span class="p">)]</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_conv_block</span><span class="p">(</span><span class="n">conv_args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">)]</span>
             <span class="p">)</span>
-            <span class="n">network_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">max_pool_op</span><span class="p">(</span><span class="o">**</span><span class="n">mp_args</span><span class="p">)])</span>
+            <span class="n">network_layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_pool_op</span><span class="p">(</span><span class="o">**</span><span class="n">mp_args</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">network_layers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">network_layers</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -430,7 +430,7 @@ document.write(`
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="p">()):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_weights</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_init_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper method to initialize the parameters of the model</span>
 <span class="sd">        with Kaiming uniform initialization.</span>
 
@@ -438,15 +438,15 @@ document.write(`
 <span class="sd">            m: Module to initialize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">):</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">kaiming_uniform_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">bias</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">)):</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">kaiming_uniform_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">bias</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
                 <span class="k">if</span> <span class="s2">&quot;bias&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
-                    <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="s2">&quot;weight&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
-                    <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">kaiming_uniform_</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">kaiming_uniform_</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_num_out_features</span><span class="p">(</span>
@@ -467,16 +467,13 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">layer_input</span> <span class="o">=</span> <span class="n">input_size</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">conv_arg</span><span class="p">,</span> <span class="n">mp_arg</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
-            <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">conv_args</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">mp_args</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+        <span class="k">for</span> <span class="n">conv_arg</span><span class="p">,</span> <span class="n">mp_arg</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span><span class="n">conv_args</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">mp_args</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span>
+            <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="c1"># number of features in the convolution output</span>
             <span class="n">layer_input</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="n">layer_input</span>
-                    <span class="o">-</span> <span class="n">conv_arg</span><span class="p">[</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">]</span>
-                    <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">conv_arg</span><span class="p">[</span><span class="s2">&quot;padding&quot;</span><span class="p">]</span>
-                <span class="p">)</span>
+                <span class="p">(</span><span class="n">layer_input</span> <span class="o">-</span> <span class="n">conv_arg</span><span class="p">[</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">conv_arg</span><span class="p">[</span><span class="s2">&quot;padding&quot;</span><span class="p">])</span>
                 <span class="o">/</span> <span class="n">conv_arg</span><span class="p">[</span><span class="s2">&quot;stride&quot;</span><span class="p">]</span>
                 <span class="o">+</span> <span class="mi">1</span>
             <span class="p">)</span>
@@ -490,25 +487,24 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">_conv_block</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">conv_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-        <span class="n">activ_fn</span><span class="p">:</span> <span class="n">nn</span><span class="p">,</span>
+        <span class="n">activ_fn</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
         <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convolution block.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            conv_args: Parameters of convolution layer.</span>
-<span class="sd">            activ_fn: Activation function to use. Defaults to</span>
-<span class="sd">                torch.nn.LeakyReLU().</span>
+<span class="sd">            activ_fn: Activation function to use.</span>
 <span class="sd">            normalize: Whether to use batch normalization. Defaults to False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">conv_op</span><span class="p">(</span><span class="o">**</span><span class="n">conv_args</span><span class="p">)])</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">conv_op</span><span class="p">(</span><span class="o">**</span><span class="n">conv_args</span><span class="p">)])</span>
 
         <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
-            <span class="n">layer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">conv_args</span><span class="p">[</span><span class="s2">&quot;out_channels&quot;</span><span class="p">]))</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">conv_args</span><span class="p">[</span><span class="s2">&quot;out_channels&quot;</span><span class="p">]))</span>
 
         <span class="n">layer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">activ_fn</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layer</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layer</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -517,7 +513,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Emo18</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Emo18</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Speech emotion recognition model proposed in:</span>
 <span class="sd">        https://doi.org/10.1109/ICASSP.2018.8462677</span>
@@ -526,12 +522,12 @@ document.write(`
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_audio_model</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">build_audio_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_audio_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the audio model: 3 blocks of convolution + max-pooling.&quot;&quot;&quot;</span>
 
         <span class="n">out_channels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">]</span>
         <span class="n">in_channels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">in_channels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">out_channels</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">in_channels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">out_channels</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
         <span class="n">kernel_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
         <span class="n">stride</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
         <span class="n">padding</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -556,11 +552,7 @@ document.write(`
         <span class="p">}</span>
 
         <span class="n">audio_model</span> <span class="o">=</span> <span class="n">Base</span><span class="p">(</span><span class="n">conv_args</span><span class="p">,</span> <span class="n">maxpool_args</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1"># conv_red_size = Base._num_out_features(</span>
-        <span class="c1">#     input_size, conv_args, maxpool_args)</span>
         <span class="n">num_layers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_channels</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="c1"># num_out_features = conv_red_size * \</span>
-        <span class="c1">#     conv_args[f&quot;layer{num_layers}&quot;][&quot;out_channels&quot;]</span>
 
         <span class="n">num_out_features</span> <span class="o">=</span> <span class="n">conv_args</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;layer</span><span class="si">{</span><span class="n">num_layers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="s2">&quot;out_channels&quot;</span><span class="p">]</span>
 
@@ -570,7 +562,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Zhao19</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Zhao19</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Speech emotion recognition model proposed in:</span>
 <span class="sd">        https://doi.org/10.1016/j.bspc.2018.08.035</span>
@@ -579,12 +571,12 @@ document.write(`
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_audio_model</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">build_audio_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_audio_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the audio model: 3 blocks of convolution + max-pooling.&quot;&quot;&quot;</span>
 
         <span class="n">out_channels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">]</span>
         <span class="n">in_channels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">in_channels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">out_channels</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">in_channels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">out_channels</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
         <span class="n">kernel_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
         <span class="n">stride</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
         <span class="n">padding</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -609,7 +601,10 @@ document.write(`
         <span class="p">}</span>
 
         <span class="n">audio_model</span> <span class="o">=</span> <span class="n">Base</span><span class="p">(</span>
-            <span class="n">conv_args</span><span class="p">,</span> <span class="n">maxpool_args</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">activ_fn</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">ELU</span><span class="p">()</span>
+            <span class="n">conv_args</span><span class="p">,</span>
+            <span class="n">maxpool_args</span><span class="p">,</span>
+            <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">activation</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ELU</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">audio_model</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -618,13 +613,13 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">AudioModel</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AudioModel</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Audio network model.</span>
 
 <span class="sd">        Args:</span>
@@ -639,7 +634,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">num_features</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Factory method to choose audio model.&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;emo18&quot;</span><span class="p">:</span> <span class="n">Emo18</span><span class="p">,</span> <span class="s2">&quot;zhao19&quot;</span><span class="p">:</span> <span class="n">Zhao19</span><span class="p">}[</span><span class="n">model_name</span><span class="p">]</span>
@@ -695,7 +690,7 @@ document.write(`
             <span class="n">time_pooling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">bidirectional</span><span class="o">=</span><span class="n">bidirectional</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dim</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span>
@@ -703,9 +698,7 @@ document.write(`
         <span class="n">audio_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">audio_model</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
         <span class="n">audio_out</span> <span class="o">=</span> <span class="n">audio_out</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-        <span class="n">rnn_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">audio_out</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">rnn_out</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">audio_out</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -713,8 +706,7 @@ document.write(`
 <span class="sd">            features ((torch.Tensor) - BS x S x 1 x T)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rnn_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">rnn_out</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">output</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">rnn_out</span><span class="p">)</span></div>
 
 </pre></div>
 

@@ -39,14 +39,14 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/metrics/multi_label_classification';</script>
-    <script src="../../../_static/external_links.js?v=919ee35f"></script>
+    <script src="../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -362,7 +362,7 @@ document.write(`
 <div class="viewcode-block" id="MLAccuracy">
 <a class="viewcode-back" href="../../../modules/metrics.html#autrainer.metrics.MLAccuracy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MLAccuracy</span><span class="p">(</span><span class="n">BaseAscendingMetric</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Accuracy metric using `sklearn.metrics.accuracy_score`.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ml-accuracy&quot;</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">)</span></div>
 
@@ -371,7 +371,7 @@ document.write(`
 <div class="viewcode-block" id="MLF1Macro">
 <a class="viewcode-back" href="../../../modules/metrics.html#autrainer.metrics.MLF1Macro">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MLF1Macro</span><span class="p">(</span><span class="n">BaseAscendingMetric</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;F1 macro metric using `sklearn.metrics.f1_score`.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ml-f1-macro&quot;</span><span class="p">,</span>
@@ -393,9 +393,7 @@ document.write(`
 <span class="sd">            The unitary score.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span>
-            <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span>
-                <span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span>
-            <span class="p">)</span>
+            <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">)</span>
         <span class="p">)</span></div>
 
 
@@ -403,7 +401,7 @@ document.write(`
 <div class="viewcode-block" id="MLF1Micro">
 <a class="viewcode-back" href="../../../modules/metrics.html#autrainer.metrics.MLF1Micro">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MLF1Micro</span><span class="p">(</span><span class="n">BaseAscendingMetric</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;F1 micro metric using `sklearn.metrics.f1_score`.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ml-f1-micro&quot;</span><span class="p">,</span>
@@ -425,9 +423,7 @@ document.write(`
 <span class="sd">            The unitary score.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span>
-            <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span>
-                <span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span>
-            <span class="p">)</span>
+            <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">)</span>
         <span class="p">)</span></div>
 
 
@@ -435,7 +431,7 @@ document.write(`
 <div class="viewcode-block" id="MLF1Weighted">
 <a class="viewcode-back" href="../../../modules/metrics.html#autrainer.metrics.MLF1Weighted">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MLF1Weighted</span><span class="p">(</span><span class="n">BaseAscendingMetric</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;F1 weighted metric using `sklearn.metrics.f1_score`.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ml-f1-weighted&quot;</span><span class="p">,</span>
@@ -457,9 +453,7 @@ document.write(`
 <span class="sd">            The unitary score.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span>
-            <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span>
-                <span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span>
-            <span class="p">)</span>
+            <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">)</span>
         <span class="p">)</span></div>
 
 </pre></div>
