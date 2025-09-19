@@ -194,6 +194,33 @@ For more information on variable interpolation, refer to the
 `OmegaConf documentation <https://omegaconf.readthedocs.io/en/2.3_branch/usage.html#variable-interpolation>`_.
 
 
+.. _evaluation_configuration:
+
+Evaluation Configuration
+------------------------
+
+The evaluation entry point of `autrainer` is the :file:`conf/eval.yaml` file by default.
+This file defines the configuration for evaluating trained models over which a grid search is performed.
+
+.. configurations::
+   :configs: eval
+   :exact:
+
+The evaluation configuration file defines the following parameters:
+
+* :attr:`defaults`: A list of default configurations (see :ref:`defaults_list`, :ref:`optional_defaults_list`, and :ref:`autrainer_defaults`).
+* :attr:`results_dir`: The directory where the results of the evaluation experiments are stored.
+* :attr:`experiment_id`: The ID of the experiment.
+* :attr:`hydra/sweeper/params`: The parameters of the evaluation sweep.
+
+  * :attr:`dataset`: One or more :ref:`datasets <datasets>` to evaluate the model on (with comma-separated values).
+  * :attr:`model`: One or more :ref:`models <models>` to evaluate (with comma-separated values).
+* :attr:`hydra/sweeper/filters`: A list of filters to filter out unwanted hyperparameter combinations (see :ref:`hydra_sweeper_plugins`).
+
+.. note::
+   For evaluation, the :attr:`model_checkpoint` attribute of the :ref:`model <models>` configuration is required to load the trained model weights.
+
+
 .. _defaults_list:
 
 Defaults List
@@ -201,22 +228,6 @@ Defaults List
 
 The defaults list instructs Hydra to import configurations from other YAML files to build the final configuration.
 For more information on the defaults list, see `Hydra's defaults list documentation <https://hydra.cc/docs/advanced/defaults_list/>`_.
-
-For brevity, the defaults list is outsourced to :ref:`_autrainer_.yaml defaults <autrainer_defaults>`
-file with the following imports:
-
-.. code-block:: yaml
-   :linenos:
-   :caption: \_autrainer\_.yaml
-
-   defaults:
-     - _self_
-     - dataset: ??? # placeholder
-     - model: ??? # placeholder
-     - optimizer: ??? # placeholder
-     - scheduler: None # optional default
-     - augmentation: None # optional default
-     - plotting: Default # optional default
 
 
 .. _optional_defaults_list:
@@ -241,10 +252,11 @@ For more information on overriding defaults, refer to the
 .. _autrainer_defaults:
 
 autrainer Defaults
-----------------------
+------------------
 
-The :file:`_autrainer_.yaml` file contains further default configurations to simplify the :ref:`main configuration <main_configuration>`,
-which includes:
+The :file:`_autrainer_train_.yaml`, :file:`_autrainer_eval_.yaml`, and :file:`_autrainer_.yaml` files contain further default
+configurations to simplify the :ref:`main configuration <main_configuration>` and :ref:`evaluation configuration <evaluation_configuration>`,
+which include:
 
 * The :ref:`defaults list <defaults_list>` and :ref:`optional defaults list <optional_defaults_list>`.
 * Global default parameters for :ref:`training <training>`, such as the evaluation frequency, save frequency, inference batch size, CUDA-enabled device, etc.
@@ -253,7 +265,17 @@ which includes:
 
 .. tip::
 
-   Any global default parameter can be overridden in the :ref:`main configuration <main_configuration>` file by redefining it.
+   Any global default parameter can be overridden in the :ref:`main configuration <main_configuration>`
+   or :ref:`evaluation configuration <evaluation_configuration>` files by redefining it.
+
+
+.. configurations::
+   :configs: _autrainer_train_
+   :exact:
+
+.. configurations::
+   :configs: _autrainer_eval_
+   :exact:
 
 .. configurations::
    :configs: _autrainer_

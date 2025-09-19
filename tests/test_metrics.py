@@ -1,8 +1,7 @@
 import logging
-from typing import Any, Dict, List, Type
+from typing import List, Type
 
 import numpy as np
-import numpy.testing
 import pandas as pd
 import pytest
 from sklearn.metrics import f1_score
@@ -21,7 +20,6 @@ from autrainer.metrics import (
     MLF1Micro,
     MLF1Weighted,
 )
-from autrainer.training.utils import disaggregated_evaluation
 
 
 class TestAllMetrics:
@@ -160,79 +158,3 @@ class TestAllMetrics:
                 m.unitary(truth[:, idx], pred[:, idx]),
                 f1_score(truth[:, idx], pred[:, idx]),
             )
-
-    @pytest.mark.parametrize(
-        (
-            "targets",
-            "predictions",
-            "indices",
-            "metrics",
-            "groundtruth",
-            "target_column",
-            "stratify",
-            "results",
-        ),
-        [
-            (
-                np.array([0, 1, 2, 3, 4]),
-                np.array([2, 3, 4, 5, 6]),
-                np.array([0, 1, 2, 3, 4]),
-                [MAE()],
-                pd.DataFrame([0, 1, 2, 3, 4], columns=["truth"]),
-                "truth",
-                [],
-                {
-                    "mae": {
-                        "all": 2.0,
-                    }
-                },
-            ),
-            (
-                np.array([0, 1, 2, 3, 4]),
-                np.array([2, 3, 4, 6, 7]),
-                np.array([0, 1, 2, 3, 4]),
-                [MAE()],
-                pd.DataFrame(
-                    [[0, 0], [1, 0], [2, 0], [3, 1], [4, 1]],
-                    columns=["truth", "foo"],
-                ),
-                "truth",
-                ["foo"],
-                {"mae": {"all": 2.4, 0: 2, 1: 3}},
-            ),
-            (
-                np.array([0, 1, 2, 3, 4]),
-                np.array([2, 3, 4, 7, 7]),
-                np.array([0, 3, 4, 1, 2]),
-                [MAE()],
-                pd.DataFrame(
-                    [[0, 0], [1, 0], [2, 0], [3, 1], [4, 1]],
-                    columns=["truth", "foo"],
-                ),
-                "truth",
-                ["foo"],
-                {"mae": {"all": 2.6, 0: 3, 1: 2}},
-            ),
-        ],
-    )
-    def test_disaggregated_evaluation(
-        self,
-        targets: np.ndarray,
-        predictions: np.ndarray,
-        indices: np.ndarray,
-        metrics: List[AbstractMetric],
-        groundtruth: pd.DataFrame,
-        target_column: str,
-        stratify: List[str],
-        results: Dict[str, Any],
-    ) -> None:
-        res = disaggregated_evaluation(
-            targets=targets,
-            predictions=predictions,
-            indices=indices,
-            metrics=metrics,
-            groundtruth=groundtruth,
-            target_column=target_column,
-            stratify=stratify,
-        )
-        assert res == results

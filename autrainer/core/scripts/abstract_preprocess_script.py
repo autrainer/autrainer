@@ -33,6 +33,7 @@ class AbstractPreprocessScript(AbstractScript):
         sys.argv = sys.argv + [
             "hydra/hydra_logging=none",
             "hydra/job_logging=none",
+            "hydra/sweeper=basic",
             f"hydra.sweep.dir={self.tempdir}",
             f"hydra.sweep.subdir={self.tempdir}",
         ]

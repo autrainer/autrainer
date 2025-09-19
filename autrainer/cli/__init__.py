@@ -1,5 +1,6 @@
 from autrainer.core.scripts import (
     create,
+    eval,
     fetch,
     group,
     inference,
@@ -15,6 +16,7 @@ from autrainer.core.scripts import list_configs as list
 
 __all__ = [
     "create",
+    "eval",
     "fetch",
     "group",
     "inference",

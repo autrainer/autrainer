@@ -1,6 +1,6 @@
 import os
 import shutil
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from omegaconf import DictConfig, ListConfig
 
@@ -15,7 +15,7 @@ class GroupGrid:
         results_dir: str,
         groupings: Union[ListConfig[DictConfig], List[Dict]],
         max_runs: Optional[int] = None,
-        plot_params: Optional[dict] = None,
+        plot_params: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Group runs of one or more grid search experiments based on the
         specified groupings.

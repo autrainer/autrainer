@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, Optional
 
 from omegaconf import DictConfig, OmegaConf
@@ -14,24 +15,22 @@ from .utils import (
 )
 
 
-class TrainScript(AbstractScript):
+class EvalScript(AbstractScript):
     def __init__(self) -> None:
         super().__init__(
-            "train",
-            "Launch a training configuration (Hydra).",
+            "eval",
+            "Launch an evaluation configuration (Hydra).",
             extended_description=(
                 "For more information on Hydra's command line line flags, see:\n"
                 "https://hydra.cc/docs/advanced/hydra-command-line-flags/."
             ),
-            epilog="Example: autrainer train -cn config.yaml",
+            epilog="Example: autrainer eval -cn eval.yaml",
             unknown_args=True,
         )
 
     def main(self, args: dict) -> None:
-        @autrainer.main("config")
+        @autrainer.main("eval")
         def main(cfg: DictConfig) -> float:
-            import os
-
             import hydra
 
             from autrainer.core.filters import AlreadyRun
@@ -50,7 +49,7 @@ class TrainScript(AbstractScript):
                     os.path.join(output_dir, "_best", "dev.yaml")
                 )
                 tracking_metric = autrainer.instantiate_shorthand(
-                    config=cfg.dataset.tracking_metric,
+                    config=cfg.evaluation.tracking_metric,
                     instance_of=AbstractMetric,
                 )
                 best_metric = dev_metrics[tracking_metric.name]["all"]
@@ -65,36 +64,36 @@ class TrainScript(AbstractScript):
             os.makedirs(os.path.dirname(cfg_path), exist_ok=True)
             OmegaConf.save(cfg, cfg_path)
 
-            from autrainer.training import Trainer
+            from autrainer.training.evaluation import EvalOnlyTrainer
 
-            trainer = Trainer(cfg=cfg, output_directory=output_dir)
-            return trainer.train()
+            eval_trainer = EvalOnlyTrainer(cfg, output_dir)
+            return eval_trainer.eval()
 
         check_invalid_config_path_arg(self.parser)
         main()
 
 
 @catch_cli_errors
-def train(
+def eval(
     override_kwargs: Optional[Dict[str, Any]] = None,
-    config_name: str = "config",
+    config_name: str = "eval",
     config_path: Optional[str] = None,
 ) -> None:
-    """Launch a training configuration.
+    """Launch an evaluation configuration.
 
     Args:
         override_kwargs: Additional Hydra override arguments to pass to the
-            train script.
+            evaluation script. Defaults to None.
         config_name: The name of the config (usually the file name without the
-            .yaml extension). Defaults to "config".
+            .yaml extension). Defaults to "eval".
         config_path: The config path, a directory where Hydra will search for
             config files. If config_path is None no directory is added to the
             search path. Defaults to None.
     """
     if running_in_notebook():
-        run_hydra_cmd("train", override_kwargs, config_name, config_path)
+        run_hydra_cmd("eval", override_kwargs, config_name, config_path)
     else:
         add_hydra_args_to_sys(override_kwargs, config_name, config_path)
-        script = TrainScript()
+        script = EvalScript()
         script.parser = MockParser()
         script.main({})

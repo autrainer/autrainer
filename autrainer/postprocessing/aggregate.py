@@ -34,8 +34,8 @@ class AggregateGrid:
         training_dir: str = "training",
         max_runs_plot: Optional[int] = None,
         aggregate_name: Optional[str] = None,
-        aggregated_dict: Optional[dict] = None,
-        plot_params: Optional[dict] = None,
+        aggregated_dict: Optional[Dict[str, Any]] = None,
+        plot_params: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Aggregate the results of a grid search over one or more parameters.
 

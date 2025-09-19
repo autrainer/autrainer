@@ -279,20 +279,44 @@ Now, run the following :ref:`training <cli_training>` command to train the model
     autrainer train
 
 
+.. _quick_evaluation:
+
+Model Evaluation
+----------------
+
+To evaluate a trained model on the validation and test sets of possibly different datasets,
+the :ref:`evaluation configuration <evaluation_configuration>` (:file:`conf/eval.yaml`) file can be used.
+
+For example, to evaluate the :ref:`spectrogram classification model <quick_audio_classification>` after 600 steps on the validation and test sets,
+create a new model and set the :attr:`model_checkpoint` attribute in the configuration to the corresponding checkpoint (:file:`model.pt`):
+
+.. literalinclude:: ../examples/quickstart/audio_model_600.yaml
+   :language: yaml
+   :caption: conf/model/Cnn10-32k-T-600-Steps.yaml
+   :linenos:
+
+Next, update the :ref:`evaluation configuration <evaluation_configuration>` (:file:`conf/eval.yaml`) file to use the new model configuration:
+
+
+.. literalinclude:: ../examples/quickstart/eval_config.yaml
+   :language: yaml
+   :caption: conf/eval.yaml
+   :linenos:
+
+Now, run the following :ref:`evaluation <cli_evaluation>` command to evaluate the trained model after 600 steps:
+
+.. code-block:: autrainer
+
+    autrainer eval
+
+
 .. _quick_grid_filters:
 
 Filtering Configurations
-----------------------------
+------------------------
 
 By default, `autrainer` filters out any configurations that have already been trained
-and exist in the same experiment using the `hydra-filter-sweeper <https://github.com/autrainer/hydra-filter-sweeper/>`_ plugin
-with the following :attr:`filters` that are implicitly set in the :ref:`_autrainer_.yaml defaults <autrainer_defaults>` file:
-
-.. literalinclude:: ../examples/quickstart/config_filters.yaml
-   :language: yaml
-   :caption: conf/config.yaml
-   :linenos:
-   :lines: 18-20
+and exist in the same experiment using the `hydra-filter-sweeper <https://github.com/autrainer/hydra-filter-sweeper/>`_ plugin.
 
 
 To filter out unwanted configurations and exclude them from training,
