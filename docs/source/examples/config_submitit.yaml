@@ -1,5 +1,5 @@
 defaults:
-  - _autrainer_
+  - _autrainer_train_
   - _self_
   - override hydra/launcher: submitit_slurm # override the launcher to submitit_slurm
 

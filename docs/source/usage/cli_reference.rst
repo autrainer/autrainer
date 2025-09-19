@@ -175,6 +175,32 @@ autrainer train
 
       usage: autrainer train [-h]
 
+.. _cli_evaluation:
+
+Evaluation
+----------
+
+Evaluation of a trained model is managed by :ref:`autrainer eval <cli_autrainer_eval>`,
+which starts the evaluation process based on the :ref:`evaluation configuration <evaluation_configuration>`
+file (e.g., :file:`conf/eval.yaml`).
+
+.. _cli_autrainer_eval:
+
+autrainer eval
+~~~~~~~~~~~~~~
+
+.. argparse::
+   :module: autrainer.core.scripts.cli
+   :func: get_parser
+   :prog: autrainer
+   :nodefault:
+   :noepilog:
+   :path: eval
+
+   .. code-block:: aucli
+
+      usage: autrainer eval [-h]
+
 
 .. _cli_inference:
 

@@ -45,7 +45,7 @@ file and imported in the :ref:`main configuration <main_configuration>` file.
 Trainer
 -------
 
-:class:`~autrainer.training.Trainer` manages the training process.
+The :class:`~autrainer.training.Trainer` class manages the training process.
 It instantiates the model, dataset, criterion, optimizer, scheduler, and callbacks, and trains the model on the dataset.
 It also logs the training process and saves the model, optimizer, and scheduler states at the end of each epoch.
 
@@ -53,6 +53,15 @@ The :attr:`cfg` of the trainer is the composed main configuration file (e.g., :f
 
 .. autoclass:: autrainer.training.Trainer
    :members: train
+
+
+Evaluator
+---------
+
+The :class:`~autrainer.training.Evaluator` class manages the evaluation process and is automatically instantiated and used by the trainer.
+
+.. autoclass:: autrainer.training.Evaluator
+   :members:
 
 
 .. _callbacks:
