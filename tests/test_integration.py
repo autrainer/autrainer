@@ -100,6 +100,31 @@ class TestCLIIntegration(BaseIndividualTempDir):
         ]
         assert len(run_dirs) == 1, "Should have only one run directory."
 
+    def test_train_eval(self) -> None:
+        _b = "results/default"
+        _bt, _be = os.path.join(_b, "training"), os.path.join(_b, "evaluation")
+        autrainer.cli.create(empty=True, eval=True, force=True)
+        autrainer.cli.show("model", "ToyFFNN", save=True)
+        with patch("sys.argv", [""]):
+            autrainer.cli.train()
+        run = next(
+            iter(f for f in os.listdir(_bt) if os.path.isdir(os.path.join(_bt, f)))
+        )
+        _mp = os.path.join("conf", "model", "ToyFFNN.yaml")
+        model = OmegaConf.load(_mp)
+        model["model_checkpoint"] = os.path.join(_bt, run, "_best", "model.pt")
+        OmegaConf.save(model, _mp)
+        with patch("sys.argv", [""]):
+            autrainer.cli.eval()
+        train_metrics = OmegaConf.load(os.path.join(_bt, run, "_best", "dev.yaml"))
+        eval_metrics = OmegaConf.load(
+            os.path.join(_be, "ToyTabular-C_ToyFFNN", "_dev", "dev.yaml")
+        )
+        for metric in ["accuracy", "uar", "f1"]:
+            assert train_metrics[metric]["all"] == eval_metrics[metric]["all"], (
+                f"Should have same {metric}."
+            )
+
 
 class TestCheckpointsIntegration(BaseIndividualTempDir):
     @staticmethod
