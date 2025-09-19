@@ -1,6 +1,6 @@
 [project]
 name = "autrainer"
-version = "0.7.1"
+version = "0.8.1"
 description = "A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."
 authors = [
     { name = "Simon Rampp", email = "simon.rampp@tum.de" },
@@ -106,6 +106,7 @@ dev = [
     "pytest>=8.1.1,<9",
     "pytest-cov>=5.0.0,<6",
     "ruff==0.12.8",
+    "twine>=6.2.0",
 ]
 docs = [
     "catppuccin[pygments]>=2.3.0,<3",
