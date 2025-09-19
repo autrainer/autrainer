@@ -2,13 +2,7 @@ defaults:
   - _self_
   - dataset: ToyTabular-C
   - model: ToyFFNN
-  - optimizer: Adam
-  - scheduler: None
-  - augmentation: None
   - plotting: Default
-  - /hydra/callbacks:
-      - ConfigDirSnapshot
-  - override hydra/sweeper: AutrainerFilterSweeper
 
 training_type: epoch
 eval_frequency: 1

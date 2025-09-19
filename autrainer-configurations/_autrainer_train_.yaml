@@ -1,6 +1,12 @@
 defaults:
   - _autrainer_
   - _self_
+  - optimizer: Adam
+  - scheduler: None
+  - augmentation: None
+  - /hydra/callbacks:
+      - ConfigDirSnapshot
+  - override hydra/sweeper: AutrainerFilterSweeper
 
 hydra:
   sweep:
