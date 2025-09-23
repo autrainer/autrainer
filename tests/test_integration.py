@@ -111,6 +111,7 @@ class TestCLIIntegration(BaseIndividualTempDir):
             iter(f for f in os.listdir(_bt) if os.path.isdir(os.path.join(_bt, f)))
         )
         model = OmegaConf.load(os.path.join("conf", "model", "ToyFFNN.yaml"))
+        model["id"] = "ToyFFNN-Eval-CP"
         model["model_checkpoint"] = os.path.join(_bt, run, "_best", "model.pt")
         OmegaConf.save(model, os.path.join("conf", "model", "ToyFFNN-Eval-CP.yaml"))
         with patch("sys.argv", [""]):
