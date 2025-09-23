@@ -149,6 +149,7 @@ class EvalOnlyTrainer:
         self.best_iteration = 1
 
         # ? Create Timers
+        self.train_timer = Timer(output_directory, "dev")  # used in loggers
         self.dev_timer = Timer(output_directory, "dev")
         self.test_timer = Timer(output_directory, "test")
 
@@ -206,15 +207,6 @@ class EvalOnlyTrainer:
 
         # ? Create Evaluator
         self.evaluator = Evaluator()
-
-    @staticmethod
-    def _get_base_run_dir(output_directory: str) -> str:
-        training_dir = os.path.join(
-            os.path.dirname(os.path.dirname(output_directory)),
-            "training",
-        )
-        run = os.path.basename(output_directory).split("_", 2)[-1]
-        return os.path.join(training_dir, run)
 
     def eval(self) -> None:
         self.model = self.model.to(self.DEVICE)

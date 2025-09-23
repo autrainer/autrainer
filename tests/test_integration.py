@@ -110,15 +110,14 @@ class TestCLIIntegration(BaseIndividualTempDir):
         run = next(
             iter(f for f in os.listdir(_bt) if os.path.isdir(os.path.join(_bt, f)))
         )
-        _mp = os.path.join("conf", "model", "ToyFFNN.yaml")
-        model = OmegaConf.load(_mp)
+        model = OmegaConf.load(os.path.join("conf", "model", "ToyFFNN.yaml"))
         model["model_checkpoint"] = os.path.join(_bt, run, "_best", "model.pt")
-        OmegaConf.save(model, _mp)
+        OmegaConf.save(model, os.path.join("conf", "model", "ToyFFNN-Eval-CP.yaml"))
         with patch("sys.argv", [""]):
-            autrainer.cli.eval()
+            autrainer.cli.eval({"model": "ToyFFNN-Eval-CP"})
         train_metrics = OmegaConf.load(os.path.join(_bt, run, "_best", "dev.yaml"))
         eval_metrics = OmegaConf.load(
-            os.path.join(_be, "ToyTabular-C_ToyFFNN", "_dev", "dev.yaml")
+            os.path.join(_be, "ToyTabular-C_ToyFFNN-Eval-CP", "_dev", "dev.yaml")
         )
         for metric in ["accuracy", "uar", "f1"]:
             assert train_metrics[metric]["all"] == eval_metrics[metric]["all"], (
