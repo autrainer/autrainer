@@ -3,6 +3,8 @@ defaults:
   - dataset: ToyTabular-C
   - model: ToyFFNN
   - plotting: Default
+  - /hydra/callbacks:
+      - ConfigDirSnapshot
 
 training_type: epoch
 eval_frequency: 1
