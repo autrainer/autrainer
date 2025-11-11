@@ -102,10 +102,6 @@ class AbstractDataset(ABC):
         self._generator = torch.Generator().manual_seed(self.seed)
         self._assert_stratify()
 
-        self._train_loader_kwargs = {}
-        self._dev_loader_kwargs = {}
-        self._test_loader_kwargs = {}
-
         self.train_transform.setup(self)
         self.dev_transform.setup(self)
         self.test_transform.setup(self)
