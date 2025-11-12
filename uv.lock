@@ -396,7 +396,7 @@ requires-dist = [
     { name = "checksumdir", specifier = ">=1.2.0,<2" },
     { name = "fsspec", specifier = ">=2025.3.2" },
     { name = "hydra-core", specifier = ">=1.3.2,<2" },
-    { name = "hydra-filter-sweeper", specifier = ">=2.0.1,<3" },
+    { name = "hydra-filter-sweeper", specifier = ">=2.1.0,<3" },
     { name = "latex", marker = "extra == 'all'", specifier = ">=0.7.0,<0.8" },
     { name = "latex", marker = "extra == 'latex'", specifier = ">=0.7.0,<0.8" },
     { name = "matplotlib", specifier = ">=3.7.1,<4" },

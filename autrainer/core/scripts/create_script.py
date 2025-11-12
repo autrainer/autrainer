@@ -16,6 +16,7 @@ class CreateArgs:
     directories: List[str]
     empty: bool
     all: bool
+    eval: bool
     force: bool
 
 
@@ -49,6 +50,12 @@ class CreateScript(AbstractScript):
             help="Create a project with all configuration directories.",
         )
         self.parser.add_argument(
+            "-v",
+            "--eval",
+            action="store_true",
+            help="Create an additional evaluation configuration.",
+        )
+        self.parser.add_argument(
             "-f",
             "--force",
             action="store_true",
@@ -61,7 +68,9 @@ class CreateScript(AbstractScript):
         self._assert_mutually_exclusive(args)
         self._assert_directory_not_exists(args)
         self._create_directory(args)
-        self._create_default_config()
+        self._create_config("config")
+        if args.eval or args.all:
+            self._create_config("eval")
 
     def _assert_valid_args(self, args: CreateArgs) -> None:
         if not args.directories and not args.empty and not args.all:
@@ -117,13 +126,13 @@ class CreateScript(AbstractScript):
         for directory in directories:
             os.makedirs(directory, exist_ok=True)
 
-    def _create_default_config(self) -> None:
+    def _create_config(self, name: str) -> None:
         src = os.path.join(
             os.path.dirname(autrainer.__path__[0]),
             "autrainer-configurations",
-            "config.yaml",
+            f"{name}.yaml",
         )
-        dst = os.path.join("conf", "config.yaml")
+        dst = os.path.join("conf", f"{name}.yaml")
         shutil.copyfile(src, dst)
 
 
@@ -132,6 +141,7 @@ def create(
     directories: Optional[List[str]] = None,
     empty: bool = False,
     all: bool = False,
+    eval: bool = False,
     force: bool = False,
 ) -> None:
     """Create a new project with default configurations.
@@ -147,6 +157,7 @@ def create(
             Defaults to False.
         all: Create a project with all configuration directories.
             Defaults to False.
+        eval: Create an additional evaluation configuration. Defaults to False.
         force: Force overwrite if the configuration directory already exists.
             Defaults to False.
 
@@ -162,4 +173,4 @@ def create(
 
     script = CreateScript()
     script.parser = MockParser()
-    script.main(CreateArgs(directories, empty, all, force))
+    script.main(CreateArgs(directories, empty, all, eval, force))

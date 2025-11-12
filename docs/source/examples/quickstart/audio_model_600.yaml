@@ -1,0 +1,10 @@
+id: Cnn10-32k-T-600-Steps
+_target_: autrainer.models.Cnn10
+transfer: https://zenodo.org/records/3987831/files/Cnn10_mAP%3D0.380.pth
+
+model_checkpoint: results/spectrogram_step/training/DCASE2016Task1-32k_Cnn10-32k-T_Adam_0.001_32_step_1000_None_None_1/step_600/model.pt
+
+transform:
+  type: grayscale
+  base:
+    - autrainer.transforms.Normalize: null

@@ -1,6 +1,6 @@
 import contextlib
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -207,7 +207,7 @@ class PreprocessScript(AbstractPreprocessScript):
 
 @catch_cli_errors
 def preprocess(
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: Optional[Dict[str, Any]] = None,
     num_workers: int = 0,
     update_frequency: int = 1,
     cfg_launcher: bool = False,

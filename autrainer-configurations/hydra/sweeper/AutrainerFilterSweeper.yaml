@@ -2,5 +2,4 @@
 _target_: hydra_plugins.filter.FilterSweeper
 max_batch_size: null
 filters:
-  - hydra_filter_sweeper.Exists:
-      path: metrics.csv
+  - autrainer.core.filters.AlreadyRun

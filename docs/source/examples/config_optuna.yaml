@@ -1,5 +1,5 @@
 defaults:
-  - _autrainer_
+  - _autrainer_train_
   - _self_
   - override hydra/sweeper: optuna # override the sweeper to optuna
 

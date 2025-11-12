@@ -116,13 +116,22 @@ class TestCLICreate(BaseIndividualTempDir):
         assert os.path.exists("conf/config.yaml"), "Should create config.yaml."
         assert os.listdir("conf") == ["config.yaml"], "Should only contain config.yaml."
 
+    def test_create_eval(self) -> None:
+        autrainer.cli.create(empty=True, eval=True)
+        for file in ["config.yaml", "eval.yaml"]:
+            assert os.path.exists(f"conf/{file}"), f"Should create {file}."
+        assert set(os.listdir("conf")) == {"config.yaml", "eval.yaml"}, (
+            "Should only contain config.yaml and eval.yaml."
+        )
+
     def test_create_all(self) -> None:
         autrainer.cli.create(all=True)
         assert all(
             os.path.exists(f"conf/{directory}")
             for directory in NamingConstants().CONFIG_DIRS
         ), "Should create all directories."
-        assert os.path.exists("conf/config.yaml"), "Should create config.yaml."
+        for file in ["config.yaml", "eval.yaml"]:
+            assert os.path.exists(f"conf/{file}"), f"Should create {file}."
 
 
 class TestCLIList(BaseIndividualTempDir):
