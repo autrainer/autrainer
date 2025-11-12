@@ -102,9 +102,9 @@ class AbstractDataset(ABC):
         self._generator = torch.Generator().manual_seed(self.seed)
         self._assert_stratify()
 
-        self._train_loader_kwargs = {}
-        self._dev_loader_kwargs = {}
-        self._test_loader_kwargs = {}
+        self.train_transform.setup(self)
+        self.dev_transform.setup(self)
+        self.test_transform.setup(self)
 
     @property
     def audio_subdir(self) -> str:
@@ -270,7 +270,6 @@ class AbstractDataset(ABC):
         prefetch_factor: Optional[int] = None,
         pin_memory_device: str = "",
     ) -> DataLoader:
-        self.train_transform.setup(self)
         return DataLoader(
             self.train_dataset,
             batch_size=batch_size,
@@ -301,7 +300,6 @@ class AbstractDataset(ABC):
         prefetch_factor: Optional[int] = None,
         pin_memory_device: str = "",
     ) -> DataLoader:
-        self.dev_transform.setup(self)
         return DataLoader(
             self.dev_dataset,
             batch_size=batch_size,
@@ -332,7 +330,6 @@ class AbstractDataset(ABC):
         prefetch_factor: Optional[int] = None,
         pin_memory_device: str = "",
     ) -> DataLoader:
-        self.test_transform.setup(self)
         return DataLoader(
             self.test_dataset,
             batch_size=batch_size,
