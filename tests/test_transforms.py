@@ -450,12 +450,8 @@ class TestStandardizer:
             t(DataItem(torch.randn(3, 32, 32), 0, 0))
 
     def test_invalid_setup(self) -> None:
-        dataset = self._mock_dataset(
-            [4, 3, 32, 32],
-            SmartCompose([Standardizer()]),
-        )
         with pytest.raises(ValueError, match="Unsupported data dimensions"):
-            dataset.train_transform.setup(dataset)
+            self._mock_dataset([4, 3, 32, 32], SmartCompose([Standardizer()]))
 
     def test_setup(self) -> None:
         dataset = self._mock_dataset(
