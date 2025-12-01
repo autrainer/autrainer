@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -258,7 +258,7 @@ class Evaluator:
         indices: np.ndarray,
         groundtruth: pd.DataFrame,
         metrics: List[AbstractMetric],
-        target_column: List[str],
+        target_column: Union[str, List[str]],
         stratify: List[str] = None,
     ) -> Dict:
         r"""Runs evaluation, optionally disaggregated.
