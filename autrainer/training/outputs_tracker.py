@@ -249,26 +249,36 @@ class SequentialOutputsTracker(OutputsTracker):
             reset: Whether to reset the tracker after saving the results.
                 Defaults to True.
         """
-        # get length of longest sequence for padding & masking
-        num_sequences = sum([x.shape[0] for x in self._outputs])
-        max_length = max([x.shape[1] for x in self._outputs])
-        indices = self._indices.repeat_interleave(max_length)
+        
 
-        outputs = torch.cat(
-            [
-                pad(x, [0, 0, 0, max_length - x.shape[1]], value=-100)
-                for x in self._outputs
-            ]
-        )
-        targets = torch.cat(
-            [
-                pad(x, [0, 0, 0, max_length - x.shape[1]], value=-100)
-                for x in self._targets
-            ]
-        )
-        masks = torch.cat(
-            [pad(x, [0, max_length - x.shape[1]], value=0) for x in self._masks]
-        )
+        if isinstance(self._outputs, list):
+            # get length of longest sequence for padding & masking
+            num_sequences = sum([x.shape[0] for x in self._outputs])
+            max_length = max([x.shape[1] for x in self._outputs])
+            indices = self._indices.repeat_interleave(max_length)
+            outputs = torch.cat(
+                [
+                    pad(x, [0, 0, 0, max_length - x.shape[1]], value=-100)
+                    for x in self._outputs
+                ]
+            )
+            targets = torch.cat(
+                [
+                    pad(x, [0, 0, 0, max_length - x.shape[1]], value=-100)
+                    for x in self._targets
+                ]
+            )
+            masks = torch.cat(
+                [pad(x, [0, max_length - x.shape[1]], value=0) for x in self._masks]
+            )
+        else:
+            num_sequences = self._outputs.shape[0]
+            max_length = self._outputs.shape[1]
+            indices = self._indices
+            outputs = self._outputs
+            targets = self._targets
+            masks = self._masks
+
         results = {
             "outputs": outputs.numpy(),
             "targets": targets.numpy(),
@@ -338,7 +348,37 @@ class SequentialOutputsTracker(OutputsTracker):
         Returns:
             Masks.
         """
-        return np.array(self._masks)
+        return np.array(self._masks).reshape(-1, 1).squeeze(1)
+
+    @property
+    @check_saved
+    def predictions(self) -> np.ndarray:
+        """Get the predictions.
+
+        Returns:
+            Predictions.
+        """
+        return np.array(self._predictions).reshape(-1, 1).squeeze(1)
+    
+    @property
+    @check_saved
+    def outputs(self) -> np.ndarray:
+        """Get the model outputs.
+
+        Returns:
+            Model outputs.
+        """
+        return self._outputs.numpy().reshape(-1, 1).squeeze(1)
+
+    @property
+    @check_saved
+    def targets(self) -> np.ndarray:
+        """Get the targets.
+
+        Returns:
+            Targets.
+        """
+        return self._targets.numpy().reshape(-1, 1).squeeze(1)
 
 
 def init_trackers(
