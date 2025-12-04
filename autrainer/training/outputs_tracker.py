@@ -200,6 +200,18 @@ class SequentialOutputsTracker(OutputsTracker):
         self._predictions = None
         self._results_df = None
 
+    def reset(self) -> None:
+        """Reset the tracker. Clears all the stored data accumulated over a
+        single iteration.
+        """
+        self._outputs = []
+        self._targets = []
+        self._masks = []
+        self._indices = torch.zeros(0, dtype=torch.long)
+        self._losses = torch.zeros(0, dtype=torch.float32)
+        self._predictions = None
+        self._results_df = None
+
     def update(
         self,
         output: torch.Tensor,
