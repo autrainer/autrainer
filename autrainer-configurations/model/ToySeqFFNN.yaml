@@ -1,0 +1,11 @@
+id: ToySeqFFNN
+_target_: autrainer.models.SeqFFNN
+hidden_size: 64
+num_layers: 2
+backbone_input_dim: 64
+backbone_hidden_size: 64
+backbone_num_layers: 2
+backbone_time_pooling: false
+
+transform:
+  type: tabular
