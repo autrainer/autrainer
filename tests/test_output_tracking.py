@@ -37,11 +37,7 @@ class TestOutputsTracker(BaseIndividualTempDir):
 
     @pytest.mark.parametrize(
         "dims",
-        [
-            (1, 10),
-            # (2, 10),
-            # (2, 2, 10)
-        ],
+        [(1, 10), (2, 10), (2, 2, 10)],
     )
     def test_update(self, dims: List[int]) -> None:
         tracker = OutputsTracker(
@@ -56,7 +52,7 @@ class TestOutputsTracker(BaseIndividualTempDir):
         tracker.save("foo")
 
         np.testing.assert_array_almost_equal(
-            torch.cat((x, x)).numpy(), tracker._outputs
+            torch.cat((x, x)).numpy(), tracker._outputs, 5
         )
 
 
@@ -78,12 +74,19 @@ if __name__ == "__main__":
         data=TOY_DATASET,
         bookkeeping=Bookkeeping("foo"),
     )
-    dims = (2, 2, 10)
-    x = torch.rand(dims)
-    tracker.update(x, x, torch.Tensor([0.1]), torch.IntTensor([0]))
-    tracker.update(x, x, torch.Tensor([0.1]), torch.IntTensor([1]))
+    x = torch.rand((3, 2, 10))
+    y = torch.rand((5, 4, 10))
+    tracker.update(
+        x,
+        x,
+        torch.Tensor([0.1]),
+        torch.IntTensor([0, 1, 2]),
+        mask=torch.Tensor([[1, 1], [1, 1], [1, 0]]),
+    )
+    tracker.update(y, y, torch.Tensor([0.1]), torch.IntTensor([3, 4, 5, 6, 7]))
     tracker.save("bar", reset=False)
 
     np.testing.assert_array_almost_equal(
-        torch.cat((x, x)).numpy(), tracker._outputs
+        torch.cat((torch.cat((x, torch.ones(3, 2, 10) * -100), dim=1), y)).numpy(),
+        tracker._outputs,
     )

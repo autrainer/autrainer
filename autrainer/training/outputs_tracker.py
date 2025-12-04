@@ -194,9 +194,9 @@ class SequentialOutputsTracker(OutputsTracker):
         """
         self._outputs = []
         self._targets = []
+        self._masks = []
         self._indices = torch.zeros(0, dtype=torch.long)
         self._losses = torch.zeros(0, dtype=torch.float32)
-        self._masks = None
         self._predictions = None
         self._results_df = None
 
@@ -206,18 +206,26 @@ class SequentialOutputsTracker(OutputsTracker):
         target: torch.Tensor,
         loss: torch.Tensor,
         sample_idx: torch.Tensor,
+        mask: torch.Tensor = None,
     ) -> None:
         """Update the tracker with the current model outputs, targets, losses,
         and sample indices.
+
+        Accepts optional mask to keep track of valid samples in batch.
 
         Args:
             output: Detached model outputs.
             target: Targets.
             loss: Per-sample losses.
             sample_idx: Sample indices.
+            mask: Optional mask marking valid samples.
         """
         self._outputs += [output.cpu()]
         self._targets += [target.cpu()]
+        if mask is None:
+            # assume all samples are valid
+            mask = torch.ones(output.shape[0], output.shape[1])
+        self._masks += [mask]
         self._losses = torch.cat([self._losses, loss.cpu()], dim=0)
         self._indices = torch.cat([self._indices, sample_idx.cpu()], dim=0)
 
@@ -230,57 +238,60 @@ class SequentialOutputsTracker(OutputsTracker):
                 Defaults to True.
         """
         # get length of longest sequence for padding & masking
-        num_sequences = len(self._outputs)
-        max_length = max([x.shape[0] for x in self._outputs])
-        self._masks = torch.zeros(len(self._outputs), max_length)
-        indices = []
-        for index, x in enumerate(self._outputs):
-            self._masks[index, : len(x)] = 1
-            indices += [self._indices[index]] * len(x)
-        self._outputs = torch.cat(
-            [pad(x, [0, 0, 0, max_length], value=-100) for x in self._outputs]
+        num_sequences = sum([x.shape[0] for x in self._outputs])
+        max_length = max([x.shape[1] for x in self._outputs])
+        indices = self._indices.repeat_interleave(max_length)
+
+        outputs = torch.cat(
+            [
+                pad(x, [0, 0, 0, max_length - x.shape[1]], value=-100)
+                for x in self._outputs
+            ]
         )
-        self._targets = torch.cat(
-            [pad(x, [0, 0, 0, max_length], value=-100) for x in self._targets]
+        targets = torch.cat(
+            [
+                pad(x, [0, 0, 0, max_length - x.shape[1]], value=-100)
+                for x in self._targets
+            ]
+        )
+        masks = torch.cat(
+            [pad(x, [0, max_length - x.shape[1]], value=0) for x in self._masks]
         )
         results = {
-            "outputs": self._outputs.numpy(),
-            "targets": self._targets.numpy(),
-            "indices": self._indices.numpy(),
+            "outputs": outputs.numpy(),
+            "targets": targets.numpy(),
+            "indices": indices.numpy(),
+            "masks": masks.numpy(),
             "losses": self._losses.numpy(),
         }
 
-        _probabilities = self._data.target_transform.probabilities_inference(
-            self._outputs
-        )
-        self._predictions = self._data.target_transform.predict_inference(
-            _probabilities
-        )
-        print(self._outputs.shape)
-        print(self._targets.shape)
-        print(np.array(self._predictions).shape)
-        print(
-            np.array(self._predictions)
-            .reshape(num_sequences * max_length, -1)
-            .shape
-        )
-        exit()
-        self._results_df = pd.DataFrame(index=indices)
-        self._results_df["predictions"] = np.array(self._predictions).reshape(
+        probabilities = self._data.target_transform.probabilities_inference(outputs)
+        predictions = self._data.target_transform.predict_inference(probabilities)
+
+        self._results_df = pd.DataFrame(index=indices.tolist())
+        self._results_df["predictions"] = np.array(predictions).reshape(
             num_sequences * max_length, -1
         )
-        self._results_df["predictions"] = self._results_df[
-            "predictions"
-        ].apply(self._data.target_transform.decode)
-        self._results_df["masks"] = self._masks
+        self._results_df["predictions"] = self._results_df["predictions"].apply(
+            self._data.target_transform.decode
+        )
+        self._results_df["masks"] = masks.reshape(num_sequences * max_length, -1).int()
+
         _probs_df = pd.DataFrame(
-            index=indices,
+            index=indices.tolist(),
             data=(
                 self._data.target_transform.probabilities_to_dict(p)
-                for p in _probabilities
+                for sequence in probabilities
+                for p in sequence
             ),
         )
         self._results_df = pd.concat([self._results_df, _probs_df], axis=1)
+
+        self._predictions = predictions
+        self._outputs = outputs
+        self._targets = targets
+        self._masks = masks
+        self._indices = indices
 
         if self._export:
             for key, value in results.items():
@@ -296,8 +307,11 @@ class SequentialOutputsTracker(OutputsTracker):
         if reset:
             self.reset()
 
+    @staticmethod
     def check_saved(func: Callable[..., T]) -> Callable[..., T]:
-        def wrapper(self: "SequentialOutputsTracker", *args, **kwargs) -> T:
+        def wrapper(
+            self: "SequentialOutputsTracker", *args: Any, **kwargs: Dict[str, Any]
+        ) -> T:
             if self._results_df is None:
                 raise ValueError("Results not saved yet.")
             return func(self, *args, **kwargs)
