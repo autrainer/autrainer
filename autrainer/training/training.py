@@ -31,7 +31,11 @@ from autrainer.transforms import SmartCompose, TransformManager
 
 from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
-from .outputs_tracker import OutputsTracker, init_trackers
+from .outputs_tracker import (
+    OutputsTracker,
+    SequentialOutputsTracker,
+    init_trackers
+)
 from .utils import (
     disaggregated_evaluation,
     format_results,
@@ -894,3 +898,28 @@ class ModularTaskTrainer:
             Copy of the configuration.
         """
         return deepcopy(self._cfg)
+
+
+class SequentialTrainer(ModularTaskTrainer):
+    def _init_trackers(self) -> None:
+        self.test_tracker = SequentialOutputsTracker(
+            export=True,
+            prefix="test",
+            data=self.data,
+            bookkeeping=self.bookkeeping,
+        )
+        self.dev_tracker = SequentialOutputsTracker(
+            export=True,
+            prefix="dev",
+            data=self.data,
+            bookkeeping=self.bookkeeping,
+        )
+        if self.cfg.save_train_outputs:
+            self.train_tracker = SequentialOutputsTracker(
+                export=True,
+                prefix="train",
+                data=self.data,
+                bookkeeping=self.bookkeeping,
+            )
+        else:
+            self.train_tracker = None
