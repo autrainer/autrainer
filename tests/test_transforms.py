@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Any, Callable, Dict, List, Tuple, Type, Union
+from typing import Any, Callable, Dict, Iterator, List, Tuple, Type, Union
 import warnings
 
 import numpy as np
@@ -449,10 +449,6 @@ class TestStandardizer:
         with pytest.raises(ValueError, match="transform not initialized"):
             t(DataItem(torch.randn(3, 32, 32), 0, 0))
 
-    def test_invalid_setup(self) -> None:
-        with pytest.raises(ValueError, match="Unsupported data dimensions"):
-            self._mock_dataset([4, 3, 32, 32], SmartCompose([Standardizer()]))
-
     def test_setup(self) -> None:
         dataset = self._mock_dataset(
             [3, 32, 32],
@@ -491,6 +487,43 @@ class TestStandardizer:
         ds_succeeding.train_transform.setup(ds_succeeding)
         assert s1.mean == s2.mean, "Transforms should have the same means."
         assert s1.std == s2.std, "Transforms should have the same stds."
+
+    @pytest.mark.parametrize(
+        ("shape", "dims"),
+        [((64,), (0,)), ((1, 16000), (0, 2)), ((3, 32, 32), (0, 2, 3))],
+    )
+    def test_streaming_equivalence(
+        self,
+        shape: Tuple[int, ...],
+        dims: Tuple[int, ...],
+    ) -> None:
+        class MockDatasetWrapper:
+            def __init__(self, transform: SmartCompose, features: torch.Tensor) -> None:
+                self.transform = transform
+                self.features = features
+
+            def __iter__(self) -> Iterator[DataItem]:
+                for idx in range(self.features.shape[0]):
+                    item = DataItem(features=self.features[idx], target=0, index=idx)
+                    yield item
+
+        class MockDataset:
+            def __init__(self, transform: SmartCompose, features: torch.Tensor) -> None:
+                self.train_dataset = MockDatasetWrapper(transform, features)
+
+        s = Standardizer()
+        g = torch.Generator().manual_seed(0)
+        features = torch.randn(1000, *shape, generator=g)
+        ds = MockDataset(SmartCompose([s]), features)
+        s.setup(ds)
+        mean = features.mean(dim=dims)
+        std = features.std(dim=dims, correction=s.correction)
+        smean, sstd = torch.tensor(s.mean), torch.tensor(s.std)
+        # mock conversion
+        cmean, cstd = torch.tensor(mean.tolist()), torch.tensor(std.tolist())
+        print(sstd, cstd)
+        assert torch.allclose(smean, cmean), "Mean should match."
+        assert torch.allclose(sstd, cstd), "Std should match."
 
 
 class TestSmartCompose:
