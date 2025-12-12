@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List, TypeVar
 import numpy as np
 import pandas as pd
 import torch
+from torch.nn.functional import pad
 
 from autrainer.core.utils import Bookkeeping
 from autrainer.datasets import AbstractDataset
@@ -184,6 +185,200 @@ class OutputsTracker:
             Results as a DataFrame.
         """
         return self._results_df
+
+
+class SequentialOutputsTracker(OutputsTracker):
+    def reset(self) -> None:
+        """Reset the tracker. Clears all the stored data accumulated over a
+        single iteration.
+        """
+        self._outputs = []
+        self._targets = []
+        self._masks = []
+        self._indices = torch.zeros(0, dtype=torch.long)
+        self._losses = torch.zeros(0, dtype=torch.float32)
+        self._predictions = None
+        self._results_df = None
+
+    def reset(self) -> None:
+        """Reset the tracker. Clears all the stored data accumulated over a
+        single iteration.
+        """
+        self._outputs = []
+        self._targets = []
+        self._masks = []
+        self._indices = torch.zeros(0, dtype=torch.long)
+        self._losses = torch.zeros(0, dtype=torch.float32)
+        self._predictions = None
+        self._results_df = None
+
+    def update(
+        self,
+        output: torch.Tensor,
+        target: torch.Tensor,
+        loss: torch.Tensor,
+        sample_idx: torch.Tensor,
+        mask: torch.Tensor = None,
+    ) -> None:
+        """Update the tracker with the current model outputs, targets, losses,
+        and sample indices.
+
+        Accepts optional mask to keep track of valid samples in batch.
+
+        Args:
+            output: Detached model outputs.
+            target: Targets.
+            loss: Per-sample losses.
+            sample_idx: Sample indices.
+            mask: Optional mask marking valid samples.
+        """
+        self._outputs += [output.cpu()]
+        self._targets += [target.cpu()]
+        if mask is None:
+            # assume all samples are valid
+            mask = torch.ones(output.shape[0], output.shape[1])
+        self._masks += [mask]
+        self._losses = torch.cat([self._losses, loss.cpu()], dim=0)
+        self._indices = torch.cat([self._indices, sample_idx.cpu()], dim=0)
+
+    def save(self, iteration_folder: str, reset: bool = True) -> None:
+        """Save the tracked data to disk.
+
+        Args:
+            iteration_folder: Current iteration folder.
+            reset: Whether to reset the tracker after saving the results.
+                Defaults to True.
+        """
+        
+
+        if isinstance(self._outputs, list):
+            # get length of longest sequence for padding & masking
+            num_sequences = sum([x.shape[0] for x in self._outputs])
+            max_length = max([x.shape[1] for x in self._outputs])
+            indices = self._indices.repeat_interleave(max_length)
+            outputs = torch.cat(
+                [
+                    pad(x, [0, 0, 0, max_length - x.shape[1]], value=-100)
+                    for x in self._outputs
+                ]
+            )
+            targets = torch.cat(
+                [
+                    pad(x, [0, 0, 0, max_length - x.shape[1]], value=-100)
+                    for x in self._targets
+                ]
+            )
+            masks = torch.cat(
+                [pad(x, [0, max_length - x.shape[1]], value=0) for x in self._masks]
+            )
+        else:
+            num_sequences = self._outputs.shape[0]
+            max_length = self._outputs.shape[1]
+            indices = self._indices
+            outputs = self._outputs
+            targets = self._targets
+            masks = self._masks
+
+        results = {
+            "outputs": outputs.numpy(),
+            "targets": targets.numpy(),
+            "indices": indices.numpy(),
+            "masks": masks.numpy(),
+            "losses": self._losses.numpy(),
+        }
+
+        probabilities = self._data.target_transform.probabilities_inference(outputs)
+        predictions = self._data.target_transform.predict_inference(probabilities)
+
+        self._results_df = pd.DataFrame(index=indices.tolist())
+        self._results_df["predictions"] = np.array(predictions).reshape(
+            num_sequences * max_length, -1
+        )
+        self._results_df["predictions"] = self._results_df["predictions"].apply(
+            self._data.target_transform.decode
+        )
+        self._results_df["masks"] = masks.reshape(num_sequences * max_length, -1).int()
+
+        _probs_df = pd.DataFrame(
+            index=indices.tolist(),
+            data=(
+                self._data.target_transform.probabilities_to_dict(p)
+                for sequence in probabilities
+                for p in sequence
+            ),
+        )
+        self._results_df = pd.concat([self._results_df, _probs_df], axis=1)
+
+        self._predictions = predictions
+        self._outputs = outputs
+        self._targets = targets
+        self._masks = masks
+        self._indices = indices
+
+        if self._export:
+            for key, value in results.items():
+                self._bookkeeping.save_results_np(
+                    value, f"{self._prefix}_{key}.npy", iteration_folder
+                )
+            self._bookkeeping.save_results_df(
+                self._results_df.reset_index(),
+                f"{self._prefix}_results.csv",
+                iteration_folder,
+            )
+
+        if reset:
+            self.reset()
+
+    @staticmethod
+    def check_saved(func: Callable[..., T]) -> Callable[..., T]:
+        def wrapper(
+            self: "SequentialOutputsTracker", *args: Any, **kwargs: Dict[str, Any]
+        ) -> T:
+            if self._results_df is None:
+                raise ValueError("Results not saved yet.")
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    @property
+    @check_saved
+    def masks(self) -> np.ndarray:
+        """Get the masks.
+
+        Returns:
+            Masks.
+        """
+        return np.array(self._masks).reshape(-1, 1).squeeze(1)
+
+    @property
+    @check_saved
+    def predictions(self) -> np.ndarray:
+        """Get the predictions.
+
+        Returns:
+            Predictions.
+        """
+        return np.array(self._predictions).reshape(-1, 1).squeeze(1)
+    
+    @property
+    @check_saved
+    def outputs(self) -> np.ndarray:
+        """Get the model outputs.
+
+        Returns:
+            Model outputs.
+        """
+        return self._outputs.numpy().reshape(-1, 1).squeeze(1)
+
+    @property
+    @check_saved
+    def targets(self) -> np.ndarray:
+        """Get the targets.
+
+        Returns:
+            Targets.
+        """
+        return self._targets.numpy().reshape(-1, 1).squeeze(1)
 
 
 def init_trackers(
