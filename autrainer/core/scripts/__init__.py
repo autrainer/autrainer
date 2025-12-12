@@ -3,6 +3,7 @@ from .command_line_error import CommandLineError, print_help_on_error
 from .create_script import CreateScript, create
 from .delete_failed_script import DeleteFailedScript, rm_failed
 from .delete_states_script import DeleteStatesScript, rm_states
+from .eval_script import EvalScript, eval
 from .fetch_script import FetchScript, fetch
 from .group_script import GroupScript, group
 from .inference_script import InferenceScript, inference
@@ -20,6 +21,8 @@ __all__ = [
     "CreateScript",
     "DeleteFailedScript",
     "DeleteStatesScript",
+    "eval",
+    "EvalScript",
     "fetch",
     "FetchScript",
     "group",

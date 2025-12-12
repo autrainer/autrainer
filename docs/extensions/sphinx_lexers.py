@@ -21,6 +21,7 @@ SUBCOMMANDS = [
     "fetch",
     "preprocess",
     "train",
+    "eval",
     "postprocess",
     "rm-failed",
     "rm-states",

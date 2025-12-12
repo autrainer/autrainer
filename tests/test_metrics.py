@@ -2,7 +2,6 @@ import logging
 from typing import Any, Dict, List, Type
 
 import numpy as np
-import numpy.testing
 import pandas as pd
 import pytest
 from sklearn.metrics import f1_score
@@ -21,7 +20,7 @@ from autrainer.metrics import (
     MLF1Micro,
     MLF1Weighted,
 )
-from autrainer.training.utils import disaggregated_evaluation
+from autrainer.training import Evaluator
 
 
 class TestAllMetrics:
@@ -226,12 +225,12 @@ class TestAllMetrics:
         stratify: List[str],
         results: Dict[str, Any],
     ) -> None:
-        res = disaggregated_evaluation(
+        res = Evaluator._disaggregated(
             targets=targets,
             predictions=predictions,
             indices=indices,
-            metrics=metrics,
             groundtruth=groundtruth,
+            metrics=metrics,
             target_column=target_column,
             stratify=stratify,
         )

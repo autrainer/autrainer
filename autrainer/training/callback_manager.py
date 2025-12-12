@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 
 if TYPE_CHECKING:
-    from .training import ModularTaskTrainer  # pragma: no cover
+    from .trainer import Trainer  # pragma: no cover
 
 
 CALLBACK_FUNCTIONS = [
@@ -32,7 +32,7 @@ CALLBACK_FUNCTIONS = [
 
 class CallbackSignature:
     @abstractmethod
-    def cb_on_train_begin(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_train_begin(self, trainer: "Trainer") -> None:
         """Called at the beginning of the training loop before the first
         iteration.
 
@@ -41,7 +41,7 @@ class CallbackSignature:
         """
 
     @abstractmethod
-    def cb_on_train_end(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_train_end(self, trainer: "Trainer") -> None:
         """Called at the end of the training loop after the last iteration,
         validation, and testing are completed.
 
@@ -52,7 +52,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_iteration_begin(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         iteration: int,
     ) -> None:
         """Called at the beginning of each iteration.
@@ -67,7 +67,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_iteration_end(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         iteration: int,
         metrics: dict,
     ) -> None:
@@ -85,7 +85,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_step_begin(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         iteration: int,
         batch_idx: int,
     ) -> None:
@@ -105,7 +105,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_step_end(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         iteration: int,
         batch_idx: int,
         loss: float,
@@ -125,9 +125,7 @@ class CallbackSignature:
         """
 
     @abstractmethod
-    def cb_on_loader_exhausted(
-        self, trainer: "ModularTaskTrainer", iteration: int
-    ) -> None:
+    def cb_on_loader_exhausted(self, trainer: "Trainer", iteration: int) -> None:
         """Called when the training data loader is exhausted.
 
         Args:
@@ -140,7 +138,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_val_begin(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         iteration: int,
     ) -> None:
         """Called at the beginning of the validation loop.
@@ -155,7 +153,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_val_end(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         iteration: int,
         val_results: dict,
     ) -> None:
@@ -171,9 +169,7 @@ class CallbackSignature:
         """
 
     @abstractmethod
-    def cb_on_val_step_begin(
-        self, trainer: "ModularTaskTrainer", batch_idx: int
-    ) -> None:
+    def cb_on_val_step_begin(self, trainer: "Trainer", batch_idx: int) -> None:
         """Called at the beginning of the validation step.
 
         Args:
@@ -184,7 +180,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_val_step_end(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         batch_idx: int,
         loss: float,
     ) -> None:
@@ -197,7 +193,7 @@ class CallbackSignature:
         """
 
     @abstractmethod
-    def cb_on_test_begin(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_test_begin(self, trainer: "Trainer") -> None:
         """Called at the beginning of the testing loop.
 
         Args:
@@ -207,7 +203,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_test_end(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         test_results: dict,
     ) -> None:
         """Called at the end of the testing loop.
@@ -221,7 +217,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_test_step_begin(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         batch_idx: int,
     ) -> None:
         """Called at the beginning of the testing step.
@@ -234,7 +230,7 @@ class CallbackSignature:
     @abstractmethod
     def cb_on_test_step_end(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         batch_idx: int,
         loss: float,
     ) -> None:

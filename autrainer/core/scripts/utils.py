@@ -43,7 +43,7 @@ def encode_override_kwargs(override_kwargs: Dict[str, Any]) -> Dict[str, str]:
 
 def run_hydra_cmd(
     cmd: str,
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: Optional[Dict[str, Any]] = None,
     config_name: str = "config",
     config_path: Optional[str] = None,
     cmd_prefix: str = "autrainer",
@@ -116,7 +116,7 @@ def catch_cli_errors(func: F) -> F:
 
 
 def add_hydra_args_to_sys(
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: Optional[Dict[str, Any]] = None,
     config_name: str = "config",
     config_path: Optional[str] = None,
 ) -> None:

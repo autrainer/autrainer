@@ -1,0 +1,12 @@
+defaults:
+  - _autrainer_
+  - _self_
+  - override hydra/sweeper: AutrainerEvalFilterSweeper
+
+batch_size: 32
+seed: 1
+
+hydra:
+  sweep:
+    dir: ${results_dir}/${experiment_id}/evaluation/
+    subdir: ${dataset.id}_${model.id}

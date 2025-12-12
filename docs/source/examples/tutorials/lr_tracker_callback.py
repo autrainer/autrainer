@@ -2,16 +2,16 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from autrainer.training import ModularTaskTrainer
+    from autrainer.training import Trainer
 
 
 class LRTrackerCallback:
-    def cb_on_train_begin(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_train_begin(self, trainer: "Trainer") -> None:
         self.lr = trainer.optimizer.param_groups[0]["lr"]
 
     def cb_on_iteration_begin(
         self,
-        trainer: "ModularTaskTrainer",
+        trainer: "Trainer",
         iteration: int,
     ) -> None:
         current_lr = trainer.optimizer.param_groups[0]["lr"]

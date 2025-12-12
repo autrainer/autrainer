@@ -1,0 +1,22 @@
+defaults:
+  - _autrainer_
+  - _self_
+  - optimizer: Adam
+  - scheduler: None
+  - augmentation: None
+  - override hydra/sweeper: AutrainerFilterSweeper
+
+hydra:
+  sweep:
+    dir: ${results_dir}/${experiment_id}/training/
+    subdir: "\
+      ${dataset.id}_\
+      ${model.id}_\
+      ${optimizer.id}_\
+      ${learning_rate}_\
+      ${batch_size}_\
+      ${training_type}_\
+      ${iterations}_\
+      ${scheduler.id}_\
+      ${augmentation.id}_\
+      ${seed}"

@@ -1,0 +1,12 @@
+defaults:
+  - _autrainer_eval_
+  - _self_
+
+results_dir: results
+experiment_id: spectrogram_step
+
+hydra:
+  sweeper:
+    params:
+      dataset: DCASE2016Task1-32k
+      model: Cnn10-32k-T-600-Steps

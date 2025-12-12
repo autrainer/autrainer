@@ -27,7 +27,6 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
         target_column: Union[list, str],
         feature_shape: Union[int, List[int]],
         dtype: str,
-        generator: torch.Generator,
         transform: SmartCompose = None,
         target_transform: SmartCompose = None,
     ) -> None:
@@ -37,29 +36,15 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.dtype = dtype
-        self.generator = generator
 
     def __len__(self) -> int:
         return len(self.df)
 
-    def __getitem__(self, index: int) -> Tuple[torch.Tensor, int, int]:
+    def __getitem__(self, index: int) -> DataItem:
+        data = self.df.iloc[index]["features"].clone()
         target = self.df.iloc[index][self.target_column]
         if isinstance(target, pd.Series):
-            target = target.values
-        if self.dtype == "float32":
-            data = torch.rand(
-                self.feature_shape,
-                dtype=torch.float32,
-                generator=self.generator,
-            )
-        else:
-            data = torch.randint(
-                0,
-                256,
-                self.feature_shape,
-                dtype=torch.uint8,
-                generator=self.generator,
-            )
+            target = target.to_numpy(dtype=self.dtype)
         it = DataItem(features=data, target=target, index=index)
         if self.transform:
             it = self.transform(it)
@@ -115,7 +100,6 @@ class ToyDataset(AbstractDataset):
         self._assert_splits(dev_split, test_split)
         self.dev_split = dev_split
         self.test_split = test_split
-        self._generator = torch.Generator().manual_seed(seed)
         if dtype not in ["float32", "uint8"]:
             raise ValueError(
                 f"Invalid dtype='{dtype}', must be in ['float32', 'uint8']."
@@ -162,6 +146,21 @@ class ToyDataset(AbstractDataset):
             )
         return train_size, dev_size, test_size
 
+    def _precompute_features(self, df: pd.DataFrame, seed: int) -> pd.DataFrame:
+        g = torch.Generator().manual_seed(seed)
+        size = len(df)
+        fs = (
+            (self.feature_shape,)
+            if isinstance(self.feature_shape, int)
+            else self.feature_shape
+        )
+        if self.dtype == "float32":
+            feats = torch.rand((size, *fs), dtype=torch.float32, generator=g)
+        else:
+            feats = torch.randint(0, 256, (size, *fs), dtype=torch.uint8, generator=g)
+        df["features"] = [feats[i] for i in range(size)]
+        return df
+
     @cached_property
     def _mock_df(self) -> pd.DataFrame:
         rng = np.random.default_rng(self.seed)
@@ -207,17 +206,20 @@ class ToyDataset(AbstractDataset):
     @cached_property
     def df_train(self) -> pd.DataFrame:
         train_size, *_ = self._dataset_sizes
-        return self._reset_index(self._mock_df.iloc[:train_size])
+        df = self._reset_index(self._mock_df.iloc[:train_size])
+        return self._precompute_features(df, self.seed + 1)
 
     @cached_property
     def df_dev(self) -> pd.DataFrame:
         train_size, dev_size, _ = self._dataset_sizes
-        return self._reset_index(self._mock_df.iloc[train_size : train_size + dev_size])
+        df = self._reset_index(self._mock_df.iloc[train_size : train_size + dev_size])
+        return self._precompute_features(df, self.seed + 2)
 
     @cached_property
     def df_test(self) -> pd.DataFrame:
         train_size, dev_size, _ = self._dataset_sizes
-        return self._reset_index(self._mock_df.iloc[train_size + dev_size :])
+        df = self._reset_index(self._mock_df.iloc[train_size + dev_size :])
+        return self._precompute_features(df, self.seed + 3)
 
     def _reset_index(self, df: pd.DataFrame) -> pd.DataFrame:
         return df.copy().reset_index(drop=True).reset_index(names=[self.index_column])
@@ -232,7 +234,6 @@ class ToyDataset(AbstractDataset):
             target_column=self.target_column,
             feature_shape=self.feature_shape,
             dtype=self.dtype,
-            generator=self._generator,
             transform=transform,
             target_transform=self.target_transform,
         )
@@ -240,12 +241,12 @@ class ToyDataset(AbstractDataset):
     @cached_property
     def target_transform(self) -> AbstractTargetTransform:
         if self.task == "ml-classification":
-            return MultiLabelEncoder(0.5, self.target_column)
+            return MultiLabelEncoder(0.5, list(self.target_column))
         if self.task == "classification":
             return LabelEncoder(self.df_train[self.target_column].unique().tolist())
         if self.task == "mt-regression":
             return MultiTargetMinMaxScaler(
-                target=self.target_column,
+                target=list(self.target_column),
                 minimum=self.df_train[self.target_column].min().to_list(),
                 maximum=self.df_train[self.target_column].max().to_list(),
             )

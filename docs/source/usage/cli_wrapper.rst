@@ -82,6 +82,22 @@ based on the :ref:`main configuration <main_configuration>` file (e.g., :file:`c
 
 .. _cli_wrapper_inference:
 
+
+.. _cli_wrapper_evaluation:
+
+Evaluation
+----------
+
+Evaluation of a trained model is managed by :meth:`~autrainer.cli.eval`,
+which starts the evaluation process based on the :ref:`evaluation configuration <evaluation_configuration>`
+file (e.g., :file:`conf/eval.yaml`).
+
+
+.. _cli_wrapper_autrainer_eval:
+
+.. autofunction:: autrainer.cli.eval
+
+
 Inference
 ---------
 

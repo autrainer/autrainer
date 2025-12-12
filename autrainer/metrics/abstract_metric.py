@@ -216,7 +216,7 @@ class BaseDescendingMetric(AbstractMetric):
                 the fallback value is set to 1e32. Defaults to None.
             **fn_kwargs: Additional keyword arguments to pass to the function.
         """
-        fallback = fallback if fallback is not None else -1e32
+        fallback = fallback if fallback is not None else 1e32
         super().__init__(name, fn, fallback, **fn_kwargs)
 
     @property

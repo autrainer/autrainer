@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -54,7 +54,7 @@ class GroupScript(AbstractScript):
 
 @catch_cli_errors
 def group(
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: Optional[Dict[str, Any]] = None,
     config_name: str = "group",
     config_path: Optional[str] = None,
 ) -> None:
