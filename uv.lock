@@ -312,7 +312,7 @@ wheels = [
 
 [[package]]
 name = "autrainer"
-version = "0.9.0"
+version = "0.9.1"
 source = { editable = "." }
 dependencies = [
     { name = "audeer" },
