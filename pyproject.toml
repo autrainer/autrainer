@@ -1,6 +1,6 @@
 [project]
 name = "autrainer"
-version = "0.9.0"
+version = "0.9.1"
 description = "A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks."
 authors = [
     { name = "Simon Rampp", email = "simon.rampp@tum.de" },
