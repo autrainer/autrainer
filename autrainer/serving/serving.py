@@ -398,9 +398,18 @@ class Inference:
     def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, int]:
         w_len = int(self._window_length * self._sample_rate)
         s_len = int(self._stride_length * self._sample_rate)
+
         if x.shape[1] < w_len:
-            return w_len, s_len, 1  # force a single window if too short
+            warnings.warn(
+                "Sliding window length is greater than the audio length. "
+                "Using a single window covering the entire audio.",
+                stacklevel=2,
+            )
+
+            return w_len, s_len, 1
+
         num_windows = (x.shape[1] - w_len) // s_len + 1
+
         return w_len, s_len, num_windows
 
     def _predict_windowed(
