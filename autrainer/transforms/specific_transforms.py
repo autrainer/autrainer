@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, Tuple
 import warnings
 
 from audtorch import transforms as AT
@@ -365,6 +365,7 @@ class Standardizer(AbstractTransform):
         mean: Optional[List[float]] = None,
         std: Optional[List[float]] = None,
         subset: str = "train",
+        correction: int = 1,
         order: int = -99,
     ) -> None:
         """Standardize a dataset by calculating the mean and standard deviation
@@ -386,6 +387,8 @@ class Standardizer(AbstractTransform):
             subset: The subset to use for calculating the mean and standard
                 deviation. Must be one of ["train", "dev", "test"]. Defaults to
                 "train".
+            correction: Difference between the sample size and degrees of freedom.
+                Defaults to 1 (Bessel's correction).
             order: The order of the transform in the pipeline. Defaults to -99.
         """
         super().__init__(order=order)
@@ -393,6 +396,7 @@ class Standardizer(AbstractTransform):
         self.subset = subset
         self.mean = mean
         self.std = std
+        self.correction = correction
         self._transform = self._init_transform()
 
     def _validate_subset(self, subset: str) -> None:
@@ -406,7 +410,7 @@ class Standardizer(AbstractTransform):
             return Normalize(self.mean, self.std, self.order)
         return None
 
-    def _collect_data(self, data: "AbstractDataset") -> torch.Tensor:
+    def _collect(self, data: "AbstractDataset") -> Tuple[List[float], List[float]]:
         ds: DatasetWrapper = getattr(data, f"{self.subset}_dataset")
         original_transform = ds.transform
 
@@ -414,29 +418,30 @@ class Standardizer(AbstractTransform):
         preceding = SmartCompose(original_transform.transforms[:idx])
         ds.transform = preceding
 
-        data = torch.stack([x.features for x in ds]).to(torch.float32)
+        c = next(iter(ds)).features.shape[0]  # always one sample present
+
+        csum = torch.zeros(c, dtype=torch.float32)
+        sumsq = torch.zeros_like(csum)
+        count = 0
+
+        for x in ds:
+            flat = x.features.float().view(c, -1)
+            csum += flat.sum(dim=1)
+            sumsq += (flat**2).sum(dim=1)
+            count += flat.shape[1]
+
         ds.transform = original_transform
-        return data
+        mean = csum / count
+        std = torch.sqrt(
+            torch.clamp(sumsq / (count - self.correction) - mean**2, min=0.0)
+        )
+        return mean.tolist(), std.tolist()
 
     def setup(self, data: "AbstractDataset") -> None:
         if self.mean and self.std:  # if already computed for the current data
             return
 
-        # select all dimensions except the dimension along which to normalize
-        views = {
-            4: (0, 2, 3),  # 3D images: normalize along the channel axis
-            3: (0, 2),  # 2D audio: normalize along the channel axis
-            2: (0,),  # 1D tabular data: normalize along the feature axis
-        }
-        collected = self._collect_data(data)
-        for dim, axes in views.items():  # noqa: B007
-            if collected.ndim == dim:
-                break
-        else:
-            raise ValueError(f"Unsupported data dimensions: {collected.shape}")
-
-        self.mean = collected.mean(dim=axes).tolist()
-        self.std = collected.std(dim=axes).tolist()
+        self.mean, self.std = self._collect(data)
         self._transform = self._init_transform()
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
