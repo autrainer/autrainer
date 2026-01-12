@@ -258,3 +258,74 @@ class ToyDataset(AbstractDataset):
         raise ValueError(
             f"Invalid task '{self.task}', must be in {TrainingConstants().TASKS}."
         )
+
+
+class ToySequentialDataset(ToyDataset):
+    @cached_property
+    def _mock_df(self) -> pd.DataFrame:
+        rng = np.random.default_rng(self.seed)
+
+        if self.task == "ml-classification":
+            self.target_column = [f"class_{i + 1}" for i in range(self.num_targets)]
+            df = pd.DataFrame(
+                {
+                    **{
+                        col: rng.integers(0, 2, size=self.size).astype(np.float32)
+                        for col in self.target_column
+                    }
+                }
+            )
+        elif self.task == "classification":
+            self.target_column = "target"
+            df = pd.DataFrame(
+                {self.target_column: rng.integers(0, self.num_targets, size=(self.size, self.feature_shape[0])).tolist()}
+            )
+        elif self.task == "mt-regression":
+            self.target_column = [f"target_{i + 1}" for i in range(self.num_targets)]
+            df = pd.DataFrame(
+                {
+                    **{
+                        col: rng.random((self.size,)).astype(np.float32)
+                        for col in self.target_column
+                    }
+                }
+            )
+        elif self.task == "regression":
+            self.target_column = "target"
+            df = pd.DataFrame({self.target_column: rng.random((self.size,))})
+        else:
+            raise ValueError(
+                f"Invalid task '{self.task}', must be in {TrainingConstants().TASKS}."
+            )
+
+        return df
+    
+    @cached_property
+    def target_transform(self) -> AbstractTargetTransform:
+        if self.task == "ml-classification":
+            return MultiLabelEncoder(0.5, self.target_column)
+        if self.task == "classification":
+            labels = self.df_train[self.target_column].values.tolist()
+            labels = [item for sublist in labels for item in sublist]
+            labels = list(set(labels))
+            class SequentialEncoder(LabelEncoder):
+                def encode(self, x):
+                    return [super().encode(y) for y in x]
+                def probabilities_training(self, x):
+                    return super().probabilities_training(x).transpose(1, 2)
+            return SequentialEncoder(labels=labels)
+        if self.task == "mt-regression":
+            return MultiTargetMinMaxScaler(
+                target=self.target_column,
+                minimum=self.df_train[self.target_column].min().to_list(),
+                maximum=self.df_train[self.target_column].max().to_list(),
+            )
+        if self.task == "regression":
+            return MinMaxScaler(
+                target=self.target_column,
+                minimum=self.df_train[self.target_column].min(),
+                maximum=self.df_train[self.target_column].max(),
+            )
+        raise ValueError(
+            f"Invalid task '{self.task}', must be in {TrainingConstants().TASKS}."
+        )

@@ -63,9 +63,9 @@ class TrainScript(AbstractScript):
             os.makedirs(os.path.dirname(cfg_path), exist_ok=True)
             OmegaConf.save(cfg, cfg_path)
 
-            from autrainer.training import ModularTaskTrainer
+            from autrainer.training import ModularTaskTrainer, SequentialTrainer
 
-            trainer = ModularTaskTrainer(cfg=cfg, output_directory=output_dir)
+            trainer = SequentialTrainer(cfg=cfg, output_directory=output_dir)
             return trainer.train()
 
         check_invalid_config_path_arg(self.parser)

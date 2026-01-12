@@ -14,7 +14,7 @@ from .edansa2019 import EDANSA2019
 from .emo_db import EmoDB
 from .msppodcast import MSPPodcast
 from .speech_commands import SpeechCommands
-from .toy_dataset import ToyDataset
+from .toy_dataset import ToyDataset, ToySequentialDataset
 
 
 __all__ = [
@@ -33,4 +33,5 @@ __all__ = [
     "MSPPodcast",
     "SpeechCommands",
     "ToyDataset",
+    "ToySequentialDataset",
 ]
