@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
+    <script src="../../../_static/documentation_options.js?v=aa3b121e"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -373,7 +373,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartCompose</span>
 
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractFileHandler</span><span class="p">,</span> <span class="n">AbstractTargetTransform</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractModel</span>
 
@@ -721,14 +721,28 @@ document.write(`
         <span class="n">window_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">tqdm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping empty file: &#39;</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_window_length</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stride_length</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span>
+            <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_window_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;File &#39;</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&#39; is shorter than the sliding window length. &quot;</span>
+                <span class="s2">&quot;Using a single window covering the entire audio.&quot;</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_length</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stride_length</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">window_fn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">tqdm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing file &#39;</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
@@ -776,8 +790,11 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_windows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
         <span class="n">w_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_window_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span><span class="p">)</span>
         <span class="n">s_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stride_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_rate</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">w_len</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">w_len</span><span class="p">,</span> <span class="n">s_len</span><span class="p">,</span> <span class="mi">1</span>  <span class="c1"># force a single window if too short</span>
+            <span class="c1"># here use a single window</span>
+            <span class="k">return</span> <span class="n">w_len</span><span class="p">,</span> <span class="n">s_len</span><span class="p">,</span> <span class="mi">1</span>
+
         <span class="n">num_windows</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">w_len</span><span class="p">)</span> <span class="o">//</span> <span class="n">s_len</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">w_len</span><span class="p">,</span> <span class="n">s_len</span><span class="p">,</span> <span class="n">num_windows</span>
 
@@ -871,7 +888,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2025 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
+      © Copyright 2026 (MIT) Simon Rampp, Andreas Triantafyllopoulos, Manuel Milling, Björn W. Schuller.
       <br/>
     
   </p>
