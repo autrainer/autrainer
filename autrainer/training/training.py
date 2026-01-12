@@ -89,7 +89,7 @@ class ModularTaskTrainer:
                 self.cfg.get(key, {}),
             )
 
-        self._create_data(
+        self.create_data(
             model_config=model_config,
             dataset_config=dataset_config,
             dataset_seed=dataset_seed,
@@ -104,7 +104,7 @@ class ModularTaskTrainer:
         # ? Misc Training Parameters
         self.disable_progress_bar = not self.cfg.get("progress_bar", False)
 
-        self._setup_criterion()
+        self.setup_criterion()
 
         # ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints
         model_checkpoint = model_config.pop("model_checkpoint", None)
@@ -114,19 +114,19 @@ class ModularTaskTrainer:
         scheduler_checkpoint = model_config.pop("scheduler_checkpoint", None)
         skip_last_layer = model_config.pop("skip_last_layer", True)
 
-        self._create_model(
+        self.create_model(
             model_config=model_config,
             output_dim=self.data.output_dim,
             model_checkpoint=model_checkpoint,
             skip_last_layer=skip_last_layer,
         )
-        self._init_optimizer(
+        self.init_optimizer(
             optimizer_checkpoint=optimizer_checkpoint, skip_last_layer=skip_last_layer
         )
-        self._init_scheduler(scheduler_checkpoint=scheduler_checkpoint)
-        self._init_dataloaders()
-        self._save_init_data()
-        self._create_timers(output_directory)
+        self.init_scheduler(scheduler_checkpoint=scheduler_checkpoint)
+        self.init_dataloaders()
+        self.save_init_data()
+        self.create_timers(output_directory)
 
         # ? Continue run
         if self.cfg.get("continue_training", False):
@@ -137,8 +137,8 @@ class ModularTaskTrainer:
         else:
             self.continue_training = None
 
-        self._create_loggers(experiment_id, run_name)
-        self._register_callbacks()
+        self.create_loggers(experiment_id, run_name)
+        self.register_callbacks()
 
         # ? Create Plot Metrics
         self.plot_metrics = PlotMetrics(
@@ -147,9 +147,9 @@ class ModularTaskTrainer:
             **self.cfg.plotting,
             metric_fns=self.data.metrics,
         )
-        self._init_trackers()
+        self.init_trackers()
 
-    def _create_data(
+    def create_data(
         self,
         model_config: DictConfig,
         dataset_config: DictConfig,
@@ -179,7 +179,7 @@ class ModularTaskTrainer:
             seed=dataset_seed,
         )
 
-    def _setup_criterion(self) -> None:
+    def setup_criterion(self) -> None:
         self.criterion = autrainer.instantiate_shorthand(
             config=self.cfg.criterion,
             instance_of=torch.nn.modules.loss._Loss,
@@ -189,7 +189,7 @@ class ModularTaskTrainer:
             self.criterion.setup(self.data)
         self.criterion.to(self.DEVICE)
 
-    def _create_model(
+    def create_model(
         self,
         model_config: DictConfig,
         output_dim: int,
@@ -223,7 +223,7 @@ class ModularTaskTrainer:
             "model_summary.txt",
         )
 
-    def _init_optimizer(
+    def init_optimizer(
         self, optimizer_checkpoint: str = None, skip_last_layer: bool = False
     ) -> None:
         # ? Load Optimizer
@@ -250,7 +250,7 @@ class ModularTaskTrainer:
                 skip_last_layer,
             )
 
-    def _init_scheduler(self, scheduler_checkpoint: str = None) -> None:
+    def init_scheduler(self, scheduler_checkpoint: str = None) -> None:
         # ? Load Scheduler
         if self.cfg.scheduler.id != "None":
             _scheduler_cfg = self.cfg.scheduler
@@ -277,7 +277,7 @@ class ModularTaskTrainer:
         else:
             self.scheduler = None
 
-    def _init_dataloaders(self) -> None:
+    def init_dataloaders(self) -> None:
         # ? Create Dataloaders
         self.train_loader = self.data.create_train_loader(
             batch_size=self.cfg.batch_size,
@@ -301,7 +301,7 @@ class ModularTaskTrainer:
         self.max_dev_metric = self.data.tracking_metric.starting_metric
         self.best_iteration = 1
 
-    def _save_init_data(self) -> None:
+    def save_init_data(self) -> None:
         # ? Save initial (and best) Model, Optimizer and Scheduler states
         save_tasks = [
             (self.model, "model.pt", "_initial"),
@@ -344,13 +344,13 @@ class ModularTaskTrainer:
         for task in save_tasks:
             self._thread_manager.spawn(self.bookkeeping.save_audobject, *task)
 
-    def _create_timers(self, output_directory: str) -> None:
+    def create_timers(self, output_directory: str) -> None:
         # ? Create Timers
         self.train_timer = Timer(output_directory, "train")
         self.dev_timer = Timer(output_directory, "dev")
         self.test_timer = Timer(output_directory, "test")
 
-    def _create_loggers(self, experiment_id: str = None, run_name: str = None) -> None:
+    def create_loggers(self, experiment_id: str = None, run_name: str = None) -> None:
         # ? Create Loggers
         self.loggers: List[AbstractLogger] = []
         for logger in self.cfg.get("loggers", []):
@@ -365,7 +365,7 @@ class ModularTaskTrainer:
                 )
             )
 
-    def _register_callbacks(self) -> None:
+    def register_callbacks(self) -> None:
         # ? Create Callbacks and Callback Manager
         callbacks = self.cfg.get("callbacks", [])
         self.callbacks = []
@@ -390,7 +390,7 @@ class ModularTaskTrainer:
             ]
         )
 
-    def _init_trackers(self) -> None:
+    def init_trackers(self) -> None:
         # ? Create Outputs Tracker
         self.dev_tracker, self.test_tracker = init_trackers(
             exports=[self.cfg.save_dev_outputs, self.cfg.save_test_outputs],
