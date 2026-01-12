@@ -18,7 +18,7 @@ from autrainer.models.utils import create_model_inputs
 from autrainer.transforms import SmartCompose
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from autrainer.datasets.utils import AbstractFileHandler, AbstractTargetTransform
     from autrainer.models import AbstractModel
 
