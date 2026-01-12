@@ -13,8 +13,8 @@ from autrainer.postprocessing.postprocessing_utils import (
 )
 
 
-if TYPE_CHECKING:
-    from .training import ModularTaskTrainer  # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
+    from .training import ModularTaskTrainer
 
 
 class ContinueTraining:

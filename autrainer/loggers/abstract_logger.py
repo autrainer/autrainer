@@ -9,8 +9,8 @@ from autrainer.core.utils import Timer
 from autrainer.metrics import AbstractMetric
 
 
-if TYPE_CHECKING:
-    from autrainer.training import ModularTaskTrainer  # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
+    from autrainer.training import ModularTaskTrainer
 
 
 def get_params_to_export(
