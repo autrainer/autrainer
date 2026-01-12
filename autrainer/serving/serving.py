@@ -343,14 +343,28 @@ class Inference:
         window_fn: Callable,
     ) -> Optional[Union[Tuple[Any, torch.Tensor], torch.Tensor]]:
         x = self.file_handler.load(file)
+
         if x.numel() == 0:
             tqdm.write(f"Skipping empty file: '{file}'")
             return None
+
+        if (
+            self._window_length
+            and self._stride_length
+            and self._sample_rate
+            and x.shape[1] < int(self._window_length * self._sample_rate)
+        ):
+            warnings.warn(
+                f"File '{file}' is shorter than the sliding window length. "
+                "Using a single window covering the entire audio.",
+                stacklevel=2,
+            )
+
         try:
             if self._window_length and self._stride_length and self._sample_rate:
                 return window_fn(x)
             return fn(x)
-        except Exception as e:  # noqa: BLE001
+        except (RuntimeError, ValueError) as e:
             tqdm.write(f"Error processing file '{file}': {e}")
             return None
 
@@ -398,8 +412,11 @@ class Inference:
     def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, int]:
         w_len = int(self._window_length * self._sample_rate)
         s_len = int(self._stride_length * self._sample_rate)
+
         if x.shape[1] < w_len:
-            return w_len, s_len, 1  # force a single window if too short
+            # here use a single window
+            return w_len, s_len, 1
+
         num_windows = (x.shape[1] - w_len) // s_len + 1
         return w_len, s_len, num_windows
 
