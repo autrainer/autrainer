@@ -4,8 +4,8 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 
-if TYPE_CHECKING:
-    from .training import ModularTaskTrainer  # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
+    from .training import ModularTaskTrainer
 
 
 CALLBACK_FUNCTIONS = [
