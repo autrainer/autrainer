@@ -119,11 +119,10 @@ class ModularTaskTrainer:
             model_checkpoint=model_checkpoint,
             skip_last_layer=skip_last_layer,
         )
-        self._init_optimizer_scheduler(
-            optimizer_checkpoint=optimizer_checkpoint,
-            scheduler_checkpoint=scheduler_checkpoint,
-            skip_last_layer=skip_last_layer
+        self._init_optimizer(
+            optimizer_checkpoint=optimizer_checkpoint, skip_last_layer=skip_last_layer
         )
+        self._init_scheduler(scheduler_checkpoint=scheduler_checkpoint)
         self._init_dataloaders()
         self._save_init_data()
         self._create_timers(output_directory)
@@ -178,7 +177,7 @@ class ModularTaskTrainer:
             test_transform=test_transform,
             seed=dataset_seed,
         )
-    
+
     def _setup_criterion(self) -> None:
         self.criterion = autrainer.instantiate_shorthand(
             config=self.cfg.criterion,
@@ -223,11 +222,8 @@ class ModularTaskTrainer:
             "model_summary.txt",
         )
 
-    def _init_optimizer_scheduler(
-        self,
-        optimizer_checkpoint: str = None,
-        scheduler_checkpoint: str = None,
-        skip_last_layer: bool = False
+    def _init_optimizer(
+        self, optimizer_checkpoint: str = None, skip_last_layer: bool = False
     ) -> None:
         # ? Load Optimizer
         optimizer_cfg = self.cfg.optimizer
@@ -253,6 +249,7 @@ class ModularTaskTrainer:
                 skip_last_layer,
             )
 
+    def _init_scheduler(self, scheduler_checkpoint: str = None) -> None:
         # ? Load Scheduler
         if self.cfg.scheduler.id != "None":
             _scheduler_cfg = self.cfg.scheduler
@@ -366,7 +363,7 @@ class ModularTaskTrainer:
                     tracking_metric=self.data.tracking_metric,
                 )
             )
-    
+
     def _register_callbacks(self) -> None:
         # ? Create Callbacks and Callback Manager
         callbacks = self.cfg.get("callbacks", [])
