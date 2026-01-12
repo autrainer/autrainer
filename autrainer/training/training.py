@@ -89,6 +89,72 @@ class ModularTaskTrainer:
                 self.cfg.get(key, {}),
             )
 
+        self.create_data(
+            model_config=model_config,
+            dataset_config=dataset_config,
+            dataset_seed=dataset_seed,
+        )
+
+        # ? Create Bookkeeping
+        self.bookkeeping = Bookkeeping(
+            output_directory=output_directory,
+            file_handler_path=os.path.join(output_directory, "training.log"),
+        )
+
+        # ? Misc Training Parameters
+        self.disable_progress_bar = not self.cfg.get("progress_bar", False)
+
+        self.setup_criterion()
+
+        # ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints
+        model_checkpoint = model_config.pop("model_checkpoint", None)
+        if model_checkpoint and model_config.get("transfer", None):
+            model_config.pop("transfer", None)  # skip transfer for checkpoints
+        optimizer_checkpoint = model_config.pop("optimizer_checkpoint", None)
+        scheduler_checkpoint = model_config.pop("scheduler_checkpoint", None)
+        skip_last_layer = model_config.pop("skip_last_layer", True)
+
+        self.create_model(
+            model_config=model_config,
+            output_dim=self.data.output_dim,
+            model_checkpoint=model_checkpoint,
+            skip_last_layer=skip_last_layer,
+        )
+        self.init_optimizer(
+            optimizer_checkpoint=optimizer_checkpoint, skip_last_layer=skip_last_layer
+        )
+        self.init_scheduler(scheduler_checkpoint=scheduler_checkpoint)
+        self.init_dataloaders()
+        self.save_init_data()
+        self.create_timers(output_directory)
+
+        # ? Continue run
+        if self.cfg.get("continue_training", False):
+            self.continue_training = ContinueTraining(
+                run_name=run_name or self.output_directory.name,
+                remove_continued_runs=self.cfg.get("remove_continued_runs", False),
+            )
+        else:
+            self.continue_training = None
+
+        self.create_loggers(experiment_id, run_name)
+        self.register_callbacks()
+
+        # ? Create Plot Metrics
+        self.plot_metrics = PlotMetrics(
+            self.output_directory,
+            self.cfg.training_type,
+            **self.cfg.plotting,
+            metric_fns=self.data.metrics,
+        )
+        self.init_trackers()
+
+    def create_data(
+        self,
+        model_config: DictConfig,
+        dataset_config: DictConfig,
+        dataset_seed: int,
+    ) -> None:
         augmentation_manager = AugmentationManager(self.cfg.augmentation)
         train_aug, dev_aug, test_aug = augmentation_manager.get_augmentations()
 
@@ -113,15 +179,7 @@ class ModularTaskTrainer:
             seed=dataset_seed,
         )
 
-        # ? Create Bookkeeping
-        self.bookkeeping = Bookkeeping(
-            output_directory=output_directory,
-            file_handler_path=os.path.join(output_directory, "training.log"),
-        )
-
-        # ? Misc Training Parameters
-        self.disable_progress_bar = not self.cfg.get("progress_bar", False)
-
+    def setup_criterion(self) -> None:
         self.criterion = autrainer.instantiate_shorthand(
             config=self.cfg.criterion,
             instance_of=torch.nn.modules.loss._Loss,
@@ -131,20 +189,18 @@ class ModularTaskTrainer:
             self.criterion.setup(self.data)
         self.criterion.to(self.DEVICE)
 
-        # ? Load Pretrained Model, Optimizer, and Scheduler Checkpoints
-        model_checkpoint = model_config.pop("model_checkpoint", None)
-        if model_checkpoint and model_config.get("transfer", None):
-            model_config.pop("transfer", None)  # skip transfer for checkpoints
-        optimizer_checkpoint = model_config.pop("optimizer_checkpoint", None)
-        scheduler_checkpoint = model_config.pop("scheduler_checkpoint", None)
-        skip_last_layer = model_config.pop("skip_last_layer", True)
-
+    def create_model(
+        self,
+        model_config: DictConfig,
+        output_dim: int,
+        model_checkpoint: str = None,
+        skip_last_layer: bool = False,
+    ) -> None:
         # ? Load Model
-        self.output_dim = self.data.output_dim
         self.model = autrainer.instantiate(
             config=model_config,
             instance_of=AbstractModel,
-            output_dim=self.output_dim,
+            output_dim=output_dim,
         )
 
         if model_checkpoint:
@@ -167,6 +223,9 @@ class ModularTaskTrainer:
             "model_summary.txt",
         )
 
+    def init_optimizer(
+        self, optimizer_checkpoint: str = None, skip_last_layer: bool = False
+    ) -> None:
         # ? Load Optimizer
         optimizer_cfg = self.cfg.optimizer
         _wd = optimizer_cfg.pop("weight_decay", None)
@@ -191,6 +250,7 @@ class ModularTaskTrainer:
                 skip_last_layer,
             )
 
+    def init_scheduler(self, scheduler_checkpoint: str = None) -> None:
         # ? Load Scheduler
         if self.cfg.scheduler.id != "None":
             _scheduler_cfg = self.cfg.scheduler
@@ -217,6 +277,7 @@ class ModularTaskTrainer:
         else:
             self.scheduler = None
 
+    def init_dataloaders(self) -> None:
         # ? Create Dataloaders
         self.train_loader = self.data.create_train_loader(
             batch_size=self.cfg.batch_size,
@@ -240,6 +301,7 @@ class ModularTaskTrainer:
         self.max_dev_metric = self.data.tracking_metric.starting_metric
         self.best_iteration = 1
 
+    def save_init_data(self) -> None:
         # ? Save initial (and best) Model, Optimizer and Scheduler states
         save_tasks = [
             (self.model, "model.pt", "_initial"),
@@ -255,7 +317,7 @@ class ModularTaskTrainer:
         # ? Load and Save Preprocessing Pipeline if specified
         _preprocess_pipe = SmartCompose([])
         _file_handler = self.data.file_handler
-        _features_subdir = cfg.dataset.get("features_subdir", "default")
+        _features_subdir = self.cfg.dataset.get("features_subdir", "default")
         if (
             not isinstance(self.data.file_handler, AudioFileHandler)
             and _features_subdir != "default"
@@ -282,20 +344,13 @@ class ModularTaskTrainer:
         for task in save_tasks:
             self._thread_manager.spawn(self.bookkeeping.save_audobject, *task)
 
+    def create_timers(self, output_directory: str) -> None:
         # ? Create Timers
         self.train_timer = Timer(output_directory, "train")
         self.dev_timer = Timer(output_directory, "dev")
         self.test_timer = Timer(output_directory, "test")
 
-        # ? Continue run
-        if self.cfg.get("continue_training", False):
-            self.continue_training = ContinueTraining(
-                run_name=run_name or self.output_directory.name,
-                remove_continued_runs=self.cfg.get("remove_continued_runs", False),
-            )
-        else:
-            self.continue_training = None
-
+    def create_loggers(self, experiment_id: str = None, run_name: str = None) -> None:
         # ? Create Loggers
         self.loggers: List[AbstractLogger] = []
         for logger in self.cfg.get("loggers", []):
@@ -310,6 +365,7 @@ class ModularTaskTrainer:
                 )
             )
 
+    def register_callbacks(self) -> None:
         # ? Create Callbacks and Callback Manager
         callbacks = self.cfg.get("callbacks", [])
         self.callbacks = []
@@ -320,7 +376,6 @@ class ModularTaskTrainer:
                     instance_of=object,
                 )
             )
-
         self.callback_manager = CallbackManager()
         self.callback_manager.register_multiple(
             [
@@ -335,14 +390,7 @@ class ModularTaskTrainer:
             ]
         )
 
-        # ? Create Plot Metrics
-        self.plot_metrics = PlotMetrics(
-            self.output_directory,
-            self.cfg.training_type,
-            **self.cfg.plotting,
-            metric_fns=self.data.metrics,
-        )
-
+    def init_trackers(self) -> None:
         # ? Create Outputs Tracker
         self.dev_tracker, self.test_tracker = init_trackers(
             exports=[self.cfg.save_dev_outputs, self.cfg.save_test_outputs],
