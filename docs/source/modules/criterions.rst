@@ -27,6 +27,9 @@ For more information see `this discussion <https://discuss.pytorch.org/t/dataloa
 
 `autrainer` provides the following wrappers:
 
+.. autoclass:: autrainer.criterions.CCCLoss
+   :members:
+
 .. autoclass:: autrainer.criterions.CrossEntropyLoss
    :members:
 
