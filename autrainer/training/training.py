@@ -116,6 +116,7 @@ class ModularTaskTrainer:
 
         self._create_model(
             model_config=model_config,
+            output_dim=self.data.output_dim,
             model_checkpoint=model_checkpoint,
             skip_last_layer=skip_last_layer,
         )
@@ -191,15 +192,15 @@ class ModularTaskTrainer:
     def _create_model(
         self,
         model_config: DictConfig,
+        output_dim: int,
         model_checkpoint: str = None,
         skip_last_layer: bool = False,
     ) -> None:
         # ? Load Model
-        self.output_dim = self.data.output_dim
         self.model = autrainer.instantiate(
             config=model_config,
             instance_of=AbstractModel,
-            output_dim=self.output_dim,
+            output_dim=output_dim,
         )
 
         if model_checkpoint:
