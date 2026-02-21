@@ -1,11 +1,13 @@
 from typing import TYPE_CHECKING
 
+from autrainer.core.callbacks import CallbackMixin
+
 
 if TYPE_CHECKING:
     from autrainer.training import ModularTaskTrainer
 
 
-class LRTrackerCallback:
+class LRTrackerCallback(CallbackMixin):
     def cb_on_train_begin(self, trainer: "ModularTaskTrainer") -> None:
         self.lr = trainer.optimizer.param_groups[0]["lr"]
 
