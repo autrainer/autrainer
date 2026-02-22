@@ -15,6 +15,7 @@ eval_frequency: 1
 save_frequency: ${eval_frequency}
 inference_batch_size: ${batch_size}
 device: cuda:0
+reproducible: true
 
 progress_bar: true
 continue_training: true

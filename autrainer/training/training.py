@@ -20,6 +20,7 @@ from autrainer.core.utils import (
     save_hardware_info,
     save_requirements,
     set_device,
+    set_reproducibility,
     set_seed,
 )
 from autrainer.datasets import AbstractDataset
@@ -69,6 +70,7 @@ class ModularTaskTrainer:
         else:
             training_seed = dataset_seed = self.cfg.seed
         set_seed(training_seed)
+        set_reproducibility(self.cfg.reproducible)
         self.DEVICE = set_device(self.cfg.device)
         save_hardware_info(output_directory, device=self.DEVICE)
         self.output_directory = Path(output_directory)
