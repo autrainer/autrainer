@@ -23,6 +23,7 @@ from autrainer.core.utils import (
     save_hardware_info,
     save_requirements,
     set_device,
+    set_reproducibility,
     set_seed,
     silence,
 )
@@ -293,8 +294,31 @@ class TestSetSeed:
         assert torch.initial_seed() == seed, "Should set Torch seed."
         if torch.cuda.is_available():
             assert torch.cuda.initial_seed() == seed, "Should set Cuda seed."
-            assert torch.backends.cudnn.deterministic, "Should be deterministic."
-            assert not torch.backends.cudnn.benchmark, "Should disable benchmark."
+
+    @pytest.mark.parametrize("seed", [-1, 2**32])
+    def test_invalid_seed(self, seed: int) -> None:
+        with pytest.raises(ValueError, match=r"Seed must be between 0 and 2\*\*32-1"):
+            set_seed(seed)
+
+
+class TestSetReproducibility:
+    def test_sets_deterministic_flags(self) -> None:
+        set_reproducibility(True)
+        _s = "Should set deterministic flags."
+        assert torch.backends.cudnn.deterministic is True, _s
+        assert torch.backends.cudnn.benchmark is False, _s
+        assert torch.backends.cuda.matmul.allow_tf32 is False, _s
+        assert torch.backends.cudnn.allow_tf32 is False, _s
+        assert torch.get_float32_matmul_precision() == "highest", _s
+
+    def test_sets_nondeterministic_flags(self) -> None:
+        set_reproducibility(False)
+        _s = "Should set non-deterministic flags."
+        assert torch.backends.cudnn.deterministic is False, _s
+        assert torch.backends.cudnn.benchmark is True, _s
+        assert torch.backends.cuda.matmul.allow_tf32 is True, _s
+        assert torch.backends.cudnn.allow_tf32 is True, _s
+        assert torch.get_float32_matmul_precision() == "high", _s
 
 
 class TestSilence:
