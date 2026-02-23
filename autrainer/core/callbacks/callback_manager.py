@@ -73,7 +73,7 @@ class CallbackManager:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        metrics: dict,
+        metrics: Dict[str, float][str, float],
     ) -> None:
         self._emit(trainer=trainer, iteration=iteration, metrics=metrics)
 
@@ -112,7 +112,7 @@ class CallbackManager:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        dev_results: dict,
+        dev_results: Dict[str, float],
     ) -> None:
         self._emit(trainer=trainer, iteration=iteration, dev_results=dev_results)
 
@@ -137,7 +137,7 @@ class CallbackManager:
     def cb_on_test_end(
         self,
         trainer: "ModularTaskTrainer",
-        test_results: dict,
+        test_results: Dict[str, float],
     ) -> None:
         self._emit(trainer=trainer, test_results=test_results)
 

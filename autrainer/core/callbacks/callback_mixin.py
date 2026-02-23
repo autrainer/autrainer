@@ -130,7 +130,7 @@ class CallbackMixin:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        metrics: dict,
+        metrics: Dict[str, float],
     ) -> None:
         """Called at the end of each iteration including validation.
 
@@ -205,7 +205,7 @@ class CallbackMixin:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        dev_results: dict,
+        dev_results: Dict[str, float],
     ) -> None:
         """Called at the end of the validation loop.
 
@@ -253,7 +253,7 @@ class CallbackMixin:
     def cb_on_test_end(
         self,
         trainer: "ModularTaskTrainer",
-        test_results: dict,
+        test_results: Dict[str, float],
     ) -> None:
         """Called at the end of the testing loop.
 
