@@ -57,17 +57,17 @@ class CallbackManager:
             self.remove(obj, name)
 
     def cb_on_train_begin(self, trainer: "ModularTaskTrainer") -> None:
-        self._emit(trainer)
+        self._emit(trainer=trainer)
 
     def cb_on_train_end(self, trainer: "ModularTaskTrainer") -> None:
-        self._emit(trainer)
+        self._emit(trainer=trainer)
 
     def cb_on_iteration_begin(
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
     ) -> None:
-        self._emit(trainer, iteration)
+        self._emit(trainer=trainer, iteration=iteration)
 
     def cb_on_iteration_end(
         self,
@@ -75,7 +75,7 @@ class CallbackManager:
         iteration: int,
         metrics: dict,
     ) -> None:
-        self._emit(trainer, iteration, metrics)
+        self._emit(trainer=trainer, iteration=iteration, metrics=metrics)
 
     def cb_on_step_begin(
         self,
@@ -83,7 +83,7 @@ class CallbackManager:
         iteration: int,
         batch_idx: int,
     ) -> None:
-        self._emit(trainer, iteration, batch_idx)
+        self._emit(trainer=trainer, iteration=iteration, batch_idx=batch_idx)
 
     def cb_on_step_end(
         self,
@@ -92,19 +92,21 @@ class CallbackManager:
         batch_idx: int,
         loss: float,
     ) -> None:
-        self._emit(trainer, iteration, batch_idx, loss)
+        self._emit(trainer=trainer, iteration=iteration, batch_idx=batch_idx, loss=loss)
 
     def cb_on_loader_exhausted(
-        self, trainer: "ModularTaskTrainer", iteration: int
+        self,
+        trainer: "ModularTaskTrainer",
+        iteration: int,
     ) -> None:
-        self._emit(trainer, iteration)
+        self._emit(trainer=trainer, iteration=iteration)
 
     def cb_on_dev_begin(
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
     ) -> None:
-        self._emit(trainer, iteration)
+        self._emit(trainer=trainer, iteration=iteration)
 
     def cb_on_dev_end(
         self,
@@ -112,14 +114,14 @@ class CallbackManager:
         iteration: int,
         dev_results: dict,
     ) -> None:
-        self._emit(trainer, iteration, dev_results)
+        self._emit(trainer=trainer, iteration=iteration, dev_results=dev_results)
 
     def cb_on_dev_step_begin(
         self,
         trainer: "ModularTaskTrainer",
         batch_idx: int,
     ) -> None:
-        self._emit(trainer, batch_idx)
+        self._emit(trainer=trainer, batch_idx=batch_idx)
 
     def cb_on_dev_step_end(
         self,
@@ -127,24 +129,24 @@ class CallbackManager:
         batch_idx: int,
         loss: float,
     ) -> None:
-        self._emit(trainer, batch_idx, loss)
+        self._emit(trainer=trainer, batch_idx=batch_idx, loss=loss)
 
     def cb_on_test_begin(self, trainer: "ModularTaskTrainer") -> None:
-        self._emit(trainer)
+        self._emit(trainer=trainer)
 
     def cb_on_test_end(
         self,
         trainer: "ModularTaskTrainer",
         test_results: dict,
     ) -> None:
-        self._emit(trainer, test_results)
+        self._emit(trainer=trainer, test_results=test_results)
 
     def cb_on_test_step_begin(
         self,
         trainer: "ModularTaskTrainer",
         batch_idx: int,
     ) -> None:
-        self._emit(trainer, batch_idx)
+        self._emit(trainer=trainer, batch_idx=batch_idx)
 
     def cb_on_test_step_end(
         self,
@@ -152,4 +154,4 @@ class CallbackManager:
         batch_idx: int,
         loss: float,
     ) -> None:
-        self._emit(trainer, batch_idx, loss)
+        self._emit(trainer=trainer, batch_idx=batch_idx, loss=loss)
