@@ -205,7 +205,7 @@ class CallbackMixin:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        val_results: dict,
+        dev_results: dict,
     ) -> None:
         """Called at the end of the validation loop.
 
@@ -213,7 +213,7 @@ class CallbackMixin:
             trainer: Mutable reference to the trainer.
             iteration: Current iteration number. For epoch-based training, this is the
                 epoch number. For step-based training, this is the step number.
-            val_results: Dictionary of validation results for the entire validation loop
+            dev_results: Dictionary of validation results for the entire validation loop
                 of the current iteration.
         """
 

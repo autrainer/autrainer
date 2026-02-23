@@ -110,9 +110,9 @@ class CallbackManager:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        val_results: dict,
+        dev_results: dict,
     ) -> None:
-        self._emit(trainer, iteration, val_results)
+        self._emit(trainer, iteration, dev_results)
 
     def cb_on_dev_step_begin(
         self,
