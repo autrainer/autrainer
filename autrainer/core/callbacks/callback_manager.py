@@ -73,7 +73,7 @@ class CallbackManager:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        metrics: Dict[str, float][str, float],
+        metrics: Dict[str, float],
     ) -> None:
         self._emit(trainer=trainer, iteration=iteration, metrics=metrics)
 
