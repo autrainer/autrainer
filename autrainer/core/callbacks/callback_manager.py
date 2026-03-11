@@ -27,7 +27,7 @@ class CallbackManager:
                 alive.append((o, w))
         self._receivers[name] = alive
 
-    def _register_bound(self, name: str, fn: Callable[..., Any], order: int) -> None:
+    def _register(self, name: str, fn: Callable[..., Any], order: int) -> None:
         self._remove_dead_receivers(name)
         self._receivers[name].append((order, weakref.WeakMethod(fn)))
         self._receivers[name].sort(key=lambda t: t[0])

@@ -36,7 +36,7 @@ class CallbackMixin:
             for func in reversed(funcs):  # base first
                 bound = func.__get__(self, type(self))
                 order = getattr(func, "__cb_order__", 0)
-                mgr._register_bound(name, bound, order=order)
+                mgr._register(name, bound, order=order)
 
     def _collect_chain_funcs(self, name: str) -> list[Any]:
         impls = []
