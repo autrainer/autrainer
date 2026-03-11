@@ -18,19 +18,27 @@ class CallbackManager:
             cls._instance._receivers = defaultdict(list)
         return cls._instance
 
+    def _remove_dead_receivers(self, name: str) -> None:
+        alive: List[Tuple[int, weakref.WeakMethod]] = []
+        if name not in self._receivers:
+            return
+        for o, w in self._receivers[name]:
+            if w() is not None:
+                alive.append((o, w))
+        self._receivers[name] = alive
+
     def _register_bound(self, name: str, fn: Callable[..., Any], order: int) -> None:
+        self._remove_dead_receivers(name)
         self._receivers[name].append((order, weakref.WeakMethod(fn)))
         self._receivers[name].sort(key=lambda t: t[0])
 
     def _emit(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
         name = inspect.currentframe().f_back.f_code.co_name
-        alive: List[weakref.WeakMethod] = []
-        for o, w in self._receivers.get(name, []):
+        self._remove_dead_receivers(name)
+        for _, w in self._receivers.get(name, []):
             if (fn := w()) is None:
                 continue
             fn(*args, **kwargs)
-            alive.append((o, w))
-        self._receivers[name] = alive
 
     def remove(self, obj: object, name: str) -> None:
         """Remove a callback receiver for a specific callback name.
