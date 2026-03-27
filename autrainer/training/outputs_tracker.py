@@ -99,7 +99,7 @@ class OutputsTracker:
                 self._data.target_transform.probabilities_to_dict(p)
                 for p in _probabilities
             ),
-        )
+        ).add_prefix("probability_")
         self._results_df = pd.concat([self._results_df, _probs_df], axis=1)
 
         if self._export:
