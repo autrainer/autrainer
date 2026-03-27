@@ -282,7 +282,7 @@ Now, run the following :ref:`training <cli_training>` command to train the model
 .. _quick_grid_filters:
 
 Filtering Configurations
-----------------------------
+------------------------
 
 By default, `autrainer` filters out any configurations that have already been trained
 and exist in the same experiment using the `hydra-filter-sweeper <https://github.com/autrainer/hydra-filter-sweeper/>`_ plugin
@@ -325,6 +325,33 @@ Now, run the following :ref:`training <cli_training>` command to train the :clas
 .. code-block:: autrainer
 
     autrainer train
+
+
+Training Results
+----------------
+
+After running any of the above training commands, the corresponding results are saved in the :file:`results/default/training` directory by default.
+The training results include the training logs, the trained model weights, and the training configuration for each run.
+Specifically, the following files are saved for each run:
+
+* :file:`.hydra/config.yaml`: The entire configuration to reproduce the training run.
+* :file:`metrics.csv`: The training metrics for each training iteration in CSV format.
+* :file:`model_summary.txt`, :file:`model_summary.yaml`: The network summary provided by `torchinfo <https://github.com/TylerYep/torchinfo>`_.
+* :file:`model.yaml`, :file:`file_handler.yaml`, :file:`target_transform.yaml`, :file:`inference_transform.yaml`,
+  :file:`preprocess_file_handler.yaml`, :file:`preprocess_pipeline.yaml`: Various YAML files that can be loaded using
+  `audobject <https://github.com/audeering/audobject>`_ to reproduce the training run.
+* :file:`hardware.yaml`, :file:`requirements.txt`: The hardware and Python environment used for training.
+* :file:`training.log`, :file:`train_script.log`, :file:`timer.yaml`: The training log files containing
+  the metrics for each training iteration and training times.
+* :file:`plots/`: A directory containing plots of the metrics for each training iteration as well as the losses.
+* :file:`epoch_<n>/` or :file:`step_<n>/`, :file:`_best/`, :file:`_test/`:
+
+  * :file:`dev.yaml`, :file:`test_holistic.yaml`: The stratified evaluation results on the development and testing subsets, respectively.
+  * :file:`model.pt`, :file:`optimizer.pt`, :file:`scheduler.pt`: The model weights, optimizer state, and scheduler state.
+  * :file:`<subset>_indices.npy`, :file:`<subset>_targets.npy`, :file:`<subset>_outputs.npy`, :file:`<subset>_losses.npy`:
+    The training indices, targets, model outputs, and losses for the training (:attr:`train`), development (:attr:`dev`), and testing (:attr:`test`) subsets for the corresponding training iteration.
+  * :file:`<subset>_results.csv`: The model predictions and output probabilities for the training, development,
+    and testing subsets for the corresponding training iteration in CSV format.
 
 
 Next Steps
