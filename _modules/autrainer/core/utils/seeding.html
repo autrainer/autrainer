@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>autrainer.core.utils.set_seed &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
+    <title>autrainer.core.utils.seeding &#8212; autrainer — A Modular and Extensible Deep Learning Toolkit for Computer Audition Tasks.</title>
   
   
   
@@ -39,13 +39,13 @@
 
     <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=aa3b121e"></script>
+    <script src="../../../../_static/documentation_options.js?v=82662543"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/core/utils/set_seed';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/autrainer/core/utils/seeding';</script>
     <script src="../../../../_static/external_links.js?v=36097e0a"></script>
     <script src="../../../../_static/highlight_cli.js?v=d9429fbe"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
@@ -352,8 +352,9 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for autrainer.core.utils.set_seed</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+  <h1>Source code for autrainer.core.utils.seeding</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
@@ -362,7 +363,7 @@ document.write(`
 <div class="viewcode-block" id="set_seed">
 <a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.set_seed">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set a global seed for reproducibility for random, numpy, and torch.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set a global seed for random, numpy, and torch.</span>
 
 <span class="sd">    If CUDA is available, set the seed for CUDA and cuDNN as well.</span>
 
@@ -375,10 +376,44 @@ document.write(`
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
-        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">manual_seed_all</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-        <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span> <span class="o">=</span> <span class="kc">False</span></div>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">manual_seed_all</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_deterministic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">use_deterministic_algorithms</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">matmul</span><span class="o">.</span><span class="n">allow_tf32</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">allow_tf32</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">set_float32_matmul_precision</span><span class="p">(</span><span class="s2">&quot;highest&quot;</span><span class="p">)</span>
+
+    <span class="c1"># required for deterministic behavior in cuBLAS, see https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CUBLAS_WORKSPACE_CONFIG&quot;</span><span class="p">,</span> <span class="s2">&quot;:4096:8&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CUBLAS_WORKSPACE_CONFIG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_nondeterministic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">use_deterministic_algorithms</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">matmul</span><span class="o">.</span><span class="n">allow_tf32</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">allow_tf32</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">set_float32_matmul_precision</span><span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="set_reproducibility">
+<a class="viewcode-back" href="../../../../modules/core.html#autrainer.core.utils.set_reproducibility">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_reproducibility</span><span class="p">(</span><span class="n">reproducible</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the reproducibility of the training process.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        reproducible: Whether to make the training process reproducible.</span>
+<span class="sd">            If True, the training process will be deterministic and use only</span>
+<span class="sd">            deterministic algorithms. If False, the training process may be</span>
+<span class="sd">            non-deterministic and use non-deterministic algorithms.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_deterministic</span><span class="p">()</span> <span class="k">if</span> <span class="n">reproducible</span> <span class="k">else</span> <span class="n">_nondeterministic</span><span class="p">()</span></div>
 
 </pre></div>
 

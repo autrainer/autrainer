@@ -39,7 +39,7 @@
 
     <script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="_static/documentation_options.js?v=aa3b121e"></script>
+    <script src="_static/documentation_options.js?v=82662543"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -493,41 +493,61 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature">CallbackSignature (class in autrainer.training)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackManager">CallbackManager (class in autrainer.core.callbacks)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_iteration_begin">cb_on_iteration_begin() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin">CallbackMixin (class in autrainer.core.callbacks)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_iteration_end">cb_on_iteration_end() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_dev_begin">cb_on_dev_begin() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_loader_exhausted">cb_on_loader_exhausted() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_dev_end">cb_on_dev_end() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_step_begin">cb_on_step_begin() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_dev_step_begin">cb_on_dev_step_begin() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_step_end">cb_on_step_end() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_dev_step_end">cb_on_dev_step_end() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_test_begin">cb_on_test_begin() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_iteration_begin">cb_on_iteration_begin() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_test_end">cb_on_test_end() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_iteration_end">cb_on_iteration_end() (autrainer.core.callbacks.CallbackMixin method)</a>
+
+      <ul>
+        <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.cb_on_iteration_end">(autrainer.loggers.AbstractLogger method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_test_step_begin">cb_on_test_step_begin() (autrainer.training.CallbackSignature method)</a>
+      </ul></li>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_loader_exhausted">cb_on_loader_exhausted() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_test_step_end">cb_on_test_step_end() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_step_begin">cb_on_step_begin() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_train_begin">cb_on_train_begin() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_step_end">cb_on_step_end() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_train_end">cb_on_train_end() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_test_begin">cb_on_test_begin() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_val_begin">cb_on_val_begin() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_test_end">cb_on_test_end() (autrainer.core.callbacks.CallbackMixin method)</a>
+
+      <ul>
+        <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.cb_on_test_end">(autrainer.loggers.AbstractLogger method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_val_end">cb_on_val_end() (autrainer.training.CallbackSignature method)</a>
+      </ul></li>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_test_step_begin">cb_on_test_step_begin() (autrainer.core.callbacks.CallbackMixin method)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_test_step_end">cb_on_test_step_end() (autrainer.core.callbacks.CallbackMixin method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_val_step_begin">cb_on_val_step_begin() (autrainer.training.CallbackSignature method)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_train_begin">cb_on_train_begin() (autrainer.core.callbacks.CallbackMixin method)</a>
+
+      <ul>
+        <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.cb_on_train_begin">(autrainer.loggers.AbstractLogger method)</a>
 </li>
-      <li><a href="modules/training.html#autrainer.training.CallbackSignature.cb_on_val_step_end">cb_on_val_step_end() (autrainer.training.CallbackSignature method)</a>
+      </ul></li>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.cb_on_train_end">cb_on_train_end() (autrainer.core.callbacks.CallbackMixin method)</a>
+
+      <ul>
+        <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.cb_on_train_end">(autrainer.loggers.AbstractLogger method)</a>
 </li>
+      </ul></li>
       <li><a href="modules/metrics.html#autrainer.metrics.CCC">CCC (class in autrainer.metrics)</a>
+</li>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.chain">chain() (autrainer.core.callbacks.CallbackMixin static method)</a>
 </li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.Choice">Choice (class in autrainer.augmentations)</a>
 </li>
@@ -936,6 +956,8 @@ document.write(`
 </li>
       <li><a href="modules/transforms.html#autrainer.transforms.OpenSMILE">OpenSMILE (class in autrainer.transforms)</a>
 </li>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackMixin.order">order() (autrainer.core.callbacks.CallbackMixin static method)</a>
+</li>
       <li><a href="modules/datasets.html#autrainer.datasets.AbstractDataset.output_dim">output_dim (autrainer.datasets.AbstractDataset property)</a>
 </li>
   </ul></td>
@@ -1024,12 +1046,16 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/transforms.html#autrainer.transforms.RandomCrop">RandomCrop (class in autrainer.transforms)</a>
 </li>
-      <li><a href="modules/transforms.html#autrainer.transforms.Resample">Resample (class in autrainer.transforms)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackManager.remove">remove() (autrainer.core.callbacks.CallbackManager method)</a>
 </li>
-      <li><a href="modules/transforms.html#autrainer.transforms.Resize">Resize (class in autrainer.transforms)</a>
+      <li><a href="modules/core.html#autrainer.core.callbacks.CallbackManager.remove_all">remove_all() (autrainer.core.callbacks.CallbackManager method)</a>
+</li>
+      <li><a href="modules/transforms.html#autrainer.transforms.Resample">Resample (class in autrainer.transforms)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/transforms.html#autrainer.transforms.Resize">Resize (class in autrainer.transforms)</a>
+</li>
       <li><a href="modules/transforms.html#autrainer.transforms.RGBAToRGB">RGBAToRGB (class in autrainer.transforms)</a>
 </li>
       <li><a href="modules/transforms.html#autrainer.transforms.RGBToGrayscale">RGBToGrayscale (class in autrainer.transforms)</a>
@@ -1092,8 +1118,12 @@ document.write(`
 </li>
       <li><a href="modules/augmentations.html#autrainer.augmentations.Sequential">Sequential (class in autrainer.augmentations)</a>
 </li>
+      <li><a href="modules/core.html#autrainer.core.utils.set_reproducibility">set_reproducibility() (in module autrainer.core.utils)</a>
+</li>
       <li><a href="modules/core.html#autrainer.core.utils.set_seed">set_seed() (in module autrainer.core.utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/criterions.html#autrainer.criterions.BalancedBCEWithLogitsLoss.setup">setup() (autrainer.criterions.BalancedBCEWithLogitsLoss method)</a>
 
       <ul>
@@ -1108,8 +1138,6 @@ document.write(`
         <li><a href="modules/loggers.html#autrainer.loggers.AbstractLogger.setup">(autrainer.loggers.AbstractLogger method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="usage/cli_wrapper.html#autrainer.cli.show">show() (in module autrainer.cli)</a>
 </li>
       <li><a href="modules/core.html#autrainer.core.utils.silence">silence() (in module autrainer.core.utils)</a>

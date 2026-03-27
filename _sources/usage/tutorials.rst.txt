@@ -602,8 +602,9 @@ To add the :class:`WandBLogger`, specify it in the :ref:`main configuration <mai
 Custom Callbacks
 ----------------
 
-To create a custom :ref:`callback <callbacks>`, implement a class that specifies any of the callback functions defined in
-:class:`~autrainer.training.CallbackSignature`.
+To create a custom :ref:`callback <core_callbacks>`, implement a class that inherits from :class:`~autrainer.core.callbacks.CallbackMixin`
+(and calls ``super().__init__()`` in its constructor)
+and override the callback methods corresponding to the desired stages of the training loop.
 
 For example, the following callback tracks learning rate changes at the beginning of each iteration:
 

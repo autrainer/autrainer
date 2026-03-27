@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=aa3b121e"></script>
+    <script src="../_static/documentation_options.js?v=82662543"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -594,6 +594,361 @@ Moreover, every object derived from <a class="reference internal" href="models.h
 as the first argument (after <cite>self</cite>) of its <a class="reference internal" href="models.html#autrainer.models.AbstractModel.forward" title="autrainer.models.AbstractModel.forward"><code class="xref py py-meth docutils literal notranslate"><span class="pre">forward()</span></code></a> method.</p>
 </div>
 </section>
+<section id="callbacks">
+<span id="core-callbacks"></span><h2>Callbacks<a class="headerlink" href="#callbacks" title="Link to this heading">#</a></h2>
+<p><cite>autrainer</cite> provides a set of callback functions (<code class="xref py py-meth docutils literal notranslate"><span class="pre">cb_on_*()</span></code>) that are called at various stages of the training loop.
+Each callback is automatically invoked at the appropriate time during training.</p>
+<p>For more control over the training process, custom callbacks can be defined and added to the trainer by specifying a list of
+callback classes using <a class="reference internal" href="../usage/hydra_configurations.html#shorthand-syntax"><span class="std std-ref">shorthand syntax</span></a> in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">callbacks</span></code> attribute of the
+<a class="reference internal" href="../usage/hydra_configurations.html#main-configuration"><span class="std std-ref">main configuration</span></a> file.
+Each callback class can specify any number of callback functions following the signatures defined in <a class="reference internal" href="#autrainer.core.callbacks.CallbackMixin" title="autrainer.core.callbacks.CallbackMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallbackMixin</span></code></a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To create custom callbacks, refer to the <a class="reference internal" href="../usage/tutorials.html#tut-callbacks"><span class="std std-ref">custom callbacks tutorial</span></a>.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.core.callbacks.</span></span><span class="sig-name descname"><span class="pre">CallbackMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin" title="Link to this definition">#</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.order">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.order" title="Link to this definition">#</a></dt>
+<dd><p>Decorator to set the order of the callback in the callback list.</p>
+<p>A larger order means the callback will be called later in the list.
+If multiple callbacks share the same order, they are applied in the order they
+were registered (i.e., in instantiation order of the objects).</p>
+<p>Note: If used in combination with CallbackMixin.chain, the order is determined
+by the order of the methods in the class hierarchy, with the base class method
+being registered first by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The order of the callback in the callback list. Defaults to 0.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.chain">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.chain" title="Link to this definition">#</a></dt>
+<dd><p>Decorator to indicate that the callback should be chained and the base class
+implementation should also be called.</p>
+<p>By default, the base class implementation is called first, followed by the
+derived (decorated) implementation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_train_begin">
+<span class="sig-name descname"><span class="pre">cb_on_train_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_train_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_train_begin" title="Link to this definition">#</a></dt>
+<dd><p>Called at the beginning of the training loop before the first iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_train_end">
+<span class="sig-name descname"><span class="pre">cb_on_train_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_train_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_train_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of the training loop after the last iteration, validation,
+and testing are completed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_iteration_begin">
+<span class="sig-name descname"><span class="pre">cb_on_iteration_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_iteration_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_iteration_begin" title="Link to this definition">#</a></dt>
+<dd><p>Called at the beginning of each iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training, this is the
+epoch number. For step-based training, this is the step number.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_iteration_end">
+<span class="sig-name descname"><span class="pre">cb_on_iteration_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_iteration_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_iteration_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of each iteration including validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training, this is the
+epoch number. For step-based training, this is the step number.</p></li>
+<li><p><strong>metrics</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Dictionary of various metrics collected during the iteration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_step_begin">
+<span class="sig-name descname"><span class="pre">cb_on_step_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_step_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_step_begin" title="Link to this definition">#</a></dt>
+<dd><p>Called at the beginning of step within an iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training, this is the
+epoch number. For step-based training, this is the step number.</p></li>
+<li><p><strong>batch_idx</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current batch index within the iteration. For epoch-based
+training, this is the batch index within the epoch. For step-based
+training, this is the step number modulo the evaluation frequency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_step_end">
+<span class="sig-name descname"><span class="pre">cb_on_step_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_step_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_step_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of step within an iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training, this is the
+epoch number. For step-based training, this is the step number.</p></li>
+<li><p><strong>batch_idx</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current batch index within the iteration. For epoch-based
+training, this is the batch index within the epoch. For step-based
+training, this is the step number modulo the evaluation frequency.</p></li>
+<li><p><strong>loss</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Reduced loss value for the batch.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_loader_exhausted">
+<span class="sig-name descname"><span class="pre">cb_on_loader_exhausted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_loader_exhausted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_loader_exhausted" title="Link to this definition">#</a></dt>
+<dd><p>Called when the training data loader is exhausted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training, this is the
+epoch number. For step-based training, this is the step number.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_dev_begin">
+<span class="sig-name descname"><span class="pre">cb_on_dev_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_dev_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_dev_begin" title="Link to this definition">#</a></dt>
+<dd><p>Called at the beginning of the validation loop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training, this is the
+epoch number. For step-based training, this is the step number.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_dev_end">
+<span class="sig-name descname"><span class="pre">cb_on_dev_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dev_results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_dev_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_dev_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of the validation loop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training, this is the
+epoch number. For step-based training, this is the step number.</p></li>
+<li><p><strong>dev_results</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Dictionary of validation results for the entire validation loop
+of the current iteration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_dev_step_begin">
+<span class="sig-name descname"><span class="pre">cb_on_dev_step_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_dev_step_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_dev_step_begin" title="Link to this definition">#</a></dt>
+<dd><p>Called at the beginning of the validation step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>batch_idx</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current batch index within the validation loop.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_dev_step_end">
+<span class="sig-name descname"><span class="pre">cb_on_dev_step_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_dev_step_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_dev_step_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of the validation step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>batch_idx</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current batch index within the validation loop.</p></li>
+<li><p><strong>loss</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Reduced loss value for the batch.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_test_begin">
+<span class="sig-name descname"><span class="pre">cb_on_test_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_test_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_test_begin" title="Link to this definition">#</a></dt>
+<dd><p>Called at the beginning of the testing loop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_test_end">
+<span class="sig-name descname"><span class="pre">cb_on_test_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_test_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_test_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of the testing loop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>test_results</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Dictionary of test results for the entire testing loop.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_test_step_begin">
+<span class="sig-name descname"><span class="pre">cb_on_test_step_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_test_step_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_test_step_begin" title="Link to this definition">#</a></dt>
+<dd><p>Called at the beginning of the testing step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>batch_idx</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current batch index within the testing loop.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackMixin.cb_on_test_step_end">
+<span class="sig-name descname"><span class="pre">cb_on_test_step_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_mixin.html#CallbackMixin.cb_on_test_step_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackMixin.cb_on_test_step_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of the testing step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>batch_idx</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current batch index within the testing loop.</p></li>
+<li><p><strong>loss</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Reduced loss value for the batch.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autrainer.core.callbacks.</span></span><span class="sig-name descname"><span class="pre">CallbackManager</span></span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_manager.html#CallbackManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackManager" title="Link to this definition">#</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackManager.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_manager.html#CallbackManager.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackManager.remove" title="Link to this definition">#</a></dt>
+<dd><p>Remove a callback receiver for a specific callback name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></span>) – Receiver object whose callback should be removed.</p></li>
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the callback from which the receiver should be removed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.core.callbacks.CallbackManager.remove_all">
+<span class="sig-name descname"><span class="pre">remove_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/callbacks/callback_manager.html#CallbackManager.remove_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.callbacks.CallbackManager.remove_all" title="Link to this definition">#</a></dt>
+<dd><p>Remove all callback receivers associated with the given object across all
+callbacks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></span>) – Receiver object whose callbacks should be removed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="utils">
 <span id="core-utils"></span><h2>Utils<a class="headerlink" href="#utils" title="Link to this heading">#</a></h2>
 <p>Utils provide various helpers for I/O, logging, timing, and hardware information.</p>
@@ -973,12 +1328,29 @@ output directory. Defaults to “”.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autrainer.core.utils.set_seed">
-<span class="sig-prename descclassname"><span class="pre">autrainer.core.utils.</span></span><span class="sig-name descname"><span class="pre">set_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/utils/set_seed.html#set_seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.utils.set_seed" title="Link to this definition">#</a></dt>
-<dd><p>Set a global seed for reproducibility for random, numpy, and torch.</p>
+<span class="sig-prename descclassname"><span class="pre">autrainer.core.utils.</span></span><span class="sig-name descname"><span class="pre">set_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/utils/seeding.html#set_seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.utils.set_seed" title="Link to this definition">#</a></dt>
+<dd><p>Set a global seed for random, numpy, and torch.</p>
 <p>If CUDA is available, set the seed for CUDA and cuDNN as well.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>seed</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Seed to set.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autrainer.core.utils.set_reproducibility">
+<span class="sig-prename descclassname"><span class="pre">autrainer.core.utils.</span></span><span class="sig-name descname"><span class="pre">set_reproducibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reproducible</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/core/utils/seeding.html#set_reproducibility"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.core.utils.set_reproducibility" title="Link to this definition">#</a></dt>
+<dd><p>Set the reproducibility of the training process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reproducible</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to make the training process reproducible.
+If True, the training process will be deterministic and use only
+deterministic algorithms. If False, the training process may be
+non-deterministic and use non-deterministic algorithms.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
@@ -1366,6 +1738,34 @@ Defaults to <code class="xref py py-attr docutils literal notranslate"><span cla
 </li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#callbacks">Callbacks</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin"><code class="docutils literal notranslate"><span class="pre">CallbackMixin</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.order"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.order()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.chain"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.chain()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_train_begin"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_train_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_train_end"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_train_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_iteration_begin"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_iteration_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_iteration_end"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_iteration_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_step_begin"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_step_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_step_end"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_step_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_loader_exhausted"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_loader_exhausted()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_dev_begin"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_dev_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_dev_end"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_dev_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_dev_step_begin"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_dev_step_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_dev_step_end"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_dev_step_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_test_begin"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_test_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_test_end"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_test_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_test_step_begin"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_test_step_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackMixin.cb_on_test_step_end"><code class="docutils literal notranslate"><span class="pre">CallbackMixin.cb_on_test_step_end()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackManager"><code class="docutils literal notranslate"><span class="pre">CallbackManager</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackManager.remove"><code class="docutils literal notranslate"><span class="pre">CallbackManager.remove()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.callbacks.CallbackManager.remove_all"><code class="docutils literal notranslate"><span class="pre">CallbackManager.remove_all()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils">Utils</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.utils.Bookkeeping"><code class="docutils literal notranslate"><span class="pre">Bookkeeping</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.utils.Bookkeeping.log"><code class="docutils literal notranslate"><span class="pre">Bookkeeping.log()</span></code></a></li>
@@ -1394,6 +1794,7 @@ Defaults to <code class="xref py py-attr docutils literal notranslate"><span cla
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.utils.get_hardware_info"><code class="docutils literal notranslate"><span class="pre">get_hardware_info()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.utils.save_hardware_info"><code class="docutils literal notranslate"><span class="pre">save_hardware_info()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.utils.set_seed"><code class="docutils literal notranslate"><span class="pre">set_seed()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.utils.set_reproducibility"><code class="docutils literal notranslate"><span class="pre">set_reproducibility()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.core.utils.silence"><code class="docutils literal notranslate"><span class="pre">silence()</span></code></a></li>
 </ul>
 </li>

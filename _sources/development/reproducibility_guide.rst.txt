@@ -1,3 +1,5 @@
+.. _guide_reproducibility:
+
 Reproducibility Guide
 =====================
 
@@ -34,6 +36,8 @@ This will create an empty project structure only including the :file:`conf/confi
 Configuration Files
 -------------------
 
+The :attr:`reproducible` flag in the :file:`conf/config.yaml` file should be set to ``true`` (the default) to ensure reproducibility.
+
 All configuration files (not provided by `autrainer` or overridden) should be stored in the :attr:`conf/`
 directory and published alongside the :file:`conf/config.yaml` file.
 To ensure reproducibility on any system, it is recommended to solely use relative paths in the configuration files.
@@ -47,3 +51,10 @@ In addition to configurations, the pip requirements should be stored in a :file:
 .. code-block:: pip
 
    pip freeze > requirements.txt
+
+
+Disabling Reproducibility
+-------------------------
+
+Reproducibility can be disabled by setting the :attr:`reproducible` attribute to ``false`` in the :file:`conf/config.yaml` file.
+This can be useful to increase training speed by disabling deterministic algorithms and allowing non-deterministic behavior.

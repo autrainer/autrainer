@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=aa3b121e"></script>
+    <script src="../../../_static/documentation_options.js?v=82662543"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -359,6 +359,7 @@ document.write(`
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallbackMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExportConstants</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMetric</span>
@@ -414,7 +415,7 @@ document.write(`
 
 <div class="viewcode-block" id="AbstractLogger">
 <a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">AbstractLogger</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AbstractLogger</span><span class="p">(</span><span class="n">CallbackMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">exp_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -434,6 +435,7 @@ document.write(`
 <span class="sd">                :const:`~autrainer.core.constants.ExportConstants.ARTIFACTS`.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_name</span> <span class="o">=</span> <span class="n">run_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span> <span class="o">=</span> <span class="n">exp_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span>
@@ -564,18 +566,29 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 
+<div class="viewcode-block" id="AbstractLogger.cb_on_train_begin">
+<a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.cb_on_train_begin">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_params</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_params</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="AbstractLogger.cb_on_iteration_end">
+<a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.cb_on_iteration_end">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_iteration_end</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_and_update_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_and_update_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="AbstractLogger.cb_on_test_end">
+<a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.cb_on_test_end">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_test_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">,</span> <span class="n">test_results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_and_update_metrics</span><span class="p">(</span><span class="n">test_results</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_and_update_metrics</span><span class="p">(</span><span class="n">test_results</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="AbstractLogger.cb_on_train_end">
+<a class="viewcode-back" href="../../../modules/loggers.html#autrainer.loggers.AbstractLogger.cb_on_train_end">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_train_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_timers</span><span class="p">(</span>
             <span class="p">{</span>
@@ -599,6 +612,7 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">output_directory</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">end_run</span><span class="p">()</span></div>
+</div>
 
 </pre></div>
 

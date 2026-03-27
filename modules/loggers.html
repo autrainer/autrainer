@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=aa3b121e"></script>
+    <script src="../_static/documentation_options.js?v=82662543"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -505,6 +505,71 @@ directory to the artifact. Defaults to “”.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.loggers.AbstractLogger.cb_on_train_begin">
+<span class="sig-name descname"><span class="pre">cb_on_train_begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/loggers/abstract_logger.html#AbstractLogger.cb_on_train_begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.loggers.AbstractLogger.cb_on_train_begin" title="Link to this definition">#</a></dt>
+<dd><p>Called at the beginning of the training loop before the first iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.loggers.AbstractLogger.cb_on_iteration_end">
+<span class="sig-name descname"><span class="pre">cb_on_iteration_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/loggers/abstract_logger.html#AbstractLogger.cb_on_iteration_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.loggers.AbstractLogger.cb_on_iteration_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of each iteration including validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>iteration</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Current iteration number. For epoch-based training, this is the
+epoch number. For step-based training, this is the step number.</p></li>
+<li><p><strong>metrics</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span>) – Dictionary of various metrics collected during the iteration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.loggers.AbstractLogger.cb_on_test_end">
+<span class="sig-name descname"><span class="pre">cb_on_test_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/loggers/abstract_logger.html#AbstractLogger.cb_on_test_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.loggers.AbstractLogger.cb_on_test_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of the testing loop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p></li>
+<li><p><strong>test_results</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span>) – Dictionary of test results for the entire testing loop.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autrainer.loggers.AbstractLogger.cb_on_train_end">
+<span class="sig-name descname"><span class="pre">cb_on_train_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autrainer/loggers/abstract_logger.html#AbstractLogger.cb_on_train_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autrainer.loggers.AbstractLogger.cb_on_train_end" title="Link to this definition">#</a></dt>
+<dd><p>Called at the end of the training loop after the last iteration, validation,
+and testing are completed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trainer</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="training.html#autrainer.training.ModularTaskTrainer" title="autrainer.training.training.ModularTaskTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModularTaskTrainer</span></code></a></span>) – Mutable reference to the trainer.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -615,6 +680,10 @@ The logger serves as a no-op.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.AbstractLogger.log_timers"><code class="docutils literal notranslate"><span class="pre">AbstractLogger.log_timers()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.AbstractLogger.log_artifact"><code class="docutils literal notranslate"><span class="pre">AbstractLogger.log_artifact()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.AbstractLogger.end_run"><code class="docutils literal notranslate"><span class="pre">AbstractLogger.end_run()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.AbstractLogger.cb_on_train_begin"><code class="docutils literal notranslate"><span class="pre">AbstractLogger.cb_on_train_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.AbstractLogger.cb_on_iteration_end"><code class="docutils literal notranslate"><span class="pre">AbstractLogger.cb_on_iteration_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.AbstractLogger.cb_on_test_end"><code class="docutils literal notranslate"><span class="pre">AbstractLogger.cb_on_test_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#autrainer.loggers.AbstractLogger.cb_on_train_end"><code class="docutils literal notranslate"><span class="pre">AbstractLogger.cb_on_train_end()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=aa3b121e"></script>
+    <script src="../_static/documentation_options.js?v=82662543"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -355,7 +355,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section id="reproducibility-guide">
-<h1>Reproducibility Guide<a class="headerlink" href="#reproducibility-guide" title="Link to this heading">#</a></h1>
+<span id="guide-reproducibility"></span><h1>Reproducibility Guide<a class="headerlink" href="#reproducibility-guide" title="Link to this heading">#</a></h1>
 <p>To ensure reproducibility of your results, the following guidelines should be followed.
 The goal is to allow others to reproduce the results of the project on any system by providing all necessary configurations and source code.</p>
 <section id="project-structure">
@@ -382,6 +382,7 @@ CLI command can be used:</p>
 </section>
 <section id="configuration-files">
 <h2>Configuration Files<a class="headerlink" href="#configuration-files" title="Link to this heading">#</a></h2>
+<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">reproducible</span></code> flag in the <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code> file should be set to <code class="docutils literal notranslate"><span class="pre">true</span></code> (the default) to ensure reproducibility.</p>
 <p>All configuration files (not provided by <cite>autrainer</cite> or overridden) should be stored in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">conf/</span></code>
 directory and published alongside the <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code> file.
 To ensure reproducibility on any system, it is recommended to solely use relative paths in the configuration files.</p>
@@ -392,6 +393,11 @@ directory or in the root directory of the project.</p>
 <div class="highlight-pip notranslate"><div class="highlight"><pre><span></span><span class="nb">pip</span> <span class="k">freeze</span> <span class="o">&gt;</span> <span class="nf">requirements</span>.txt
 </pre></div>
 </div>
+</section>
+<section id="disabling-reproducibility">
+<h2>Disabling Reproducibility<a class="headerlink" href="#disabling-reproducibility" title="Link to this heading">#</a></h2>
+<p>Reproducibility can be disabled by setting the <code class="xref py py-attr docutils literal notranslate"><span class="pre">reproducible</span></code> attribute to <code class="docutils literal notranslate"><span class="pre">false</span></code> in the <code class="file docutils literal notranslate"><span class="pre">conf/config.yaml</span></code> file.
+This can be useful to increase training speed by disabling deterministic algorithms and allowing non-deterministic behavior.</p>
 </section>
 </section>
 
@@ -419,6 +425,7 @@ directory or in the root directory of the project.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-structure">Project Structure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-files">Configuration Files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#disabling-reproducibility">Disabling Reproducibility</a></li>
 </ul>
   </nav></div>
 

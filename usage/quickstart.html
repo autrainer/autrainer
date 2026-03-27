@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=aa3b121e"></script>
+    <script src="../_static/documentation_options.js?v=82662543"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -769,6 +769,34 @@ To still filter out configurations that have already been trained, the following
 </pre></div>
 </div>
 </section>
+<section id="training-results">
+<h2>Training Results<a class="headerlink" href="#training-results" title="Link to this heading">#</a></h2>
+<p>After running any of the above training commands, the corresponding results are saved in the <code class="file docutils literal notranslate"><span class="pre">results/default/training</span></code> directory by default.
+The training results include the training logs, the trained model weights, and the training configuration for each run.
+Specifically, the following files are saved for each run:</p>
+<ul class="simple">
+<li><p><code class="file docutils literal notranslate"><span class="pre">.hydra/config.yaml</span></code>: The entire configuration to reproduce the training run.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">metrics.csv</span></code>: The training metrics for each training iteration in CSV format.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">model_summary.txt</span></code>, <code class="file docutils literal notranslate"><span class="pre">model_summary.yaml</span></code>: The network summary provided by <a class="reference external" href="https://github.com/TylerYep/torchinfo">torchinfo</a>.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">model.yaml</span></code>, <code class="file docutils literal notranslate"><span class="pre">file_handler.yaml</span></code>, <code class="file docutils literal notranslate"><span class="pre">target_transform.yaml</span></code>, <code class="file docutils literal notranslate"><span class="pre">inference_transform.yaml</span></code>,
+<code class="file docutils literal notranslate"><span class="pre">preprocess_file_handler.yaml</span></code>, <code class="file docutils literal notranslate"><span class="pre">preprocess_pipeline.yaml</span></code>: Various YAML files that can be loaded using
+<a class="reference external" href="https://github.com/audeering/audobject">audobject</a> to reproduce the training run.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">hardware.yaml</span></code>, <code class="file docutils literal notranslate"><span class="pre">requirements.txt</span></code>: The hardware and Python environment used for training.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">training.log</span></code>, <code class="file docutils literal notranslate"><span class="pre">train_script.log</span></code>, <code class="file docutils literal notranslate"><span class="pre">timer.yaml</span></code>: The training log files containing
+the metrics for each training iteration and training times.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">plots/</span></code>: A directory containing plots of the metrics for each training iteration as well as the losses.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">epoch_&lt;n&gt;/</span></code> or <code class="file docutils literal notranslate"><span class="pre">step_&lt;n&gt;/</span></code>, <code class="file docutils literal notranslate"><span class="pre">_best/</span></code>, <code class="file docutils literal notranslate"><span class="pre">_test/</span></code>:</p>
+<ul>
+<li><p><code class="file docutils literal notranslate"><span class="pre">dev.yaml</span></code>, <code class="file docutils literal notranslate"><span class="pre">test_holistic.yaml</span></code>: The stratified evaluation results on the development and testing subsets, respectively.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">model.pt</span></code>, <code class="file docutils literal notranslate"><span class="pre">optimizer.pt</span></code>, <code class="file docutils literal notranslate"><span class="pre">scheduler.pt</span></code>: The model weights, optimizer state, and scheduler state.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">&lt;subset&gt;_indices.npy</span></code>, <code class="file docutils literal notranslate"><span class="pre">&lt;subset&gt;_targets.npy</span></code>, <code class="file docutils literal notranslate"><span class="pre">&lt;subset&gt;_outputs.npy</span></code>, <code class="file docutils literal notranslate"><span class="pre">&lt;subset&gt;_losses.npy</span></code>:
+The training indices, targets, model outputs, and losses for the training (<code class="xref py py-attr docutils literal notranslate"><span class="pre">train</span></code>), development (<code class="xref py py-attr docutils literal notranslate"><span class="pre">dev</span></code>), and testing (<code class="xref py py-attr docutils literal notranslate"><span class="pre">test</span></code>) subsets for the corresponding training iteration.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">&lt;subset&gt;_results.csv</span></code>: The model predictions and output probabilities for the training, development,
+and testing subsets for the corresponding training iteration in CSV format.</p></li>
+</ul>
+</li>
+</ul>
+</section>
 <section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
 <p>For more information on creating configurations, refer to the <a class="reference internal" href="hydra_configurations.html#hydra-configurations"><span class="std std-ref">Hydra configurations</span></a>
@@ -806,6 +834,7 @@ as well as the <a class="reference external" href="https://hydra.cc/">Hydra</a> 
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overriding-configurations">Overriding Configurations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-duration-step-based-training">Training Duration &amp; Step-based Training</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-configurations">Filtering Configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-results">Training Results</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
 </ul>
   </nav></div>

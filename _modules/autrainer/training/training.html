@@ -39,7 +39,7 @@
 
     <script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=aa3b121e"></script>
+    <script src="../../../_static/documentation_options.js?v=82662543"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -366,6 +366,7 @@ document.write(`
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">autrainer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.augmentations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AugmentationManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallbackManager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotMetrics</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataBatch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -375,6 +376,7 @@ document.write(`
     <span class="n">save_hardware_info</span><span class="p">,</span>
     <span class="n">save_requirements</span><span class="p">,</span>
     <span class="n">set_device</span><span class="p">,</span>
+    <span class="n">set_reproducibility</span><span class="p">,</span>
     <span class="n">set_seed</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataset</span>
@@ -384,7 +386,6 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.models.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_model_inputs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartCompose</span><span class="p">,</span> <span class="n">TransformManager</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.callback_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallbackManager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.continue_training</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContinueTraining</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.outputs_tracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputsTracker</span><span class="p">,</span> <span class="n">init_trackers</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -426,6 +427,7 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="n">training_seed</span> <span class="o">=</span> <span class="n">dataset_seed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">seed</span>
         <span class="n">set_seed</span><span class="p">(</span><span class="n">training_seed</span><span class="p">)</span>
+        <span class="n">set_reproducibility</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">reproducible</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span> <span class="o">=</span> <span class="n">set_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="n">save_hardware_info</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_directory</span><span class="p">)</span>
@@ -644,15 +646,6 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">dev_timer</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;dev&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_timer</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">)</span>
 
-        <span class="c1"># ? Continue run</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;continue_training&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span> <span class="o">=</span> <span class="n">ContinueTraining</span><span class="p">(</span>
-                <span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="n">remove_continued_runs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;remove_continued_runs&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span> <span class="o">=</span> <span class="kc">None</span>
-
         <span class="c1"># ? Create Loggers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AbstractLogger</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loggers&quot;</span><span class="p">,</span> <span class="p">[]):</span>
@@ -667,7 +660,7 @@ document.write(`
                 <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="c1"># ? Create Callbacks and Callback Manager</span>
+        <span class="c1"># ? Create Callbacks (which register automatically via mixins)</span>
         <span class="n">callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;callbacks&quot;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
@@ -678,19 +671,14 @@ document.write(`
                 <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span> <span class="o">=</span> <span class="n">CallbackManager</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">register_multiple</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">,</span>
-                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">,</span>
-                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span><span class="p">,</span>  <span class="c1"># has to be last as it might overwrite other callbacks  # noqa: E501</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
+        <span class="c1"># ? Continue run</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;continue_training&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span> <span class="o">=</span> <span class="n">ContinueTraining</span><span class="p">(</span>
+                <span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">remove_continued_runs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;remove_continued_runs&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continue_training</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># ? Create Plot Metrics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_metrics</span> <span class="o">=</span> <span class="n">PlotMetrics</span><span class="p">(</span>
@@ -737,7 +725,7 @@ document.write(`
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread_manager</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_train_begin&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">training_type</span> <span class="o">==</span> <span class="s2">&quot;epoch&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">train_epochs</span><span class="p">()</span>
@@ -763,11 +751,7 @@ document.write(`
             <span class="n">tracker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_tracker</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_test_end&quot;</span><span class="p">,</span>
-            <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-            <span class="n">test_results</span><span class="o">=</span><span class="n">test_results</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_test_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_results</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_best_results</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span>
@@ -801,7 +785,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_metrics</span><span class="o">.</span><span class="n">plot_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">save_results_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="s2">&quot;metrics.csv&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_train_end&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_train_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">best_iteration</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tracking_metric</span><span class="o">.</span><span class="n">name</span><span class="p">]</span></div>
 
 
@@ -814,9 +798,7 @@ document.write(`
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_iteration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_iteration_begin&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span>
-            <span class="p">)</span>
+            <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_iteration_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
             <span class="n">epoch_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;epoch_</span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bookkeeping</span><span class="o">.</span><span class="n">create_folder</span><span class="p">(</span><span class="n">epoch_folder</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
@@ -829,12 +811,7 @@ document.write(`
                 <span class="p">)</span>
             <span class="p">):</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">pm</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                    <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_begin&quot;</span><span class="p">,</span>
-                    <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                    <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
-                    <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_step_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span>
                 <span class="n">loss</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_step_fn</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
                     <span class="n">data</span><span class="p">,</span>
@@ -848,13 +825,7 @@ document.write(`
                     <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                    <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_end&quot;</span><span class="p">,</span>
-                    <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                    <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
-                    <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span><span class="p">,</span>
-                    <span class="n">loss</span><span class="o">=</span><span class="n">reduced_loss</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">reduced_loss</span><span class="p">)</span>
                 <span class="n">train_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reduced_loss</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">:</span>
@@ -873,26 +844,13 @@ document.write(`
                     <span class="n">tracker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_tracker</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dev_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                    <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_val_end&quot;</span><span class="p">,</span>
-                    <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                    <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
-                    <span class="n">val_results</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">epoch</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                    <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_iteration_end&quot;</span><span class="p">,</span>
-                    <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                    <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
-                    <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">epoch</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-                <span class="p">)</span>
+                <span class="n">_metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">epoch</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_dev_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">_metrics</span><span class="p">)</span>
+                <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_iteration_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">_metrics</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">epoch</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">iterations</span><span class="p">:</span>
                     <span class="n">train_loss</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_loader_exhausted&quot;</span><span class="p">,</span>
-                <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                <span class="n">iteration</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_loader_exhausted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">train_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model for a fixed number of steps.&quot;&quot;&quot;</span>
@@ -902,9 +860,7 @@ document.write(`
             <span class="n">disable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">disable_progress_bar</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_iteration</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_iteration_begin&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="n">step</span>
-        <span class="p">)</span>
+        <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_iteration_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span><span class="p">)</span>
         <span class="n">train_loss</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">pm</span> <span class="o">=</span> <span class="p">(</span>
@@ -920,20 +876,12 @@ document.write(`
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                    <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_loader_exhausted&quot;</span><span class="p">,</span>
-                    <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                    <span class="n">iteration</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_loader_exhausted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span><span class="p">)</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader_iter</span><span class="p">)</span>
             <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">pm</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_begin&quot;</span><span class="p">,</span>
-                <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                <span class="n">iteration</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
-                <span class="n">batch_idx</span><span class="o">=</span><span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">_batch_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span>
+            <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_step_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">_batch_idx</span><span class="p">)</span>
             <span class="n">loss</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_step_fn</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
                 <span class="n">data</span><span class="p">,</span>
@@ -947,13 +895,7 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_step_end&quot;</span><span class="p">,</span>
-                <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                <span class="n">iteration</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
-                <span class="n">batch_idx</span><span class="o">=</span><span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span><span class="p">,</span>
-                <span class="n">loss</span><span class="o">=</span><span class="n">reduced_loss</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">_batch_idx</span><span class="p">,</span> <span class="n">reduced_loss</span><span class="p">)</span>
             <span class="n">train_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reduced_loss</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_frequency</span> <span class="o">==</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">:</span>
@@ -974,27 +916,14 @@ document.write(`
                     <span class="n">tracker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_tracker</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dev_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                    <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_val_end&quot;</span><span class="p">,</span>
-                    <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                    <span class="n">iteration</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
-                    <span class="n">val_results</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                    <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_iteration_end&quot;</span><span class="p">,</span>
-                    <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                    <span class="n">iteration</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
-                    <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-                <span class="p">)</span>
+                <span class="n">_metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_dev_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">_metrics</span><span class="p">)</span>
+                <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_iteration_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">_metrics</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">iterations</span><span class="p">:</span>
                     <span class="n">train_loss</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="n">pbar</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">train_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                        <span class="n">position</span><span class="o">=</span><span class="s2">&quot;cb_on_iteration_begin&quot;</span><span class="p">,</span>
-                        <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                        <span class="n">iteration</span><span class="o">=</span><span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-                    <span class="p">)</span>
+                    <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_iteration_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_train_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1048,13 +977,10 @@ document.write(`
 <span class="sd">            Dictionary containing the evaluation results if evaluating on the test set,</span>
 <span class="sd">            otherwise None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cb_type</span> <span class="o">=</span> <span class="s2">&quot;val&quot;</span> <span class="k">if</span> <span class="n">dev_evaluation</span> <span class="k">else</span> <span class="s2">&quot;test&quot;</span>
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;iteration&quot;</span><span class="p">:</span> <span class="n">iteration</span><span class="p">}</span> <span class="k">if</span> <span class="n">dev_evaluation</span> <span class="k">else</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-            <span class="n">position</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cb_on_</span><span class="si">{</span><span class="n">cb_type</span><span class="si">}</span><span class="s2">_begin&quot;</span><span class="p">,</span>
-            <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
+            <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_dev_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_test_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">)</span>
         <span class="n">lk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loader_kwargs</span><span class="p">[</span><span class="s2">&quot;dev&quot;</span> <span class="k">if</span> <span class="n">dev_evaluation</span> <span class="k">else</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span>
@@ -1063,7 +989,7 @@ document.write(`
             <span class="n">tracker</span><span class="o">=</span><span class="n">tracker</span><span class="p">,</span>
             <span class="n">iteration_folder</span><span class="o">=</span><span class="n">iteration_folder</span><span class="p">,</span>
             <span class="n">loader_kwargs</span><span class="o">=</span><span class="n">lk</span><span class="p">,</span>
-            <span class="n">cb_type</span><span class="o">=</span><span class="n">cb_type</span><span class="p">,</span>
+            <span class="n">dev_evaluation</span><span class="o">=</span><span class="n">dev_evaluation</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
             <span class="n">results</span><span class="p">[</span><span class="s2">&quot;dev_loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">)</span>
@@ -1144,7 +1070,7 @@ document.write(`
         <span class="n">tracker</span><span class="p">:</span> <span class="n">OutputsTracker</span><span class="p">,</span>
         <span class="n">iteration_folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">loader_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-        <span class="n">cb_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span>
+        <span class="n">dev_evaluation</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the model on the dev or test set.</span>
 
@@ -1152,7 +1078,7 @@ document.write(`
 <span class="sd">            loader: Dataloader to evaluate on.</span>
 <span class="sd">            tracker: Tracker to save the outputs.</span>
 <span class="sd">            iteration_folder: Iteration folder to save the results to.</span>
-<span class="sd">            cb_type: Callback type. Defaults to &quot;val&quot;.</span>
+<span class="sd">            dev_evaluation: Whether to evaluate on the dev or test set.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dictionary containing the results on the dev or test set.</span>
@@ -1163,15 +1089,14 @@ document.write(`
             <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
                 <span class="n">tqdm</span><span class="p">(</span>
                     <span class="n">loader</span><span class="p">,</span>
-                    <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Evaluate&quot;</span> <span class="k">if</span> <span class="n">cb_type</span> <span class="o">==</span> <span class="s2">&quot;val&quot;</span> <span class="k">else</span> <span class="s2">&quot;Test&quot;</span><span class="p">,</span>
+                    <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Evaluate&quot;</span> <span class="k">if</span> <span class="n">dev_evaluation</span> <span class="k">else</span> <span class="s2">&quot;Test&quot;</span><span class="p">,</span>
                     <span class="n">disable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">disable_progress_bar</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                    <span class="n">position</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cb_on_</span><span class="si">{</span><span class="n">cb_type</span><span class="si">}</span><span class="s2">_step_begin&quot;</span><span class="p">,</span>
-                    <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                    <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
+                    <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_dev_step_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_test_step_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEVICE</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">pm</span><span class="p">)</span>
                 <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">create_model_inputs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
                 <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span>
@@ -1181,17 +1106,13 @@ document.write(`
                 <span class="n">reduced_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
                 <span class="n">losses</span> <span class="o">+=</span> <span class="n">reduced_loss</span>
                 <span class="n">tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">callback_manager</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-                    <span class="n">position</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cb_on_</span><span class="si">{</span><span class="n">cb_type</span><span class="si">}</span><span class="s2">_step_end&quot;</span><span class="p">,</span>
-                    <span class="n">trainer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                    <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span><span class="p">,</span>
-                    <span class="n">loss</span><span class="o">=</span><span class="n">reduced_loss</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">dev_evaluation</span><span class="p">:</span>
+                    <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_dev_step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">reduced_loss</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">CallbackManager</span><span class="p">()</span><span class="o">.</span><span class="n">cb_on_test_step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">reduced_loss</span><span class="p">)</span>
             <span class="n">losses</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loader</span><span class="p">)</span>
         <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">iteration_folder</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">losses</span><span class="p">,</span>
-        <span class="p">}</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">losses</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
             <span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric</span><span class="p">(</span><span class="n">tracker</span><span class="o">.</span><span class="n">targets</span><span class="p">,</span> <span class="n">tracker</span><span class="o">.</span><span class="n">predictions</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">results</span>

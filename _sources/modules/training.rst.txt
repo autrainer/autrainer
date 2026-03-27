@@ -53,32 +53,3 @@ The :attr:`cfg` of the trainer is the composed main configuration file (e.g., :f
 
 .. autoclass:: autrainer.training.ModularTaskTrainer
    :members: train
-
-
-.. _callbacks:
-
-Callbacks
----------
-
-Any :ref:`dataset <datasets>`,
-:ref:`model <models>`,
-:ref:`optimizer <optimizers>`,
-:ref:`scheduler <schedulers>`,
-:ref:`criterion <criterions>`,
-or :ref:`logger <loggers>` can specify callback functions which start with :meth:`cb_on_*`.
-
-Each callback is automatically invoked at the appropriate time during training.
-The function signature of each callback is defined in :class:`~autrainer.training.CallbackSignature`.
-
-For more control over the training process, custom callbacks can be defined and added to the trainer by specifying a list of
-callback classes using :ref:`shorthand syntax <shorthand_syntax>` in the :attr:`callbacks` attribute of the
-:ref:`main configuration <main_configuration>` file.
-Each callback class can specify any number of callback functions following the signatures defined in :class:`~autrainer.training.CallbackSignature`.
-
-.. tip::
-
-   To create custom callbacks, refer to the :ref:`custom callbacks tutorial <tut_callbacks>`.
-
-
-.. autoclass:: autrainer.training.CallbackSignature
-   :members:

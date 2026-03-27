@@ -40,7 +40,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=aa3b121e"></script>
+    <script src="../_static/documentation_options.js?v=82662543"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1505,34 +1505,37 @@ and a project with the same name as the <code class="xref py py-attr docutils li
 </section>
 <section id="custom-callbacks">
 <span id="tut-callbacks"></span><h2>Custom Callbacks<a class="headerlink" href="#custom-callbacks" title="Link to this heading">#</a></h2>
-<p>To create a custom <a class="reference internal" href="../modules/training.html#callbacks"><span class="std std-ref">callback</span></a>, implement a class that specifies any of the callback functions defined in
-<a class="reference internal" href="../modules/training.html#autrainer.training.CallbackSignature" title="autrainer.training.CallbackSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallbackSignature</span></code></a>.</p>
+<p>To create a custom <a class="reference internal" href="../modules/core.html#core-callbacks"><span class="std std-ref">callback</span></a>, implement a class that inherits from <a class="reference internal" href="../modules/core.html#autrainer.core.callbacks.CallbackMixin" title="autrainer.core.callbacks.CallbackMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallbackMixin</span></code></a>
+(and calls <code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code> in its constructor)
+and override the callback methods corresponding to the desired stages of the training loop.</p>
 <p>For example, the following callback tracks learning rate changes at the beginning of each iteration:</p>
 <div class="literal-block-wrapper docutils container" id="id37">
 <div class="code-block-caption"><span class="caption-text">lr_tracker_callback.py</span><a class="headerlink" href="#id37" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-<span class="linenos"> 5</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.training</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModularTaskTrainer</span>
-<span class="linenos"> 6</span>
-<span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">LRTrackerCallback</span><span class="p">:</span>
-<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">10</span>        <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span>    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_iteration_begin</span><span class="p">(</span>
-<span class="linenos">13</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">14</span>        <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">,</span>
-<span class="linenos">15</span>        <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<span class="linenos">16</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">17</span>        <span class="n">current_lr</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
-<span class="linenos">18</span>        <span class="k">if</span> <span class="n">current_lr</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">:</span>
-<span class="linenos">19</span>            <span class="nb">print</span><span class="p">(</span>
-<span class="linenos">20</span>                <span class="sa">f</span><span class="s2">&quot;Learning rate changed from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="si">}</span><span class="s2"> &quot;</span>
-<span class="linenos">21</span>                <span class="sa">f</span><span class="s2">&quot;to </span><span class="si">{</span><span class="n">current_lr</span><span class="si">}</span><span class="s2"> in iteration </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">.&quot;</span>
-<span class="linenos">22</span>            <span class="p">)</span>
-<span class="linenos">23</span>            <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">current_lr</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.core.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallbackMixin</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+<span class="linenos"> 7</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">autrainer.training</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModularTaskTrainer</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">LRTrackerCallback</span><span class="p">(</span><span class="n">CallbackMixin</span><span class="p">):</span>
+<span class="linenos">11</span>    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">12</span>        <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span>    <span class="k">def</span><span class="w"> </span><span class="nf">cb_on_iteration_begin</span><span class="p">(</span>
+<span class="linenos">15</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">16</span>        <span class="n">trainer</span><span class="p">:</span> <span class="s2">&quot;ModularTaskTrainer&quot;</span><span class="p">,</span>
+<span class="linenos">17</span>        <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos">18</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">19</span>        <span class="n">current_lr</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
+<span class="linenos">20</span>        <span class="k">if</span> <span class="n">current_lr</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">:</span>
+<span class="linenos">21</span>            <span class="nb">print</span><span class="p">(</span>
+<span class="linenos">22</span>                <span class="sa">f</span><span class="s2">&quot;Learning rate changed from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="si">}</span><span class="s2"> &quot;</span>
+<span class="linenos">23</span>                <span class="sa">f</span><span class="s2">&quot;to </span><span class="si">{</span><span class="n">current_lr</span><span class="si">}</span><span class="s2"> in iteration </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">.&quot;</span>
+<span class="linenos">24</span>            <span class="p">)</span>
+<span class="linenos">25</span>            <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">current_lr</span>
 </pre></div>
 </div>
 </div>
