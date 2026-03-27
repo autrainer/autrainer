@@ -111,6 +111,8 @@ Utils provide various helpers for I/O, logging, timing, and hardware information
 
 .. autofunction:: autrainer.core.utils.set_seed
 
+.. autofunction:: autrainer.core.utils.set_reproducibility
+
 .. autofunction:: autrainer.core.utils.silence
 
 
