@@ -68,6 +68,30 @@ into a batch of data items and must be passed to the :class:`torch.utils.data.Da
    as the first argument (after `self`) of its :meth:`~autrainer.models.AbstractModel.forward` method.
 
 
+.. _core_callbacks:
+
+Callbacks
+---------
+`autrainer` provides a set of callback functions (:meth:`cb_on_*`) that are called at various stages of the training loop.
+Each callback is automatically invoked at the appropriate time during training.
+
+For more control over the training process, custom callbacks can be defined and added to the trainer by specifying a list of
+callback classes using :ref:`shorthand syntax <shorthand_syntax>` in the :attr:`callbacks` attribute of the
+:ref:`main configuration <main_configuration>` file.
+Each callback class can specify any number of callback functions following the signatures defined in :class:`~autrainer.core.callbacks.CallbackMixin`.
+
+.. tip::
+
+   To create custom callbacks, refer to the :ref:`custom callbacks tutorial <tut_callbacks>`.
+
+
+.. autoclass:: autrainer.core.callbacks.CallbackMixin
+    :members:
+
+.. autoclass:: autrainer.core.callbacks.CallbackManager
+    :members:
+
+
 .. _core_utils:
 
 Utils

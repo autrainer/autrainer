@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 
+from autrainer.core.callbacks import CallbackMixin
 from autrainer.core.constants import ExportConstants
 from autrainer.core.utils import Timer
 from autrainer.metrics import AbstractMetric
@@ -57,7 +58,7 @@ def get_params_to_export(
     return result
 
 
-class AbstractLogger(ABC):
+class AbstractLogger(CallbackMixin, ABC):
     def __init__(
         self,
         exp_name: str,
@@ -77,6 +78,7 @@ class AbstractLogger(ABC):
                 :const:`~autrainer.core.constants.ExportConstants.ARTIFACTS`.
                 Defaults to None.
         """
+        super().__init__()
         self.run_name = run_name
         self.exp_name = exp_name
         self.metrics = metrics

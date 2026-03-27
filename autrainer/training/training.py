@@ -11,6 +11,7 @@ from tqdm import tqdm
 
 import autrainer
 from autrainer.augmentations import AugmentationManager
+from autrainer.core.callbacks import CallbackManager
 from autrainer.core.plotting import PlotMetrics
 from autrainer.core.structs import AbstractDataBatch
 from autrainer.core.utils import (
@@ -29,7 +30,6 @@ from autrainer.models import AbstractModel
 from autrainer.models.utils import create_model_inputs
 from autrainer.transforms import SmartCompose, TransformManager
 
-from .callback_manager import CallbackManager
 from .continue_training import ContinueTraining
 from .outputs_tracker import OutputsTracker, init_trackers
 from .utils import (
@@ -287,15 +287,6 @@ class ModularTaskTrainer:
         self.dev_timer = Timer(output_directory, "dev")
         self.test_timer = Timer(output_directory, "test")
 
-        # ? Continue run
-        if self.cfg.get("continue_training", False):
-            self.continue_training = ContinueTraining(
-                run_name=run_name or self.output_directory.name,
-                remove_continued_runs=self.cfg.get("remove_continued_runs", False),
-            )
-        else:
-            self.continue_training = None
-
         # ? Create Loggers
         self.loggers: List[AbstractLogger] = []
         for logger in self.cfg.get("loggers", []):
@@ -310,7 +301,7 @@ class ModularTaskTrainer:
                 )
             )
 
-        # ? Create Callbacks and Callback Manager
+        # ? Create Callbacks (which register automatically via mixins)
         callbacks = self.cfg.get("callbacks", [])
         self.callbacks = []
         for callback in callbacks:
@@ -321,19 +312,14 @@ class ModularTaskTrainer:
                 )
             )
 
-        self.callback_manager = CallbackManager()
-        self.callback_manager.register_multiple(
-            [
-                self.data,
-                self.model,
-                self.optimizer,
-                self.scheduler,
-                self.criterion,
-                *self.loggers,
-                *self.callbacks,
-                self.continue_training,  # has to be last as it might overwrite other callbacks  # noqa: E501
-            ]
-        )
+        # ? Continue run
+        if self.cfg.get("continue_training", False):
+            self.continue_training = ContinueTraining(
+                run_name=run_name or self.output_directory.name,
+                remove_continued_runs=self.cfg.get("remove_continued_runs", False),
+            )
+        else:
+            self.continue_training = None
 
         # ? Create Plot Metrics
         self.plot_metrics = PlotMetrics(
@@ -378,7 +364,7 @@ class ModularTaskTrainer:
         )
 
         self._thread_manager.join()
-        self.callback_manager.callback(position="cb_on_train_begin", trainer=self)
+        CallbackManager().cb_on_train_begin(self)
 
         if self.cfg.training_type == "epoch":
             self.train_epochs()
@@ -404,11 +390,7 @@ class ModularTaskTrainer:
             tracker=self.test_tracker,
         )
         self.test_timer.stop()
-        self.callback_manager.callback(
-            position="cb_on_test_end",
-            trainer=self,
-            test_results=test_results,
-        )
+        CallbackManager().cb_on_test_end(self, test_results)
         self.metrics["iteration"] = self.metrics.index
         self.bookkeeping.save_best_results(
             self.metrics,
@@ -442,7 +424,7 @@ class ModularTaskTrainer:
         self.plot_metrics.plot_run(self.metrics)
 
         self.bookkeeping.save_results_df(self.metrics, "metrics.csv")
-        self.callback_manager.callback(position="cb_on_train_end", trainer=self)
+        CallbackManager().cb_on_train_end(self)
         return self.metrics.loc[self.best_iteration][self.data.tracking_metric.name]
 
     def train_epochs(self) -> None:
@@ -454,9 +436,7 @@ class ModularTaskTrainer:
         )
         self.train_timer.start()
         for epoch in range(self.initial_iteration, self.cfg.iterations + 1):
-            self.callback_manager.callback(
-                position="cb_on_iteration_begin", trainer=self, iteration=epoch
-            )
+            CallbackManager().cb_on_iteration_begin(self, epoch)
             epoch_folder = f"epoch_{epoch}"
             self.bookkeeping.create_folder(epoch_folder)
             self.model.train()
@@ -469,12 +449,7 @@ class ModularTaskTrainer:
                 )
             ):
                 data.to(self.DEVICE, non_blocking=pm)
-                self.callback_manager.callback(
-                    position="cb_on_step_begin",
-                    trainer=self,
-                    iteration=epoch,
-                    batch_idx=batch_idx,
-                )
+                CallbackManager().cb_on_step_begin(self, epoch, batch_idx)
                 loss, output = self.train_step_fn(
                     self.model,
                     data,
@@ -488,13 +463,7 @@ class ModularTaskTrainer:
                     self.scheduler.step()
                 if self.train_tracker:
                     self.train_tracker.update(output, data.target, loss, data.index)
-                self.callback_manager.callback(
-                    position="cb_on_step_end",
-                    trainer=self,
-                    iteration=epoch,
-                    batch_idx=batch_idx,
-                    loss=reduced_loss,
-                )
+                CallbackManager().cb_on_step_end(self, epoch, batch_idx, reduced_loss)
                 train_loss.append(reduced_loss)
             if epoch % self.cfg.eval_frequency == 0:
                 if self.scheduler and self.scheduler_frequency == "evaluation":
@@ -513,26 +482,13 @@ class ModularTaskTrainer:
                     tracker=self.dev_tracker,
                 )
                 self.dev_timer.stop()
-                self.callback_manager.callback(
-                    position="cb_on_val_end",
-                    trainer=self,
-                    iteration=epoch,
-                    val_results=self.metrics.loc[epoch].to_dict(),
-                )
-                self.callback_manager.callback(
-                    position="cb_on_iteration_end",
-                    trainer=self,
-                    iteration=epoch,
-                    metrics=self.metrics.loc[epoch].to_dict(),
-                )
+                _metrics = self.metrics.loc[epoch].to_dict()
+                CallbackManager().cb_on_dev_end(self, epoch, _metrics)
+                CallbackManager().cb_on_iteration_end(self, epoch, _metrics)
                 if epoch < self.cfg.iterations:
                     train_loss = []
                     self.train_timer.start()
-            self.callback_manager.callback(
-                position="cb_on_loader_exhausted",
-                trainer=self,
-                iteration=epoch,
-            )
+            CallbackManager().cb_on_loader_exhausted(self, epoch)
 
     def train_steps(self) -> None:
         """Train the model for a fixed number of steps."""
@@ -542,9 +498,7 @@ class ModularTaskTrainer:
             disable=self.disable_progress_bar,
         )
         step = self.initial_iteration - 1
-        self.callback_manager.callback(
-            position="cb_on_iteration_begin", trainer=self, iteration=step
-        )
+        CallbackManager().cb_on_iteration_begin(self, step)
         self.train_loader_iter = iter(self.train_loader)
         train_loss = []
         pm = (
@@ -560,20 +514,12 @@ class ModularTaskTrainer:
             try:
                 data = next(self.train_loader_iter)
             except StopIteration:
-                self.callback_manager.callback(
-                    position="cb_on_loader_exhausted",
-                    trainer=self,
-                    iteration=step,
-                )
+                CallbackManager().cb_on_loader_exhausted(self, step)
                 self.train_loader_iter = iter(self.train_loader)
                 data = next(self.train_loader_iter)
             data.to(self.DEVICE, non_blocking=pm)
-            self.callback_manager.callback(
-                position="cb_on_step_begin",
-                trainer=self,
-                iteration=step,
-                batch_idx=(step - 1) % self.cfg.eval_frequency,
-            )
+            _batch_idx = (step - 1) % self.cfg.eval_frequency
+            CallbackManager().cb_on_step_begin(self, step, _batch_idx)
             loss, output = self.train_step_fn(
                 self.model,
                 data,
@@ -587,13 +533,7 @@ class ModularTaskTrainer:
                 self.scheduler.step()
             if self.train_tracker:
                 self.train_tracker.update(output, data.target, loss, data.index)
-            self.callback_manager.callback(
-                position="cb_on_step_end",
-                trainer=self,
-                iteration=step,
-                batch_idx=(step - 1) % self.cfg.eval_frequency,
-                loss=reduced_loss,
-            )
+            CallbackManager().cb_on_step_end(self, step, _batch_idx, reduced_loss)
             train_loss.append(reduced_loss)
             if step % self.cfg.eval_frequency == 0:
                 if self.scheduler and self.scheduler_frequency == "evaluation":
@@ -614,27 +554,14 @@ class ModularTaskTrainer:
                     tracker=self.dev_tracker,
                 )
                 self.dev_timer.stop()
-                self.callback_manager.callback(
-                    position="cb_on_val_end",
-                    trainer=self,
-                    iteration=step,
-                    val_results=self.metrics.loc[step].to_dict(),
-                )
-                self.callback_manager.callback(
-                    position="cb_on_iteration_end",
-                    trainer=self,
-                    iteration=step,
-                    metrics=self.metrics.loc[step].to_dict(),
-                )
+                _metrics = self.metrics.loc[step].to_dict()
+                CallbackManager().cb_on_dev_end(self, step, _metrics)
+                CallbackManager().cb_on_iteration_end(self, step, _metrics)
                 if step < self.cfg.iterations:
                     train_loss = []
                     pbar.reset()
                     self.train_timer.start()
-                    self.callback_manager.callback(
-                        position="cb_on_iteration_begin",
-                        trainer=self,
-                        iteration=step + 1,
-                    )
+                    CallbackManager().cb_on_iteration_begin(self, step + 1)
 
     def _train_step(
         self,
@@ -688,13 +615,10 @@ class ModularTaskTrainer:
             Dictionary containing the evaluation results if evaluating on the test set,
             otherwise None.
         """
-        cb_type = "val" if dev_evaluation else "test"
-        kwargs = {"iteration": iteration} if dev_evaluation else {}
-        self.callback_manager.callback(
-            position=f"cb_on_{cb_type}_begin",
-            trainer=self,
-            **kwargs,
-        )
+        if dev_evaluation:
+            CallbackManager().cb_on_dev_begin(self, iteration)
+        else:
+            CallbackManager().cb_on_test_begin(self)
         self.model.eval()
         self.model.to(self.DEVICE)
         lk = self._loader_kwargs["dev" if dev_evaluation else "test"]
@@ -703,7 +627,7 @@ class ModularTaskTrainer:
             tracker=tracker,
             iteration_folder=iteration_folder,
             loader_kwargs=lk,
-            cb_type=cb_type,
+            dev_evaluation=dev_evaluation,
         )
         if dev_evaluation:
             results["dev_loss"] = results.pop("loss")
@@ -784,7 +708,7 @@ class ModularTaskTrainer:
         tracker: OutputsTracker,
         iteration_folder: str,
         loader_kwargs: Dict[str, Any],
-        cb_type: str = "val",
+        dev_evaluation: bool,
     ) -> Dict[str, float]:
         """Evaluate the model on the dev or test set.
 
@@ -792,7 +716,7 @@ class ModularTaskTrainer:
             loader: Dataloader to evaluate on.
             tracker: Tracker to save the outputs.
             iteration_folder: Iteration folder to save the results to.
-            cb_type: Callback type. Defaults to "val".
+            dev_evaluation: Whether to evaluate on the dev or test set.
 
         Returns:
             Dictionary containing the results on the dev or test set.
@@ -803,15 +727,14 @@ class ModularTaskTrainer:
             for batch_idx, data in enumerate(
                 tqdm(
                     loader,
-                    desc="Evaluate" if cb_type == "val" else "Test",
+                    desc="Evaluate" if dev_evaluation else "Test",
                     disable=self.disable_progress_bar,
                 )
             ):
-                self.callback_manager.callback(
-                    position=f"cb_on_{cb_type}_step_begin",
-                    trainer=self,
-                    batch_idx=batch_idx,
-                )
+                if dev_evaluation:
+                    CallbackManager().cb_on_dev_step_begin(self, batch_idx)
+                else:
+                    CallbackManager().cb_on_test_step_begin(self, batch_idx)
                 data.to(self.DEVICE, non_blocking=pm)
                 output = self.model(**create_model_inputs(self.model, data))
                 loss = self.criterion(
@@ -821,17 +744,13 @@ class ModularTaskTrainer:
                 reduced_loss = loss.mean().item()
                 losses += reduced_loss
                 tracker.update(output, data.target, loss, data.index)
-                self.callback_manager.callback(
-                    position=f"cb_on_{cb_type}_step_end",
-                    trainer=self,
-                    batch_idx=batch_idx,
-                    loss=reduced_loss,
-                )
+                if dev_evaluation:
+                    CallbackManager().cb_on_dev_step_end(self, batch_idx, reduced_loss)
+                else:
+                    CallbackManager().cb_on_test_step_end(self, batch_idx, reduced_loss)
             losses /= len(loader)
         tracker.save(iteration_folder, reset=False)
-        results = {
-            "loss": losses,
-        }
+        results = {"loss": losses}
         for metric in self.data.metrics:
             results[metric.name] = metric(tracker.targets, tracker.predictions)
         return results

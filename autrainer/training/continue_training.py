@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import pandas as pd
 
+from autrainer.core.callbacks import CallbackMixin
 from autrainer.core.constants import NamingConstants
 from autrainer.postprocessing.postprocessing_utils import (
     get_run_names,
@@ -17,12 +18,14 @@ if TYPE_CHECKING:  # pragma: no cover
     from .training import ModularTaskTrainer
 
 
-class ContinueTraining:
+class ContinueTraining(CallbackMixin):
     def __init__(self, run_name: str, remove_continued_runs: bool = False) -> None:
+        super().__init__()
         self.run_name = run_name
         self.continued_run = None
         self.remove_continued_runs = remove_continued_runs
 
+    @CallbackMixin.order(100)  # should run after all other callbacks
     def cb_on_train_begin(self, trainer: "ModularTaskTrainer") -> None:
         finished_runs = get_run_names(trainer.output_directory.parent)
 
@@ -43,6 +46,7 @@ class ContinueTraining:
             return
         self.continue_training(trainer, max(matches, key=matches.get))
 
+    @CallbackMixin.order(100)  # should run after all other callbacks
     def cb_on_train_end(self, trainer: "ModularTaskTrainer") -> None:
         if self.continued_run is None or not self.remove_continued_runs:
             return
