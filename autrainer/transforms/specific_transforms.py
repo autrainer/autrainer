@@ -461,6 +461,11 @@ class FeatureExtractor(AbstractTransform):
         """Extract features from an audio signal using a feature extractor
         from the Hugging Face Transformers library.
 
+        Note: Extracted features are returned as a 2D audtio tensor of shape
+        (channels, time) for W2V2, and as a 3D image tensor of shape
+        (channels, time, frequency) for AST and Whisper, aligning with the
+        representation used by PANNs.
+
         Args:
             fe_type: The class of feature extractor to use in ["AST", "Whisper",
                 "W2V2", None]. If None, the AutoFeatureExtractor will be used.
@@ -495,6 +500,13 @@ class FeatureExtractor(AbstractTransform):
                 f"{OmegaConf.to_yaml(extractor_dict)}",
                 stacklevel=2,
             )
+        if not isinstance(
+            feature_extractor,
+            (ASTFeatureExtractor, WhisperFeatureExtractor, Wav2Vec2FeatureExtractor),
+        ):
+            raise ValueError(
+                f"Unsupported feature extractor type '{type(feature_extractor)}'."
+            )
 
         def extract_features(signal: np.ndarray) -> torch.Tensor:
             if len(signal.shape) == 2:
@@ -505,7 +517,10 @@ class FeatureExtractor(AbstractTransform):
                 padding=padding,
                 return_tensors="pt",
             )
-            return extracted[list(extracted.keys())[0]][0]
+            outputs: torch.Tensor = extracted[list(extracted.keys())[0]][0]
+            if isinstance(feature_extractor, WhisperFeatureExtractor):
+                outputs = outputs.T
+            return outputs.unsqueeze(0)
 
         self._extract_features = extract_features
 
