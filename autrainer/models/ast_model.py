@@ -53,6 +53,7 @@ class ASTModel(AbstractModel):
         self.out = torch.nn.Sequential(*layers)
 
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        features = features.squeeze(1)  # (B, 1, T, F) -> (B, T, F)
         return self.model(features).last_hidden_state.mean(1)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:

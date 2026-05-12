@@ -93,7 +93,8 @@ class W2V2FFNN(AbstractModel):
         )
 
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
-        return self.backbone(features.squeeze(1))
+        features = features.squeeze(1)  # (B, 1, T) -> (B, T)
+        return self.backbone(features)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         return self.frontend(self.embeddings(features))

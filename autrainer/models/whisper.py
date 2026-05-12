@@ -77,6 +77,7 @@ class WhisperFFNN(AbstractModel):
         )
 
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+        features = features.squeeze(1).transpose(1, 2)  # (B, 1, T, F) -> (B, F, T)
         return self.backbone(features)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
