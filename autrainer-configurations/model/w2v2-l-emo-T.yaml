@@ -8,7 +8,7 @@ dropout: 0.5
 transfer: true
 
 transform:
-  type: raw
+  type: audio
   base:
     - autrainer.transforms.FeatureExtractor:
         fe_type: W2V2

@@ -32,6 +32,7 @@ class TDNNFFNN(AbstractModel):
         self.dropout = dropout
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=FutureWarning)
+            warnings.simplefilter("ignore", category=UserWarning)
             if transfer:  # pragma: no cover
                 checkpoint_dir = os.path.join(torch.hub.get_dir(), "speechbrain")
                 os.makedirs(checkpoint_dir, exist_ok=True)
@@ -65,7 +66,8 @@ class TDNNFFNN(AbstractModel):
 
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
         _device = features.device
-        features = self.features(features.squeeze(1).cpu())
+        features = features.squeeze(1)  # (B, 1, T) -> (B, T)
+        features = self.features(features.cpu())
         features = features.to(_device)
         return self.backbone(features).squeeze(1)
 

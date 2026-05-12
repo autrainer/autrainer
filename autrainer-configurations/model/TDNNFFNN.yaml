@@ -3,4 +3,4 @@ _target_: autrainer.models.TDNNFFNN
 hidden_size: 32
 
 transform:
-  type: raw
+  type: audio

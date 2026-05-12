@@ -23,7 +23,7 @@ from autrainer.models.utils import ExtractLayerEmbeddings
 
 MODEL_FIXTURES = [
     (FFNN, {"input_size": 64, "hidden_size": 128}, (64,)),
-    (TDNNFFNN, {"hidden_size": 128}, (16000,)),
+    (TDNNFFNN, {"hidden_size": 128}, (1, 16000)),
     (
         W2V2FFNN,
         {
@@ -31,9 +31,9 @@ MODEL_FIXTURES = [
             "freeze_extractor": True,
             "hidden_size": 128,
         },
-        (16000,),
+        (1, 16000),
     ),
-    (ASTModel, {}, (1024, 128)),
+    (ASTModel, {}, (1, 1024, 128)),
     (AudioRNNModel, {"model_name": "emo18"}, (1, 16000)),
     (Cnn10, {}, (1, 128, 64)),
     (Cnn14, {}, (1, 128, 64)),
@@ -53,7 +53,7 @@ MODEL_FIXTURES = [
     (
         WhisperFFNN,
         {"model_name": "openai/whisper-tiny", "hidden_size": 128},
-        (80, 3000),
+        (1, 3000, 80),
     ),
 ]
 

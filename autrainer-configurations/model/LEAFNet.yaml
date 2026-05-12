@@ -2,4 +2,4 @@ id: LEAFNet
 _target_: autrainer.models.LEAFNet
 
 transform:
-  type: raw
+  type: audio

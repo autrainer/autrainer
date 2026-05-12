@@ -20,6 +20,6 @@ metrics:
 tracking_metric: autrainer.metrics.MLF1Weighted
 
 transform:
-  type: raw
+  type: audio
   base:
     - autrainer.transforms.StereoToMono:
