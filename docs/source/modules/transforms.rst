@@ -129,7 +129,7 @@ Each :attr:`transform` configuration includes a :attr:`type` attribute, specifyi
 * :attr:`image`: RGB images of shape ``(3, H, W)`` with ``3`` channels, height ``H``, and width ``W``
 * :attr:`grayscale`: Grayscale images of shape ``(1, H, W)`` with ``1`` channel, height ``H``, and width ``W``,
   or ``(1, T, F)`` for spectrograms with ``1`` channel, time dimension ``T``, and frequency dimension ``F``
-* :attr:`raw`: Raw audio waveforms of shape ``(1, T)`` with ``1`` channel and time dimension ``T``
+* :attr:`audio`: Raw audio waveforms of shape ``(1, T)`` with ``1`` channel and time dimension ``T``
 * :attr:`tabular`: Tabular data of shape ``(D,)`` with feature dimension ``D``
 
 .. note::

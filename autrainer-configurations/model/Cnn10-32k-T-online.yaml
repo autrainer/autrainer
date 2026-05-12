@@ -3,7 +3,7 @@ _target_: autrainer.models.Cnn10
 transfer: https://zenodo.org/records/3987831/files/Cnn10_mAP%3D0.380.pth
 
 transform:
-  type: raw
+  type: audio
   base:
     - autrainer.transforms.Resample:
         current_sr: 48000

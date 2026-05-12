@@ -20,7 +20,7 @@ metrics:
 tracking_metric: autrainer.metrics.Accuracy
 
 transform:
-  type: raw
+  type: audio
   base:
     - autrainer.transforms.Expand:
         size: 144000 # 16khz * 9s

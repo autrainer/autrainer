@@ -821,16 +821,16 @@ class TestTransformManager:
         [
             ("image", "image", True),
             ("grayscale", "grayscale", True),
-            ("raw", "raw", True),
+            ("audio", "audio", True),
             ("tabular", "tabular", True),
             ("image", "grayscale", True),
             ("grayscale", "image", True),
             ("image", "tabular", False),
-            ("image", "raw", False),
-            ("tabular", "raw", False),
+            ("image", "audio", False),
+            ("tabular", "audio", False),
             ("tabular", "image", False),
-            ("raw", "image", False),
-            ("raw", "tabular", False),
+            ("audio", "image", False),
+            ("audio", "tabular", False),
         ],
     )
     def test_valid_model_dataset_combination(

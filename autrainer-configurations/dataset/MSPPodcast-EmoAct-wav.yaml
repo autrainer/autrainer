@@ -17,7 +17,7 @@ metrics:
 tracking_metric: autrainer.metrics.CCC
 
 transform:
-  type: raw
+  type: audio
   base:
     - autrainer.transforms.Expand:
         size: 48000

@@ -11,11 +11,11 @@ file_type: wav
 file_handler: autrainer.datasets.utils.AudioFileHandler
 
 criterion: autrainer.criterions.BalancedCrossEntropyLoss
-metrics: 
+metrics:
   - autrainer.metrics.Accuracy
   - autrainer.metrics.UAR
   - autrainer.metrics.F1
 tracking_metric: autrainer.metrics.Accuracy
 
 transform:
-  type: raw
+  type: audio

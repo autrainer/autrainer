@@ -20,7 +20,7 @@ class TestModelConfigurations:
         assert config["transform"]["type"] in [
             "image",
             "grayscale",
-            "raw",
+            "audio",
             "tabular",
         ], f"{name}: Invalid transform type: {config['transform']['type']}"
 

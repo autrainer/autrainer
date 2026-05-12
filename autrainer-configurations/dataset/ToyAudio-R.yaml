@@ -17,4 +17,4 @@ metrics:
 tracking_metric: autrainer.metrics.PCC
 
 transform:
-  type: raw
+  type: audio

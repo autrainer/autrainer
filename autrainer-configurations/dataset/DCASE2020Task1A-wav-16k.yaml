@@ -25,4 +25,4 @@ metrics:
 tracking_metric: autrainer.metrics.Accuracy
 
 transform:
-  type: raw
+  type: audio
