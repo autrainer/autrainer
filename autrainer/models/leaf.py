@@ -95,6 +95,7 @@ class LEAFNet(AbstractModel):
         elif mode == "speech_brain":
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=FutureWarning)
+                warnings.simplefilter("ignore", category=UserWarning)
                 from speechbrain.lobes.features import Leaf as LeafSb
 
             self.leaf = LeafSb(

@@ -32,6 +32,7 @@ class TDNNFFNN(AbstractModel):
         self.dropout = dropout
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=FutureWarning)
+            warnings.simplefilter("ignore", category=UserWarning)
             if transfer:  # pragma: no cover
                 checkpoint_dir = os.path.join(torch.hub.get_dir(), "speechbrain")
                 os.makedirs(checkpoint_dir, exist_ok=True)
