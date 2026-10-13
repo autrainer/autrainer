@@ -48,15 +48,15 @@ dependencies = [
     "Requests>=2.31.0,<3",
     "scikit-learn>=1.6.0,<2",
     "seaborn>=0.13.0,<0.14",
-    "speechbrain>=1.0.0,<2",
-    "timm>=1.0.3,<2",
+    "speechbrain>=1.1.1",
+    "timm>=1.0.30,<2",
     "torch>=2.0.0,<3",
     "torchaudio>=2.0.0",
     "torchinfo>=1.8.0,<2",
     "torchlibrosa>=0.1.0,<0.2",
     "torchvision>=0.15.0",
     "tqdm>=4.66.1,<5",
-    "transformers>=4.34.0,<5",
+    "transformers>=5.19.0",
 ]
 
 [tool.uv]
@@ -118,6 +118,7 @@ docs = [
     "sphinx-design>=0.6.0,<0.7",
     "sphinxcontrib-jquery~=4.1",
     "toml>=0.10.2,<0.11",
+    "wandb>=0.30.0",
 ]
 
 
