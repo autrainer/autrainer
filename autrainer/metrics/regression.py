@@ -31,7 +31,7 @@ def _mean_metric(
     m = np.empty(y_true.shape[1])
     for i in range(y_true.shape[1]):
         m[i] = metric_fn(y_true[:, i], y_pred[:, i], **kwargs)
-    return np.mean(m)
+    return float(np.mean(m))
 
 
 class MSE(BaseDescendingMetric):
