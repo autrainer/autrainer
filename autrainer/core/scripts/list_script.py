@@ -5,9 +5,9 @@ import os
 import autrainer
 from autrainer.core.constants import NamingConstants
 
-from .abstract_script import AbstractScript, MockParser
+from .abstract_script import AbstractScript
 from .command_line_error import CommandLineError
-from .utils import catch_cli_errors
+from .utils import MockParser, catch_cli_errors
 
 
 @dataclass
@@ -127,8 +127,8 @@ def list_configs(
 ) -> None:
     """List local and global configurations.
 
-    If called in a notebook, the function will not raise an error and print
-    the error message instead.
+    If called in a notebook, the function will not raise an error and print the error
+    message instead.
 
     Args:
         directory: The directory to list configurations from. Choose from:
@@ -138,8 +138,8 @@ def list_configs(
         pattern: Glob pattern to filter configurations. Defaults to "*".
 
     Raises:
-        CommandLineError: If the local configuration directory does not exist
-            and local_only is True.
+        CommandLineError: If the local configuration directory does not exist and
+            local_only is True.
     """
 
     script = ListScript()

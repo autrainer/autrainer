@@ -1,6 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Dict, List, Optional
 from zipfile import ZipFile
 
 import requests
@@ -10,7 +9,7 @@ from tqdm import tqdm
 class ZipDownloadManager:
     def __init__(
         self,
-        files: Dict[str, str],
+        files: dict[str, str],
         path: str,
         max_threads: int = 4,
     ) -> None:
@@ -26,15 +25,15 @@ class ZipDownloadManager:
         self.path.mkdir(parents=True, exist_ok=True)
         self.max_threads = max_threads
 
-    def download(self, check_exist: Optional[List[str]] = None) -> None:
+    def download(self, check_exist: list[str] | None = None) -> None:
         """Download all files in `files` to `path`.
 
-        Skips files if they are already present or all files in `check_exist`
-        are present.
+        Skips files if they are already present or all files in `check_exist` are
+        present.
 
         Args:
-            check_exist: List of filenames to check if they already exist.
-                Defaults to None.
+            check_exist: List of filenames to check if they already exist. Defaults to
+                None.
         """
         if self._check_exist(check_exist):
             print("All files already exist, skipping download.")
@@ -54,14 +53,14 @@ class ZipDownloadManager:
 
         print()
 
-    def extract(self, check_exist: Optional[List[str]] = None) -> None:
+    def extract(self, check_exist: list[str] | None = None) -> None:
         """Extract all files in `files` to `path`.
 
         Does not extract files if all files in `check_exist` are present.
 
         Args:
-            check_exist: List of filenames to check if they already exist.
-                Defaults to None.
+            check_exist: List of filenames to check if they already exist. Defaults to
+                None.
         """
         if self._check_exist(check_exist):
             print("All files already exist, skipping extraction.")
@@ -70,8 +69,8 @@ class ZipDownloadManager:
         for filename in self.files:
             self._extract_zip(self.path / filename, self.path)
 
-    def _check_exist(self, check_exist: Optional[List[str]] = None) -> bool:
-        return check_exist and all(
+    def _check_exist(self, check_exist: list[str] | None = None) -> bool:
+        return check_exist is not None and all(
             (self.path / filename).exists() for filename in check_exist
         )
 

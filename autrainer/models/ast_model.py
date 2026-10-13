@@ -1,5 +1,3 @@
-from typing import Optional
-
 import torch
 from transformers import ASTConfig
 from transformers import ASTModel as ASTBaseModel
@@ -14,35 +12,33 @@ class ASTModel(AbstractModel):
         num_hidden_layers: int = 12,
         hidden_size: int = 128,
         dropout: float = 0.5,
-        transfer: Optional[str] = None,
+        transfer: str | None = None,
     ) -> None:
         """Audio Speech Transformer (AST) model. For more information see:
+
         https://huggingface.co/docs/transformers/v4.31.0/en/model_doc/audio-spectrogram-transformer
 
         Args:
             output_dim: Output dimension of the model.
-            num_hidden_layers: Number of hidden layers in the transformer.
-                Defaults to 12.
+            num_hidden_layers: Number of hidden layers in the transformer. Defaults
+                to 12.
             hidden_size: Hidden size of the linear layer. Defaults to 128.
             dropout: Dropout rate. Defaults to 0.5.
-            transfer: Name of the pretrained model to load. If None, the default
-                AST fine-tuned on AudioSet is used. Defaults to None.
-                For more information see:
-                https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593
+            transfer: Name of the pretrained model to load. If None, the default AST
+                fine-tuned on AudioSet is used. Defaults to None. For more information
+                see: https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593
         """
         super().__init__(output_dim, transfer)
         self.num_hidden_layers = num_hidden_layers
         self.hidden_size = hidden_size
         self.dropout = dropout
-        if self.transfer:  # pragma: no cover
+        if transfer:  # pragma: no cover
             self.model = ASTBaseModel.from_pretrained(
-                self.transfer,
+                transfer,
                 num_hidden_layers=num_hidden_layers,
             )
         else:
-            config = ASTConfig(
-                num_hidden_layers=num_hidden_layers,
-            )
+            config = ASTConfig(num_hidden_layers=num_hidden_layers)
             self.model = ASTBaseModel(config)
         layers = [
             torch.nn.Linear(self.model.config.hidden_size, hidden_size),

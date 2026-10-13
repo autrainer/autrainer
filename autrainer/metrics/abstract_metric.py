@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 import functools
 import logging
-from typing import Any, Callable, Dict, ParamSpec, TypeVar, Union
+from typing import Any, ParamSpec, TypeVar
 import warnings
 
 import numpy as np
@@ -28,7 +29,7 @@ class AbstractMetric(ABC):
         name: str,
         fn: Callable,
         fallback: float,
-        **fn_kwargs: dict,
+        **fn_kwargs: Any,
     ) -> None:
         """Abstract class for metrics.
 
@@ -45,7 +46,7 @@ class AbstractMetric(ABC):
         self.logger = logging.getLogger(__name__)
 
     @ignore_runtime_warning
-    def __call__(self, *args: Any, **kwargs: Dict[str, Any]) -> float:
+    def __call__(self, *args: Any, **kwargs: Any) -> float:
         """Compute the metric.
 
         Args:
@@ -91,7 +92,7 @@ class AbstractMetric(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_best(a: Union[pd.Series, np.ndarray]) -> float:
+    def get_best(a: pd.Series | np.ndarray) -> float:
         """Get the best metric value from a series of scores.
 
         Args:
@@ -103,7 +104,7 @@ class AbstractMetric(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_best_pos(a: Union[pd.Series, np.ndarray]) -> int:
+    def get_best_pos(a: pd.Series | np.ndarray) -> int:
         """Get the position of the best metric value from a series of scores.
 
         Args:
@@ -129,12 +130,10 @@ class AbstractMetric(ABC):
     def unitary(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Unitary evaluation of metric.
 
-        Metric computed for each individual label
-        in the case of multilabel classification
-        or regression.
+        Metric computed for each individual label in the case of multilabel
+        classification or regression.
 
-        In the default case, computes the metric
-        in the same way as globally.
+        In the default case, computes the metric in the same way as globally.
 
         Args:
             y_true: ground truth values.
@@ -151,16 +150,16 @@ class BaseAscendingMetric(AbstractMetric):
         self,
         name: str,
         fn: Callable,
-        fallback: float = None,
-        **fn_kwargs: dict,
+        fallback: float | None = None,
+        **fn_kwargs: Any,
     ) -> None:
         """Base for ascending metrics with higher values being better.
 
         Args:
             name: The name of the metric.
             fn: The function to compute the metric.
-            fallback: The fallback value if the metric is NaN. If None,
-                the fallback value is set to -1e32. Defaults to None.
+            fallback: The fallback value if the metric is NaN. If None, the fallback
+                value is set to -1e32. Defaults to None.
             **fn_kwargs: Additional keyword arguments to pass to the function.
         """
         fallback = fallback if fallback is not None else -1e32
@@ -185,13 +184,13 @@ class BaseAscendingMetric(AbstractMetric):
         return "max"
 
     @staticmethod
-    def get_best(a: Union[pd.Series, np.ndarray]) -> float:
+    def get_best(a: pd.Series | np.ndarray) -> float:
         return float(a.max())
 
     @staticmethod
-    def get_best_pos(a: Union[pd.Series, np.ndarray]) -> int:
+    def get_best_pos(a: pd.Series | np.ndarray) -> int:
         if isinstance(a, pd.Series):
-            return int(a.idxmax())
+            a = a.to_numpy()
         return int(a.argmax())
 
     @staticmethod
@@ -204,16 +203,16 @@ class BaseDescendingMetric(AbstractMetric):
         self,
         name: str,
         fn: Callable,
-        fallback: float = None,
-        **fn_kwargs: dict,
+        fallback: float | None = None,
+        **fn_kwargs: Any,
     ) -> None:
         """Base for descending metrics with lower values being better.
 
         Args:
             name: The name of the metric.
             fn: The function to compute the metric.
-            fallback: The fallback value if the metric is NaN. If None,
-                the fallback value is set to 1e32. Defaults to None.
+            fallback: The fallback value if the metric is NaN. If None, the fallback
+                value is set to 1e32. Defaults to None.
             **fn_kwargs: Additional keyword arguments to pass to the function.
         """
         fallback = fallback if fallback is not None else -1e32
@@ -238,13 +237,13 @@ class BaseDescendingMetric(AbstractMetric):
         return "min"
 
     @staticmethod
-    def get_best(a: Union[pd.Series, np.ndarray]) -> float:
+    def get_best(a: pd.Series | np.ndarray) -> float:
         return float(a.min())
 
     @staticmethod
-    def get_best_pos(a: Union[pd.Series, np.ndarray]) -> int:
+    def get_best_pos(a: pd.Series | np.ndarray) -> int:
         if isinstance(a, pd.Series):
-            return int(a.idxmin())
+            a = a.to_numpy()
         return int(a.argmin())
 
     @staticmethod

@@ -48,9 +48,9 @@ def set_reproducibility(reproducible: bool) -> None:
     """Set the reproducibility of the training process.
 
     Args:
-        reproducible: Whether to make the training process reproducible.
-            If True, the training process will be deterministic and use only
-            deterministic algorithms. If False, the training process may be
-            non-deterministic and use non-deterministic algorithms.
+        reproducible: Whether to make the training process reproducible. If True, the
+            training process will be deterministic and use only deterministic
+            algorithms. If False, the training process may be non-deterministic and use
+            non-deterministic algorithms.
     """
     _deterministic() if reproducible else _nondeterministic()

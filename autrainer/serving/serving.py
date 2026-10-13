@@ -1,7 +1,8 @@
+from collections.abc import Callable
 import glob
 import os
 import sys
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any
 import warnings
 
 import audobject
@@ -29,34 +30,31 @@ class Inference:
         model_path: str,
         checkpoint: str = "_best",
         device: str = "cpu",
-        preprocess_cfg: Optional[str] = "default",
-        window_length: Optional[float] = None,
-        stride_length: Optional[float] = None,
-        min_length: Optional[float] = None,
-        sample_rate: Optional[int] = None,
+        preprocess_cfg: str | None = "default",
+        window_length: float | None = None,
+        stride_length: float | None = None,
+        min_length: float | None = None,
+        sample_rate: int | None = None,
     ) -> None:
         """Inference class for audio models.
 
         Args:
             model_path: Local model directory containing the model.yaml,
-                file_handler.yaml, target_transform.yaml, and
-                inference_transform.yaml files.
-            checkpoint: Checkpoint directory containing a model.pt file.
-                Defaults to "_best".
+                file_handler.yaml, target_transform.yaml, and inference_transform.yaml
+                files.
+            checkpoint: Checkpoint directory containing a model.pt file. Defaults to
+                "_best".
             device: Device to run inference on. Defaults to "cpu".
-            preprocess_cfg: Preprocessing configuration file. If "default",
-                the default preprocessing pipeline used during training is
-                applied. If None, no preprocessing is applied. Defaults to
-                "default".
-            window_length: Window length in seconds for sliding window
-                inference. Defaults to None.
-            stride_length: Stride length in seconds for sliding window
-                inference. Defaults to None.
-            min_length: Minimum length of an audio file in seconds.
-                Audio files shorter than this will be padded with zeros.
+            preprocess_cfg: Preprocessing configuration file. If "default", the default
+                preprocessing pipeline used during training is applied. If None, no
+                preprocessing is applied. Defaults to "default".
+            window_length: Window length in seconds for sliding window inference.
                 Defaults to None.
-            sample_rate: Sample rate of the audio files in Hz.
+            stride_length: Stride length in seconds for sliding window inference.
                 Defaults to None.
+            min_length: Minimum length of an audio file in seconds. Audio files shorter
+                than this will be padded with zeros. Defaults to None.
+            sample_rate: Sample rate of the audio files in Hz. Defaults to None.
         """
         self._model_path = model_path
         self._checkpoint = checkpoint
@@ -71,7 +69,7 @@ class Inference:
         self.model: AbstractModel = audobject.from_yaml(
             os.path.join(self._model_path, "model.yaml"),
             override_args={"transfer": None},
-        )
+        )  # ty: ignore[invalid-assignment]
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", UserWarning)
             state = torch.load(
@@ -84,26 +82,26 @@ class Inference:
         self.model.eval()
         self.file_handler: AbstractFileHandler = audobject.from_yaml(
             os.path.join(self._model_path, "file_handler.yaml")
-        )
+        )  # ty: ignore[invalid-assignment]
         self.target_transform: AbstractTargetTransform = audobject.from_yaml(
             os.path.join(self._model_path, "target_transform.yaml")
-        )
+        )  # ty: ignore[invalid-assignment]
         self.inference_transform: SmartCompose = audobject.from_yaml(
             os.path.join(self._model_path, "inference_transform.yaml")
-        )
+        )  # ty: ignore[invalid-assignment]
 
         self.preprocess_pipeline = SmartCompose([])
         if self._preprocess_cfg == "default":
             self.file_handler: AbstractFileHandler = audobject.from_yaml(
                 os.path.join(self._model_path, "preprocess_file_handler.yaml")
-            )
+            )  # ty: ignore[invalid-assignment]
             self.preprocess_pipeline: SmartCompose = audobject.from_yaml(
                 os.path.join(self._model_path, "preprocess_pipeline.yaml")
-            )
+            )  # ty: ignore[invalid-assignment]
         elif self._preprocess_cfg is not None:
-            preprocess_cfg = OmegaConf.to_container(
+            preprocess_cfg: dict[str, Any] = OmegaConf.to_container(
                 OmegaConf.load(self._preprocess_cfg)
-            )
+            )  # ty: ignore[invalid-assignment]
             self.file_handler = autrainer.instantiate_shorthand(
                 preprocess_cfg["file_handler"]
             )
@@ -121,21 +119,20 @@ class Inference:
     ) -> pd.DataFrame:
         """Obtain the model predictions for all files in a directory.
 
-        If an audio is empty, too short, or an error occurs during
-        processing, it will be skipped.
+        If an audio is empty, too short, or an error occurs during processing, it will
+        be skipped.
 
         Args:
             directory: Path to the directory containing audio files.
             extension: File extension of the audio files.
-            recursive: Whether to search recursively for audio files in
-                subdirectories. Defaults to False.
-            update_frequency: Frequency of progress bar updates. If 0, the
-                progress bar will be disabled. Defaults to 1.
+            recursive: Whether to search recursively for audio files in subdirectories.
+                Defaults to False.
+            update_frequency: Frequency of progress bar updates. If 0, the progress bar
+                will be disabled. Defaults to 1.
 
         Returns:
-            DataFrame containing the filename, prediction, and output for
-            each file. If sliding window inference is used, the offset is
-            additionally included.
+            DataFrame containing the filename, prediction, and output for each file. If
+            sliding window inference is used, the offset is additionally included.
         """
         files = self._collect_files(directory, extension, recursive)
         records = []
@@ -159,7 +156,7 @@ class Inference:
                             "offset": offset,
                             "prediction": pred,
                             "output": out.squeeze().tolist(),
-                            **probs[offset],
+                            **probs[offset],  # ty: ignore[invalid-argument-type]
                         }
                     )
             else:
@@ -167,7 +164,7 @@ class Inference:
                     {
                         "filename": os.path.relpath(file, directory),
                         "prediction": prediction,
-                        "output": output.squeeze().tolist(),
+                        "output": output.squeeze().tolist(),  # ty: ignore[unresolved-attribute]
                         **probs,
                     }
                 )
@@ -182,8 +179,8 @@ class Inference:
     ) -> pd.DataFrame:
         """Obtain the model embeddings for all files in a directory.
 
-        If an audio is empty, too short, or an error occurs during
-        processing, it will be skipped.
+        If an audio is empty, too short, or an error occurs during processing, it will
+        be skipped.
 
         Args:
             directory: Path to the directory containing audio files.
@@ -194,9 +191,8 @@ class Inference:
             progress bar will be disabled. Defaults to 1.
 
         Returns:
-            DataFrame containing the filename and embedding for each file.
-            If sliding window inference is used, the offset is additionally
-            included.
+            DataFrame containing the filename and embedding for each file. If sliding
+            window inference is used, the offset is additionally included.
         """
         files = self._collect_files(directory, extension, recursive)
         records = []
@@ -230,42 +226,36 @@ class Inference:
     def predict_file(
         self,
         file: str,
-    ) -> Optional[
-        Union[
-            Tuple[Any, torch.Tensor, Dict[str, float]],
-            Tuple[Dict[str, Any], Dict[str, torch.Tensor], Dict[str, dict]],
-        ]
-    ]:
+    ) -> (
+        tuple[Any, torch.Tensor, dict[str, float]]
+        | tuple[dict[str, Any], dict[str, torch.Tensor], dict[str, dict]]
+        | None
+    ):
         """Obtain the model prediction for a single file.
 
         Args:
             file: Path to the audio file.
 
         Returns:
-            Model prediction, output, and probabilties for the file.
-            If sliding window inference is used, the prediction is a dictionary
-            with the offset as the key.
-            If the audio is empty, too short, or an error occurs during
-            processing, it will be skipped.
+            Model prediction, output, and probabilities for the file. If sliding window
+            inference is used, the prediction is a dictionary with the offset as the
+            key. If the audio is empty, too short, or an error occurs during processing,
+            it will be skipped.
         """
-        return self._delegate_file(file, self._predict, self._predict_windowed)
+        return self._delegate_file(file, self._predict, self._predict_windowed)  # ty: ignore[invalid-return-type]
 
-    def embed_file(
-        self,
-        file: str,
-    ) -> Optional[Union[torch.Tensor, Dict[str, torch.Tensor]]]:
+    def embed_file(self, file: str) -> torch.Tensor | dict[str, torch.Tensor] | None:
         """Obtain the model embedding for a single file.
 
         Args:
             file: Path to the audio file.
 
         Returns:
-            Model embedding for the file. If sliding window inference is used,
-            the embedding is a dictionary with the offset as the key.
-            If the audio is empty, too short, or an error occurs during
-            processing, it will be skipped.
+            Model embedding for the file. If sliding window inference is used, the
+            embedding is a dictionary with the offset as the key. If the audio is empty,
+            too short, or an error occurs during processing, it will be skipped.
         """
-        return self._delegate_file(file, self._embed, self._embed_windowed)
+        return self._delegate_file(file, self._embed, self._embed_windowed)  # ty: ignore[invalid-return-type]
 
     @staticmethod
     def save_prediction_yaml(results: pd.DataFrame, output_dir: str) -> None:
@@ -290,10 +280,7 @@ class Inference:
             yaml.dump(results, fp)
 
     @staticmethod
-    def save_prediction_results(
-        results: pd.DataFrame,
-        output_dir: str,
-    ) -> None:
+    def save_prediction_results(results: pd.DataFrame, output_dir: str) -> None:
         """Save the prediction results to a CSV file.
 
         Creates a CSV file with the model predictions and outputs.
@@ -313,14 +300,14 @@ class Inference:
     ) -> None:
         """Save the embeddings as torch tensors.
 
-        Saves the embeddings to the output directory with the same filename
-        as each audio file.
+        Saves the embeddings to the output directory with the same filename as each
+        audio file.
 
         Args:
             results: DataFrame containing the embeddings.
             output_dir: Output directory to save the embeddings to.
-            input_extension: File extension of the input audio files to replace
-                with ".pt".
+            input_extension: File extension of the input audio files to replace with
+                ".pt".
         """
         os.makedirs(output_dir, exist_ok=True)
 
@@ -341,7 +328,7 @@ class Inference:
         file: str,
         fn: Callable,
         window_fn: Callable,
-    ) -> Optional[Union[Tuple[Any, torch.Tensor], torch.Tensor]]:
+    ) -> tuple[Any, torch.Tensor] | torch.Tensor | None:
         x = self.file_handler.load(file)
 
         if x.numel() == 0:
@@ -373,7 +360,7 @@ class Inference:
         directory: str,
         extension: str,
         recursive: bool,
-    ) -> List[str]:
+    ) -> list[str]:
         pattern = f"**/*.{extension}" if recursive else f"*.{extension}"
         return glob.glob(os.path.join(directory, pattern), recursive=True)
 
@@ -381,14 +368,14 @@ class Inference:
         item = DataItem(self._pad_audio(x), 0, 0)
         item = self.preprocess_pipeline(item)
         item = self.inference_transform(item)
-        batch = DataBatch.collate([item])
+        batch = DataBatch.collate([item])  # ty: ignore[invalid-argument-type]
         batch.to(self._device)
-        return batch
+        return batch  # ty: ignore[invalid-return-type]
 
     def _predict(
         self,
         x: torch.Tensor,
-    ) -> Tuple[Any, torch.Tensor, Dict[str, float]]:
+    ) -> tuple[Any, torch.Tensor, dict[str, float]]:
         data = self._preprocess_file(x)
         with torch.inference_mode():
             output = self.model(**create_model_inputs(self.model, data)).cpu()
@@ -409,7 +396,11 @@ class Inference:
                 .squeeze()
             )
 
-    def _create_windows(self, x: torch.Tensor) -> Tuple[int, int, int]:
+    def _create_windows(self, x: torch.Tensor) -> tuple[int, int, int]:
+        assert self._window_length is not None
+        assert self._stride_length is not None
+        assert self._sample_rate is not None
+
         w_len = int(self._window_length * self._sample_rate)
         s_len = int(self._stride_length * self._sample_rate)
 
@@ -423,7 +414,8 @@ class Inference:
     def _predict_windowed(
         self,
         x: torch.Tensor,
-    ) -> Tuple[Dict[str, Any], Dict[str, torch.Tensor], Dict[str, dict]]:
+    ) -> tuple[dict[str, Any], dict[str, torch.Tensor], dict[str, dict]]:
+        assert self._sample_rate is not None
         results = {}
         outputs = {}
         probs = {}
@@ -443,7 +435,8 @@ class Inference:
         probs["majority"] = dict.fromkeys(prob.keys())
         return results, outputs, probs
 
-    def _embed_windowed(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
+    def _embed_windowed(self, x: torch.Tensor) -> dict[str, torch.Tensor]:
+        assert self._sample_rate is not None
         results = {}
         w_len, s_len, num_windows = self._create_windows(x)
         for i in range(num_windows):

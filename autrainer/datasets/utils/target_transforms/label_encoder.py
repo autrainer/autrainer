@@ -1,12 +1,10 @@
-from typing import Dict, List, Union
-
 import torch
 
 from .abstract_target_transform import AbstractTargetTransform
 
 
 class LabelEncoder(AbstractTargetTransform):
-    def __init__(self, labels: List[str]) -> None:
+    def __init__(self, labels: list[str]) -> None:
         """Label encoder for single-label classification targets.
 
         Args:
@@ -50,8 +48,8 @@ class LabelEncoder(AbstractTargetTransform):
         return self.inverse_map[x]
 
     def probabilities_training(self, x: torch.Tensor) -> torch.Tensor:
-        """Get the encoded probabilities from a batch of model outputs
-        during training by returning the raw model outputs.
+        """Get the encoded probabilities from a batch of model outputs during training
+        by returning the raw model outputs.
 
         Args:
             x: Batch of model outputs.
@@ -62,8 +60,8 @@ class LabelEncoder(AbstractTargetTransform):
         return x
 
     def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
-        """Get the encoded probabilities from a batch of model outputs by
-        applying the softmax function.
+        """Get the encoded probabilities from a batch of model outputs by applying the
+        softmax function.
 
         Args:
             x: Batch of model outputs.
@@ -73,9 +71,9 @@ class LabelEncoder(AbstractTargetTransform):
         """
         return torch.softmax(x, dim=-1)
 
-    def predict_inference(self, x: torch.Tensor) -> Union[List[int], int]:
-        """Get the encoded predictions from a batch of model output
-        probabilities by obtaining the index of the maximum value.
+    def predict_inference(self, x: torch.Tensor) -> list[int] | int:
+        """Get the encoded predictions from a batch of model output probabilities by
+        obtaining the index of the maximum value.
 
         Args:
             x: Batch of model output probabilities.
@@ -85,9 +83,9 @@ class LabelEncoder(AbstractTargetTransform):
         """
         return x.argmax(-1).squeeze().tolist()
 
-    def majority_vote(self, x: List[str]) -> str:
-        """Get the majority vote from a list of decoded labels by
-        determining the most frequently predicted label.
+    def majority_vote(self, x: list[str]) -> str:
+        """Get the majority vote from a list of decoded labels by determining the most
+        frequently predicted label.
 
         Args:
             x: List of decoded labels.
@@ -97,9 +95,9 @@ class LabelEncoder(AbstractTargetTransform):
         """
         return max(set(x), key=x.count)
 
-    def probabilities_to_dict(self, x: torch.Tensor) -> Dict[str, float]:
-        """Convert a tensor of probabilities to a dictionary of labels and
-        their probabilities.
+    def probabilities_to_dict(self, x: torch.Tensor) -> dict[str, float]:
+        """Convert a tensor of probabilities to a dictionary of labels and their
+        probabilities.
 
         Args:
             x: Tensor of probabilities.

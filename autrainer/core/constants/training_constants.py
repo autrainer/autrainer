@@ -1,5 +1,3 @@
-from typing import List
-
 from .abstract_constants import AbstractConstants
 
 
@@ -15,10 +13,11 @@ class TrainingConstants(AbstractConstants):
     ]
 
     @property
-    def TASKS(self) -> List[str]:
+    def TASKS(self) -> list[str]:
         """Get the supported training tasks.
-        Defaults to :attr:`["classification", "ml-classification",
-        "regression", "mt-regression"]`.
+
+        Defaults to :attr:`["classification", "ml-classification", "regression",
+        "mt-regression"]`.
 
         Returns:
             Supported training tasks.
@@ -26,7 +25,7 @@ class TrainingConstants(AbstractConstants):
         return self._tasks
 
     @TASKS.setter
-    def TASKS(self, tasks: List[str]) -> None:
+    def TASKS(self, tasks: list[str]) -> None:
         """Set the supported training tasks.
 
         Args:

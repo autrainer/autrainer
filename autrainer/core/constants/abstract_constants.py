@@ -1,5 +1,7 @@
 from abc import ABC
-from typing import Any, Type
+from typing import Any
+
+from typing_extensions import Self
 
 
 class AbstractConstants(ABC):  # noqa: B024
@@ -10,7 +12,7 @@ class AbstractConstants(ABC):  # noqa: B024
     _name = "AbstractConstants"
     _instance = None
 
-    def __new__(cls):  # noqa: ANN204
+    def __new__(cls) -> Self:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
@@ -18,7 +20,7 @@ class AbstractConstants(ABC):  # noqa: B024
     def _assert_type(
         self,
         value: Any,
-        value_type: Type[Any],
+        value_type: type[Any],
         constant: str,
         msg: str = "",
     ) -> None:

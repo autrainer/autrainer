@@ -71,15 +71,12 @@ class Timer:
         pretty = datetime.timedelta(seconds=int(seconds))
         return str(pretty)
 
-    def save(self, path: str = "") -> dict:
+    def save(self, path: str = "") -> None:
         """Save and append the timer to timer.yaml.
 
         Args:
-            path: Subdirectory to save the timer.yaml file to relative to the
-                output directory. Defaults to "".
-
-        Returns:
-            Dictionary with mean and total time in seconds and pretty format.
+            path: Subdirectory to save the timer.yaml file to relative to the output
+                directory. Defaults to "".
         """
         os.makedirs(os.path.join(self.output_directory, path), exist_ok=True)
         out_path = os.path.join(self.output_directory, path, "timer.yaml")

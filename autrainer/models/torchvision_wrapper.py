@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import torch
 import torchvision
@@ -13,18 +13,16 @@ class TorchvisionModel(AbstractModel):
         output_dim: int,
         torchvision_name: str,
         transfer: bool = False,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Wrapper for torchvision models.
 
         Args:
             output_dim: Number of output classes.
-            torchvision_name: Name of the model available in
-                `torchvision.models`.
-            transfer: Whether to load the model with pretrained weights.
-                The "DEFAULT" weights are used if `transfer` is True.
-                The final layer is replaced with a new layer with `output_dim`
-                output features. Defaults to False.
+            torchvision_name: Name of the model available in `torchvision.models`.
+            transfer: Whether to load the model with pretrained weights. The "DEFAULT"
+                weights are used if `transfer` is True. The final layer is replaced with
+                a new layer with `output_dim` output features. Defaults to False.
             kwargs: Additional arguments to pass to the model constructor.
         """
         super().__init__(output_dim, transfer)
@@ -49,8 +47,8 @@ class TorchvisionModel(AbstractModel):
         self._embedding_extractor = ExtractLayerEmbeddings(self.model)
 
     def _replace_final_layer(self, module: torch.nn.Module) -> None:
-        """Replace the final linear layer of the model with a new linear
-        layer having `self.output_dim` output features.
+        """Replace the final linear layer of the model with a new linear layer having
+        `self.output_dim` output features.
 
         Args:
             module: Model to replace the final layer.
@@ -58,7 +56,7 @@ class TorchvisionModel(AbstractModel):
         Raises:
             ValueError: If no linear layer is found in the model.
         """
-        layers: List[Tuple[torch.nn.Module, str, torch.nn.Linear]] = []
+        layers: list[tuple[torch.nn.Module, str, torch.nn.Linear]] = []
 
         def collect_layers(module: torch.nn.Module) -> None:
             for name, layer in module.named_children():

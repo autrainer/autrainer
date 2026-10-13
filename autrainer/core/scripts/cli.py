@@ -1,5 +1,4 @@
 import argparse
-from typing import List, Optional
 
 import autrainer
 from autrainer.core.scripts import (
@@ -25,7 +24,7 @@ class CLI:
         self.scripts = self._init_scripts()
         self.parser = self._init_parser()
 
-    def _init_scripts(self) -> List[AbstractScript]:
+    def _init_scripts(self) -> list[AbstractScript]:
         return [
             # configuration management
             CreateScript(),
@@ -53,7 +52,7 @@ class CLI:
                 "for Computer Audition Tasks."
             ),
         )
-        parser.error = print_help_on_error(parser)
+        parser.error = print_help_on_error(parser)  # ty: ignore[invalid-assignment]
         parser.add_argument(
             "-v",
             "--version",
@@ -63,7 +62,7 @@ class CLI:
         subparsers = parser.add_subparsers(dest="command", metavar="<command>")
         for c in self.scripts:
             p = subparsers.add_parser(c.command, help=c.description)
-            p = CLI._setup_subparser(p, c)
+            CLI._setup_subparser(p, c)
         return parser
 
     @staticmethod
@@ -79,11 +78,11 @@ class CLI:
             parser.description = command.description
         parser.epilog = command.epilog
         parser.formatter_class = argparse.RawTextHelpFormatter
-        parser.error = print_help_on_error(parser)
+        parser.error = print_help_on_error(parser)  # ty: ignore[invalid-assignment]
         command.init_parser(parser)
         command.add_arguments()
 
-    def _get_command(self, name: str) -> Optional[AbstractScript]:
+    def _get_command(self, name: str) -> AbstractScript | None:
         return next((c for c in self.scripts if c.command == name), None)
 
     def main(self) -> None:

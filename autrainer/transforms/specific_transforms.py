@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, cast
 import warnings
 
 from audtorch import transforms as AT
@@ -10,6 +10,7 @@ import torch
 from torchaudio import transforms as TT
 import torchlibrosa
 from torchvision import transforms as T
+import torchvision.transforms.functional as TF
 from transformers import (
     ASTFeatureExtractor,
     AutoFeatureExtractor,
@@ -46,8 +47,7 @@ FE_MAPPINGS = {
 
 class AnyToTensor(AbstractTransform):
     def __init__(self, order: int = -100) -> None:
-        """Convert a numpy array, torch tensor, or a PIL image to a torch
-        tensor.
+        """Convert a numpy array, torch tensor, or a PIL image to a torch tensor.
 
         Args:
             order: The order of the transform in the pipeline. Defaults to -100.
@@ -94,12 +94,12 @@ class SpectToImage(AbstractTransform):
         cmap: str = "magma",
         order: int = -90,
     ) -> None:
-        """Convert a spectrogram in the range [0, 1] to a 3-channel uint8 image
-        in the range [0, 255] using a specific colormap.
+        """Convert a spectrogram in the range [0, 1] to a 3-channel uint8 image in the
+        range [0, 255] using a specific colormap.
 
         Note: The transform should be used in combination with
-        `~autrainer.transforms.ImageToFloat` to convert the image back to the
-        range [0, 1] for training.
+        `~autrainer.transforms.ImageToFloat` to convert the image back to the range [0,
+        1] for training.
 
         Args:
             height: The height of the image.
@@ -121,7 +121,7 @@ class SpectToImage(AbstractTransform):
         im /= im.max()
         im = (
             Image.fromarray(np.uint8(self._cmap(im)[..., :3] * 255))
-            .transpose(Image.FLIP_TOP_BOTTOM)
+            .transpose(Image.Transpose.FLIP_TOP_BOTTOM)
             .resize((self.width, self.height))
         )
         item.features = torch.from_numpy(np.array(im)).transpose(0, 2)
@@ -139,14 +139,13 @@ class PannMel(AbstractTransform):
         mel_bins: int,
         ref: float,
         amin: float,
-        top_db: int,
+        top_db: int | None,
         order: int = -90,
     ) -> None:
-        """Create a log-Mel spectrogram from an audio signal analogous to
-        the Pretrained Audio Neural Networks (PANN) implementation.
+        """Create a log-Mel spectrogram from an audio signal analogous to the Pretrained
+        Audio Neural Networks (PANN) implementation.
 
-        For more information, see:
-        https://doi.org/10.48550/arXiv.1912.10211
+        For more information, see: https://doi.org/10.48550/arXiv.1912.10211
 
         Args:
             window_size: The size of the window.
@@ -194,23 +193,22 @@ class PannMel(AbstractTransform):
 class Resize(AbstractTransform):
     def __init__(
         self,
-        height: int = 64,
-        width: int = 64,
+        height: int | str = 64,
+        width: int | str = 64,
         interpolation: str = "bilinear",
         antialias: bool = True,
         order: int = -90,
     ) -> None:
-        """Resize an image to a specific height and width.
-        If "Any" is provided for the height or width, the other dimension will
-        be used as the size, creating a square image.
+        """Resize an image to a specific height and width. If "Any" is provided for the
+        height or width, the other dimension will be used as the size, creating a square
+        image.
 
         Args:
-            height: The target height. If set to "Any", the width will be used
-                as the size. Defaults to 64.
-            width: The target width. If set to "Any", the height will be used
-                as the size. Defaults to 64.
-            interpolation: The interpolation method to use. Defaults to
-                'bilinear'.
+            height: The target height. If set to "Any", the width will be used as the
+                size. Defaults to 64.
+            width: The target width. If set to "Any", the height will be used as the
+                size. Defaults to 64.
+            interpolation: The interpolation method to use. Defaults to 'bilinear'.
             antialias: Whether to use antialiasing. Defaults to True.
             order: The order of the transform in the pipeline. Defaults to -90.
         """
@@ -241,8 +239,9 @@ class Resize(AbstractTransform):
 class SquarePadCrop(AbstractTransform):
     def __init__(self, mode: str = "pad", order: int = -91) -> None:
         """Pad or crop an image to make it square.
-        If the image is padded, the padding will be added to the shorter
-        sides as black pixels.
+
+        If the image is padded, the padding will be added to the shorter sides as black
+        pixels.
 
         Args:
             mode: The mode to use in ["pad", "crop"]. Defaults to "pad".
@@ -262,21 +261,17 @@ class SquarePadCrop(AbstractTransform):
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
         m = self._mode_fn(item.features.shape[-2:])
-        item.features = T.functional.center_crop(item.features, m)
+        item.features = TF.center_crop(item.features, [m])
         return item
 
 
 class ScaleRange(AbstractTransform):
-    def __init__(
-        self,
-        range: List[float] = None,
-        order: int = 90,
-    ) -> None:
+    def __init__(self, range: list[float] | None = None, order: int = 90) -> None:
         """Scale a tensor to a specific target range.
 
         Args:
-            range: The range to scale the tensor to. If None, it will be set to
-            [0.0, 1.0]. Defaults to None.
+            range: The range to scale the tensor to. If None, it will be set to [0.0,
+                1.0]. Defaults to None.
             order: The order of the transform in the pipeline. Defaults to 90.
         """
         if range is None:
@@ -296,7 +291,7 @@ class ScaleRange(AbstractTransform):
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
         m, M, (r0, r1) = item.features.min(), item.features.max(), self.range
         if m == M:
-            item.features = torch.full_like(item.features, m)
+            item.features = torch.full_like(item.features, m.item())
             return item
         item.features = (item.features - m) / (M - m)
         item.features = item.features * (r1 - r0) + r0
@@ -305,8 +300,8 @@ class ScaleRange(AbstractTransform):
 
 class ImageToFloat(AbstractTransform):
     def __init__(self, order: int = 90) -> None:
-        """Transform a uint8 image in the range [0, 255] to a float32 image in
-        the range [0.0, 1.0].
+        """Transform a uint8 image in the range [0, 255] to a float32 image in the range
+        [0.0, 1.0].
 
         Args:
             order: The order of the transform in the pipeline. Defaults to 90.
@@ -320,12 +315,7 @@ class ImageToFloat(AbstractTransform):
 
 
 class Normalize(AbstractTransform):
-    def __init__(
-        self,
-        mean: List[float],
-        std: List[float],
-        order: int = 95,
-    ) -> None:
+    def __init__(self, mean: list[float], std: list[float], order: int = 95) -> None:
         """Normalize a tensor with a mean and standard deviation.
 
         Args:
@@ -362,31 +352,29 @@ class Normalize(AbstractTransform):
 class Standardizer(AbstractTransform):
     def __init__(
         self,
-        mean: Optional[List[float]] = None,
-        std: Optional[List[float]] = None,
+        mean: list[float] | None = None,
+        std: list[float] | None = None,
         subset: str = "train",
         correction: int = 1,
         order: int = -99,
     ) -> None:
-        """Standardize a dataset by calculating the mean and standard deviation
-        of the data and applying the normalization.
+        """Standardize a dataset by calculating the mean and standard deviation of the
+        data and applying the normalization.
 
-        The mean and standard deviation are automatically calculated from the
-        data in the specified subset.
+        The mean and standard deviation are automatically calculated from the data in
+        the specified subset.
 
-        Note: The transform is applied at the specified order in the pipeline
-        such that any preceding transforms are applied before the mean and
-        standard deviation are calculated.
+        Note: The transform is applied at the specified order in the pipeline such that
+        any preceding transforms are applied before the mean and standard deviation are
+        calculated.
 
         Args:
             mean: The mean to use for normalization. If None, the mean will be
                 calculated from the data. Defaults to None.
-            std: The standard deviation to use for normalization. If None, the
-                standard deviation will be calculated from the data. Defaults
-                to None.
-            subset: The subset to use for calculating the mean and standard
-                deviation. Must be one of ["train", "dev", "test"]. Defaults to
-                "train".
+            std: The standard deviation to use for normalization. If None, the standard
+                deviation will be calculated from the data. Defaults to None.
+            subset: The subset to use for calculating the mean and standard deviation.
+                Must be one of ["train", "dev", "test"]. Defaults to "train".
             correction: Difference between the sample size and degrees of freedom.
                 Defaults to 1 (Bessel's correction).
             order: The order of the transform in the pipeline. Defaults to -99.
@@ -405,14 +393,14 @@ class Standardizer(AbstractTransform):
                 f"Invalid subset '{subset}'. Must be one of 'train', 'dev', or 'test'."
             )
 
-    def _init_transform(self) -> Optional[AbstractTransform]:
+    def _init_transform(self) -> AbstractTransform | None:
         if self.mean and self.std:
             return Normalize(self.mean, self.std, self.order)
         return None
 
-    def _collect(self, data: "AbstractDataset") -> Tuple[List[float], List[float]]:
+    def _collect(self, data: "AbstractDataset") -> tuple[list[float], list[float]]:
         ds: DatasetWrapper = getattr(data, f"{self.subset}_dataset")
-        original_transform = ds.transform
+        original_transform = cast("SmartCompose", ds.transform)
 
         idx = original_transform.transforms.index(self)  # thanks to audobject
         preceding = SmartCompose(original_transform.transforms[:idx])
@@ -453,23 +441,21 @@ class Standardizer(AbstractTransform):
 class FeatureExtractor(AbstractTransform):
     def __init__(
         self,
-        fe_type: Optional[str] = None,
-        fe_transfer: Optional[str] = None,
+        fe_type: str | None = None,
+        fe_transfer: str | None = None,
         sampling_rate: int = 16000,
         order: int = -80,
     ) -> None:
-        """Extract features from an audio signal using a feature extractor
-        from the Hugging Face Transformers library.
+        """Extract features from an audio signal using a feature extractor from the
+        Hugging Face Transformers library.
 
         Args:
-            fe_type: The class of feature extractor to use in ["AST", "Whisper",
-                "W2V2", None]. If None, the AutoFeatureExtractor will be used.
-                Defaults to None.
-            fe_transfer: The name of a pretrained feature extractor to use.
-                If None, the feature extractor will be initialized with default
-                values. Defaults to None.
-            sampling_rate: The sampling rate of the audio signal. Defaults to
-                16000.
+            fe_type: The class of feature extractor to use in ["AST", "Whisper", "W2V2",
+                None]. If None, the AutoFeatureExtractor will be used. Defaults to None.
+            fe_transfer: The name of a pretrained feature extractor to use. If None, the
+                feature extractor will be initialized with default values. Defaults to
+                None.
+            sampling_rate: The sampling rate of the audio signal. Defaults to 16000.
             order: The order of the transform in the pipeline. Defaults to -80.
 
         Raises:
@@ -485,12 +471,12 @@ class FeatureExtractor(AbstractTransform):
         padding = FE_MAPPINGS[self.fe_type]["padding"]
 
         if self.fe_transfer is not None:
-            feature_extractor = fe_class.from_pretrained(self.fe_transfer)
+            fe = fe_class.from_pretrained(self.fe_transfer)  # ty: ignore[unresolved-attribute]
         else:
-            feature_extractor = fe_class()
-            extractor_dict = {k: repr(v) for k, v in feature_extractor.__dict__.items()}
+            fe = fe_class()  # ty: ignore[call-non-callable]
+            extractor_dict = {k: repr(v) for k, v in fe.__dict__.items()}
             warnings.warn(
-                f"{fe_class.__name__} "
+                f"{fe_class.__name__} "  # ty: ignore[unresolved-attribute]
                 "initialized with default values:\n"
                 f"{OmegaConf.to_yaml(extractor_dict)}",
                 stacklevel=2,
@@ -499,12 +485,12 @@ class FeatureExtractor(AbstractTransform):
         def extract_features(signal: np.ndarray) -> torch.Tensor:
             if len(signal.shape) == 2:
                 signal = signal.mean(0)
-            extracted = feature_extractor(
+            extracted = fe(
                 signal,
                 sampling_rate=self.sampling_rate,
-                padding=padding,
+                padding=padding,  # ty: ignore[invalid-argument-type]
                 return_tensors="pt",
-            )
+            )  # ty: ignore[call-non-callable]
             return extracted[list(extracted.keys())[0]][0]
 
         self._extract_features = extract_features
@@ -522,16 +508,15 @@ class Expand(AbstractTransform):
         axis: int = -2,
         order: int = -85,
     ) -> None:
-        """Expand a tensor along a specific axis to a specific size, ensuring
-        it is at least the specified size.
-        If the tensor is smaller than the target size, it will be padded
-        with zeros.
-        If the tensor is larger than the target size, it will not be cropped.
+        """Expand a tensor along a specific axis to a specific size, ensuring it is at
+        least the specified size.
+
+        If the tensor is smaller than the target size, it will be padded with zeros. If
+        the tensor is larger than the target size, it will not be cropped.
 
         Args:
             size: The target size.
-            method: The method to use in ["pad", "replicate"]. Defaults to
-                "pad".
+            method: The method to use in ["pad", "replicate"]. Defaults to "pad".
             axis: The axis along which to expand. Defaults to -2.
             order: The order of the transform in the pipeline. Defaults to -85.
         """
@@ -556,21 +541,19 @@ class RandomCrop(AbstractTransform):
         fix_randomization: bool = False,
         order: int = -90,
     ) -> None:
-        """Randomly crop a tensor along a specific axis to a specific size,
-        ensuring it is the specified size.
+        """Randomly crop a tensor along a specific axis to a specific size, ensuring it
+        is the specified size.
 
-        If the tensor is larger than the target size, it will be randomly
-        cropped along the specified axis.
-
-        If the tensor is smaller than the target size, it will be padded.
+        If the tensor is larger than the target size, it will be randomly cropped along
+        the specified axis. If the tensor is smaller than the target size, it will be
+        padded.
 
         Args:
             size: The target size.
-            method: Padding method to use if the tensor is smaller than the
-                target size in ["pad", "replicate"]. Defaults to "pad".
+            method: Padding method to use if the tensor is smaller than the target size
+                in ["pad", "replicate"]. Defaults to "pad".
             axis: The axis along which to crop. Defaults to -2.
-            fix_randomization: Whether to fix the randomization. Defaults to
-                False.
+            fix_randomization: Whether to fix the randomization. Defaults to False.
             order: The order of the transform in the pipeline. Defaults to -90.
         """
         super().__init__(order=order)
@@ -593,8 +576,8 @@ class RandomCrop(AbstractTransform):
 
 class StereoToMono(AbstractTransform):
     def __init__(self, order: int = -95) -> None:
-        """Convert a stereo audio signal to mono by taking the mean of the
-        first dimension.
+        """Convert a stereo audio signal to mono by taking the mean of the first
+        dimension.
 
         Args:
             order: The order of the transform in the pipeline. Defaults to -95.
@@ -625,10 +608,9 @@ class RGBToGrayscale(AbstractTransform):
     def __init__(self, order: int = 100) -> None:
         """Convert an RGB or RGBA image to a grayscale image.
 
-        For the conversion to grayscale, the
-        luminance is calculated in line with the implementation in
-        torchvision.transforms.Grayscale:
-        Y = 0.2989 * R + 0.587 * G + 0.114 * B.
+        For the conversion to grayscale, the luminance is calculated in line with the
+        implementation in `torchvision.transforms.Grayscale`: Y = 0.2989 * R + 0.587 *
+        G + 0.114 * B.
 
         Args:
             order: The order of the transform in the pipeline. Defaults to 100.
@@ -656,12 +638,7 @@ class GrayscaleToRGB(AbstractTransform):
 
 
 class Resample(AbstractTransform):
-    def __init__(
-        self,
-        current_sr: int,
-        target_sr: int,
-        order: int = -95,
-    ) -> None:
+    def __init__(self, current_sr: int, target_sr: int, order: int = -95) -> None:
         """Resample an audio signal to a target sample rate.
 
         Args:
@@ -690,27 +667,25 @@ class OpenSMILE(AbstractTransform):
     ) -> None:
         """Extract features from an audio signal using openSMILE.
 
-        The openSMILE library must be installed to use this transform.
-        To install the required extras, run:
-        'pip install autrainer[opensmile]'.
+        The openSMILE library must be installed to use this transform. To install the
+        required extras, run: 'pip install autrainer[opensmile]'.
 
         .. warning::
             Setting `lld_deltas` to `True`
             will extract and concatenate
             :py:attr:`opensmile.FeatureLevel.LowLevelDescriptors_Deltas` to the
             :py:attr:`opensmile.FeatureLevel.LowLevelDescriptors` features.
-            However, :py:mod:`opensmile` returns *longer* sequences
-            for the delta features. To match to the original length,
-            we drop the first and last frame of the delta features.
-            This may result in misalignment, as we are not sure
+            However, :py:mod:`opensmile` returns *longer* sequences for the delta
+            features. To match to the original length, we drop the first and last frame
+            of the delta features. This may result in misalignment, as we are not sure
             how padding is handled in :py:mod:`opensmile`.
 
         Args:
             feature_set: The feature set to use.
             sample_rate: The sample rate of the audio signal.
             functionals: Whether to use functionals. Defaults to False.
-            lld_deltas: Whether to additionally compute deltas. Only relevant
-                for LLDs. Defaults to False.
+            lld_deltas: Whether to additionally compute deltas. Only relevant for LLDs.
+                Defaults to False.
             order: The order of the transform in the pipeline. Defaults to -80.
 
         Raises:
@@ -741,11 +716,11 @@ class OpenSMILE(AbstractTransform):
                 )
 
     def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
-        it = self.smile.process_signal(item.features, self.sample_rate)
+        it = self.smile.process_signal(item.features.numpy(), self.sample_rate)
         feats = torch.from_numpy(self.smile.to_numpy(it)).squeeze()
         if self.smile_de is not None:
-            data_de = self.smile_de.process_signal(item.features, self.sample_rate)
-            data_de = torch.from_numpy(self.smile.to_numpy(data_de)).squeeze()[:, 1:-1]
-            feats = torch.cat((feats, data_de), axis=-2)
+            de = self.smile_de.process_signal(item.features.numpy(), self.sample_rate)
+            de = torch.from_numpy(self.smile.to_numpy(de)).squeeze()[:, 1:-1]
+            feats = torch.cat((feats, de), dim=-2)
         item.features = feats
         return item

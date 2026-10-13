@@ -1,11 +1,8 @@
-from typing import Dict, List, Union
-
 from .abstract_constants import AbstractConstants
 
 
 class ExportConstants(AbstractConstants):
-    """Singleton for managing the export and logging configurations of
-    `autrainer`."""
+    """Singleton for managing the export and logging configurations of `autrainer`."""
 
     _name = "ExportConstants"
     _logging_depth = 2
@@ -37,6 +34,7 @@ class ExportConstants(AbstractConstants):
     @property
     def LOGGING_DEPTH(self) -> int:
         """Get the depth of logging for configuration parameters.
+
         Defaults to :attr:`2`.
 
         Returns:
@@ -60,14 +58,14 @@ class ExportConstants(AbstractConstants):
         self._logging_depth = logging_depth
 
     @property
-    def IGNORE_PARAMS(self) -> List[str]:
+    def IGNORE_PARAMS(self) -> list[str]:
         """Get the ignored configuration parameters for logging.
+
         Defaults to :attr:`["results_dir", "experiment_id", "model.dataset",
         "training_type", "save_frequency", "dataset.metrics", "plotting",
-        "model.transform", "dataset.transform", "augmentation.steps",
-        "loggers", "progress_bar", "continue_training",
-        "remove_continued_runs", "save_train_outputs", "save_dev_outputs",
-        "save_test_outputs"]`.
+        "model.transform", "dataset.transform", "augmentation.steps", "loggers",
+        "progress_bar", "continue_training", "remove_continued_runs",
+        "save_train_outputs", "save_dev_outputs", "save_test_outputs"]`.
 
         Returns:
             Ignored configuration parameters for logging.
@@ -75,7 +73,7 @@ class ExportConstants(AbstractConstants):
         return self._ignore_params
 
     @IGNORE_PARAMS.setter
-    def IGNORE_PARAMS(self, ignore_params: List[str]) -> None:
+    def IGNORE_PARAMS(self, ignore_params: list[str]) -> None:
         """Set the ignored configuration parameters for logging.
 
         Args:
@@ -90,10 +88,11 @@ class ExportConstants(AbstractConstants):
         self._ignore_params = ignore_params
 
     @property
-    def ARTIFACTS(self) -> List[Union[str, Dict[str, str]]]:
+    def ARTIFACTS(self) -> list[str | dict[str, str]]:
         """Get the artifacts to log for runs.
-        Defaults to :attr:`["model_summary.txt", "metrics.csv",
-        {"config.yaml": ".hydra"}]`.
+
+        Defaults to :attr:`["model_summary.txt", "metrics.csv", {"config.yaml":
+        ".hydra"}]`.
 
         Returns:
             Artifacts to log for runs.
@@ -101,15 +100,14 @@ class ExportConstants(AbstractConstants):
         return self._artifacts
 
     @ARTIFACTS.setter
-    def ARTIFACTS(self, artifacts: List[Union[str, Dict[str, str]]]) -> None:
+    def ARTIFACTS(self, artifacts: list[str | dict[str, str]]) -> None:
         """Set the artifacts to log for runs.
 
         Args:
             artifacts: Artifacts to log for runs.
 
         Raises:
-            ValueError: If the artifacts are not a list of strings or
-                dictionaries.
+            ValueError: If the artifacts are not a list of strings or dictionaries.
         """
         self._assert_type(artifacts, list, "ARTIFACTS")
         for a in artifacts:

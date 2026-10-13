@@ -1,7 +1,8 @@
+from collections.abc import Callable
 from copy import deepcopy
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -47,19 +48,19 @@ class ModularTaskTrainer:
         self,
         cfg: DictConfig,
         output_directory: str,
-        experiment_id: str = None,
-        run_name: str = None,
+        experiment_id: str | None = None,
+        run_name: str | None = None,
     ) -> None:
         """Trainer managing the training of a model given a configuration.
 
         Args:
             cfg: Run configuration.
             output_directory: Output directory for the run.
-            experiment_id: Experiment ID for the run. If None, the ID is
-                automatically set based on the parent directory of the output
-                directory. Defaults to None.
-            run_name: Run name for the run. If None, the name is automatically
-                set based on the output directory. Defaults to None.
+            experiment_id: Experiment ID for the run. If None, the ID is automatically
+                set based on the parent directory of the output directory. Defaults to
+                None.
+            run_name: Run name for the run. If None, the name is automatically set based
+                on the output directory. Defaults to None.
         """
         self._thread_manager = ThreadManager()
         self._cfg = cfg
@@ -129,7 +130,7 @@ class ModularTaskTrainer:
             instance_of=torch.nn.modules.loss._Loss,
             reduction="none",
         )
-        if hasattr(self.criterion, "setup"):
+        if hasattr(self.criterion, "setup") and callable(self.criterion.setup):
             self.criterion.setup(self.data)
         self.criterion.to(self.DEVICE)
 
@@ -150,16 +151,8 @@ class ModularTaskTrainer:
         )
 
         if model_checkpoint:
-            state_dict = torch.load(
-                model_checkpoint,
-                map_location="cpu",
-                weights_only=True,
-            )
-            load_pretrained_model_state(
-                self.model,
-                state_dict,
-                skip_last_layer,
-            )
+            state_dict = torch.load(model_checkpoint, "cpu", weights_only=True)
+            load_pretrained_model_state(self.model, state_dict, skip_last_layer)
 
         self._thread_manager.spawn(
             self.bookkeeping.save_model_summary,
@@ -184,14 +177,10 @@ class ModularTaskTrainer:
         if optimizer_checkpoint:
             state_dict = torch.load(
                 optimizer_checkpoint,
-                map_location=self.DEVICE,
+                self.DEVICE,
                 weights_only=True,
             )
-            load_pretrained_optim_state(
-                self.optimizer,
-                state_dict,
-                skip_last_layer,
-            )
+            load_pretrained_optim_state(self.optimizer, state_dict, skip_last_layer)
 
         # ? Load Scheduler
         if self.cfg.scheduler.id != "None":
@@ -205,16 +194,12 @@ class ModularTaskTrainer:
                 )
             self.scheduler = autrainer.instantiate(
                 config=_scheduler_cfg,
-                instance_of=torch.optim.lr_scheduler.LRScheduler,
+                instance_of=(torch.optim.lr_scheduler.LRScheduler, None),
                 optimizer=self.optimizer,
             )
             if self.scheduler is not None and scheduler_checkpoint:
                 self.scheduler.load_state_dict(
-                    torch.load(
-                        scheduler_checkpoint,
-                        map_location="cpu",
-                        weights_only=True,
-                    )
+                    torch.load(scheduler_checkpoint, "cpu", weights_only=True)
                 )
         else:
             self.scheduler = None
@@ -238,7 +223,7 @@ class ModularTaskTrainer:
             "train_loss",
             "dev_loss",
         ]
-        self.metrics = pd.DataFrame(columns=metrics)
+        self.metrics = pd.DataFrame(columns=pd.Index(metrics))
         self.max_dev_metric = self.data.tracking_metric.starting_metric
         self.best_iteration = 1
 
@@ -264,7 +249,7 @@ class ModularTaskTrainer:
         ):
             _preprocess = OmegaConf.to_container(
                 hydra.compose(f"preprocessing/{_features_subdir}")
-            )["preprocessing"]
+            )["preprocessing"]  # ty: ignore[invalid-argument-type, not-subscriptable]
             _file_handler = autrainer.instantiate_shorthand(
                 config=_preprocess["file_handler"],
                 instance_of=AbstractFileHandler,
@@ -290,7 +275,7 @@ class ModularTaskTrainer:
         self.test_timer = Timer(output_directory, "test")
 
         # ? Create Loggers
-        self.loggers: List[AbstractLogger] = []
+        self.loggers: list[AbstractLogger] = []
         for logger in self.cfg.get("loggers", []):
             self.loggers.append(
                 autrainer.instantiate_shorthand(
@@ -325,7 +310,7 @@ class ModularTaskTrainer:
 
         # ? Create Plot Metrics
         self.plot_metrics = PlotMetrics(
-            self.output_directory,
+            str(self.output_directory),
             self.cfg.training_type,
             **self.cfg.plotting,
             metric_fns=self.data.metrics,
@@ -358,12 +343,8 @@ class ModularTaskTrainer:
             The best value of the tracking metric.
         """
         # ? Allow optimizers to have custom step functions
-        custom_step = getattr(self.optimizer, "custom_step", False) and callable(
-            self.optimizer.custom_step
-        )
-        self.train_step_fn = (
-            self.optimizer.custom_step if custom_step else self._train_step
-        )
+        custom_step = getattr(self.optimizer, "custom_step", None)
+        self.train_step_fn = custom_step if callable(custom_step) else self._train_step
 
         self._thread_manager.join()
         CallbackManager().cb_on_train_begin(self)
@@ -387,10 +368,12 @@ class ModularTaskTrainer:
             "_test",
             self.test_loader,
             self.data.df_test,
+            tracker=self.test_tracker,
             dev_evaluation=False,
             save_to="test_holistic",
-            tracker=self.test_tracker,
         )
+        if test_results is None:
+            raise RuntimeError("Expected test results to be computed.")
         self.test_timer.stop()
         CallbackManager().cb_on_test_end(self, test_results)
         self.metrics["iteration"] = self.metrics.index
@@ -571,15 +554,14 @@ class ModularTaskTrainer:
         data: AbstractDataBatch,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """Train the model for a single step.
 
         Args:
             model: Model to train.
             data: Data to train on.
             criterion: Criterion to optimize.
-            probabilities_fn: Function to convert model output to
-                probabilities.
+            probabilities_fn: Function to convert model output to probabilities.
 
         Returns:
             Tuple containing the non-reduced loss and model outputs.
@@ -597,10 +579,10 @@ class ModularTaskTrainer:
         iteration_folder: str,
         loader: torch.utils.data.DataLoader,
         df: pd.DataFrame,
+        tracker: OutputsTracker,
         dev_evaluation: bool = True,
         save_to: str = "dev",
-        tracker: Optional[OutputsTracker] = None,
-    ) -> Optional[Dict[str, float]]:
+    ) -> dict[str, float] | None:
         """Evaluate the model on the dev or test set.
 
         Args:
@@ -608,8 +590,7 @@ class ModularTaskTrainer:
             iteration_folder: Folder to save the results to.
             loader: Dataloader to evaluate on.
             df: Groundtruth dataframe.
-            dev_evaluation: Whether to evaluate on the dev set.
-                Defaults to True.
+            dev_evaluation: Whether to evaluate on the dev set. Defaults to True.
             save_to: Prefix to save the results to. Defaults to "dev".
             tracker: Tracker to save the outputs. Defaults to None.
 
@@ -662,7 +643,7 @@ class ModularTaskTrainer:
                 stratify=self.data.stratify,
             )
         else:
-            logging_results = {
+            logging_results: dict[str, Any] = {
                 k: {"all": v} for k, v in results.items() if not k.endswith("loss")
             }
         if dev_evaluation:
@@ -709,9 +690,9 @@ class ModularTaskTrainer:
         loader: torch.utils.data.DataLoader,
         tracker: OutputsTracker,
         iteration_folder: str,
-        loader_kwargs: Dict[str, Any],
+        loader_kwargs: dict[str, Any],
         dev_evaluation: bool,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Evaluate the model on the dev or test set.
 
         Args:

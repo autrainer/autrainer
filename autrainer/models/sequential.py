@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 import torch
 
 from .abstract_model import AbstractModel
@@ -17,7 +15,7 @@ class Sequential(AbstractModel):
         cell: str = "LSTM",
         time_pooling: bool = True,
         bidirectional: bool = False,
-        transfer: Optional[Union[bool, str]] = None,
+        transfer: bool | str | None = None,
     ) -> None:
         assert_no_transfer_weights(self, transfer)
         super().__init__(
@@ -67,7 +65,7 @@ class SeqFFNN(AbstractModel):
         backbone_cell: str = "LSTM",
         backbone_time_pooling: bool = True,
         backbone_bidirectional: bool = False,
-        transfer: Optional[Union[bool, str]] = None,
+        transfer: bool | str | None = None,
     ) -> None:
         """Sequential model with FFNN frontend.
 
@@ -80,14 +78,14 @@ class SeqFFNN(AbstractModel):
             num_layers: Number of layers of the FFNN. Defaults to 2.
             dropout: Dropout rate of the FFNN. Defaults to 0.5.
             backbone_dropout: Dropout rate of the backbone. Defaults to 0.5.
-            backbone_cell: Cell type of the backbone in ["LSTM", "GRU"].
-                Defaults to "LSTM".
-            backbone_time_pooling: Whether to apply time pooling in the
-                backbone. Defaults to True.
-            backbone_bidirectional: Whether to use a bidirectional backbone.
-                Defaults to False.
-            transfer: Not available for this model. If set, raises an error.
-                Defaults to None.
+            backbone_cell: Cell type of the backbone in ["LSTM", "GRU"]. Defaults to
+                "LSTM".
+            backbone_time_pooling: Whether to apply time pooling in the backbone.
+                Defaults to True.
+            backbone_bidirectional: Whether to use a bidirectional backbone. Defaults to
+                False.
+            transfer: Not available for this model. If set, raises an error. Defaults to
+                None.
         """
         assert_no_transfer_weights(self, transfer)
         super().__init__(output_dim, None)  # no transfer learning weights

@@ -1,6 +1,7 @@
+from collections.abc import Callable
 import os
 import sys
-from typing import Any, Callable, Optional
+from typing import Any
 
 import hydra
 from hydra.core.config_search_path import ConfigSearchPath
@@ -33,21 +34,20 @@ def add_current_directory_to_path() -> None:
 
 def main(
     config_name: str,
-    config_path: Optional[str] = None,
-    version_base: Optional[str] = None,
+    config_path: str | None = None,
+    version_base: str | None = None,
 ) -> Callable[[TaskFunction], Any]:
     """Hydra main decorator with additional `autrainer` configs.
 
-    The `conf` directory in the current working directory is always added to
-    the search path if it exists.
-    The current working directory is also added to the Python path.
+    The `conf` directory in the current working directory is always added to the search
+    path if it exists. The current working directory is also added to the Python path.
 
     Args:
-        config_name: The name of the config (usually the file name without the
-            .yaml extension).
-        config_path: The config path, a directory where Hydra will search for
-            config files. If config_path is None no directory is added to the
-            search path. Defaults to None.
+        config_name: The name of the config (usually the file name without the .yaml
+            extension).
+        config_path: The config path, a directory where Hydra will search for config
+            files. If config_path is None no directory is added to the search path.
+            Defaults to None.
         version_base: Hydra version base. Defaults to None.
     """
     if not any("jupyter" in arg or "ipykernel" in arg for arg in sys.argv):

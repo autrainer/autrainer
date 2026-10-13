@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 import os
+from typing import Generic, TypeVar
 
 from .abstract_script import AbstractScript
 from .command_line_error import CommandLineError
+
+
+TArgs = TypeVar("TArgs", bound="AbstractPostprocessArgs")
 
 
 @dataclass
@@ -11,7 +15,7 @@ class AbstractPostprocessArgs:
     experiment_id: str
 
 
-class AbstractPostprocessScript(AbstractScript):
+class AbstractPostprocessScript(AbstractScript, Generic[TArgs]):
     def add_arguments(self) -> None:
         self.parser.add_argument(
             "results_dir",
@@ -24,7 +28,7 @@ class AbstractPostprocessScript(AbstractScript):
             help="ID of experiment to postprocess.",
         )
 
-    def main(self, args: AbstractPostprocessArgs) -> None:
+    def main(self, args: TArgs) -> None:
         self._assert_results_dir_exists(args)
         self._assert_experiment_id_exists(args)
 

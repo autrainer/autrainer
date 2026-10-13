@@ -1,19 +1,18 @@
 from dataclasses import dataclass
 import os
 import shutil
-from typing import List, Optional
 
 import autrainer
 from autrainer.core.constants import NamingConstants
 
-from .abstract_script import AbstractScript, MockParser
+from .abstract_script import AbstractScript
 from .command_line_error import CommandLineError
-from .utils import catch_cli_errors
+from .utils import MockParser, catch_cli_errors
 
 
 @dataclass
 class CreateArgs:
-    directories: List[str]
+    directories: list[str]
     empty: bool
     all: bool
     force: bool
@@ -129,37 +128,36 @@ class CreateScript(AbstractScript):
 
 @catch_cli_errors
 def create(
-    directories: Optional[List[str]] = None,
+    directories: list[str] | None = None,
     empty: bool = False,
     all: bool = False,
     force: bool = False,
 ) -> None:
     """Create a new project with default configurations.
 
-    If called in a notebook, the function will not raise an error and print
-    the error message instead.
+    If called in a notebook, the function will not raise an error and print the error
+    message instead.
 
     Args:
         directories: Configuration directories to create. One or more of:
-            :const:`~autrainer.core.constants.NamingConstants.CONFIG_DIRS`.
-            Defaults to None.
-        empty: Create an empty project without any configuration directory.
-            Defaults to False.
-        all: Create a project with all configuration directories.
-            Defaults to False.
-        force: Force overwrite if the configuration directory already exists.
-            Defaults to False.
+            :const:`~autrainer.core.constants.NamingConstants.CONFIG_DIRS`. Defaults to
+            None.
+        empty: Create an empty project without any configuration directory. Defaults to
+            False.
+        all: Create a project with all configuration directories. Defaults to False.
+        force: Force overwrite if the configuration directory already exists. Defaults
+            to False.
 
     Raises:
-        CommandLineError: If no configuration directories are specified and
-            neither the empty nor all flags are set.
+        CommandLineError: If no configuration directories are specified and neither the
+            empty nor all flags are set.
         CommandLineError: If the empty and all flags are set at the same time.
         CommandLineError: If the empty or all flags are set in combination with
             configuration directories.
-        CommandLineError: If the configuration directory already exists and the
-            force flag is not set.
+        CommandLineError: If the configuration directory already exists and the force
+            flag is not set.
     """
 
     script = CreateScript()
     script.parser = MockParser()
-    script.main(CreateArgs(directories, empty, all, force))
+    script.main(CreateArgs(directories or [], empty, all, force))

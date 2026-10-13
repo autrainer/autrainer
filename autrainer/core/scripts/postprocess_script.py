@@ -1,24 +1,22 @@
 from dataclasses import dataclass
-from typing import List, Optional
 
 from autrainer.core.constants import NamingConstants
-from autrainer.core.scripts.abstract_script import MockParser
 
 from .abstract_postprocess_script import (
     AbstractPostprocessArgs,
     AbstractPostprocessScript,
 )
 from .command_line_error import CommandLineError
-from .utils import catch_cli_errors
+from .utils import MockParser, catch_cli_errors
 
 
 @dataclass
 class PostprocessArgs(AbstractPostprocessArgs):
-    max_runs: Optional[int]
-    aggregate: Optional[List[List[str]]]
+    max_runs: int | None
+    aggregate: list[list[str]] | None
 
 
-class PostprocessScript(AbstractPostprocessScript):
+class PostprocessScript(AbstractPostprocessScript[PostprocessArgs]):
     def __init__(self) -> None:
         super().__init__(
             "postprocess",
@@ -93,13 +91,13 @@ class PostprocessScript(AbstractPostprocessScript):
 def postprocess(
     results_dir: str,
     experiment_id: str,
-    max_runs: Optional[int] = None,
-    aggregate: Optional[List[List[str]]] = None,
+    max_runs: int | None = None,
+    aggregate: list[list[str]] | None = None,
 ) -> None:
     """Postprocess grid search results.
 
-    If called in a notebook, the function will not raise an error and print
-    the error message instead.
+    If called in a notebook, the function will not raise an error and print the error
+    message instead.
 
     Args:
         results_dir: Path to grid search results directory.

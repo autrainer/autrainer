@@ -1,16 +1,17 @@
 import argparse
 import sys
-from typing import Callable, NoReturn
+from types import MethodType
+from typing import NoReturn
 
 
 class CommandLineError(Exception):
     """Command line error.
 
     Args:
-        parser (argparse.ArgumentParser): Argument parser.
-        message (str): Error message.
-        code (int, optional): Exit code. Defaults to 2 in accordance with the
-        UNIX standard to indicate incorrect usage.
+        parser: Argument parser.
+        message: Error message.
+        code: Exit code. Defaults to 2 in accordance with the UNIX standard to indicate
+            incorrect usage.
     """
 
     def __init__(
@@ -35,20 +36,17 @@ class CommandLineError(Exception):
         sys.exit(self.code)
 
 
-def print_help_on_error(
-    parser: argparse.ArgumentParser,
-) -> Callable[[str], NoReturn]:
+def print_help_on_error(parser: argparse.ArgumentParser) -> MethodType:
     """Print help on error.
 
     Args:
-        parser (argparse.ArgumentParser): Argument parser.
+        parser: Argument parser.
 
     Returns:
-        Callable[[str], NoReturn]: Closure that raises a CommandLineError with
-        the given message.
+        Closure that raises a CommandLineError with the given message.
     """
 
-    def closure(message: str = "") -> NoReturn:
+    def closure(self: argparse.ArgumentParser, message: str) -> NoReturn:
         if not message:
             raise CommandLineError(parser)
 
@@ -57,4 +55,4 @@ def print_help_on_error(
             message += "."
         raise CommandLineError(parser, message)
 
-    return closure
+    return MethodType(closure, parser)

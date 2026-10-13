@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Union
 import warnings
 
 from omegaconf import DictConfig
@@ -26,21 +25,18 @@ class MLFlowLogger(AbstractLogger):
         self,
         exp_name: str,
         run_name: str,
-        metrics: List[AbstractMetric],
+        metrics: list[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[Union[str, Dict[str, str]]] = None,
+        artifacts: list[str | dict[str, str]] | None = None,
         output_dir: str = "mlruns",
     ) -> None:
         super().__init__(exp_name, run_name, metrics, tracking_metric, artifacts)
-        output_dir = Path(output_dir)
-        if not output_dir.is_absolute():
-            output_dir = output_dir.absolute()
-        if not any(
-            str(output_dir).startswith(prefix)
-            for prefix in ["file://", "http://", "https://"]
-        ):
-            output_dir = output_dir.as_uri()
-        self.output_dir = output_dir
+        p = Path(output_dir)
+        if not p.is_absolute():
+            p = p.absolute()
+        if not any(str(p).startswith(pf) for pf in ["file://", "http://", "https://"]):
+            p = p.as_uri()
+        self.output_dir = p
 
     def setup(self) -> None:
         mlflow.set_tracking_uri(self.output_dir)
@@ -63,23 +59,26 @@ class MLFlowLogger(AbstractLogger):
         runs = mlflow.search_runs(
             experiment_ids=[self.exp_id],
             filter_string=f"tags.mlflow.runName='{run_name}'",
+            output_format="pandas",
         )
+        if isinstance(runs, list):  # cannot happen
+            return
         if runs.shape[0] > 0:
             run_id = runs.iloc[0]["run_id"]
             client.delete_run(run_id)
 
-    def log_params(self, params: Union[dict, DictConfig]) -> None:
+    def log_params(self, params: dict | DictConfig) -> None:
         params = get_params_to_export(params)
         mlflow.log_params(params)
 
     def log_metrics(
         self,
-        metrics: Dict[str, Union[int, float]],
-        iteration: Optional[int] = None,
+        metrics: dict[str, int | float],
+        iteration: int | None = None,
     ) -> None:
         mlflow.log_metrics(metrics, step=iteration)
 
-    def log_timers(self, timers: Dict[str, float]) -> None:
+    def log_timers(self, timers: dict[str, float | str]) -> None:
         mlflow.log_params(timers)
 
     def log_artifact(self, filename: str, path: str = "") -> None:
@@ -95,4 +94,4 @@ MLFlowLogger = (
     else lambda *args, **kwargs: FallbackLogger(
         "MLFlowLogger", "mlflow"
     )  # pragma: no cover
-)
+)  # ty: ignore[invalid-assignment]

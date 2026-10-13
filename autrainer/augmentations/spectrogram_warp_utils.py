@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import torch
 import torchvision.transforms.functional as F
 
@@ -46,7 +44,7 @@ def _solve_interpolation(
     vals: torch.Tensor,
     order: int,
     eps: float = 1e-7,
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor | None, torch.Tensor | None]:
     device = pts.device
     _, n, d = F.get_dimensions(pts)
     k = vals.shape[-1]
@@ -75,7 +73,7 @@ def _solve_interpolation(
         w = X[:n, :]
         v = X[n:, :]
         return w, v
-    except torch._C._LinAlgError:
+    except RuntimeError:
         return None, None
 
 
@@ -105,11 +103,11 @@ def _interpolate_spline(
     query_pts: torch.Tensor,
     order: int,
     regularization_weight: float = 0.0,
-) -> torch.Tensor:
+) -> torch.Tensor | None:
     # First, fit the spline to the observed data.
     w, v = _solve_interpolation(pts, vals, order, regularization_weight)
 
-    if w is None and v is None:
+    if w is None or v is None:
         return None
 
     # Then, evaluate the spline at the query locations.
@@ -227,13 +225,13 @@ def _dense_image_warp(tensor: torch.Tensor, flow: torch.Tensor) -> torch.Tensor:
     return torch.reshape(interpolated, [channels, height, width])
 
 
-def _sparse_image_warp(
+def sparse_image_warp(
     tensor: torch.Tensor,
     src_ctr_pt_locations: torch.Tensor,
     dest_ctr_pt_locations: torch.Tensor,
     order: int = 2,
     regularization_weight: float = 0.0,
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor | None, torch.Tensor | None]:
     device = tensor.device
     control_point_flows = dest_ctr_pt_locations - src_ctr_pt_locations
 

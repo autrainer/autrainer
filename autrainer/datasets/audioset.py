@@ -1,6 +1,7 @@
 """Code for AudioSet dataset.
-Utility functions to filter data
-adapted from: https://github.com/audeering/audtorch/blob/master/audtorch/datasets/audio_set.py
+
+Utility functions to filter data adapted from:
+https://github.com/audeering/audtorch/blob/master/audtorch/datasets/audio_set.py
 Originally written by https://github.com/hagenw
 """
 
@@ -8,7 +9,6 @@ from functools import cached_property
 import json
 import logging
 import os
-from typing import Dict, List, Optional, Union
 
 from audeer import flatten_list
 from omegaconf import DictConfig
@@ -77,23 +77,23 @@ class AudioSet(BaseMLClassificationDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: Optional[str],
+        features_subdir: str | None,
         seed: int,
-        metrics: List[Union[str, DictConfig, Dict]],
-        tracking_metric: Union[str, DictConfig, Dict],
+        metrics: list[str | DictConfig | dict],
+        tracking_metric: str | DictConfig | dict,
         index_column: str,
         file_type: str,
-        file_handler: Union[str, DictConfig, Dict],
-        target_column: Optional[List[str]] = None,
-        features_path: Optional[str] = None,
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
-        stratify: Optional[List[str]] = None,
+        file_handler: str | DictConfig | dict,
+        target_column: list[str] | None = None,
+        features_path: str | None = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
+        stratify: list[str] | None = None,
         threshold: float = 0.5,
         use_unbalanced: bool = False,
-        include: Optional[List[str]] = None,
-        exclude: Optional[List[str]] = None,
+        include: list[str] | None = None,
+        exclude: list[str] | None = None,
     ) -> None:
         """AudioSet dataset.
 
@@ -108,44 +108,35 @@ class AudioSet(BaseMLClassificationDataset):
 
         Args:
             path: Root path to the dataset.
-            features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
+            features_subdir: Subdirectory containing the features. If `None`, defaults
+                to audio subdirectory, which is `default` for the standard format, but
+                can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
             index_column: Index column of the dataframe.
-            target_column: Target column of the dataframe.
-                If None, defaults to the least common subset
-                available in the data. Defaults to None.
+            target_column: Target column of the dataframe. If None, defaults to the
+                least common subset available in the data. Defaults to None.
             file_type: File type of the features.
             file_handler: File handler to load the data.
             batch_size: Batch size.
-            inference_batch_size: Inference batch size. If None, defaults to
-                batch_size. Defaults to None.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different directory than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
-            train_transform: Transform to apply to the training set.
+            inference_batch_size: Inference batch size. If None, defaults to batch_size.
                 Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            features_path: Root path to features. Useful when features need to be
+                extracted and stored in a different directory than the root of the
+                dataset. If `None`, will be set to `path`. Defaults to `None`.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
             threshold: Threshold for classification. Defaults to 0.5.
-            use_unbalanced: Flag to allow the use of unbalanced set
-                during training.
-            include: List of categories to include. If set,
-                only instances tagged with at least one
-                category from the list will be included
-                in the final dataset.
-            exclude: List of categories to include. If set,
-                all instances tagged with at least one
-                category from the list will be excluded
-                from the final dataset.
+            use_unbalanced: Flag to allow the use of unbalanced set during training.
+            include: List of categories to include. If set, only instances tagged with
+                at least one category from the list will be included in the final
+                dataset.
+            exclude: List of categories to include. If set, all instances tagged with at
+                least one category from the list will be excluded from the final
+                dataset.
         """
         self.use_unbalanced = use_unbalanced
         self.include = include
@@ -158,7 +149,7 @@ class AudioSet(BaseMLClassificationDataset):
             metrics=metrics,
             tracking_metric=tracking_metric,
             index_column=index_column,
-            target_column=target_column,
+            target_column=target_column,  # ty: ignore[invalid-argument-type]
             file_type=file_type,
             file_handler=file_handler,
             features_path=features_path,
@@ -173,23 +164,21 @@ class AudioSet(BaseMLClassificationDataset):
     def audio_subdir(self) -> str:
         """Subdirectory containing audio data.
 
-        Data assumed to be in root directory
-        under the name of the respective partition
-        which is prepended once the CSV file is loaded.
-        Available partitions are (with original number of instances):
+        Data assumed to be in root directory under the name of the respective partition
+        which is prepended once the CSV file is loaded. Available partitions are (with
+        original number of instances):
+
         - balanced_train_segments (n=22,160)
         - unbalanced_train_segments (n=2,041,789)
         - eval_segments (n=20,371)
         """
         return ""
 
-    def _assert_target_column(self, allowed_columns: List[str]) -> None:
+    def _assert_target_column(self, allowed_columns: list[str]) -> None:
         """Override target column check.
 
-        Allow `None` as a valid input.
-        Override it to support all available tags
-        in ontology, irrespective of whether
-        they appear at all in the data or not.
+        Allow `None` as a valid input. Override it to support all available tags in
+        ontology, irrespective of whether they appear at all in the data or not.
         """
         if self.target_column is None:
             unique_categories = {x["name"] for x in self.ontology}
@@ -200,17 +189,12 @@ class AudioSet(BaseMLClassificationDataset):
                 x for y in self.df_dev["categories"].values.tolist() for x in y
             }
             self.target_column = list(
-                (
-                    train_categories.intersection(dev_categories).intersection(
-                        unique_categories
-                    )
+                train_categories.intersection(dev_categories).intersection(
+                    unique_categories
                 )
             )
             self._log.info(
-                (
-                    f"Training on {len(self.target_column)} classes:\n"
-                    f"{self.target_column}"
-                )
+                f"Training on {len(self.target_column)} classes:\n{self.target_column}"
             )
         return super()._assert_target_column(allowed_columns)
 
@@ -222,7 +206,6 @@ class AudioSet(BaseMLClassificationDataset):
 
         Results:
             data frame with columns `filename` and `ids`.
-
         """
         df = df.rename(columns={"positive_labels": "ids"})
         # Translate labels from "label1,label2" to [label1, label2]
@@ -231,7 +214,7 @@ class AudioSet(BaseMLClassificationDataset):
         df["filename"] = df["# YTID"] + ".wav"
         return df[["filename", "ids"]]
 
-    def _add_parent_ids(self, child_ids: List[str]) -> List[str]:
+    def _add_parent_ids(self, child_ids: list[str]) -> list[str]:
         r"""Add all parent IDs to the list of given child IDs.
 
         Args:
@@ -239,7 +222,6 @@ class AudioSet(BaseMLClassificationDataset):
 
         Return:
             list of child and parent IDs.
-
         """
         ids = child_ids
         for id in child_ids:
@@ -247,7 +229,7 @@ class AudioSet(BaseMLClassificationDataset):
         # Remove duplicates
         return list(set(ids))
 
-    def _convert_ids_to_categories(self, ids: List[str]) -> List[str]:
+    def _convert_ids_to_categories(self, ids: list[str]) -> list[str]:
         r"""Convert list of ids to sorted list of categories.
 
         Args:
@@ -255,7 +237,6 @@ class AudioSet(BaseMLClassificationDataset):
 
         Returns:
             list of sorted categories.
-
         """
         # Convert IDs to categories
         categories = []
@@ -278,7 +259,7 @@ class AudioSet(BaseMLClassificationDataset):
     def _filter_by_categories(
         self,
         df: pd.DataFrame,
-        categories: List[str],
+        categories: list[str],
         exclude_mode: bool = False,
     ) -> pd.DataFrame:
         r"""Return data frame containing only specified categories.
@@ -286,13 +267,11 @@ class AudioSet(BaseMLClassificationDataset):
         Args:
             df: data frame containing the columns `ids`.
             categories: list of categories to include or exclude.
-            exclude_mode: if `False` the specified categories
-                should be included in the data frame, otherwise excluded.
-                Default: `False`.
+            exclude_mode: if `False` the specified categories should be included in the
+                data frame, otherwise excluded. Default: `False`.
 
         Returns:
             data frame containing only the desired categories.
-
         """
         ids = self._ids_for_categories(categories)
         if exclude_mode:
@@ -313,7 +292,7 @@ class AudioSet(BaseMLClassificationDataset):
             ]
         return df.reset_index(drop=True)
 
-    def _ids_for_categories(self, categories: List[str]) -> List[str]:
+    def _ids_for_categories(self, categories: list[str]) -> list[str]:
         r"""All IDs and child IDs for a given set of categories.
 
         Args:
@@ -321,7 +300,6 @@ class AudioSet(BaseMLClassificationDataset):
 
         Returns:
             list of IDs.
-
         """
         ids = []
         category_ids = [x["id"] for x in self.ontology if x["name"] in categories]
@@ -330,7 +308,7 @@ class AudioSet(BaseMLClassificationDataset):
         # Remove duplicates
         return list(set(ids))
 
-    def _subcategory_ids(self, parent_id: str) -> List[str]:
+    def _subcategory_ids(self, parent_id: str) -> list[str]:
         r"""Recursively identify all IDs of a given category.
 
         Args:
@@ -338,7 +316,6 @@ class AudioSet(BaseMLClassificationDataset):
 
         Returns:
             list of all children IDs and the parent ID
-
         """
         id_list = [parent_id]
         child_ids = [x["child_ids"] for x in self.ontology if x["id"] == parent_id]
@@ -351,12 +328,9 @@ class AudioSet(BaseMLClassificationDataset):
     def map_to_classes(self, df: pd.DataFrame) -> pd.DataFrame:
         """Map dataframe as loaded to `autrainer` compatible.
 
-        Assigns all AudioSet IDs to category names.
-        Recursively assigns parent nodes
-        to every instance where a child is present.
-        Optionally filters dataframes
-        to include/exclude instances.
-        Creates columns with final labels.
+        Assigns all AudioSet IDs to category names. Recursively assigns parent nodes to
+        every instance where a child is present. Optionally filters dataframes to
+        include/exclude instances. Creates columns with final labels.
 
         Args:
             df: dataframe loaded from CSV.
@@ -385,9 +359,9 @@ class AudioSet(BaseMLClassificationDataset):
         return df
 
     @cached_property
-    def ontology(self) -> Dict:
+    def ontology(self) -> dict:
         """Reads AudioSet ontology."""
-        with open(os.path.join(self.path, "ontology.json"), "r") as fp:
+        with open(os.path.join(self.path, "ontology.json")) as fp:
             return json.load(fp)
 
     def _load_df(self, relative_path: str) -> pd.DataFrame:
@@ -404,8 +378,8 @@ class AudioSet(BaseMLClassificationDataset):
             df["filename"].apply(
                 lambda x: os.path.isfile(
                     os.path.join(
-                        self.features_path,
-                        self.features_subdir,
+                        self.features_path or "",
+                        self.features_subdir or "",
                         x.replace(".wav", f".{self.file_type}"),
                     )
                 )
@@ -441,11 +415,8 @@ class AudioSet(BaseMLClassificationDataset):
         """Download AudioSet.
 
         The data must be downloaded manually from
-        https://research.google.com/audioset/download.html.
-        We do not implement
-        an automatic download
-        as this is a very costly process
-        that the user should handle
+        https://research.google.com/audioset/download.html. We do not implement an
+        automatic download as this is a very costly process that the user should handle
         outside of `autrainer`.
 
         Args:

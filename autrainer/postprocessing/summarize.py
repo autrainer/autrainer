@@ -1,6 +1,6 @@
 import os
 import shutil
-from typing import Dict, List, Optional, Union
+from typing import Any
 
 from omegaconf import DictConfig, OmegaConf
 import pandas as pd
@@ -28,25 +28,25 @@ class SummarizeGrid:
         summary_dir: str = "summary",
         training_dir: str = "training",
         clear_old_outputs: bool = True,
-        training_type: Optional[str] = None,
-        max_runs_plot: Optional[int] = None,
-        plot_params: Optional[Union[DictConfig, Dict]] = None,
+        training_type: str | None = None,
+        max_runs_plot: int | None = None,
+        plot_params: DictConfig | dict | None = None,
     ) -> None:
         """Summarize the results of a grid search.
 
         Args:
             results_dir: The directory where the results are stored.
             experiment_id: The ID of the grid search experiment.
-            summary_dir: The directory where the the grid search summary will
-                be stored. Defaults to "summary".
-            training_dir: The directory of the training results of the
-                    experiment. Defaults to "training".
-            clear_old_outputs: Whether to clear existing summary outputs.
-                Defaults to True.
-            training_type: The type of training in ["Epoch", "Step"]. If None,
-                it will be inferred from the training results. Defaults to None.
-            max_runs_plot: The maximum number of best runs to plot. If None,
-                all runs will be plotted. Defaults to None.
+            summary_dir: The directory where the the grid search summary will be stored.
+                Defaults to "summary".
+            training_dir: The directory of the training results of the experiment.
+                Defaults to "training".
+            clear_old_outputs: Whether to clear existing summary outputs. Defaults to
+                True.
+            training_type: The type of training in ["Epoch", "Step"]. If None, it will
+                be inferred from the training results. Defaults to None.
+            max_runs_plot: The maximum number of best runs to plot. If None, all runs
+                will be plotted. Defaults to None.
             plot_params: Additional parameters for plotting. Defaults to None.
         """
         self.results_dir = results_dir
@@ -65,7 +65,8 @@ class SummarizeGrid:
         self.training_type = training_type
         if self.training_type is None:
             self.training_type = get_training_type(
-                self.training_directory, self.run_names
+                self.training_directory,
+                self.run_names,
             )
         self.max_runs_plot = max_runs_plot
         self.plot_params = plot_params
@@ -74,7 +75,7 @@ class SummarizeGrid:
             self.plot_params = get_plotting_params(
                 self.training_directory, self.run_names[0]
             )
-        self.metric_fns: List[AbstractMetric] = []
+        self.metric_fns: list[AbstractMetric] = []
 
     def summarize(self) -> None:
         """Summarize the results of the grid search."""
@@ -128,7 +129,7 @@ class SummarizeGrid:
         path = os.path.join(self.output_directory, "best_runs.yaml")
         save_yaml(path, best_runs)
 
-    def _find_metrics_to_plot(self) -> List[str]:
+    def _find_metrics_to_plot(self) -> list[str]:
         summary_path = os.path.join(self.output_directory, "metrics.csv")
         df = pd.read_csv(summary_path)
         return [
@@ -142,9 +143,9 @@ class SummarizeGrid:
         """Plot the metrics of the grid search."""
         plotter = PlotMetrics(
             output_directory=self.output_directory,
-            training_type=self.training_type,
+            training_type=str(self.training_type),
             metric_fns=self.metric_fns,
-            **self.plot_params,
+            **self.plot_params,  # ty: ignore[invalid-argument-type]
         )
         metrics_to_plot = self._find_metrics_to_plot()
         for metric in metrics_to_plot:
@@ -176,9 +177,9 @@ class SummarizeGrid:
         metrics_to_plot = self._find_metrics_to_plot()
         plotter = PlotMetrics(
             output_directory=self.output_directory,
-            training_type=self.training_type,
+            training_type=str(self.training_type),
             metric_fns=self.metric_fns,
-            **self.plot_params,
+            **self.plot_params,  # ty: ignore[invalid-argument-type]
         )
         metrics_df = pd.DataFrame()
 
@@ -226,7 +227,7 @@ class SummarizeGrid:
             "time_test_mean": time_dict["test"]["mean"],
         }
 
-    def _update_metric_fns(self, metric_cfg: Union[dict, DictConfig]) -> None:
+    def _update_metric_fns(self, metric_cfg: list[str | dict[str, Any]]) -> None:
         metrics = [
             autrainer.instantiate_shorthand(m, instance_of=AbstractMetric)
             for m in metric_cfg

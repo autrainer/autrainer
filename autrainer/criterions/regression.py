@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
@@ -11,22 +11,21 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class MSELoss(torch.nn.MSELoss):
-    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         """Wrapper for `torch.nn.MSELoss.forward`.
 
-        Squeezes the model outputs along the last dimension to match the shape
-        of the targets.
-        Converts the targets to `float`.
+        Squeezes the model outputs along the last dimension to match the shape of the
+        targets. Converts the targets to `float`.
 
         Args:
-            x: Batched model outputs.
-            y: Targets.
+            input: Batched model outputs.
+            target: Targets.
 
         Returns:
             Loss.
         """
         # TODO: is there a more elegant way to handle broadcasting
-        return super().forward(x.squeeze(-1), y.float())
+        return super().forward(input.squeeze(-1), target.float())
 
 
 class WeightedMSELoss(MSELoss):
@@ -34,20 +33,19 @@ class WeightedMSELoss(MSELoss):
 
     def __init__(
         self,
-        target_weights: Dict[str, float],
-        **kwargs: Dict[str, Any],
+        target_weights: dict[str, float],
+        **kwargs: Any,
     ) -> None:
-        """Wrapper for `torch.nn.MSELoss` with manual target weights intended
-        for multi-target regression tasks.
+        """Wrapper for `torch.nn.MSELoss` with manual target weights intended for
+        multi-target regression tasks.
 
-        The target weights are automatically normalized to sum up to the number
-        of targets.
+        The target weights are automatically normalized to sum up to the number of
+        targets.
 
         Args:
-            target_weights: Dictionary with target weights corresponding to the
-                target labels and their respective weights.
-            **kwargs: Additional keyword arguments passed to
-                `torch.nn.MSELoss`.
+            target_weights: Dictionary with target weights corresponding to the target
+                labels and their respective weights.
+            **kwargs: Additional keyword arguments passed to `torch.nn.MSELoss`.
         """
         self.target_weights = target_weights
         super().__init__(**kwargs)
@@ -65,7 +63,7 @@ class WeightedMSELoss(MSELoss):
                 "`WeightedMSELoss` is only supported for multi-target regression tasks."
             )
 
-        for target in data.target_transform.target:
+        for target in data.target_transform.target:  # ty: ignore[unresolved-attribute]
             if target not in self.target_weights:
                 raise ValueError(f"Missing target weight for target '{target}'.")
             values.append(self.target_weights[target])
@@ -75,14 +73,14 @@ class WeightedMSELoss(MSELoss):
         weight = weight * len(weight) / weight.sum()
         self.register_buffer("weights_buffer", weight)
 
-    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         """Wrapper for `torch.nn.MSELoss.forward` with manual target weights.
 
         Args:
-            x: Batched model outputs.
-            y: Targets.
+            input: Batched model outputs.
+            target: Targets.
 
         Returns:
             Loss.
         """
-        return super().forward(x, y) * self.weights_buffer.expand_as(y)
+        return super().forward(input, target) * self.weights_buffer.expand_as(target)

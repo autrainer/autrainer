@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,8 +26,8 @@ class PlotMetrics(PlotBase):
         add_titles: bool,
         add_xlabels: bool,
         add_ylabels: bool,
-        rcParams: Dict[str, Any],  # noqa: N803
-        metric_fns: List[AbstractMetric],
+        rcParams: dict[str, Any],  # noqa: N803
+        metric_fns: list[AbstractMetric],
     ) -> None:
         """Plot the metrics of one or multiple runs.
 
@@ -35,9 +35,8 @@ class PlotMetrics(PlotBase):
             output_directory: Output directory to save plots to.
             training_type: Type of training in ["Epoch", "Step"].
             figsize: Figure size in inches.
-            latex: Whether to use LaTeX in plots. Requires the `latex` package.
-                To install all necessary dependencies, run:
-                `pip install autrainer[latex]`.
+            latex: Whether to use LaTeX in plots. Requires the `latex` package. To
+                install all necessary dependencies, run: `pip install autrainer[latex]`.
             filetypes: Filetypes to save plots as.
             pickle: Whether to save additional pickle files of the plots.
             context: Context for seaborn plots.
@@ -71,8 +70,7 @@ class PlotMetrics(PlotBase):
 
         Args:
             metrics: DataFrame containing the metrics.
-            std_scale: Scale factor for the standard deviation.
-                Defaults to 0.1.
+            std_scale: Scale factor for the standard deviation. Defaults to 0.1.
         """
         std_columns = metrics.filter(regex="\\.std$").columns
         has_std = not std_columns.empty
@@ -109,21 +107,19 @@ class PlotMetrics(PlotBase):
         self,
         metrics: pd.DataFrame,
         metric: str,
-        metrics_std: Optional[pd.DataFrame] = None,
+        metrics_std: pd.DataFrame | None = None,
         std_scale: float = 0.1,
-        max_runs: Optional[int] = None,
+        max_runs: int | None = None,
     ) -> None:
         """Plot a single metric of multiple runs.
 
         Args:
             metrics: DataFrame containing the metrics.
             metric: Metric to plot.
-            metrics_std: DataFrame containing the standard deviations.
-                Defaults to None.
-            std_scale: Scale factor for the standard deviation.
-                Defaults to 0.1.
-            max_runs: Maximum number of best runs to plot. If None, all runs
-                are plotted. Defaults to None.
+            metrics_std: DataFrame containing the standard deviations. Defaults to None.
+            std_scale: Scale factor for the standard deviation. Defaults to 0.1.
+            max_runs: Maximum number of best runs to plot. If None, all runs are
+                plotted. Defaults to None.
         """
         fig = plt.figure(figsize=self.figsize)
 
@@ -158,14 +154,11 @@ class PlotMetrics(PlotBase):
     ) -> None:
         """Plot aggregated bar plots for a metric.
 
-        Generate a bar plots from the metrics_df, which are divided
-        by the "subplots_by" column, further grouped according to the
-        "group_by" column.
-        If "split_subgroups" is set to true, each group is further split into
-        subgroups based on what comes after a potential "-" in the "group_by"
-        entry.
-        Finally the "metric" entries are averaged to create the bars and the
-        standard deviation is shown as error bars.
+        Generate a bar plots from the metrics_df, which are divided by the "subplots_by"
+        column, further grouped according to the "group_by" column. If "split_subgroups"
+        is set to true, each group is further split into subgroups based on what comes
+        after a potential "-" in the "group_by" entry. Finally the "metric" entries are
+        averaged to create the bars and the standard deviation is shown as error bars.
 
         Args:
             metrics_df: DataFrame containing the metrics.
@@ -190,7 +183,7 @@ class PlotMetrics(PlotBase):
             for group, group_df in group_metrics:
                 if split_subgroups:
                     # Use the shared prefix for subgroups
-                    group_split = group.split("-")
+                    group_split = str(group).split("-")
                     group = group_split[0]
                     subgroup = group_split[1] if len(group_split) > 1 else "None"
                 values = group_df[metric].dropna().astype(float).values
@@ -257,9 +250,9 @@ class PlotMetrics(PlotBase):
         self,
         metric: str,
         metrics: pd.DataFrame,
-        metrics_std: pd.DataFrame,
+        metrics_std: pd.DataFrame | None,
         max_runs: int,
-    ) -> Tuple[pd.DataFrame, Optional[pd.DataFrame]]:
+    ) -> tuple[pd.DataFrame, pd.DataFrame | None]:
         if "loss" in metric:
             top_values = metrics.min()
             ascending_order = True

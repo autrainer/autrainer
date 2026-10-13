@@ -1,5 +1,5 @@
+from collections.abc import Callable
 import os
-from typing import Callable, Dict, List, Optional, Tuple, Union
 import warnings
 
 import requests
@@ -45,11 +45,11 @@ def load_transfer_weights(model: torch.nn.Module, weights_link: str) -> None:
         )
 
 
-def init_layer(layer: torch.nn.Module) -> None:
+def init_layer(layer: torch.nn.Conv2d | torch.nn.Linear) -> None:
     """Initialize a Linear or Convolutional layer."""
     torch.nn.init.xavier_uniform_(layer.weight)
 
-    if hasattr(layer, "bias") and layer.bias is not None:
+    if layer.bias is not None:
         layer.bias.data.fill_(0.0)
 
 
@@ -97,7 +97,7 @@ class ConvBlock(torch.nn.Module):
     def forward(
         self,
         x: torch.Tensor,
-        pool_size: Tuple[int, int] = (2, 2),
+        pool_size: tuple[int, int] = (2, 2),
         pool_type: str = "avg",
     ) -> torch.Tensor:
         x = F.relu_(self.bn1(self.conv1(x)))
@@ -120,16 +120,16 @@ class ExtractLayerEmbeddings:
     def __init__(
         self,
         model: torch.nn.Module,
-        layer_selector_fn: Callable = None,
+        layer_selector_fn: Callable | None = None,
     ) -> None:
         """Extract embeddings from a layer in a model.
 
         Args:
             model: Model to extract embeddings from.
-            layer_selector_fn: Function to select the layer to extract
-                embeddings from. The model is passed to this function and
-                the output should be the layer. If None, the preceding layer
-                of the last linear layer is selected. Defaults to None.
+            layer_selector_fn: Function to select the layer to extract embeddings from.
+                The model is passed to this function and the output should be the layer.
+                If None, the preceding layer of the last linear layer is selected.
+                Defaults to None.
         """
         self.model = model
         self._embeddings = None
@@ -144,7 +144,7 @@ class ExtractLayerEmbeddings:
     def _find_second_to_last_layer(model: torch.nn.Module) -> torch.nn.Module:
         def _flatten_layers(
             layer: torch.nn.Module,
-            layers: List[torch.nn.Module],
+            layers: list[torch.nn.Module],
         ) -> None:
             if len(list(layer.children())) == 0:
                 layers.append(layer)
@@ -178,7 +178,7 @@ class ExtractLayerEmbeddings:
     def _register(self) -> None:
         if self._hook_handle is not None:
             return
-        self._hook_handle = self._hook_layer.register_forward_hook(self._hook)
+        self._hook_handle = self._hook_layer.register_forward_hook(self._hook)  # ty: ignore[invalid-argument-type]
 
     def _unregister(self) -> None:
         if self._hook_handle is None:
@@ -193,13 +193,13 @@ class ExtractLayerEmbeddings:
         self._register()
         self.model(x)
         self._unregister()
-        return self._embeddings
+        return self._embeddings  # ty: ignore[invalid-return-type]
 
 
 def create_model_inputs(
     model: AbstractModel,
     data: AbstractDataBatch,
-) -> Dict[str, torch.Tensor]:
+) -> dict[str, torch.Tensor]:
     _forbidden = ["features", "target", "index"]
     model_inputs = {model.inputs[0]: data.features}
     for key, value in vars(data).items():
@@ -210,7 +210,7 @@ def create_model_inputs(
 
 def assert_no_transfer_weights(
     model: AbstractModel,
-    transfer: Optional[Union[bool, str]] = None,
+    transfer: bool | str | None = None,
 ) -> None:
     if not transfer:
         return

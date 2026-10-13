@@ -1,11 +1,16 @@
 import logging
-from typing import Any, Dict
+from typing import Any
+import warnings
 
-import timm
 import torch
 
 from .abstract_model import AbstractModel
 from .utils import ExtractLayerEmbeddings
+
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", FutureWarning)
+    import timm
 
 
 class TimmModel(AbstractModel):
@@ -14,16 +19,16 @@ class TimmModel(AbstractModel):
         output_dim: int,
         timm_name: str,
         transfer: bool = False,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Wrapper for timm models.
 
         Args:
             output_dim: Number of output classes.
             timm_name: Name of the model available in `timm.create_model`.
-            transfer: Whether to load the model with pretrained weights.
-                The final layer is replaced with a new layer with `output_dim`
-                output features. Defaults to False.
+            transfer: Whether to load the model with pretrained weights. The final layer
+                is replaced with a new layer with `output_dim` output features. Defaults
+                to False.
             kwargs: Additional arguments to pass to the model constructor.
         """
         super().__init__(output_dim, transfer)

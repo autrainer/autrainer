@@ -1,5 +1,4 @@
 from functools import cached_property
-from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from omegaconf import DictConfig
@@ -24,16 +23,20 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
     def __init__(
         self,
         df: pd.DataFrame,
-        target_column: Union[list, str],
-        feature_shape: Union[int, List[int]],
+        target_column: list | str,
+        feature_shape: int | list[int],
         dtype: str,
         generator: torch.Generator,
-        transform: SmartCompose = None,
-        target_transform: SmartCompose = None,
+        transform: SmartCompose | None = None,
+        target_transform: AbstractTargetTransform | None = None,
     ) -> None:
         self.df = df
         self.target_column = target_column
-        self.feature_shape = feature_shape
+        self.feature_shape = (
+            tuple(feature_shape)
+            if isinstance(feature_shape, (list, tuple))
+            else (feature_shape,)
+        )
         self.transform = transform
         self.target_transform = target_transform
         self.dtype = dtype
@@ -42,7 +45,7 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
     def __len__(self) -> int:
         return len(self.df)
 
-    def __getitem__(self, index: int) -> Tuple[torch.Tensor, int, int]:
+    def __getitem__(self, index: int) -> DataItem:
         target = self.df.iloc[index][self.target_column]
         if isinstance(target, pd.Series):
             target = target.values
@@ -65,7 +68,7 @@ class ToyDatasetWrapper(torch.utils.data.Dataset):
             it = self.transform(it)
         if self.target_transform:
             it.target = self.target_transform(it.target)
-        return it
+        return it  # ty: ignore[invalid-return-type]
 
 
 class ToyDataset(AbstractDataset):
@@ -74,16 +77,16 @@ class ToyDataset(AbstractDataset):
         task: str,
         size: int,
         num_targets: int,
-        feature_shape: Union[int, List[int]],
+        feature_shape: int | list[int],
         dev_split: float,
         test_split: float,
         seed: int,
-        metrics: List[Union[str, DictConfig, Dict]],
-        tracking_metric: Union[str, DictConfig, Dict],
+        metrics: list[str | DictConfig | dict],
+        tracking_metric: str | DictConfig | dict,
         dtype: str = "float32",
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
     ) -> None:
         """Toy dataset for testing purposes.
 
@@ -98,12 +101,9 @@ class ToyDataset(AbstractDataset):
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
-            train_transform: Transform to apply to the training set.
-                Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
         """
         if task not in TrainingConstants().TASKS:
             raise ValueError(
@@ -140,7 +140,7 @@ class ToyDataset(AbstractDataset):
         self._mock_df  # required due to super().__init__ with placeholders # noqa: B018
 
     @staticmethod
-    def _assert_splits(dev_split: int, test_split: float) -> None:
+    def _assert_splits(dev_split: float, test_split: float) -> None:
         if dev_split + test_split >= 1.0:
             raise ValueError(
                 f"Sum of dev_split '{dev_split}' and test_split "
@@ -148,7 +148,7 @@ class ToyDataset(AbstractDataset):
             )
 
     @cached_property
-    def _dataset_sizes(self) -> Tuple[int, int, int]:
+    def _dataset_sizes(self) -> tuple[int, int, int]:
         if self.size <= 0:
             raise ValueError(f"Size must be > 0, got '{self.size}'.")
 
@@ -226,7 +226,7 @@ class ToyDataset(AbstractDataset):
         self,
         df: pd.DataFrame,
         transform: SmartCompose,
-    ) -> ToyDatasetWrapper:
+    ) -> ToyDatasetWrapper:  # ty: ignore[invalid-method-override]
         return ToyDatasetWrapper(
             df=df,
             target_column=self.target_column,
@@ -240,16 +240,24 @@ class ToyDataset(AbstractDataset):
     @cached_property
     def target_transform(self) -> AbstractTargetTransform:
         if self.task == "ml-classification":
+            if not isinstance(self.target_column, list):
+                raise TypeError("Expected multiple target columns.")
             return MultiLabelEncoder(0.5, self.target_column)
         if self.task == "classification":
+            if not isinstance(self.target_column, str):
+                raise TypeError("Expected a single target column.")
             return LabelEncoder(self.df_train[self.target_column].unique().tolist())
         if self.task == "mt-regression":
+            if not isinstance(self.target_column, list):
+                raise TypeError("Expected multiple target columns.")
             return MultiTargetMinMaxScaler(
                 target=self.target_column,
                 minimum=self.df_train[self.target_column].min().to_list(),
                 maximum=self.df_train[self.target_column].max().to_list(),
             )
         if self.task == "regression":
+            if not isinstance(self.target_column, str):
+                raise TypeError("Expected a single target column.")
             return MinMaxScaler(
                 target=self.target_column,
                 minimum=self.df_train[self.target_column].min(),

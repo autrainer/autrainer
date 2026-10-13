@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 import torch
 
@@ -12,8 +12,8 @@ class AbstractAugmentation(AbstractTransform):
         self,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
-        **kwargs: Dict[str, Any],
+        generator_seed: int | None = None,
+        **kwargs: Any,
     ) -> None:
         """Abstract class for an augmentation.
 
@@ -21,9 +21,9 @@ class AbstractAugmentation(AbstractTransform):
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
             kwargs: Additional keyword arguments to store in the object.
 
         Raises:
@@ -39,13 +39,14 @@ class AbstractAugmentation(AbstractTransform):
             self.g.manual_seed(self.generator_seed)
 
     def offset_generator_seed(self, offset: int) -> None:
-        """Offset the generator seed used to draw the probability of applying
-        the augmentation. Useful for ensuring reproducibility and
-        randomness of augmentations when using multiple workers.
+        """Offset the generator seed used to draw the probability of applying the
+        augmentation.
+
+        Useful for ensuring reproducibility and randomness of augmentations when using
+        multiple workers.
 
         Args:
-            offset: Offset to add to the generator seed. Usually the
-                worker index.
+            offset: Offset to add to the generator seed. Usually the worker index.
         """
         if self.generator_seed is None:
             return
@@ -59,8 +60,8 @@ class AbstractAugmentation(AbstractTransform):
             item: The input data item.
 
         Returns:
-            The augmented item if the probability is less than p, otherwise
-            the input item.
+            The augmented item if the probability is less than p, otherwise the input
+            item.
         """
         probability = torch.rand(1, generator=self.g).item()
         return self.apply(item) if probability < self.p else item

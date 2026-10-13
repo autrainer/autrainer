@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, Optional, Union
 
 from omegaconf import DictConfig
 
@@ -9,14 +8,14 @@ from .abstract_logger import AbstractLogger
 class FallbackLogger(AbstractLogger):
     def __init__(
         self,
-        requested_logger: Optional[str] = None,
-        extras: Optional[str] = None,
+        requested_logger: str | None = None,
+        extras: str | None = None,
     ) -> None:
         """Fallback logger for when a requested logger is not available.
 
-        If the requested logger is not available, a warning is logged.
-        If both requested_logger and extras are None, nothing is logged.
-        The logger serves as a no-op.
+        If the requested logger is not available, a warning is logged. If both
+        requested_logger and extras are None, nothing is logged. The logger serves as a
+        no-op.
 
         Args:
             requested_logger: The requested logger. Defaults to None.
@@ -31,22 +30,24 @@ class FallbackLogger(AbstractLogger):
             f"'pip install autrainer[{extras}]'."
         )
 
-    def log_params(self, params: Union[dict, DictConfig]) -> None:
+    def log_params(self, params: dict | DictConfig) -> None:
         pass
 
     def log_and_update_metrics(
-        self, metrics: Dict[str, Union[int, float]], iteration: int = None
+        self,
+        metrics: dict[str, int | float],
+        iteration: int | None = None,
     ) -> None:
         pass
 
     def log_metrics(
         self,
-        metrics: Dict[str, Union[int, float]],
-        iteration: Optional[int] = None,
+        metrics: dict[str, int | float],
+        iteration: int | None = None,
     ) -> None:
         pass
 
-    def log_timers(self, timers: Dict[str, float]) -> None:
+    def log_timers(self, timers: dict[str, float | str]) -> None:
         pass
 
     def log_artifact(self, filename: str, path: str = "") -> None:

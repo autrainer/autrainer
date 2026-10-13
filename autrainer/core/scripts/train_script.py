@@ -1,11 +1,10 @@
-from typing import Optional
-
 from omegaconf import DictConfig, OmegaConf
 
 import autrainer
 
-from .abstract_script import AbstractScript, MockParser
+from .abstract_script import AbstractScript
 from .utils import (
+    MockParser,
     add_hydra_args_to_sys,
     catch_cli_errors,
     check_invalid_config_path_arg,
@@ -32,7 +31,7 @@ class TrainScript(AbstractScript):
         def main(cfg: DictConfig) -> float:
             import os
 
-            import hydra
+            import hydra.core.hydra_config
 
             OmegaConf.set_struct(cfg, False)
             OmegaConf.resolve(cfg)
@@ -47,6 +46,9 @@ class TrainScript(AbstractScript):
                 dev_metrics = OmegaConf.load(
                     os.path.join(output_dir, "_best", "dev.yaml")
                 )
+                if not isinstance(dev_metrics, DictConfig):
+                    raise RuntimeError("Expected dev.yaml to contain a mapping.")
+
                 tracking_metric = autrainer.instantiate_shorthand(
                     config=cfg.dataset.tracking_metric,
                     instance_of=AbstractMetric,
@@ -74,20 +76,20 @@ class TrainScript(AbstractScript):
 
 @catch_cli_errors
 def train(
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: dict | None = None,
     config_name: str = "config",
-    config_path: Optional[str] = None,
+    config_path: str | None = None,
 ) -> None:
     """Launch a training configuration.
 
     Args:
-        override_kwargs: Additional Hydra override arguments to pass to the
-            train script.
-        config_name: The name of the config (usually the file name without the
-            .yaml extension). Defaults to "config".
-        config_path: The config path, a directory where Hydra will search for
-            config files. If config_path is None no directory is added to the
-            search path. Defaults to None.
+        override_kwargs: Additional Hydra override arguments to pass to the train
+            script.
+        config_name: The name of the config (usually the file name without the .yaml
+            extension). Defaults to "config".
+        config_path: The config path, a directory where Hydra will search for config
+            files. If config_path is None no directory is added to the search path.
+            Defaults to None.
     """
     if running_in_notebook():
         run_hydra_cmd("train", override_kwargs, config_name, config_path)

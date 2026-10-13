@@ -1,7 +1,6 @@
 from functools import cached_property
 import os
 import shutil
-from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from omegaconf import DictConfig
@@ -27,30 +26,29 @@ class DCASE2018Task3(BaseClassificationDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: Optional[str],
+        features_subdir: str | None,
         seed: int,
-        metrics: List[Union[str, DictConfig, Dict]],
-        tracking_metric: Union[str, DictConfig, Dict],
+        metrics: list[str | DictConfig | dict],
+        tracking_metric: str | DictConfig | dict,
         index_column: str,
         target_column: str,
         file_type: str,
-        file_handler: Union[str, DictConfig, Dict],
-        features_path: Optional[str] = None,
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
-        stratify: Optional[List[str]] = None,
+        file_handler: str | DictConfig | dict,
+        features_path: str | None = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
+        stratify: list[str] | None = None,
         dev_split: float = 0.0,
-        dev_split_seed: Optional[int] = None,
+        dev_split_seed: int | None = None,
     ) -> None:
         """DCASE 2018 Task 3 dataset.
 
         Args:
             path: Root path to the dataset.
-            features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
+            features_subdir: Subdirectory containing the features. If `None`, defaults
+                to audio subdirectory, which is `default` for the standard format, but
+                can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -58,21 +56,17 @@ class DCASE2018Task3(BaseClassificationDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different directory than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
-            train_transform: Transform to apply to the training set.
-                Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            features_path: Root path to features. Useful when features need to be
+                extracted and stored in a different directory than the root of the
+                dataset. If `None`, will be set to `path`. Defaults to `None`.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
-            dev_split: Fraction of the training set to use as the development
-                set. Defaults to 0.0.
-            dev_split_seed: Seed for the development split. If None, seed is
-                used. Defaults to None.
+            dev_split: Fraction of the training set to use as the development set.
+                Defaults to 0.0.
+            dev_split_seed: Seed for the development split. If None, seed is used.
+                Defaults to None.
         """
         self._assert_dev_split(dev_split)
         self.dev_split = dev_split
@@ -97,7 +91,7 @@ class DCASE2018Task3(BaseClassificationDataset):
     @cached_property
     def _load_train_dev_df(
         self,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
         df_train = pd.read_csv(os.path.join(self.path, "train.csv"))
         df_dev = pd.read_csv(os.path.join(self.path, "test.csv"))
 
@@ -109,7 +103,7 @@ class DCASE2018Task3(BaseClassificationDataset):
     def _split_train_dataset(
         self,
         df: pd.DataFrame,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
         rng = np.random.default_rng(self.dev_split_seed)
         indices = rng.permutation(df.index)
         train_indices = indices[: int(len(indices) * (1 - self.dev_split))]
@@ -139,10 +133,9 @@ class DCASE2018Task3(BaseClassificationDataset):
 
         - Crowdsourced dataset, UK ("warblrb10k")
 
-        Both the training and test datasets are taken from the development set,
-        as no labels are provided for the evaluation set.
-        For more information on the dataset, see:
-        https://dcase.community/challenge2018/task-bird-audio-detection
+        Both the training and test datasets are taken from the development set, as no
+        labels are provided for the evaluation set. For more information on the dataset,
+        see: https://dcase.community/challenge2018/task-bird-audio-detection
 
         Args:
             path: Path to the directory to download the dataset to.

@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Generic, List, Mapping, Type, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 import numpy as np
 import torch
 
 
-AbstractItemType = TypeVar("ItemType", bound="AbstractDataItem")
+AbstractItemType = TypeVar("AbstractItemType", bound="AbstractDataItem")
 
 
 @dataclass
@@ -20,7 +21,7 @@ class AbstractDataItem(ABC):
     """
 
     features: torch.Tensor
-    target: Union[int, float, List[int], List[float], np.ndarray]
+    target: int | float | list[int] | list[float] | np.ndarray
     index: int
 
 
@@ -49,8 +50,8 @@ class AbstractDataBatch(ABC, Generic[AbstractItemType]):
 
     @classmethod
     def collate(
-        cls: Type["AbstractDataBatch[AbstractItemType]"],
-        items: List[AbstractItemType],
+        cls: type["AbstractDataBatch[AbstractItemType]"],
+        items: list[AbstractItemType],
     ) -> "AbstractDataBatch[AbstractItemType]":
         """Collate a list of data items into a data batch.
 
@@ -60,17 +61,19 @@ class AbstractDataBatch(ABC, Generic[AbstractItemType]):
         Returns:
             Collated data batch.
         """
-        if not isinstance(items[0], Mapping):
-            items = [vars(item) for item in items]
-        first = items[0]
-        batch = {}
+        if not items:
+            raise RuntimeError("Collate requires at least one item.")
 
-        for k, v in first.items():
+        fn = dict if isinstance(items[0], Mapping) else vars
+        mapping: list[dict[str, Any]] = [fn(item) for item in items]  # ty: ignore[no-matching-overload]
+
+        batch = {}
+        for k, v in mapping[0].items():
             if isinstance(v, torch.Tensor):
-                batch[k] = torch.stack([f[k] for f in items])
+                batch[k] = torch.stack([f[k] for f in mapping])
             elif isinstance(v, np.ndarray):
-                batch[k] = torch.from_numpy(np.stack([f[k] for f in items]))
+                batch[k] = torch.from_numpy(np.stack([f[k] for f in mapping]))
             else:
-                batch[k] = torch.tensor([f[k] for f in items])
+                batch[k] = torch.tensor([f[k] for f in mapping])
 
         return cls(**batch)

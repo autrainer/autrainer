@@ -1,5 +1,3 @@
-from typing import Dict, List, Union
-
 import torch
 
 from .abstract_target_transform import AbstractTargetTransform
@@ -45,8 +43,8 @@ class MinMaxScaler(AbstractTargetTransform):
         return (x - self.minimum) / (self.maximum - self.minimum)
 
     def decode(self, x: float) -> float:
-        """Decode a target value by reversing the scaling between the minimum
-        and maximum. Inverse operation of encode.
+        """Decode a target value by reversing the scaling between the minimum and
+        maximum. Inverse operation of encode.
 
         Args:
             x: Scaled target value.
@@ -57,8 +55,8 @@ class MinMaxScaler(AbstractTargetTransform):
         return x * (self.maximum - self.minimum) + self.minimum
 
     def probabilities_training(self, x: torch.Tensor) -> torch.Tensor:
-        """Get the encoded probabilities from a batch of model outputs
-        during training by applying the sigmoid function.
+        """Get the encoded probabilities from a batch of model outputs during training
+        by applying the sigmoid function.
 
         Args:
             x: Batch of model outputs.
@@ -69,8 +67,8 @@ class MinMaxScaler(AbstractTargetTransform):
         return torch.sigmoid(x)
 
     def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
-        """Get the encoded probabilities from a batch of model outputs by
-        applying the sigmoid function.
+        """Get the encoded probabilities from a batch of model outputs by applying the
+        sigmoid function.
 
         Args:
             x: Batch of model outputs.
@@ -80,9 +78,9 @@ class MinMaxScaler(AbstractTargetTransform):
         """
         return torch.sigmoid(x)
 
-    def predict_inference(self, x: torch.Tensor) -> Union[List[float], float]:
-        """Get the encoded predictions from a batch of model output
-        probabilities by returning the raw values.
+    def predict_inference(self, x: torch.Tensor) -> list[float] | float:
+        """Get the encoded predictions from a batch of model output probabilities by
+        returning the raw values.
 
         Args:
             x: Batch of model output probabilities.
@@ -92,9 +90,9 @@ class MinMaxScaler(AbstractTargetTransform):
         """
         return x.squeeze().tolist()
 
-    def majority_vote(self, x: List[float]) -> float:
-        """Get the majority vote from a list of target values by averaging
-        the predictions.
+    def majority_vote(self, x: list[float]) -> float:
+        """Get the majority vote from a list of target values by averaging the
+        predictions.
 
         Args:
             x: List of target values.
@@ -104,9 +102,9 @@ class MinMaxScaler(AbstractTargetTransform):
         """
         return sum(x) / len(x)
 
-    def probabilities_to_dict(self, x: torch.Tensor) -> Dict[str, float]:
-        """Convert a tensor of probabilities to a dictionary of targets and
-        their probabilities.
+    def probabilities_to_dict(self, x: torch.Tensor) -> dict[str, float]:
+        """Convert a tensor of probabilities to a dictionary of targets and their
+        probabilities.
 
         Args:
             x: Tensor of probabilities.

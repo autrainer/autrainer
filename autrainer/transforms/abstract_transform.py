@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 import audobject
 
@@ -7,14 +7,13 @@ from autrainer.core.structs import AbstractDataItem
 
 
 class AbstractTransform(ABC, audobject.Object):
-    def __init__(self, order: int = 0, **kwargs: Dict[str, Any]) -> None:
+    def __init__(self, order: int = 0, **kwargs: Any) -> None:
         """Abstract class for a transform.
 
         Args:
-            order: The order of the transform in the pipeline. Larger means
-                later in the pipeline. If multiple transforms have the same
-                order, they are applied in the order they were added to the
-                pipeline. Defaults to 0.
+            order: The order of the transform in the pipeline. Larger means later in the
+                pipeline. If multiple transforms have the same order, they are applied
+                in the order they were added to the pipeline. Defaults to 0.
             kwargs: Additional keyword arguments to store in the object.
         """
         super().__init__(**kwargs)

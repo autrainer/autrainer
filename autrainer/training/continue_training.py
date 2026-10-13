@@ -26,8 +26,8 @@ class ContinueTraining(CallbackMixin):
         self.remove_continued_runs = remove_continued_runs
 
     @CallbackMixin.order(100)  # should run after all other callbacks
-    def cb_on_train_begin(self, trainer: "ModularTaskTrainer") -> None:
-        finished_runs = get_run_names(trainer.output_directory.parent)
+    def cb_on_train_begin(self, trainer: ModularTaskTrainer) -> None:
+        finished_runs = get_run_names(str(trainer.output_directory.parent))
 
         current_cfg = self._create_run_config(self.run_name)
         current_iteration = int(current_cfg.pop("iterations"))
@@ -44,10 +44,10 @@ class ContinueTraining(CallbackMixin):
                 matches[run] = current_iteration
         if not matches:
             return
-        self.continue_training(trainer, max(matches, key=matches.get))
+        self.continue_training(trainer, max(matches, key=matches.__getitem__))
 
     @CallbackMixin.order(100)  # should run after all other callbacks
-    def cb_on_train_end(self, trainer: "ModularTaskTrainer") -> None:
+    def cb_on_train_end(self, trainer: ModularTaskTrainer) -> None:
         if self.continued_run is None or not self.remove_continued_runs:
             return
         shutil.rmtree(os.path.join(trainer.output_directory.parent, self.continued_run))

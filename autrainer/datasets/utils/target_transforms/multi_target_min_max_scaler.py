@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 import torch
 
 from .abstract_target_transform import AbstractTargetTransform
@@ -8,9 +6,9 @@ from .abstract_target_transform import AbstractTargetTransform
 class MultiTargetMinMaxScaler(AbstractTargetTransform):
     def __init__(
         self,
-        target: List[str],
-        minimum: List[float],
-        maximum: List[float],
+        target: list[str],
+        minimum: list[float],
+        maximum: list[float],
     ) -> None:
         """Minimum-Maximum Scaler for multi-target regression.
 
@@ -39,7 +37,7 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         """
         return len(self.target)
 
-    def encode(self, x: List[float]) -> torch.Tensor:
+    def encode(self, x: list[float]) -> torch.Tensor:
         """Encode a target value by scaling it between the minimum and maximum.
 
         Args:
@@ -50,9 +48,9 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         """
         return (torch.Tensor(x) - self._m) / (self._M - self._m)
 
-    def decode(self, x: List[float]) -> List[float]:
-        """Decode a target value by reversing the scaling between the minimum
-        and maximum. Inverse operation of encode.
+    def decode(self, x: list[float]) -> list[float]:
+        """Decode a target value by reversing the scaling between the minimum and
+        maximum. Inverse operation of encode.
 
         Args:
             x: Scaled target value.
@@ -63,8 +61,8 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         return (torch.Tensor(x) * (self._M - self._m) + self._m).tolist()
 
     def probabilities_training(self, x: torch.Tensor) -> torch.Tensor:
-        """Get the encoded probabilities from a batch of model outputs
-        during training by applying the sigmoid function.
+        """Get the encoded probabilities from a batch of model outputs during training
+        by applying the sigmoid function.
 
         Args:
             x: Batch of model outputs.
@@ -75,8 +73,8 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         return torch.sigmoid(x)
 
     def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
-        """Get the encoded probabilities from a batch of model outputs by
-        applying the sigmoid function.
+        """Get the encoded probabilities from a batch of model outputs by applying the
+        sigmoid function.
 
         Args:
             x: Batch of model outputs.
@@ -86,9 +84,9 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         """
         return torch.sigmoid(x)
 
-    def predict_inference(self, x: torch.Tensor) -> List[List[float]]:
-        """Get the encoded predictions from a batch of model output
-        probabilities by returning the raw values.
+    def predict_inference(self, x: torch.Tensor) -> list[list[float]]:
+        """Get the encoded predictions from a batch of model output probabilities by
+        returning the raw values.
 
         Args:
             x: Batch of model output probabilities.
@@ -98,9 +96,9 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         """
         return x.tolist()
 
-    def majority_vote(self, x: List[List[float]]) -> List[float]:
-        """Get the majority vote from a list of target values by averaging
-        the predictions.
+    def majority_vote(self, x: list[list[float]]) -> list[float]:
+        """Get the majority vote from a list of target values by averaging the
+        predictions.
 
         Args:
             x: List of target values.
@@ -110,9 +108,9 @@ class MultiTargetMinMaxScaler(AbstractTargetTransform):
         """
         return [sum(item) / len(item) for item in zip(*x, strict=False)]
 
-    def probabilities_to_dict(self, x: torch.Tensor) -> Dict[str, float]:
-        """Convert a tensor of probabilities to a dictionary of targets and
-        their probabilities.
+    def probabilities_to_dict(self, x: torch.Tensor) -> dict[str, float]:
+        """Convert a tensor of probabilities to a dictionary of targets and their
+        probabilities.
 
         Args:
             x: Tensor of probabilities.

@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from .callback_manager import CallbackManager
 
@@ -8,7 +9,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class CallbackMixin:
-    def __init_subclass__(cls, **kwargs: Dict[str, Any]) -> None:
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
         names, seen = [], set()
 
@@ -27,7 +28,7 @@ class CallbackMixin:
 
         cls.__cb_names__ = names
 
-    def __init__(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         mgr = CallbackManager()
 
@@ -65,9 +66,9 @@ class CallbackMixin:
     def order(order: int) -> Callable[..., Any]:
         """Decorator to set the order of the callback in the callback list.
 
-        A larger order means the callback will be called later in the list.
-        If multiple callbacks share the same order, they are applied in the order they
-        were registered (i.e., in instantiation order of the objects).
+        A larger order means the callback will be called later in the list. If multiple
+        callbacks share the same order, they are applied in the order they were
+        registered (i.e., in instantiation order of the objects).
 
         Note: If used in combination with CallbackMixin.chain, the order is determined
         by the order of the methods in the class hierarchy, with the base class method
@@ -78,7 +79,7 @@ class CallbackMixin:
         """
 
         def deco(fn: Callable[..., Any]) -> Callable[..., Any]:
-            fn.__cb_order__ = order
+            fn.__cb_order__ = order  # ty: ignore[unresolved-attribute]
             return fn
 
         return deco
@@ -93,7 +94,7 @@ class CallbackMixin:
         """
 
         def deco(fn: Callable[..., Any]) -> Callable[..., Any]:
-            fn.__cb_chain__ = True
+            fn.__cb_chain__ = True  # ty: ignore[unresolved-attribute]
             return fn
 
         return deco
@@ -130,7 +131,7 @@ class CallbackMixin:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        metrics: Dict[str, float],
+        metrics: dict[str, float],
     ) -> None:
         """Called at the end of each iteration including validation.
 
@@ -205,7 +206,7 @@ class CallbackMixin:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        dev_results: Dict[str, float],
+        dev_results: dict[str, float],
     ) -> None:
         """Called at the end of the validation loop.
 
@@ -253,7 +254,7 @@ class CallbackMixin:
     def cb_on_test_end(
         self,
         trainer: "ModularTaskTrainer",
-        test_results: Dict[str, float],
+        test_results: dict[str, float],
     ) -> None:
         """Called at the end of the testing loop.
 

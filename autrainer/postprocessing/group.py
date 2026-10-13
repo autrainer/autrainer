@@ -1,6 +1,6 @@
 import os
 import shutil
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from omegaconf import DictConfig, ListConfig
 
@@ -13,19 +13,19 @@ class GroupGrid:
     def __init__(
         self,
         results_dir: str,
-        groupings: Union[ListConfig[DictConfig], List[Dict]],
-        max_runs: Optional[int] = None,
-        plot_params: Optional[dict] = None,
+        groupings: ListConfig | list[dict[str, Any]],
+        max_runs: int | None = None,
+        plot_params: dict | None = None,
     ) -> None:
-        """Group runs of one or more grid search experiments based on the
-        specified groupings.
+        """Group runs of one or more grid search experiments based on the specified
+        groupings.
 
         Args:
             results_dir: The directory where the results are stored.
-            groupings: A list of experiments to create containing one or more
-                runs to group.
-            max_runs_plot: The maximum number of best runs to plot. If None,
-                all runs will be plotted. Defaults to None.
+            groupings: A list of experiments to create containing one or more runs to
+                group.
+            max_runs_plot: The maximum number of best runs to plot. If None, all runs
+                will be plotted. Defaults to None.
             plot_params: Additional parameters for plotting. Defaults to None.
         """
         self.results_dir = results_dir
@@ -36,7 +36,7 @@ class GroupGrid:
     def group_runs(self) -> None:
         """Group the runs of the specified experiments based on the groupings."""
         for grouping in self.groupings:
-            grouping = self._preprocess(grouping)
+            grouping = self._preprocess(grouping)  # ty: ignore[invalid-argument-type]
             mappings = self._copy_runs(grouping.experiment_id, grouping.runs)
             self._group_experiment(
                 grouping.experiment_id,
@@ -62,9 +62,7 @@ class GroupGrid:
                 run.states = grouping.states
         return grouping
 
-    def _copy_runs(
-        self, experiment: str, runs: ListConfig[DictConfig]
-    ) -> Dict[str, List[str]]:
+    def _copy_runs(self, experiment: str, runs: ListConfig) -> dict[str, list[str]]:
         run_paths, copy_states = self._resolve_runs_paths(experiment, runs)
         run_paths, copy_states, mappings = self._resolve_aggregated_runs(
             run_paths, copy_states
@@ -74,8 +72,10 @@ class GroupGrid:
         return mappings
 
     def _resolve_runs_paths(
-        self, experiment: str, runs: ListConfig[DictConfig]
-    ) -> Tuple[List[str], List[bool]]:
+        self,
+        experiment: str,
+        runs: ListConfig,
+    ) -> tuple[list[str], list[bool]]:
         paths = []
         copy_states = []
         for run in runs:
@@ -100,8 +100,8 @@ class GroupGrid:
         return paths, copy_states
 
     def _resolve_aggregated_runs(
-        self, run_paths: List[str], copy_states: List[bool]
-    ) -> Tuple[List[str], List[bool], Dict[str, List[str]]]:
+        self, run_paths: list[str], copy_states: list[bool]
+    ) -> tuple[list[str], list[bool], dict[str, list[str]]]:
         expanded_paths = []
         expanded_states = []
         mappings = {}
@@ -117,10 +117,10 @@ class GroupGrid:
 
         return expanded_paths, expanded_states, mappings
 
-    def _get_aggregated_runs(self, run_path: str) -> List[str]:
+    def _get_aggregated_runs(self, run_path: str) -> list[str]:
         if "#" not in os.path.basename(run_path):
             return [os.path.basename(run_path)]
-        return load_yaml(os.path.join(run_path, "runs.yaml"))
+        return load_yaml(os.path.join(run_path, "runs.yaml"))  # ty: ignore[invalid-return-type]
 
     def _copy_run(self, experiment: str, run_path: str, copy_state: bool) -> None:
         dst = os.path.join(
@@ -143,9 +143,9 @@ class GroupGrid:
     def _group_experiment(
         self,
         experiment: str,
-        runs: ListConfig[DictConfig],
+        runs: ListConfig,
         create_summary: bool,
-        mappings: Dict[str, List[str]],
+        mappings: dict[str, list[str]],
     ) -> None:
         grouped_dict = {}
         for run in runs:
@@ -167,7 +167,7 @@ class GroupGrid:
         ag = AggregateGrid(
             results_dir=self.results_dir,
             experiment_id=experiment,
-            aggregate_list="",
+            aggregate_list=[],
             aggregate_name="grouping",
             aggregated_dict=grouped_dict,
             max_runs_plot=self.max_runs,

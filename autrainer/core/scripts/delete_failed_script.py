@@ -1,15 +1,12 @@
 from dataclasses import dataclass
 import os
 import shutil
-from typing import List
-
-from autrainer.core.scripts.abstract_script import MockParser
 
 from .abstract_postprocess_script import (
     AbstractPostprocessArgs,
     AbstractPostprocessScript,
 )
-from .utils import catch_cli_errors
+from .utils import MockParser, catch_cli_errors
 
 
 @dataclass
@@ -17,7 +14,7 @@ class DeleteFailedArgs(AbstractPostprocessArgs):
     force: bool
 
 
-class DeleteFailedScript(AbstractPostprocessScript):
+class DeleteFailedScript(AbstractPostprocessScript[DeleteFailedArgs]):
     def __init__(self) -> None:
         super().__init__(
             "rm-failed",
@@ -49,7 +46,7 @@ class DeleteFailedScript(AbstractPostprocessScript):
         if args.force or self._confirm_deletion(failed_runs):
             self._delete_runs(args, failed_runs)
 
-    def _collect_failed_runs(self, args: DeleteFailedArgs) -> List[str]:
+    def _collect_failed_runs(self, args: DeleteFailedArgs) -> list[str]:
         path = os.path.join(args.results_dir, args.experiment_id, "training")
         return [
             f
@@ -58,7 +55,7 @@ class DeleteFailedScript(AbstractPostprocessScript):
             and not os.path.exists(os.path.join(path, f, "metrics.csv"))
         ]
 
-    def _confirm_deletion(self, failed_runs: List[str]) -> bool:
+    def _confirm_deletion(self, failed_runs: list[str]) -> bool:
         print("The following failed runs will be deleted:")
         print("\n".join(failed_runs))
         print()
@@ -70,7 +67,7 @@ class DeleteFailedScript(AbstractPostprocessScript):
     def _delete_runs(
         self,
         args: DeleteFailedArgs,
-        failed_runs: List[str],
+        failed_runs: list[str],
     ) -> None:
         path = os.path.join(args.results_dir, args.experiment_id, "training")
         for run in failed_runs:
@@ -78,21 +75,16 @@ class DeleteFailedScript(AbstractPostprocessScript):
 
 
 @catch_cli_errors
-def rm_failed(
-    results_dir: str,
-    experiment_id: str,
-    force: bool = False,
-) -> None:
+def rm_failed(results_dir: str, experiment_id: str, force: bool = False) -> None:
     """Delete failed runs from an experiment.
 
-    If called in a notebook, the function will not raise an error and print
-    the error message instead.
+    If called in a notebook, the function will not raise an error and print the error
+    message instead.
 
     Args:
         results_dir: Path to grid search results directory.
         experiment_id: ID of experiment to postprocess.
-        force: Force deletion of failed runs without confirmation.
-            Defaults to False.
+        force: Force deletion of failed runs without confirmation. Defaults to False.
 
     Raises:
         CommandLineError: If the results directory or experiment ID dont exist.
