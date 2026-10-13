@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from docutils import nodes
 from docutils.parsers.rst import directives
@@ -31,7 +31,7 @@ class ConfigurationsDirective(SphinxDirective):
         "exact": directives.flag,
     }
 
-    def run(self) -> List[ConfigNode]:
+    def run(self) -> list[ConfigNode]:
         """Collects and renders YAML configuration files.
 
         Options:
@@ -78,11 +78,11 @@ class ConfigurationsDirective(SphinxDirective):
 
     def _generate(
         self,
-        subdir: Optional[str],
+        subdir: str | None,
         config: str,
         headline: bool = False,
         exact: bool = False,
-    ) -> List[ConfigNode]:
+    ) -> list[ConfigNode]:
         subdir = subdir or ""
         conf_dir = os.path.abspath(
             os.path.join(
@@ -113,7 +113,7 @@ class ConfigurationsDirective(SphinxDirective):
             config_id = f"default-{config_file.replace('.yaml', '').lower()}"
             container_node["ids"].append(config_id)
 
-            with open(config_path, "r") as file:
+            with open(config_path) as file:
                 config_content = file.read()
 
             literal_node = nodes.literal_block(
@@ -126,7 +126,7 @@ class ConfigurationsDirective(SphinxDirective):
             container_node += literal_node
             content.append(container_node)
 
-        return content
+        return content  # ty: ignore[invalid-return-type]
 
     @staticmethod
     def _select_config(f: str, config: str, exact: bool) -> bool:
@@ -135,7 +135,7 @@ class ConfigurationsDirective(SphinxDirective):
         return f.startswith(config) and f.endswith(".yaml")
 
 
-def setup(app: Sphinx) -> Dict[str, Any]:
+def setup(app: Sphinx) -> dict[str, Any]:
     app.add_node(
         ConfigNode,
         html=(

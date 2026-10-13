@@ -1,7 +1,7 @@
 from functools import cached_property
 import os
 import shutil
-from typing import Any, Dict, List
+from typing import Any
 
 import pandas as pd
 
@@ -15,10 +15,10 @@ FILES = {"ESC-50.zip": "https://github.com/karoldvl/ESC-50/archive/master.zip"}
 class ESC50(BaseClassificationDataset):
     def __init__(
         self,
-        train_folds: List[int],
-        dev_folds: List[int],
-        test_folds: List[int],
-        **kwargs: Dict[str, Any],  # kwargs only for simplicity in the tutorial
+        train_folds: list[int],
+        dev_folds: list[int],
+        test_folds: list[int],
+        **kwargs: Any,  # kwargs only for simplicity in the tutorial
     ) -> None:
         self.train_folds = train_folds
         self.dev_folds = dev_folds

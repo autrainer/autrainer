@@ -1,5 +1,4 @@
 import math
-from typing import Dict, List, Union
 
 import torch
 
@@ -29,11 +28,11 @@ class LogTargetTransform(AbstractTargetTransform):
     def probabilities_inference(self, x: torch.Tensor) -> torch.Tensor:
         return x
 
-    def predict_inference(self, x: torch.Tensor) -> Union[List[float], float]:
+    def predict_inference(self, x: torch.Tensor) -> list[float] | float:
         return x.squeeze().tolist()
 
-    def majority_vote(self, x: List[float]) -> float:
+    def majority_vote(self, x: list[float]) -> float:
         return sum(x) / len(x)
 
-    def probabilities_to_dict(self, x: torch.Tensor) -> Dict[str, float]:
+    def probabilities_to_dict(self, x: torch.Tensor) -> dict[str, float]:
         return {self.target: x.item()}

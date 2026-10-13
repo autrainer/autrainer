@@ -1,4 +1,4 @@
-from typing import Callable, Tuple
+from collections.abc import Callable
 
 import torch
 
@@ -13,7 +13,7 @@ class SomeOptimizer(torch.optim.Optimizer):
         data: DataBatch,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """Custom step function for the optimizer.
 
         Args:
@@ -30,3 +30,4 @@ class SomeOptimizer(torch.optim.Optimizer):
         Returns:
             Tuple containing the non-reduced loss and model outputs.
         """
+        raise NotImplementedError

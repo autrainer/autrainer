@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from pygments.lexer import RegexLexer, bygroups
 from pygments.token import (
@@ -108,7 +108,7 @@ class ExtendedLexer(RegexLexer):
     }
 
 
-def setup(app: Sphinx) -> Dict[str, Any]:
+def setup(app: Sphinx) -> dict[str, Any]:
     lexers["autrainer"] = AutrainerLexer(startinline=True)
     lexers["aucli"] = AutrainerLexer(startinline=True)
     lexers["pip"] = PipLexer(startinline=True)

@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from autrainer.augmentations.abstract_augmentation import AbstractAugmentation
 from autrainer.core.structs import DataBatch

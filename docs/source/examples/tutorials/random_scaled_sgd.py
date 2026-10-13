@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict, Tuple
+from collections.abc import Callable
+from typing import Any
 
 import torch
 
@@ -12,9 +13,9 @@ class RandomScaledSGD(torch.optim.Optimizer):
         self,
         scaling_factor: float = 0.01,
         p: float = 1.0,
-        generator_seed: int = None,
+        generator_seed: int | None = None,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Randomized Scaled SGD optimizer. Randomly scales the learning rate.
 
@@ -38,7 +39,7 @@ class RandomScaledSGD(torch.optim.Optimizer):
         data: AbstractDataBatch,  # batched input data
         criterion: torch.nn.Module,  # loss function
         probabilities_fn: Callable,  # function to get probabilities from model outputs
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         self.zero_grad()
         output = model(**create_model_inputs(model, data))
         loss = criterion(probabilities_fn(output), data.target)

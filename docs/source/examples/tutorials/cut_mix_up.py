@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Callable, List, Optional
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 import torch
 from torchvision.transforms import v2
@@ -17,7 +18,7 @@ class CutMixUp(AbstractAugmentation):
         alpha: float = 1.0,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
+        generator_seed: int | None = None,
     ) -> None:
         """Randomly applies CutMix or MixUp augmentations with a probability
         of 0.5 each.
@@ -45,7 +46,7 @@ class CutMixUp(AbstractAugmentation):
         self.cutmix = v2.CutMix(num_classes=data.output_dim, alpha=self.alpha)
         self.mixup = v2.MixUp(num_classes=data.output_dim, alpha=self.alpha)
 
-        def _collate_fn(batch: List[AbstractDataItem]) -> AbstractDataBatch:
+        def _collate_fn(batch: list[AbstractDataItem]) -> AbstractDataBatch:
             probability = torch.rand(1, generator=self.g).item()
             batched: AbstractDataBatch = default(batch)
             if probability < self.p:

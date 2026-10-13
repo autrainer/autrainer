@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
+from typing import Any
 
 import pandas as pd
 import torch
@@ -33,18 +34,18 @@ class DataBatchMulti(AbstractDataBatch[DataItemMultiBranch]):
     target: torch.Tensor
     index: torch.Tensor
 
-    def to(self, device: torch.device) -> None:
-        self.features = self.features.to(device)
-        self.meta = self.meta.to(device)
-        self.target = self.target.to(device)
+    def to(self, device: torch.device, **kwargs: Any) -> None:
+        self.features = self.features.to(device, **kwargs)
+        self.meta = self.meta.to(device, **kwargs)
+        self.target = self.target.to(device, **kwargs)
 
 
 class ToyDatasetMultiBranch(ToyDatasetWrapper):
-    def __getitem__(self, index: int) -> DataItemMultiBranch:
+    def __getitem__(self, index: int) -> DataItemMultiBranch:  # ty: ignore[invalid-method-override]
         data = super().__getitem__(index)
         return DataItemMultiBranch(
             features=data.features,
-            target=data.target,
+            target=data.target,  # ty: ignore[invalid-argument-type]
             index=data.index,
             meta=data.features,
         )
