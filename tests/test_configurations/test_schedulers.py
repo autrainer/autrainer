@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -11,7 +11,7 @@ from .utils import (
 
 class TestSchedulerConfigurations:
     @pytest.mark.parametrize(("name", "config"), load_configurations("scheduler"))
-    def test_configurations(self, name: str, config: Dict[str, Any]) -> None:
+    def test_configurations(self, name: str, config: dict[str, Any]) -> None:
         assert config.get("id"), f"{name}: Missing ID in configuration"
         if config["id"] == "None":
             return

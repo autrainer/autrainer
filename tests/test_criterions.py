@@ -1,4 +1,4 @@
-from typing import Any, Tuple, Type
+from typing import Any
 
 import pandas as pd
 import pytest
@@ -89,9 +89,9 @@ class MockMTRegressionDataset(MockMLClassificationDataset):
 class TestBalancedCrossEntropyLoss:
     def _mock_criterion_setup(
         self,
-    ) -> Tuple[BalancedCrossEntropyLoss, torch.Tensor]:
+    ) -> tuple[BalancedCrossEntropyLoss, torch.Tensor]:
         criterion = BalancedCrossEntropyLoss()
-        criterion.setup(MockClassificationDataset())
+        criterion.setup(MockClassificationDataset())  # ty: ignore[invalid-argument-type]
         weights = torch.tensor(
             [1 / 1, 1 / 2, 1 / 3, 1, 1],
             dtype=torch.float32,
@@ -104,7 +104,7 @@ class TestBalancedCrossEntropyLoss:
         dataset = MockClassificationDataset()
         dataset.df_train = pd.DataFrame({"target": [0, 1, 1, 2, 2, 2, 3, 0]})
         with pytest.raises(ValueError, match="weighting requires a non-zero frequency"):
-            criterion.setup(dataset)
+            criterion.setup(dataset)  # ty: ignore[invalid-argument-type]
 
     def test_setup(self) -> None:
         criterion, weights = self._mock_criterion_setup()
@@ -125,7 +125,7 @@ class TestBalancedCrossEntropyLoss:
 class TestWeightedCrossEntropyLoss(TestBalancedCrossEntropyLoss):
     def _mock_criterion_setup(
         self,
-    ) -> Tuple[WeightedCrossEntropyLoss, torch.Tensor]:
+    ) -> tuple[WeightedCrossEntropyLoss, torch.Tensor]:
         criterion = WeightedCrossEntropyLoss(
             class_weights={
                 "target1": 1,
@@ -135,7 +135,7 @@ class TestWeightedCrossEntropyLoss(TestBalancedCrossEntropyLoss):
                 "target5": 4,
             }
         )
-        criterion.setup(MockClassificationDataset())
+        criterion.setup(MockClassificationDataset())  # ty: ignore[invalid-argument-type]
         weights = torch.tensor([1, 2, 3, 5, 4], dtype=torch.float32)
         weights = weights * len(weights) / weights.sum()
         return criterion, weights
@@ -151,20 +151,18 @@ class TestWeightedCrossEntropyLoss(TestBalancedCrossEntropyLoss):
             }
         )
         with pytest.raises(ValueError, match="weighting requires a non-zero frequency"):
-            criterion.setup(MockClassificationDataset())
+            criterion.setup(MockClassificationDataset())  # ty: ignore[invalid-argument-type]
 
     def test_missing_target_weight(self) -> None:
         criterion = WeightedCrossEntropyLoss(class_weights={"target1": 1})
         with pytest.raises(ValueError, match="Missing class weight for label"):
-            criterion.setup(MockClassificationDataset())
+            criterion.setup(MockClassificationDataset())  # ty: ignore[invalid-argument-type]
 
 
 class TestBalancedBCEWithLogitsLoss(TestBalancedCrossEntropyLoss):
-    def _mock_criterion_setup(
-        self,
-    ) -> Tuple[BalancedBCEWithLogitsLoss, torch.Tensor]:
+    def _mock_criterion_setup(self) -> tuple[BalancedBCEWithLogitsLoss, torch.Tensor]:  # ty: ignore[invalid-method-override]
         criterion = BalancedBCEWithLogitsLoss()
-        criterion.setup(MockMLClassificationDataset())
+        criterion.setup(MockMLClassificationDataset())  # ty: ignore[invalid-argument-type]
         weights = torch.tensor(
             [1 / 2, 1 / 3, 1 / 3, 1 / 5, 1 / 4],
             dtype=torch.float32,
@@ -187,7 +185,7 @@ class TestBalancedBCEWithLogitsLoss(TestBalancedCrossEntropyLoss):
         dataset = MockMLClassificationDataset()
         dataset.target_transform.labels += ["target6"]
         with pytest.raises(ValueError, match="6 columns passed, passed data had 5"):
-            criterion.setup(dataset)
+            criterion.setup(dataset)  # ty: ignore[invalid-argument-type]
 
     def test_forward_dtype(self) -> None:
         criterion, _ = self._mock_criterion_setup()
@@ -200,7 +198,7 @@ class TestBalancedBCEWithLogitsLoss(TestBalancedCrossEntropyLoss):
 class TestWeightedBCEWithLogitsLoss(TestBalancedBCEWithLogitsLoss):
     def _mock_criterion_setup(
         self,
-    ) -> Tuple[WeightedBCEWithLogitsLoss, torch.Tensor]:
+    ) -> tuple[WeightedBCEWithLogitsLoss, torch.Tensor]:
         criterion = WeightedBCEWithLogitsLoss(
             class_weights={
                 "target1": 1,
@@ -210,7 +208,7 @@ class TestWeightedBCEWithLogitsLoss(TestBalancedBCEWithLogitsLoss):
                 "target5": 4,
             }
         )
-        criterion.setup(MockMLClassificationDataset())
+        criterion.setup(MockMLClassificationDataset())  # ty: ignore[invalid-argument-type]
         weights = torch.tensor([1, 2, 3, 5, 4], dtype=torch.float32)
         weights = weights * len(weights) / weights.sum()
         return criterion, weights
@@ -226,18 +224,16 @@ class TestWeightedBCEWithLogitsLoss(TestBalancedBCEWithLogitsLoss):
             }
         )
         with pytest.raises(ValueError, match="weighting requires a non-zero frequency"):
-            criterion.setup(MockMLClassificationDataset())
+            criterion.setup(MockMLClassificationDataset())  # ty: ignore[invalid-argument-type]
 
     def test_missing_target_weight(self) -> None:
         criterion = WeightedBCEWithLogitsLoss(class_weights={"target1": 1})
         with pytest.raises(ValueError, match="Missing class weight for label"):
-            criterion.setup(MockMLClassificationDataset())
+            criterion.setup(MockMLClassificationDataset())  # ty: ignore[invalid-argument-type]
 
 
 class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
-    def _mock_criterion_setup(
-        self,
-    ) -> Tuple[WeightedMSELoss, torch.Tensor]:
+    def _mock_criterion_setup(self) -> tuple[WeightedMSELoss, torch.Tensor]:  # ty: ignore[invalid-method-override]
         criterion = WeightedMSELoss(
             target_weights={
                 "target1": 1,
@@ -247,7 +243,7 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
                 "target5": 4,
             }
         )
-        criterion.setup(MockMTRegressionDataset())
+        criterion.setup(MockMTRegressionDataset())  # ty: ignore[invalid-argument-type]
         weights = torch.tensor([1, 2, 3, 5, 4], dtype=torch.float32)
         weights = weights * len(weights) / weights.sum()
         return criterion, weights
@@ -263,9 +259,9 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
         )
 
     def test_invalid_task(self) -> None:
-        criterion = WeightedMSELoss(target_weights=None)
+        criterion = WeightedMSELoss(target_weights=None)  # ty: ignore[invalid-argument-type]
         with pytest.raises(ValueError, match="multi-target regression"):
-            criterion.setup(MockClassificationDataset())
+            criterion.setup(MockClassificationDataset())  # ty: ignore[invalid-argument-type]
 
     def test_invalid_frequency_setup(self) -> None:
         criterion = WeightedMSELoss(
@@ -278,12 +274,12 @@ class TestWeightedMSELoss(TestBalancedCrossEntropyLoss):
             }
         )
         with pytest.raises(ValueError, match="weighting requires a non-zero frequency"):
-            criterion.setup(MockMTRegressionDataset())
+            criterion.setup(MockMTRegressionDataset())  # ty: ignore[invalid-argument-type]
 
     def test_missing_target_weight(self) -> None:
         criterion = WeightedMSELoss(target_weights={"target1": 1})
         with pytest.raises(ValueError, match="Missing target weight for target"):
-            criterion.setup(MockMTRegressionDataset())
+            criterion.setup(MockMTRegressionDataset())  # ty: ignore[invalid-argument-type]
 
     def test_forward_dtype(self) -> None:
         criterion, _ = self._mock_criterion_setup()
@@ -309,7 +305,7 @@ class TestLossForward:
             (MSELoss, torch.rand(10, 5)),
         ],
     )
-    def test_forward_dtype(self, cls: Type[CrossEntropyLoss], y: torch.Tensor) -> None:
+    def test_forward_dtype(self, cls: type[CrossEntropyLoss], y: torch.Tensor) -> None:
         x = torch.rand(10, 5)
         loss = cls()(x, y)
         assert isinstance(loss, torch.Tensor), "Should return a torch.Tensor"

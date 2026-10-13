@@ -1,4 +1,4 @@
-from typing import Any, Dict, Union
+from typing import Any
 
 import pytest
 
@@ -20,7 +20,7 @@ class TestTransformConfigurations:
     def test_preprocesing_configurations(
         self,
         name: str,
-        config: Dict[str, Any],
+        config: dict[str, Any],
     ) -> None:
         assert config.get("file_handler"), f"{name}: Missing file handler"
         self._assert_transform(config["file_handler"], name)
@@ -35,7 +35,7 @@ class TestTransformConfigurations:
     def test_augmentation_configurations(
         self,
         name: str,
-        config: Dict[str, Any],
+        config: dict[str, Any],
     ) -> None:
         assert config.get("id"), f"{name}: Missing ID in configuration"
         assert config.get("_target_") == AUG_PATH, f"{name}: Invalid target"
@@ -47,7 +47,7 @@ class TestTransformConfigurations:
 
     @staticmethod
     def _assert_transform(
-        config: Union[str, Dict[str, Any]],
+        config: str | dict[str, Any],
         name: str,
     ) -> None:
         if isinstance(config, str):

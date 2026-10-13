@@ -37,11 +37,8 @@ mpl.use("Agg")
 
 
 class TestBookkeeping(BaseIndividualTempDir):
-    def test_log(
-        self,
-        caplog: pytest.CaptureFixture,
-    ) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+    def test_log(self, caplog: pytest.LogCaptureFixture) -> None:
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         with caplog.at_level(logging.INFO):
             bookkeeping.log("test")
             bookkeeping.log("test", level=logging.WARNING)
@@ -52,14 +49,14 @@ class TestBookkeeping(BaseIndividualTempDir):
 
     def test_log_to_file(
         self,
-        caplog: pytest.CaptureFixture,
+        caplog: pytest.LogCaptureFixture,
     ) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir, "bookkeeping.log")
+        bookkeeping = Bookkeeping(str(self.temp_dir), "bookkeeping.log")
         with caplog.at_level(logging.INFO):
             bookkeeping.log_to_file("test")
             bookkeeping.log_to_file("test", level=logging.WARNING)
             bookkeeping.log_to_file("test", level=logging.ERROR)
-        with open(os.path.join(self.temp_dir, "bookkeeping.log"), "r") as f:
+        with open(os.path.join(self.temp_dir, "bookkeeping.log")) as f:
             log = f.read()
         assert not caplog.text, "Should not log to stdout."
         assert "INFO" in log, "Should log info message."
@@ -67,14 +64,14 @@ class TestBookkeeping(BaseIndividualTempDir):
         assert "ERROR" in log, "Should log error message."
 
     def test_create_folder(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         bookkeeping.create_folder("folder")
         assert os.path.isdir(os.path.join(self.temp_dir, "folder")), (
             "Should create folder."
         )
 
     def test_save_model_summary(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
         shape = (1, 64)
         bookkeeping.save_model_summary(
@@ -91,7 +88,7 @@ class TestBookkeeping(BaseIndividualTempDir):
         )
 
     def test_save_state_dict(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
         bookkeeping.save_state(model, "model.pt")
         assert os.path.isfile(os.path.join(self.temp_dir, "model.pt")), (
@@ -99,16 +96,16 @@ class TestBookkeeping(BaseIndividualTempDir):
         )
 
     def test_save_invalid_state_dict(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         model = "not a model"
         with pytest.raises(TypeError):
-            bookkeeping.save_state(model, "model.pt")
+            bookkeeping.save_state(model, "model.pt")  # ty: ignore[invalid-argument-type]
         assert not os.path.isfile(os.path.join(self.temp_dir, "model.pt")), (
             "Should not save model state dict."
         )
 
     def test_load_state_dict(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         model1 = FFNN(output_dim=10, input_size=64, hidden_size=64)
         bookkeeping.save_state(model1, "model.pt")
         model2 = FFNN(output_dim=10, input_size=64, hidden_size=64)
@@ -118,21 +115,21 @@ class TestBookkeeping(BaseIndividualTempDir):
         )
 
     def test_load_invalid_state_dict(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
         bookkeeping.save_state(model, "model.pt")
         model = "not a model"
         with pytest.raises(TypeError):
-            bookkeeping.load_state(model, "model.pt")
+            bookkeeping.load_state(model, "model.pt")  # ty: ignore[invalid-argument-type]
 
     def test_load_non_existent_state_dict(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
         with pytest.raises(FileNotFoundError):
             bookkeeping.load_state(model, "model.pt")
 
     def test_save_audobject(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         model = FFNN(output_dim=10, input_size=64, hidden_size=64)
         bookkeeping.save_audobject(model, "model.yaml")
         assert os.path.isfile(os.path.join(self.temp_dir, "model.yaml")), (
@@ -140,16 +137,16 @@ class TestBookkeeping(BaseIndividualTempDir):
         )
 
     def test_save_invalid_audobject(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         model = "not a model"
         with pytest.raises(TypeError):
-            bookkeeping.save_audobject(model, "model.yaml")
+            bookkeeping.save_audobject(model, "model.yaml")  # ty: ignore[invalid-argument-type]
         assert not os.path.isfile(os.path.join(self.temp_dir, "model.yaml")), (
             "Should not save model audobject YAML."
         )
 
     def test_save_results_dict(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         results = {"loss": 0.1, "accuracy": 0.9}
         bookkeeping.save_results_dict(results, "results.yaml")
         assert os.path.isfile(os.path.join(self.temp_dir, "results.yaml")), (
@@ -160,7 +157,7 @@ class TestBookkeeping(BaseIndividualTempDir):
         assert results == loaded, "Should save and load results dict YAML."
 
     def test_save_results_df(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         results = pd.DataFrame({"loss": [0.1], "accuracy": [0.9]})
         bookkeeping.save_results_df(results, "results.csv")
         assert os.path.isfile(os.path.join(self.temp_dir, "results.csv")), (
@@ -170,7 +167,7 @@ class TestBookkeeping(BaseIndividualTempDir):
         assert results.equals(loaded), "Should save and load results dict CSV."
 
     def test_save_results_np(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         results = np.array([[0.1, 0.9]])
         bookkeeping.save_results_np(results, "results.npy")
         assert os.path.isfile(os.path.join(self.temp_dir, "results.npy")), (
@@ -183,7 +180,7 @@ class TestBookkeeping(BaseIndividualTempDir):
         )
 
     def test_save_best_results(self) -> None:
-        bookkeeping = Bookkeeping(self.temp_dir)
+        bookkeeping = Bookkeeping(str(self.temp_dir))
         results = pd.DataFrame(
             {
                 "train_loss": [0.01, 0.1, 0.2],
@@ -191,12 +188,11 @@ class TestBookkeeping(BaseIndividualTempDir):
                 "uar": [0.8, 0.7, 0.9],
             }
         )
-        metrics = [Accuracy(), UAR()]
         tracking_metric = Accuracy()
         bookkeeping.save_best_results(
             metrics=results,
             filename="best_results.yaml",
-            metric_fns=metrics,
+            metric_fns=[Accuracy(), UAR()],
             tracking_metric_fn=tracking_metric,
         )
         assert os.path.isfile(os.path.join(self.temp_dir, "best_results.yaml")), (
@@ -204,6 +200,7 @@ class TestBookkeeping(BaseIndividualTempDir):
         )
         loaded = OmegaConf.load(os.path.join(self.temp_dir, "best_results.yaml"))
         loaded = OmegaConf.to_container(loaded)
+        assert isinstance(loaded, dict)
         assert loaded.get("best_iteration") == 1, "Should save best iteration."
         assert loaded.get("accuracy") == 0.99, "Should save best accuracy."
         assert loaded.get("uar") == 0.9, "Should save best UAR."
@@ -212,7 +209,7 @@ class TestBookkeeping(BaseIndividualTempDir):
 
 class TestTimer(BaseIndividualTempDir):
     def test_timer(self) -> None:
-        timer = Timer(self.temp_dir, "test")
+        timer = Timer(str(self.temp_dir), "test")
         timer.start()
         time.sleep(1)
         timer.stop()
@@ -226,7 +223,7 @@ class TestTimer(BaseIndividualTempDir):
         )
 
     def test_invalid_timer(self) -> None:
-        timer = Timer(self.temp_dir, "test")
+        timer = Timer(str(self.temp_dir), "test")
         with pytest.raises(ValueError, match="not yet started"):
             timer.stop()
 
@@ -236,24 +233,24 @@ class TestHardware(BaseIndividualTempDir):
     def setup_class(cls) -> None:
         cls.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    def test_get_hardware_info(self) -> dict:
+    def test_get_hardware_info(self) -> None:
         hardware_info = get_hardware_info(self.device)
         assert hardware_info, "Should get hardware info."
 
     def test_save_hardware_info(self) -> None:
-        save_hardware_info(self.temp_dir, device=self.device)
+        save_hardware_info(str(self.temp_dir), device=self.device)
         assert os.path.isfile(os.path.join(self.temp_dir, "hardware.yaml")), (
             "Should save hardware info."
         )
 
-    def test_set_device(self) -> torch.device:
+    def test_set_device(self) -> None:
         if torch.cuda.is_available():
             device = set_device("cuda:0")
             assert device.type == "cuda", "Should set CUDA device."
         device = set_device("cpu")
         assert device.type == "cpu", "Should set CPU device."
 
-    def test_fallback_device(self, caplog: pytest.CaptureFixture) -> None:
+    def test_fallback_device(self, caplog: pytest.LogCaptureFixture) -> None:
         with caplog.at_level(logging.WARNING):
             device = set_device("invalid")
         assert device.type == "cpu", "Should fall back to CPU."
@@ -276,7 +273,7 @@ class TestThreadManager:
 
 class TestSaveRequirements(BaseIndividualTempDir):
     def test_save_requirements(self) -> None:
-        save_requirements(self.temp_dir)
+        save_requirements(str(self.temp_dir))
         assert os.path.isfile(os.path.join(self.temp_dir, "requirements.txt")), (
             "Should save requirements."
         )
@@ -290,7 +287,7 @@ class TestSetSeed:
         random.seed(seed)
 
         assert random.random() == rand, "Should set Python seed."
-        assert np.random.get_state()[1][0] == seed, "Should set NumPy seed."
+        assert np.random.get_state()[1][0] == seed, "Should set NumPy seed."  # ty: ignore[invalid-argument-type]
         assert torch.initial_seed() == seed, "Should set Torch seed."
         if torch.cuda.is_available():
             assert torch.cuda.initial_seed() == seed, "Should set Cuda seed."

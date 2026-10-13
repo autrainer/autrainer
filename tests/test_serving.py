@@ -76,7 +76,9 @@ class TestInference(BaseIndividualTempDir):
         assert os.path.exists("output/results.csv"), "Should save prediction results."
         assert os.path.exists("output/results.yaml"), "Should save prediction YAML."
 
-        pred, out, probs = inference.predict_file("input/audio_0.npy")
+        predictions = inference.predict_file("input/audio_0.npy")
+        assert predictions is not None
+        pred, out, probs = predictions
         assert isinstance(pred, str), "Should return a prediction string."
         assert isinstance(out, torch.Tensor), "Should return an output tensor."
         assert isinstance(probs, dict), "Should return a probabilities dict."
@@ -103,7 +105,9 @@ class TestInference(BaseIndividualTempDir):
         assert os.path.exists("output/results.csv"), "Should save prediction results."
         assert os.path.exists("output/results.yaml"), "Should save prediction YAML."
 
-        pred, out, probs = inference.predict_file("input/audio_0.npy")
+        predictions = inference.predict_file("input/audio_0.npy")
+        assert predictions is not None
+        pred, out, probs = predictions
         assert isinstance(pred, dict), "Should return a prediction dictionary"
         assert isinstance(out, dict), "Should return an output dictionary"
         assert isinstance(probs, dict), "Should return a probabilities dict."
@@ -164,7 +168,9 @@ class TestInference(BaseIndividualTempDir):
         assert os.path.exists("output/results.csv"), "Should save prediction results."
         assert os.path.exists("output/results.yaml"), "Should save prediction YAML."
 
-        pred, out, probs = inference.predict_file("input/audio_0.npy")
+        predictions = inference.predict_file("input/audio_0.npy")
+        assert predictions is not None
+        pred, out, probs = predictions
         assert isinstance(pred, str), "Should return a prediction string."
         assert isinstance(out, torch.Tensor), "Should return an output tensor."
         assert isinstance(probs, dict), "Should return a probabilities dict."

@@ -1,5 +1,4 @@
 import os
-from typing import Dict, List, Optional
 
 import audiofile
 import numpy as np
@@ -22,7 +21,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         file_type: str = "wav",
         target_type: str = "classification",
         num_files: int = 10,
-        output_files: Optional[List[str]] = None,
+        output_files: list[str] | None = None,
     ) -> None:
         assert target_type in [
             "classification",
@@ -57,7 +56,7 @@ class TestPreprocessing(BaseIndividualTempDir):
         sampling_rate: int,
         features_subdir: str = "default",
         index_column: str = "index",
-        output_files: Optional[List[str]] = None,
+        output_files: list[str] | None = None,
     ) -> None:
         if output_files is None:
             output_files = ["train", "dev", "test"]
@@ -150,9 +149,9 @@ class TestPreprocessing(BaseIndividualTempDir):
     )
     def test_log_mel_spectrogram_preprocessing(
         self,
-        preprocess: Dict,
+        preprocess: dict,
         sampling_rate: int,
-        features_path: Optional[str],
+        features_path: str | None,
     ) -> None:
         self._mock_dataframes("data/TestDataset")
         self._mock_data("data/TestDataset", sampling_rate)
@@ -183,8 +182,8 @@ class TestPreprocessing(BaseIndividualTempDir):
 
         preprocess_main(
             name="TestDataset",
-            dataset=dataset_args,
-            preprocess=preprocess,
+            dataset=dataset_args,  # ty: ignore[invalid-argument-type]
+            preprocess=preprocess,  # ty: ignore[invalid-argument-type]
             num_workers=1,
             update_frequency=1,
         )

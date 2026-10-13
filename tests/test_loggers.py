@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import Union
+from typing import TYPE_CHECKING, cast
 
 from omegaconf import OmegaConf
 import pytest
@@ -13,11 +13,15 @@ from autrainer.metrics import UAR, Accuracy
 from .utils import BaseIndividualTempDir
 
 
+if TYPE_CHECKING:
+    from autrainer.training import ModularTaskTrainer
+
+
 class TestFallbackLogger:
     @pytest.mark.parametrize("requested", ["mlflow", "test", None])
     def test_requested(
         self,
-        requested: Union[str, None],
+        requested: str | None,
         caplog: pytest.LogCaptureFixture,
     ) -> None:
         with caplog.at_level(logging.WARNING):
@@ -39,10 +43,7 @@ class TestFallbackLogger:
 
 class TestMLFlowLogger(BaseIndividualTempDir):
     @staticmethod
-    def _mock_mlflow_logger(
-        exp_name: str,
-        run_name: str,
-    ) -> MLFlowLogger:
+    def _mock_mlflow_logger(exp_name: str, run_name: str) -> MLFlowLogger:
         logger = MLFlowLogger(
             exp_name=exp_name,
             run_name=run_name,
@@ -105,10 +106,7 @@ class TestMLFlowLogger(BaseIndividualTempDir):
 
 class TestTensorBoardLogger(BaseIndividualTempDir):
     @staticmethod
-    def _mock_tensorboard_logger(
-        exp_name: str,
-        run_name: str,
-    ) -> MLFlowLogger:
+    def _mock_tensorboard_logger(exp_name: str, run_name: str) -> TensorBoardLogger:
         logger = TensorBoardLogger(
             exp_name=exp_name,
             run_name=run_name,
@@ -187,7 +185,7 @@ class TestSimulateTraining(BaseIndividualTempDir):
             output_dir="tbruns",
         )
         logger.setup()
-        trainer = self._mock_trainer()
+        trainer = cast("ModularTaskTrainer", self._mock_trainer())
         logger.cb_on_train_begin(trainer)
         for i in range(5):
             logger.cb_on_iteration_end(

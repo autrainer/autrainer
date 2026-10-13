@@ -1,5 +1,6 @@
+from collections.abc import Callable, Iterator
 from copy import deepcopy
-from typing import Any, Callable, Dict, Iterator, List, Tuple, Type, Union
+from typing import Any
 import warnings
 
 import numpy as np
@@ -73,10 +74,10 @@ class TestAllTransforms:
     )
     def test_output_shape(
         self,
-        transform: Type[Union[AbstractTransform, AbstractAugmentation]],
-        params: Dict[str, Any],
-        input_shape: Union[Tuple[int, int], Tuple[int, int, int]],
-        output_shape: Union[Tuple[int, int], Tuple[int, int, int]],
+        transform: type[AbstractTransform | AbstractAugmentation],
+        params: dict[str, Any],
+        input_shape: tuple[int, int] | tuple[int, int, int],
+        output_shape: tuple[int, int] | tuple[int, int, int],
     ) -> None:
         if issubclass(transform, AbstractAugmentation):
             instance = transform(**params, generator_seed=AUGMENTATION_SEED)
@@ -119,7 +120,7 @@ class TestAnyToTensor:
         )
 
     def test_numpy(self) -> None:
-        x = DataItem(np.random.rand(3, 32, 32).astype(np.float32), 0, 0)
+        x = DataItem(np.random.rand(3, 32, 32).astype(np.float32), 0, 0)  # ty: ignore[invalid-argument-type]
         y = AnyToTensor()(x)
         assert torch.is_tensor(y.features), "Output should be a tensor"
         assert y.features.shape == torch.Size([3, 32, 32]), (
@@ -130,7 +131,7 @@ class TestAnyToTensor:
 
     def test_pil(self) -> None:
         x = Image.fromarray(np.random.rand(32, 32, 3).astype(np.uint8))
-        x = DataItem(x, 0, 0)
+        x = DataItem(x, 0, 0)  # ty: ignore[invalid-argument-type]
         y = AnyToTensor()(x)
         assert torch.is_tensor(y.features), "Output should be a tensor"
         assert y.features.shape == torch.Size([3, 32, 32]), (
@@ -141,12 +142,12 @@ class TestAnyToTensor:
 
     def test_wrong_input(self) -> None:
         with pytest.raises(TypeError, match="must be a 'torch.Tensor'"):
-            AnyToTensor()(DataItem(0, 0, 0))
+            AnyToTensor()(DataItem(0, 0, 0))  # ty: ignore[invalid-argument-type]
 
 
 class TestNumpyToTensor:
     def test_numpy(self) -> None:
-        x = DataItem(np.random.rand(3, 32, 32).astype(np.float32), 0, 0)
+        x = DataItem(np.random.rand(3, 32, 32).astype(np.float32), 0, 0)  # ty: ignore[invalid-argument-type]
         y = NumpyToTensor()(x)
         assert torch.is_tensor(y.features), "Output should be a tensor"
         assert y.features.shape == torch.Size([3, 32, 32]), (
@@ -190,9 +191,9 @@ class TestResize:
     )
     def test_resize(
         self,
-        height: Union[int, str],
-        width: Union[int, str],
-        expected: Union[Tuple[int, int, int], None],
+        height: int | str,
+        width: int | str,
+        expected: tuple[int, int, int] | None,
     ) -> None:
         x = DataItem(torch.randn(3, 32, 32), 0, 0)
         if not expected:
@@ -217,8 +218,8 @@ class TestSquarePadCrop:
     def test_crop(
         self,
         mode: str,
-        input_shape: Tuple[int, int, int],
-        expected: Union[Tuple[int, int, int], None],
+        input_shape: tuple[int, int, int],
+        expected: tuple[int, int, int] | None,
     ) -> None:
         x = DataItem(torch.randn(*input_shape), 0, 0)
         if not expected:
@@ -232,19 +233,19 @@ class TestSquarePadCrop:
 
 class TestScaleRange:
     @pytest.mark.parametrize("range", [(0, 1), (-1, 1), (0, 255)])
-    def test_range_uint8(self, range: Tuple[int, int]) -> None:
+    def test_range_uint8(self, range: tuple[int, int]) -> None:
         self._test_range(
             torch.randint(0, 256, (3, 32, 32), dtype=torch.uint8),
             range,
         )
 
     @pytest.mark.parametrize("range", [(0, 1), (-1, 1), (0, 255)])
-    def test_range_float32(self, range: Tuple[int, int]) -> None:
+    def test_range_float32(self, range: tuple[int, int]) -> None:
         self._test_range(torch.randn(3, 32, 32), range)
 
     def test_range_zeros(self) -> None:
         x = DataItem(torch.zeros(3, 32, 32), 0, 0)
-        y = ScaleRange((0, 1))(x)
+        y = ScaleRange([0, 1])(x)
         assert torch.is_tensor(y.features), "Output should be a tensor"
         assert y.features.shape == torch.Size([3, 32, 32]), (
             "Output shape should match input"
@@ -254,17 +255,17 @@ class TestScaleRange:
         assert y.features.max() == 0, "Max value should be 0"
 
     @pytest.mark.parametrize("range", [(0, 0), (-1.5, -1.5)])
-    def test_range_invalid(self, range: Tuple[int, int]) -> None:
+    def test_range_invalid(self, range: tuple[int, int]) -> None:
         with pytest.raises(ValueError, match="lower bound of 'range' must be"):
-            ScaleRange(range)
+            ScaleRange(list(range))
 
     @pytest.mark.parametrize("range", [(0,), (1, 2, 3)])
-    def test_range_len(self, range: Tuple[int, int]) -> None:
+    def test_range_len(self, range: tuple[int, int]) -> None:
         with pytest.raises(ValueError, match="Expected 'range' to be a list"):
-            ScaleRange(range)
+            ScaleRange(list(range))
 
-    def _test_range(self, x: torch.Tensor, range: Tuple[int, int]) -> None:
-        y = ScaleRange(range)(DataItem(x, 0, 0))
+    def _test_range(self, x: torch.Tensor, range: tuple[int, int]) -> None:
+        y = ScaleRange(list(range))(DataItem(x, 0, 0))
         assert torch.is_tensor(y.features), "Output should be a tensor"
         assert y.features.shape == torch.Size([3, 32, 32]), (
             "Output shape should match input"
@@ -344,10 +345,10 @@ class TestFeatureExtractor:
     )
     def test_extractor(
         self,
-        fe_type: Union[str, None],
-        fe_transfer: Union[str, None],
-        input_shape: Tuple[int, int],
-        expected: Union[Tuple[int], Tuple[int, int]],
+        fe_type: str | None,
+        fe_transfer: str | None,
+        input_shape: tuple[int, int],
+        expected: tuple[int] | tuple[int, int],
     ) -> None:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -362,8 +363,8 @@ class TestFeatureExtractor:
     @pytest.mark.parametrize(("fe_type", "fe_transfer"), [(None, None)])
     def test_invalid(
         self,
-        fe_type: Union[str, None],
-        fe_transfer: Union[str, None],
+        fe_type: str | None,
+        fe_transfer: str | None,
     ) -> None:
         with pytest.raises(ValueError, match="must be provided"):
             FeatureExtractor(fe_type, fe_transfer)
@@ -386,7 +387,7 @@ class TestOpenSMILE:
         feature_set: str,
         functionals: bool,
         lld_deltas: bool,
-        expected: Tuple[int, int],
+        expected: tuple[int, int],
     ) -> None:
         x = DataItem(torch.randn(16000), 0, 0)
         y = OpenSMILE(
@@ -406,7 +407,7 @@ class TestOpenSMILE:
 class TestStandardizer:
     def _mock_dataset(
         self,
-        feature_shape: List[int],
+        feature_shape: list[int],
         transform: SmartCompose,
     ) -> AbstractDataset:
         return ToyDataset(
@@ -436,7 +437,7 @@ class TestStandardizer:
             ([10, 20, 30], [1, 2, 3]),
         ],
     )
-    def test_precomputed(self, mean: List[float], std: List[float]) -> None:
+    def test_precomputed(self, mean: list[float], std: list[float]) -> None:
         t1 = Standardizer(mean=mean, std=std)
         t2 = Normalize(mean=mean, std=std)
         x = DataItem(torch.randn(3, 32, 32), 0, 0)
@@ -467,7 +468,7 @@ class TestStandardizer:
         assert s1 == s2, "Std should not change."
 
     def test_transform_order(self) -> None:
-        sr = ScaleRange((10, 20), order=0)
+        sr = ScaleRange([10, 20], order=0)
         s1 = Standardizer(order=-1)
         s2 = Standardizer(order=1)
         ds_preceding = self._mock_dataset([3, 32, 32], SmartCompose([sr, s1]))
@@ -478,7 +479,7 @@ class TestStandardizer:
         assert s1.std != s2.std, "Transforms should have different stds."
 
     def test_transform_order_precomputed(self) -> None:
-        sr = ScaleRange((10, 20), order=0)
+        sr = ScaleRange([10, 20], order=0)
         s1 = Standardizer([1, 2, 3], [1, 2, 3], order=-1)
         s2 = Standardizer([1, 2, 3], [1, 2, 3], order=1)
         ds_preceding = self._mock_dataset([3, 32, 32], SmartCompose([sr, s1]))
@@ -494,8 +495,8 @@ class TestStandardizer:
     )
     def test_streaming_equivalence(
         self,
-        shape: Tuple[int, ...],
-        dims: Tuple[int, ...],
+        shape: tuple[int, ...],
+        dims: tuple[int, ...],
     ) -> None:
         class MockDatasetWrapper:
             def __init__(self, transform: SmartCompose, features: torch.Tensor) -> None:
@@ -515,7 +516,7 @@ class TestStandardizer:
         g = torch.Generator().manual_seed(0)
         features = torch.randn(1000, *shape, generator=g)
         ds = MockDataset(SmartCompose([s]), features)
-        s.setup(ds)
+        s.setup(ds)  # ty: ignore[invalid-argument-type]
         mean = features.mean(dim=dims)
         std = features.std(dim=dims, correction=s.correction)
         smean, sstd = torch.tensor(s.mean), torch.tensor(s.std)
@@ -537,7 +538,7 @@ class TestSmartCompose:
     )
     def test_add_valid(
         self,
-        other: Union[SmartCompose, AbstractTransform, List[AbstractTransform]],
+        other: SmartCompose | AbstractTransform | list[AbstractTransform],
     ) -> None:
         assert isinstance(SmartCompose([]) + other, SmartCompose), (
             "Adding a Compose should return a SmartCompose"
@@ -549,7 +550,7 @@ class TestSmartCompose:
 
     def test_add_invalid(self) -> None:
         with pytest.raises(TypeError):
-            SmartCompose([]) + 1
+            SmartCompose([]) + 1  # ty: ignore[unsupported-operator]
 
     @pytest.mark.parametrize(
         ("transforms", "has_collate_fn"),
@@ -557,7 +558,7 @@ class TestSmartCompose:
     )
     def test_collate_fn(
         self,
-        transforms: List[AbstractTransform],
+        transforms: list[AbstractTransform],
         has_collate_fn: bool,
     ) -> None:
         sc = SmartCompose(transforms)
@@ -569,11 +570,11 @@ class TestSmartCompose:
             def default_collate_fn(self) -> Callable:
                 return DataBatch.collate
 
-        assert sc.get_collate_fn(MockDataset()) is not None, (
+        assert sc.get_collate_fn(MockDataset()) is not None, (  # ty: ignore[invalid-argument-type]
             "Collate function should be present"
         )
         assert (
-            sc.get_collate_fn(MockDataset()) == DataBatch.collate
+            sc.get_collate_fn(MockDataset()) == DataBatch.collate  # ty: ignore[invalid-argument-type]
         ) != has_collate_fn, f"Collate function should be default: {not has_collate_fn}"
 
     def test_sorting_order(self) -> None:

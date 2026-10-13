@@ -1,5 +1,4 @@
 import os
-from typing import List, Union
 
 import pytest
 import torch
@@ -133,12 +132,12 @@ class TestMultiTargetMinMaxScaler:
             ([0, 1, 0], [1, 1, 1]),
         ],
     )
-    def test_invalid_min_max(self, minimum: List[float], maximum: List[float]) -> None:
+    def test_invalid_min_max(self, minimum: list[float], maximum: list[float]) -> None:
         with pytest.raises(ValueError, match="must be less than maximum"):
             MultiTargetMinMaxScaler(self.targets, minimum, maximum)
 
     @pytest.mark.parametrize("x", [[0, 1, 0.5], [10, -1, -0.5], [-10, 0, 0.5]])
-    def test_encode_decode(self, x: List[float]) -> None:
+    def test_encode_decode(self, x: list[float]) -> None:
         scaler = MultiTargetMinMaxScaler(self.targets, [0, 0, 0], [1, 1, 1])
         assert scaler.decode(scaler(x).tolist()) == x, "Should encode and decode."
 
@@ -186,7 +185,7 @@ class TestMultiLabelEncoder:
             MultiLabelEncoder(threshold, self.labels)
 
     @pytest.mark.parametrize("labels", [[1, 0, 1], ["fizz", "jazz"]])
-    def test_encode_decode(self, labels: Union[List[int], List[str]]) -> None:
+    def test_encode_decode(self, labels: list[int] | list[str]) -> None:
         encoder = MultiLabelEncoder(0.5, self.labels)
         assert encoder.decode(encoder(labels).tolist()) == [
             "fizz",
