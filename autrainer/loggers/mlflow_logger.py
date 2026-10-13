@@ -31,15 +31,15 @@ class MLFlowLogger(AbstractLogger):
         output_dir: str = "mlruns",
     ) -> None:
         super().__init__(exp_name, run_name, metrics, tracking_metric, artifacts)
-        p = Path(output_dir)
-        if not p.is_absolute():
-            p = p.absolute()
-        if not any(str(p).startswith(pf) for pf in ["file://", "http://", "https://"]):
-            p = p.as_uri()
-        self.output_dir = p
+
+        self.output_dir = Path(output_dir).absolute()
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.db_path = self.output_dir / "mlflow.db"
+        self.tracking_uri = f"sqlite:///{self.db_path.as_posix()}"
+        self.artifact_location = (self.output_dir / "artifacts").as_uri()
 
     def setup(self) -> None:
-        mlflow.set_tracking_uri(self.output_dir)
+        mlflow.set_tracking_uri(self.tracking_uri)
         self.exp_id = self._get_or_create_experiment()
         mlflow.set_experiment(experiment_id=self.exp_id)
         self.run = self._get_or_create_run()
@@ -48,7 +48,10 @@ class MLFlowLogger(AbstractLogger):
         experiment = mlflow.get_experiment_by_name(self.exp_name)
         if experiment:
             return experiment.experiment_id
-        return mlflow.create_experiment(name=self.exp_name)
+        return mlflow.create_experiment(
+            name=self.exp_name,
+            artifact_location=self.artifact_location,
+        )
 
     def _get_or_create_run(self) -> "mlflow.ActiveRun":
         self._delete_run_if_exists(self.run_name)

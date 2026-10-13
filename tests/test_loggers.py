@@ -3,6 +3,7 @@ import os
 import time
 from typing import TYPE_CHECKING, cast
 
+import mlflow
 from omegaconf import OmegaConf
 import pytest
 
@@ -74,27 +75,33 @@ class TestMLFlowLogger(BaseIndividualTempDir):
 
     def test_log_params(self) -> None:
         logger = self._mock_mlflow_logger("test_exp", "run1")
+        run_id = logger.run.info.run_id
         logger.log_params({"a": 1, "b": 2})
         logger.end_run()
-        assert self._file_exists("a", "params"), "Should log params"
-        assert self._file_exists("b", "params"), "Should log params"
+        run = mlflow.get_run(run_id)
+        assert run.data.params["a"] == "1"
+        assert run.data.params["b"] == "2"
 
     def test_log_metrics(self) -> None:
         logger = self._mock_mlflow_logger("test_exp", "run1")
+        run_id = logger.run.info.run_id
         logger.log_metrics({"accuracy": 0.5, "uar": 0.6}, iteration=1)
         logger.log_metrics({"accuracy": 0.8, "uar": 0.7}, iteration=2)
         logger.end_run()
-        assert self._file_exists("accuracy", "metrics"), "Should log metrics"
-        assert self._file_exists("uar", "metrics"), "Should log metrics"
+        run = mlflow.get_run(run_id)
+        assert run.data.metrics["accuracy"] == 0.8
+        assert run.data.metrics["uar"] == 0.7
 
     def test_log_timers(self) -> None:
         logger = self._mock_mlflow_logger("test_exp", "run1")
+        run_id = logger.run.info.run_id
         timer = Timer("mlruns", "test")
         timer.start()
         timer.stop()
         logger.log_timers({"time.test.mean": timer.get_mean_seconds()})
         logger.end_run()
-        assert self._file_exists("time.test.mean", "params"), "Should log timers"
+        run = mlflow.get_run(run_id)
+        assert "time.test.mean" in run.data.params
 
     def test_log_artifact(self) -> None:
         OmegaConf.save({"model_parameters": 42}, "model_summary.yaml")
