@@ -1,9 +1,10 @@
+from collections.abc import Generator
+from contextlib import contextmanager
 import logging
 import os
 import time
 from typing import TYPE_CHECKING, cast
 
-import mlflow
 from omegaconf import OmegaConf
 import pytest
 
@@ -44,7 +45,8 @@ class TestFallbackLogger:
 
 class TestMLFlowLogger(BaseIndividualTempDir):
     @staticmethod
-    def _mock_mlflow_logger(exp_name: str, run_name: str) -> MLFlowLogger:
+    @contextmanager
+    def _mock_mlflow_logger(exp_name: str, run_name: str) -> Generator[MLFlowLogger]:
         logger = MLFlowLogger(
             exp_name=exp_name,
             run_name=run_name,
@@ -53,7 +55,10 @@ class TestMLFlowLogger(BaseIndividualTempDir):
             output_dir="mlruns",
         )
         logger.setup()
-        return logger
+        try:
+            yield logger
+        finally:
+            logger.end_run()
 
     @staticmethod
     def _file_exists(name: str, log_type: str) -> bool:
@@ -63,51 +68,42 @@ class TestMLFlowLogger(BaseIndividualTempDir):
         return False
 
     def test_setup_and_multiple_runs(self) -> None:
-        logger = self._mock_mlflow_logger("test_exp", "run1")
-        assert logger.exp_id is not None, "Should create experiment"
-        assert logger.run is not None, "Should create run"
-        logger.end_run()
+        with self._mock_mlflow_logger("test_exp", "run1") as logger:
+            assert logger._exp_id is not None, "Should create experiment"
+            assert logger._run_id is not None, "Should create run"
+            exp_id = logger._exp_id
 
-        new_logger = self._mock_mlflow_logger("test_exp", "run1")
-        new_logger.end_run()
-        assert logger.exp_id == new_logger.exp_id, "Should use same experiment"
-        new_logger.end_run()
+        with self._mock_mlflow_logger("test_exp", "run1") as new_logger:
+            assert exp_id == new_logger._exp_id, "Should use same experiment"
 
     def test_log_params(self) -> None:
-        logger = self._mock_mlflow_logger("test_exp", "run1")
-        run_id = logger.run.info.run_id
-        logger.log_params({"a": 1, "b": 2})
-        logger.end_run()
-        run = mlflow.get_run(run_id)
+        with self._mock_mlflow_logger("test_exp", "run1") as logger:
+            logger.log_params({"a": 1, "b": 2})
+        run = logger._client.get_run(logger._run_id)
         assert run.data.params["a"] == "1"
         assert run.data.params["b"] == "2"
 
     def test_log_metrics(self) -> None:
-        logger = self._mock_mlflow_logger("test_exp", "run1")
-        run_id = logger.run.info.run_id
-        logger.log_metrics({"accuracy": 0.5, "uar": 0.6}, iteration=1)
-        logger.log_metrics({"accuracy": 0.8, "uar": 0.7}, iteration=2)
-        logger.end_run()
-        run = mlflow.get_run(run_id)
+        with self._mock_mlflow_logger("test_exp", "run1") as logger:
+            logger.log_metrics({"accuracy": 0.5, "uar": 0.6}, iteration=1)
+            logger.log_metrics({"accuracy": 0.8, "uar": 0.7}, iteration=2)
+        run = logger._client.get_run(logger._run_id)
         assert run.data.metrics["accuracy"] == 0.8
         assert run.data.metrics["uar"] == 0.7
 
     def test_log_timers(self) -> None:
-        logger = self._mock_mlflow_logger("test_exp", "run1")
-        run_id = logger.run.info.run_id
-        timer = Timer("mlruns", "test")
-        timer.start()
-        timer.stop()
-        logger.log_timers({"time.test.mean": timer.get_mean_seconds()})
-        logger.end_run()
-        run = mlflow.get_run(run_id)
+        with self._mock_mlflow_logger("test_exp", "run1") as logger:
+            timer = Timer("mlruns", "test")
+            timer.start()
+            timer.stop()
+            logger.log_timers({"time.test.mean": timer.get_mean_seconds()})
+        run = logger._client.get_run(logger._run_id)
         assert "time.test.mean" in run.data.params
 
     def test_log_artifact(self) -> None:
         OmegaConf.save({"model_parameters": 42}, "model_summary.yaml")
-        logger = self._mock_mlflow_logger("test_exp", "run1")
-        logger.log_artifact("model_summary.yaml")
-        logger.end_run()
+        with self._mock_mlflow_logger("test_exp", "run1") as logger:
+            logger.log_artifact("model_summary.yaml")
         assert self._file_exists("model_summary.yaml", "artifacts")
 
 
