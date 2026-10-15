@@ -1,16 +1,15 @@
-import os
-import subprocess
-import sys
+from importlib.metadata import distributions
+from pathlib import Path
 
 
 def save_requirements(output_directory: str) -> None:
-    reqs_output = os.path.join(output_directory, "requirements.txt")
-    result = subprocess.run(
-        [sys.executable, "-m", "pip", "freeze"],
-        capture_output=True,
-        text=True,
-        check=True,
+    reqs = sorted(
+        {
+            f"{name}=={d.version}"
+            for d in distributions()
+            if (name := d.metadata["Name"])
+        },
+        key=str.lower,
     )
-
-    with open(reqs_output, "w", encoding="utf-8") as f:
-        f.write(result.stdout)
+    p = Path(output_directory) / "requirements.txt"
+    p.write_text("\n".join(reqs) + "\n", encoding="utf-8")
