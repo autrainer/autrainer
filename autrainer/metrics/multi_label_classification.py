@@ -22,8 +22,8 @@ class MLF1Macro(BaseAscendingMetric):
     def unitary(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Unitary evaluation of metric.
 
-        Metric computed with `average='binary'`
-        i.e. only accounting for the positive label.
+        Metric computed with `average='binary'` i.e. only accounting for the positive
+        label.
 
         Args:
             y_true: ground truth values.
@@ -49,8 +49,8 @@ class MLF1Micro(BaseAscendingMetric):
     def unitary(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Unitary evaluation of metric.
 
-        Metric computed with `average='binary'`
-        i.e. only accounting for the positive label.
+        Metric computed with `average='binary'` i.e. only accounting for the positive
+        label.
 
         Args:
             y_true: ground truth values.
@@ -76,8 +76,8 @@ class MLF1Weighted(BaseAscendingMetric):
     def unitary(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """Unitary evaluation of metric.
 
-        Metric computed with `average='binary'`
-        i.e. only accounting for the positive label.
+        Metric computed with `average='binary'` i.e. only accounting for the positive
+        label.
 
         Args:
             y_true: ground truth values.

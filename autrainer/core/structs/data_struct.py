@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 import torch
 
@@ -26,6 +27,6 @@ class DataBatch(AbstractDataBatch[DataItem]):
         index: Tensor of indices for the data samples.
     """
 
-    def to(self, device: torch.device, **kwargs: dict) -> None:
+    def to(self, device: torch.device, **kwargs: Any) -> None:
         self.features = self.features.to(device, **kwargs)
         self.target = self.target.to(device, **kwargs)

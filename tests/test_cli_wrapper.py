@@ -1,6 +1,5 @@
 import os
 import subprocess
-from typing import List, Union
 from unittest.mock import patch
 
 from omegaconf import OmegaConf
@@ -14,38 +13,20 @@ from .utils import BaseIndividualTempDir
 
 
 class TestMainEntryPoint(BaseIndividualTempDir):
-    @pytest.mark.parametrize(
-        "args",
-        [
-            ["-h"],
-            ["-v"],
-            ["create", "-e"],
-        ],
-    )
-    def test_main(self, args: List[str]) -> None:
-        result = subprocess.run(
-            ["autrainer"] + args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
+    @pytest.mark.parametrize("args", [["-h"], ["-v"], ["create", "-e"]])
+    def test_main(self, args: list[str]) -> None:
+        result = subprocess.run(["autrainer"] + args, capture_output=True, text=True)
         assert result.returncode == 0, "Should return 0."
         assert result.stderr == "", "Should not return an error message."
 
     def test_no_command(self) -> None:
-        result = subprocess.run(
-            ["autrainer"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
+        result = subprocess.run(["autrainer"], capture_output=True, text=True)
         assert result.returncode == 2, "Should return 2."
 
     def test_non_existent_command(self) -> None:
         result = subprocess.run(
             ["autrainer", "create", "invalid"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             text=True,
         )
         assert result.returncode == 2, "Should return 2."
@@ -68,15 +49,11 @@ class TestCLICreate(BaseIndividualTempDir):
 
     @pytest.mark.parametrize(
         ("dirs", "empty", "all"),
-        [
-            (None, True, True),
-            (["model"], False, True),
-            (["model"], True, False),
-        ],
+        [(None, True, True), (["model"], False, True), (["model"], True, False)],
     )
     def test_mutually_exclusive(
         self,
-        dirs: Union[List[str]],
+        dirs: list[str],
         empty: bool,
         all: bool,
     ) -> None:
@@ -88,10 +65,7 @@ class TestCLICreate(BaseIndividualTempDir):
 
     def test_force_overwrite(self) -> None:
         os.mkdir("conf")
-        with pytest.raises(
-            CommandLineError,
-            match="Directory 'conf' already exists.",
-        ):
+        with pytest.raises(CommandLineError, match="Directory 'conf' already exists."):
             autrainer.cli.create(empty=True)
         autrainer.cli.create(empty=True, force=True)
 
@@ -104,7 +78,7 @@ class TestCLICreate(BaseIndividualTempDir):
             NamingConstants().CONFIG_DIRS,
         ],
     )
-    def test_create_directories(self, dirs: List[str]) -> None:
+    def test_create_directories(self, dirs: list[str]) -> None:
         autrainer.cli.create(dirs)
         assert all(os.path.exists(f"conf/{directory}") for directory in dirs), (
             "Should create directories."
@@ -180,10 +154,7 @@ class TestCLIList(BaseIndividualTempDir):
 
 
 class TestCLIShow(BaseIndividualTempDir):
-    @pytest.mark.parametrize(
-        "config",
-        ["EfficientNet-B0", "EfficientNet-B0.yaml"],
-    )
+    @pytest.mark.parametrize("config", ["EfficientNet-B0", "EfficientNet-B0.yaml"])
     def test_valid_directory(self, capfd: pytest.CaptureFixture, config: str) -> None:
         autrainer.cli.show("model", config)
         out, _ = capfd.readouterr()
@@ -235,9 +206,7 @@ class TestCLIFetch(BaseIndividualTempDir):
         self, capfd: pytest.CaptureFixture, cfg_launcher: bool
     ) -> None:
         with patch("sys.argv", [""]):
-            autrainer.cli.fetch(
-                cfg_launcher=cfg_launcher,
-            )
+            autrainer.cli.fetch(cfg_launcher=cfg_launcher)
         out, _ = capfd.readouterr()
         assert "Fetching datasets..." in out, "Should print fetching message."
         assert "Fetching models..." in out, "Should print fetching message."
@@ -323,18 +292,13 @@ class TestCLIInference(BaseIndividualTempDir):
                 extension="example",
             )
 
-    def test_invalid_device(
-        self,
-    ) -> None:
+    def test_invalid_device(self) -> None:
         self._mock_model()
         self._mock_input()
         os.makedirs("model/_best", exist_ok=True)
         OmegaConf.save({}, "model/_best/model.pt")
 
-        with pytest.raises(
-            CommandLineError,
-            match="Invalid device 'invalid'.",
-        ):
+        with pytest.raises(CommandLineError, match="Invalid device 'invalid'."):
             autrainer.cli.inference(
                 model="model",
                 input="input",
@@ -342,9 +306,7 @@ class TestCLIInference(BaseIndividualTempDir):
                 device="invalid",
             )
 
-    def test_invalid_checkpoint(
-        self,
-    ) -> None:
+    def test_invalid_checkpoint(self) -> None:
         self._mock_model()
         self._mock_input()
 
@@ -359,9 +321,7 @@ class TestCLIInference(BaseIndividualTempDir):
                 checkpoint="invalid",
             )
 
-    def test_invalid_preprocess_config(
-        self,
-    ) -> None:
+    def test_invalid_preprocess_config(self) -> None:
         self._mock_model()
         self._mock_input()
         os.makedirs("model/_best", exist_ok=True)
@@ -403,7 +363,7 @@ class TestCLIRmFailed(BaseCLIRemove):
             (["run1", "run2", "run3"], [True, True, True]),
         ],
     )
-    def test_rm_failed(self, names: List[str], successful: List[bool]) -> None:
+    def test_rm_failed(self, names: list[str], successful: list[bool]) -> None:
         for name, success in zip(names, successful, strict=False):
             if success:
                 self._mock_successful_run(name)
@@ -419,7 +379,7 @@ class TestCLIRmFailed(BaseCLIRemove):
 
 class TestCLIRmStates(BaseCLIRemove):
     @pytest.mark.parametrize("names", [["run1", "run2", "run3"], []])
-    def test_delete_all(self, names: List[str]) -> None:
+    def test_delete_all(self, names: list[str]) -> None:
         for name in names:
             self._mock_successful_run(name)
         with patch("builtins.input", return_value="y"):
@@ -432,7 +392,7 @@ class TestCLIRmStates(BaseCLIRemove):
                 ), "Should remove all states."
 
     @pytest.mark.parametrize("names", [["run1", "run2", "run3"]])
-    def test_delete_keep_best(self, names: List[str]) -> None:
+    def test_delete_keep_best(self, names: list[str]) -> None:
         for name in names:
             self._mock_successful_run(name)
         with patch("builtins.input", return_value="y"):
@@ -448,7 +408,7 @@ class TestCLIRmStates(BaseCLIRemove):
             )
 
     @pytest.mark.parametrize("names", [["run1", "run2", "run3"]])
-    def test_delete_keep_runs(self, names: List[str]) -> None:
+    def test_delete_keep_runs(self, names: list[str]) -> None:
         for name in names:
             self._mock_successful_run(name)
         with patch("builtins.input", return_value="y"):
@@ -466,7 +426,7 @@ class TestCLIRmStates(BaseCLIRemove):
             ), "Should keep states for specified runs."
 
     @pytest.mark.parametrize(("names", "keep_it"), [(["run1", "run2", "run3"], 2)])
-    def test_delete_keep_iterations(self, names: List[str], keep_it: int) -> None:
+    def test_delete_keep_iterations(self, names: list[str], keep_it: int) -> None:
         for name in names:
             self._mock_successful_run(name)
         with patch("builtins.input", return_value="y"):

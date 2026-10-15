@@ -1,5 +1,3 @@
-from typing import Optional, Tuple
-
 import torch
 
 from autrainer.augmentations import AbstractAugmentation
@@ -9,10 +7,10 @@ from autrainer.core.structs import AbstractDataItem
 class AmplitudeScale(AbstractAugmentation):
     def __init__(
         self,
-        scale_range: Tuple[float, float],
+        scale_range: tuple[float, float],
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
+        generator_seed: int | None = None,
     ) -> None:
         """Amplitude scaling augmentation. The amplitude is randomly scaled by
         a factor drawn from scale_range.

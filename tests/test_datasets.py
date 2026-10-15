@@ -1,6 +1,7 @@
+from functools import cached_property
 import os
 import random
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -37,14 +38,14 @@ class MockTargetTransform(AbstractTargetTransform):
 
 
 class MockBaseInvalidDataset(AbstractDataset):
-    def __init__(self, **kwargs: Dict[str, Any]) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(task="invalid", **kwargs)
 
     @property
     def target_transform(self) -> AbstractTargetTransform:
-        return MockTargetTransform()
+        return MockTargetTransform()  # ty: ignore[call-non-callable]
 
-    @property
+    @cached_property
     def output_dim(self) -> int:
         return 10
 
@@ -58,7 +59,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
         file_type: str = "npy",
         target_type: str = "classification",
         num_files: int = 10,
-        output_files: Optional[List[str]] = None,
+        output_files: list[str] | None = None,
     ) -> None:
         assert target_type in [
             "classification",
@@ -87,10 +88,10 @@ class TestBaseDatasets(BaseIndividualTempDir):
     @staticmethod
     def _mock_data(
         path: str,
-        shape: Tuple[int, ...],
+        shape: tuple[int, ...],
         features_subdir: str = "default",
         index_column: str = "index",
-        output_files: Optional[List[str]] = None,
+        output_files: list[str] | None = None,
     ) -> None:
         if output_files is None:
             output_files = ["train", "dev", "test"]
@@ -165,9 +166,7 @@ class TestBaseDatasets(BaseIndividualTempDir):
         "target_column",
         ["target_1", [], ["target_1", "target_100"]],
     )
-    def test_invalid_mlc_target_column(
-        self, target_column: Union[str, List[str]]
-    ) -> None:
+    def test_invalid_mlc_target_column(self, target_column: str | list[str]) -> None:
         self._mock_dataframes(
             "data/TestDataset",
             target_type="ml-classification",
@@ -223,10 +222,10 @@ class TestBaseDatasets(BaseIndividualTempDir):
         train_loader_kwargs = {"num_workers": 2}
         data = BaseClassificationDataset(**self._mock_dataset_kwargs())
         data._generator.manual_seed(0)
-        loader = iter(data.create_train_loader(4, **train_loader_kwargs))
+        loader = iter(data.create_train_loader(4, **train_loader_kwargs))  # ty: ignore[invalid-argument-type]
         d1, d2 = next(loader), next(loader)
         data._generator.manual_seed(0)
-        loader = iter(data.create_train_loader(4, **train_loader_kwargs))
+        loader = iter(data.create_train_loader(4, **train_loader_kwargs))  # ty: ignore[invalid-argument-type]
         d3, d4 = next(loader), next(loader)
         assert torch.allclose(d1.features, d3.features), "Should be equal."
         assert torch.allclose(d2.features, d4.features), "Should be equal."
@@ -234,8 +233,8 @@ class TestBaseDatasets(BaseIndividualTempDir):
     def _test_data(
         self,
         data: AbstractDataset,
-        output_dim: str,
-        y_shape: Tuple[int, ...],
+        output_dim: int,
+        y_shape: tuple[int, ...],
     ) -> None:
         assert data.output_dim == output_dim, f"Should be {output_dim}."
         assert isinstance(data.df_dev, pd.DataFrame), "Should be a DataFrame."
@@ -302,12 +301,12 @@ class TestAIBO(BaseIndividualTempDir):
         df[target_column] = [i % 10 for i in range(num_files)]
 
         name = f"chunk_labels_{task}_corpus.txt"
-        df.to_csv(os.path.join(path, name), index=False, header=None, sep=" ")
+        df.to_csv(os.path.join(path, name), index=False, header=None, sep=" ")  # ty: ignore[no-matching-overload]
 
     @staticmethod
     def _mock_data(
         path: str,
-        shape: Tuple[int, ...],
+        shape: tuple[int, ...],
         features_subdir: str = "default",
         task: str = "2cl",
     ) -> None:
@@ -515,14 +514,14 @@ class TestMSPPodcast(BaseIndividualTempDir):
     def test_classification(
         self,
         task: str,
-        target: Union[str, List[str]],
+        target: str | list[str],
         metric: str,
         shape: torch.Size,
     ) -> None:
         TestBaseDatasets._mock_dataframes(
             "data/TestDataset",
             target_type=task,
-            target_column=target,
+            target_column=target,  # ty: ignore[invalid-argument-type]
             output_files=["metadata"],
         )
         TestBaseDatasets._mock_data(
@@ -541,8 +540,8 @@ class TestMSPPodcast(BaseIndividualTempDir):
         assert len(data.train_dataset) == 4, "Should be 4."
         assert len(data.dev_dataset) == 3, "Should be 3."
         assert len(data.test_dataset) == 3, "Should be 3."
-        assert data.test_dataset[0].target.shape == shape, (
-            f"Target shape should be {shape} but is {data.test_dataset[0].target.shape}"
+        assert data.test_dataset[0].target.shape == shape, (  # ty: ignore[unresolved-attribute]
+            f"Target shape should be {shape} but is {data.test_dataset[0].target.shape}"  # ty: ignore[unresolved-attribute]
         )
 
 
@@ -607,7 +606,7 @@ class TestToyDataset(BaseIndividualTempDir):
     @staticmethod
     def _test_data_shapes(
         data: AbstractDataset,
-        y_shape: Tuple[int, ...],
+        y_shape: tuple[int, ...],
     ) -> None:
         assert len(data.train_dataset) == 60, "Should be 60."
         assert len(data.dev_dataset) == 20, "Should be 20."

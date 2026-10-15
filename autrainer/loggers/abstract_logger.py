@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from typing import TYPE_CHECKING, Dict, List, Optional, Union
+from typing import TYPE_CHECKING
 
 from omegaconf import DictConfig
 
@@ -15,14 +15,14 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def get_params_to_export(
-    params: Union[dict, DictConfig], prefix: str = ""
-) -> Dict[str, Union[int, float, str]]:
+    params: dict | DictConfig,
+    prefix: str = "",
+) -> dict[str, int | float | str]:
     """Get parameters to export as a flattened dictionary filtered by
-    :const:`~autrainer.core.constants.ExportConstants.IGNORE_PARAMS`
-    and :const:`~autrainer.core.constants.ExportConstants.LOGGING_DEPTH`.
+    :const:`~autrainer.core.constants.ExportConstants.IGNORE_PARAMS` and
+    :const:`~autrainer.core.constants.ExportConstants.LOGGING_DEPTH`.
 
-    Private parameters (starting with "_") are also ignored except for
-    "_target_".
+    Private parameters (starting with "_") are also ignored except for "_target_".
 
     Args:
         params: The parameters of the configuration.
@@ -33,16 +33,16 @@ def get_params_to_export(
     """
     result = {}
     for k, v in params.items():
-        full_key = f"{prefix}.{k}" if prefix else k
+        full_key = str(f"{prefix}.{k}" if prefix else k)
         if (
             full_key in ExportConstants().IGNORE_PARAMS
             or prefix in ExportConstants().IGNORE_PARAMS
             or len(full_key.split(".")) > ExportConstants().LOGGING_DEPTH
             or prefix.startswith("_")
-            or (k.startswith("_") and k != "_target_")
+            or (str(k).startswith("_") and k != "_target_")
         ):
             continue
-        if isinstance(v, (dict, DictConfig)):
+        if isinstance(v, dict | DictConfig):
             cfg_id = v.get("id", None)
             if cfg_id is None and v.get("_target_", None):
                 raise KeyError(f"Configuration '{full_key}' is missing an id field.")
@@ -63,9 +63,9 @@ class AbstractLogger(CallbackMixin, ABC):
         self,
         exp_name: str,
         run_name: str,
-        metrics: List[AbstractMetric],
+        metrics: list[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[Union[str, Dict[str, str]]] = None,
+        artifacts: list[str | dict[str, str]] | None = None,
     ) -> None:
         """Base class for loggers.
 
@@ -75,8 +75,8 @@ class AbstractLogger(CallbackMixin, ABC):
             metrics: The metrics to log.
             tracking_metric: The metric to determine the best results.
             artifacts: The artifacts to log. If None, defaults to
-                :const:`~autrainer.core.constants.ExportConstants.ARTIFACTS`.
-                Defaults to None.
+                :const:`~autrainer.core.constants.ExportConstants.ARTIFACTS`. Defaults
+                to None.
         """
         super().__init__()
         self.run_name = run_name
@@ -89,23 +89,25 @@ class AbstractLogger(CallbackMixin, ABC):
             "dev_loss.min": float("inf"),
             "best_iteration": 0,
         }
-        self.metrics_dict: Dict[str, AbstractMetric] = {}
+        self.metrics_dict: dict[str, AbstractMetric] = {}
         for metric in self.metrics:
             self.best_metrics[f"{metric.name}.{metric.suffix}"] = metric.starting_metric
             self.metrics_dict[metric.name] = metric
 
     def log_and_update_metrics(
-        self, metrics: Dict[str, Union[int, float]], iteration: int = None
+        self,
+        metrics: dict[str, int | float],
+        iteration: int | None = None,
     ) -> None:
         """Log all metrics in the metrics dictionary for the given iteration.
+
         Automatically updates the best metrics based on the tracking metric.
 
         Args:
-            metrics: The metrics to log, with the metric name as the key and
-                the metric value as the value.
-            iteration: The iteration, epoch, or step number.
-                If None, the iteration will not be logged
-                (e.g., for test metrics). Defaults to None.
+            metrics: The metrics to log, with the metric name as the key and the metric
+                value as the value.
+            iteration: The iteration, epoch, or step number. If None, the iteration will
+                not be logged (e.g., for test metrics). Defaults to None.
         """
         if iteration:
             self._update_best_metrics(metrics, iteration)
@@ -114,7 +116,7 @@ class AbstractLogger(CallbackMixin, ABC):
 
     def _update_best_metrics(
         self,
-        metrics: Dict[str, Union[int, float]],
+        metrics: dict[str, int | float],
         iteration: int,
     ) -> None:
         if self.tracking_metric.compare(
@@ -141,7 +143,7 @@ class AbstractLogger(CallbackMixin, ABC):
         """
 
     @abstractmethod
-    def log_params(self, params: Union[dict, DictConfig]) -> None:
+    def log_params(self, params: dict | DictConfig) -> None:
         """Log the parameters of the configuration.
 
         Args:
@@ -151,26 +153,25 @@ class AbstractLogger(CallbackMixin, ABC):
     @abstractmethod
     def log_metrics(
         self,
-        metrics: Dict[str, Union[int, float]],
-        iteration: Optional[int] = None,
+        metrics: dict[str, int | float],
+        iteration: int | None = None,
     ) -> None:
         """Log the metrics for the given iteration.
 
         Args:
-            metrics: The metrics to log, with the metric name as the key and
-                the metric value as the value.
-            iteration: The iteration, epoch, or step number.
-                If None, the iteration will not be logged
-                (e.g., for test metrics). Defaults to None.
+            metrics: The metrics to log, with the metric name as the key and the metric
+                value as the value.
+            iteration: The iteration, epoch, or step number. If None, the iteration will
+                not be logged (e.g., for test metrics). Defaults to None.
         """
 
     @abstractmethod
-    def log_timers(self, timers: Dict[str, float]) -> None:
+    def log_timers(self, timers: dict[str, float | str]) -> None:
         """Log all timers (e.g., mean times for train, dev, and test).
 
         Args:
-            timers: The timers to log, with the timer name as the key and the
-                timer value as the value.
+            timers: The timers to log, with the timer name as the key and the timer
+                value as the value.
         """
 
     @abstractmethod
@@ -179,14 +180,12 @@ class AbstractLogger(CallbackMixin, ABC):
 
         Args:
             filename: The name of the artifact.
-            path: The absolute path or relative path from the current working
-                directory to the artifact. Defaults to "".
+            path: The absolute path or relative path from the current working directory
+                to the artifact. Defaults to "".
         """
 
     def end_run(self) -> None:  # noqa: B027
-        """Optional end run method called at the end of the run
-        (`cb_on_train_end`).
-        """
+        """Optional end run method called at the end of the run (`cb_on_train_end`)."""
 
     def cb_on_train_begin(self, trainer: "ModularTaskTrainer") -> None:
         self.setup()
@@ -220,6 +219,6 @@ class AbstractLogger(CallbackMixin, ABC):
                         filename, os.path.join(trainer.output_directory, path)
                     )
             else:
-                self.log_artifact(artifact, trainer.output_directory)
+                self.log_artifact(artifact, str(trainer.output_directory))
 
         self.end_run()

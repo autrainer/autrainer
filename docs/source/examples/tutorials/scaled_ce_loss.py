@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import torch
 
@@ -8,7 +8,7 @@ class ScaledCrossEntropyLoss(torch.nn.CrossEntropyLoss):
         self,
         scaling_factor: float = 1.0,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Cross entropy loss with a scaling factor.
 
@@ -20,7 +20,7 @@ class ScaledCrossEntropyLoss(torch.nn.CrossEntropyLoss):
         super().__init__(*args, **kwargs)
         self.scaling_factor = scaling_factor
 
-    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-        if y.ndim == 1:
-            y = y.long()
-        return self.scaling_factor * super().forward(x, y)
+    def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.ndim == 1:
+            target = target.long()
+        return self.scaling_factor * super().forward(input, target)

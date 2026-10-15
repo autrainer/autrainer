@@ -1,5 +1,3 @@
-from typing import List
-
 import torch
 from torch.optim.lr_scheduler import LRScheduler
 
@@ -21,7 +19,7 @@ class LinearWarmUpLR(LRScheduler):
         self.warmup_steps = warmup_steps
         super().__init__(optimizer, last_epoch)
 
-    def get_lr(self) -> List[float]:
+    def get_lr(self) -> list[float | torch.Tensor]:
         if self.last_epoch < self.warmup_steps:
             return [
                 base_lr * (self.last_epoch + 1) / self.warmup_steps

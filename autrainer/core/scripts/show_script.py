@@ -7,9 +7,9 @@ from omegaconf import OmegaConf
 import autrainer
 from autrainer.core.constants import NamingConstants
 
-from .abstract_script import AbstractScript, MockParser
+from .abstract_script import AbstractScript
 from .command_line_error import CommandLineError
-from .utils import catch_cli_errors
+from .utils import MockParser, catch_cli_errors
 
 
 @dataclass
@@ -118,23 +118,23 @@ def show(
 ) -> None:
     """Show and save a global configuration.
 
-    If called in a notebook, the function will not raise an error and print
-    the error message instead.
+    If called in a notebook, the function will not raise an error and print the error
+    message instead.
 
     Args:
         directory: The directory to list configurations from. Choose from:
             :const:`~autrainer.core.constants.NamingConstants.CONFIG_DIRS`.
-        config: The global configuration to show. Configurations can be
-            discovered using the 'autrainer list' command.
-        save: Save the global configuration to the local conf directory.
-            Defaults to False.
-        force: Force overwrite local configuration if it exists in combination
-            with save=True. Defaults to False.
+        config: The global configuration to show. Configurations can be discovered using
+            the 'autrainer list' command.
+        save: Save the global configuration to the local conf directory. Defaults to
+            False.
+        force: Force overwrite local configuration if it exists in combination with
+            save=True. Defaults to False.
 
     Raises:
         CommandLineError: If the global configuration does not exist.
-        CommandLineError: If while saving the local configuration, the
-            configuration already exists and force is not set.
+        CommandLineError: If while saving the local configuration, the configuration
+            already exists and force is not set.
     """
     script = ShowScript()
     script.parser = MockParser()

@@ -1,6 +1,5 @@
 from functools import cached_property
 import os
-from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -20,18 +19,18 @@ class MSPPodcast(AbstractDataset):
         self,
         path: str,
         seed: int,
-        metrics: List[str],
+        metrics: list[str | DictConfig | dict],
         tracking_metric: str,
         target_column: str,
         file_type: str,
-        file_handler: Union[str, DictConfig, Dict],
+        file_handler: str | DictConfig | dict,
         index_column: str = "FileName",
-        features_subdir: Optional[str] = None,
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
-        stratify: Optional[List[str]] = None,
-        categories: List[str] = None,
+        features_subdir: str | None = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
+        stratify: list[str] | None = None,
+        categories: list[str] | None = None,
     ) -> None:
         """MSP-Podcast dataset.
 
@@ -66,19 +65,15 @@ class MSPPodcast(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            index_column: Index column of the dataframe.
-                Defaults to `FileName`, as in the original data.
-            train_transform: Transform to apply to the training set.
-                Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            index_column: Index column of the dataframe. Defaults to `FileName`, as in
+                the original data.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
-            categories: used to filter out specific emotional categories.
-                Useful for training on subset of data/classes, such as the classic
-                ["A", "H", "N", "S"] 4-class problem found in literature.
-                Defaults to None.
+            categories: used to filter out specific emotional categories. Useful for
+                training on subset of data/classes, such as the classic ["A", "H", "N",
+                "S"] 4-class problem found in literature. Defaults to None.
         """
         task = "classification" if target_column == "EmoClass" else "regression"
         self.categories = categories
@@ -109,11 +104,10 @@ class MSPPodcast(AbstractDataset):
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover
-        """
-        Download the MSP-Podcast dataset.
+        """Download the MSP-Podcast dataset.
 
-        As this dataset is not publicly-available, please download it manually
-        by contacting Prof. Carlos Busso:
+        As this dataset is not publicly-available, please download it manually by
+        contacting Prof. Carlos Busso:
         https://ecs.utdallas.edu/research/researchlabs/msp-lab/MSP-Podcast.html
 
         This function will not do anything.
@@ -129,8 +123,8 @@ class MSPPodcast(AbstractDataset):
     ) -> pd.DataFrame:
         """Load the dataframes.
 
-        Overrides base class so there is no need
-        to create separate train/dev/test files.
+        Overrides base class so there is no need to create separate train/dev/test
+        files.
 
         Returns:
             Dataframes for training, development, and testing.

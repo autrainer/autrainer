@@ -1,14 +1,13 @@
 import contextlib
 from dataclasses import dataclass
-from typing import Optional
 
 from omegaconf import DictConfig, OmegaConf
 
 import autrainer
-from autrainer.core.scripts.abstract_script import MockParser
 
 from .abstract_preprocess_script import AbstractPreprocessScript, PreprocessArgs
 from .utils import (
+    MockParser,
     add_hydra_args_to_sys,
     catch_cli_errors,
     check_invalid_config_path_arg,
@@ -106,10 +105,7 @@ def preprocess_main(
             out_path.parent.mkdir(parents=True, exist_ok=True)
             if out_path.exists():
                 continue
-            output_file_handler.save(
-                out_path,
-                instance.features.squeeze(dim=0),
-            )
+            output_file_handler.save(str(out_path), instance.features.squeeze(dim=0))
 
 
 class PreprocessScript(AbstractPreprocessScript):
@@ -207,29 +203,29 @@ class PreprocessScript(AbstractPreprocessScript):
 
 @catch_cli_errors
 def preprocess(
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: dict | None = None,
     num_workers: int = 0,
     update_frequency: int = 1,
     cfg_launcher: bool = False,
     config_name: str = "config",
-    config_path: Optional[str] = None,
+    config_path: str | None = None,
 ) -> None:
     """Launch a data preprocessing configuration.
 
     Args:
-        override_kwargs: Additional Hydra override arguments to pass to the
-            train script.
-        num_workers: Number of workers (subprocess) to use for preprocessing.
-            Defaults to 0.
-        update_frequency: Frequency of progress bar updates.
-            If 0, the progress bar will be disabled. Defaults to 1.
-        cfg_launcher: Use the launcher specified in the configuration instead
-            of the Hydra basic launcher. Defaults to False.
-        config_name: The name of the config (usually the file name without the
-            .yaml extension). Defaults to "config".
-        config_path: The config path, a directory where Hydra will search for
-            config files. If config_path is None no directory is added to the
-            search path. Defaults to None.
+        override_kwargs: Additional Hydra override arguments to pass to the train
+            script.
+        num_workers: Number of workers (subprocess) to use for preprocessing. Defaults
+            to 0.
+        update_frequency: Frequency of progress bar updates. If 0, the progress bar will
+            be disabled. Defaults to 1.
+        cfg_launcher: Use the launcher specified in the configuration instead of the
+            Hydra basic launcher. Defaults to False.
+        config_name: The name of the config (usually the file name without the .yaml
+            extension). Defaults to "config".
+        config_path: The config path, a directory where Hydra will search for config
+            files. If config_path is None no directory is added to the search path.
+            Defaults to None.
     """
     if running_in_notebook():
         cmd = "preprocess"

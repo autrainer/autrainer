@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 import re
 import sys
-from typing import List, Optional, Tuple
 
 
 MODEL_FILES = [
@@ -79,10 +78,9 @@ class HubModelPath(AbstractModelPath):
     def verify(self) -> None:
         """Verify the given hugging face model path.
 
-        Verification includes checking the validity of the repository, revision,
-        and repository subdirectory in the model path.
-        The model files are also verified to ensure that a single model
-        directory is found.
+        Verification includes checking the validity of the repository, revision, and
+        repository subdirectory in the model path. The model files are also verified to
+        ensure that a single model directory is found.
 
         Raises:
             ValueError: If the model path is invalid.
@@ -140,10 +138,9 @@ class HubModelPath(AbstractModelPath):
     def create_model_path(self) -> str:
         """Create the local directory of the model.
 
-        The model is downloaded to the local directory if it is not already
-        present.
-        If no local directory is specified, the model is downloaded to the
-        default torch.hub directory.
+        The model is downloaded to the local directory if it is not already present. If
+        no local directory is specified, the model is downloaded to the default
+        torch.hub directory.
 
         Returns:
             Local directory of the model.
@@ -154,9 +151,7 @@ class HubModelPath(AbstractModelPath):
             sys.path.append(local_path)
         return local_path
 
-    def _parse_hub_path(
-        self,
-    ) -> Tuple[str, Optional[str], Optional[str], Optional[str]]:
+    def _parse_hub_path(self) -> tuple[str, str | None, str | None, str | None]:
         # pattern: hf:repo_id[@revision][:subdir]#local_dir
         pattern = r"^hf:([^@:#]+)(?:@([^:#]+))?(?::([^#]+))?(?:#(.+))?$"
 
@@ -164,14 +159,14 @@ class HubModelPath(AbstractModelPath):
         if not match:
             raise ValueError(f"Invalid hugging face path format: '{self.model_path}'")
 
-        return match.groups()
+        return match.groups()  # ty: ignore[invalid-return-type]
 
     @staticmethod
     def _verify_hub_path(
         repo_id: str,
-        revision: Optional[str],
-        subdir: Optional[str],
-    ) -> List[str]:
+        revision: str | None,
+        subdir: str | None,
+    ) -> list[str]:
         from huggingface_hub import HfApi
 
         try:
@@ -195,9 +190,9 @@ class HubModelPath(AbstractModelPath):
     @staticmethod
     def _verify_model_files(
         repo_id: str,
-        revision: Optional[str],
-        subdir: Optional[str],
-        model_files: List[str],
+        revision: str | None,
+        subdir: str | None,
+        model_files: list[str],
     ) -> None:
         if not model_files:
             raise ValueError(

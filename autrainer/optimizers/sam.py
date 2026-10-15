@@ -1,6 +1,8 @@
-from typing import Any, Callable, Dict, Tuple
+from collections.abc import Callable
+from typing import Any
 
 import torch
+from torch.optim.optimizer import ParamsT
 
 import autrainer
 from autrainer.core.structs import AbstractDataBatch
@@ -11,35 +13,33 @@ from autrainer.models.utils import create_model_inputs
 class SAM(torch.optim.Optimizer):
     def __init__(
         self,
-        params: torch.nn.Module,
+        params: ParamsT,
         base_optimizer: str,
         rho: float = 0.05,
         adaptive: bool = False,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Sharpness Aware Minimization (SAM) optimizer.
 
         This implementation is adapted from the following repository:
         https://github.com/davda54/sam
 
-        For more information, see:
-        https://arxiv.org/abs/2010.01412
+        For more information, see: https://arxiv.org/abs/2010.01412
 
         Args:
             params: Model parameters.
-            base_optimizer: Underlying optimizer performing the sharpness-aware
-                update, specified as a relative import path.
-            rho: Size of the neighborhood for computing the max loss.
-                Defaults to 0.05.
-            adaptive: Whether to use an experimental implementation of
-                element-wise Adaptive SAM. Defaults to False.
+            base_optimizer: Underlying optimizer performing the sharpness-aware update,
+                specified as a relative import path.
+            rho: Size of the neighborhood for computing the max loss. Defaults to 0.05.
+            adaptive: Whether to use an experimental implementation of element-wise
+                Adaptive SAM. Defaults to False.
             **kwargs: Additional arguments passed to the underlying optimizer.
         """
         if rho < 0.0:
             raise ValueError(f"Rho '{rho}' should be non-negative.")
 
         defaults = dict(rho=rho, adaptive=adaptive, **kwargs)
-        super(SAM, self).__init__(params, defaults)
+        super().__init__(params, defaults)
 
         self.base_optimizer = autrainer.instantiate(
             config={
@@ -86,7 +86,7 @@ class SAM(torch.optim.Optimizer):
             self.zero_grad()
 
     @torch.no_grad()
-    def step(self, closure: Callable = None) -> None:
+    def step(self, closure: Callable[[], None] | None = None) -> None:  # ty: ignore[invalid-method-override]
         assert closure is not None, (
             "Sharpness Aware Minimization requires closure, but it was not provided"
         )
@@ -103,7 +103,10 @@ class SAM(torch.optim.Optimizer):
         return torch.norm(
             torch.stack(
                 [
-                    ((torch.abs(p) if group["adaptive"] else 1.0) * p.grad)
+                    (
+                        (torch.abs(p) if group["adaptive"] else torch.tensor(1.0))
+                        * p.grad
+                    )
                     .norm(p=2)
                     .to(shared_device)
                     for group in self.param_groups
@@ -114,7 +117,7 @@ class SAM(torch.optim.Optimizer):
             p=2,
         )
 
-    def load_state_dict(self, state_dict: Dict[str, Any]) -> None:
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
         super().load_state_dict(state_dict)
         self.base_optimizer.param_groups = self.param_groups
 
@@ -126,21 +129,18 @@ class SAM(torch.optim.Optimizer):
         data: AbstractDataBatch,
         criterion: torch.nn.Module,
         probabilities_fn: Callable,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """Sharpness Aware Minimization requires two forward-backward passes
-        over the batch to simultaneously minimize the loss value and the loss
-        sharpness.
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Sharpness Aware Minimization requires two forward-backward passes over the
+        batch to simultaneously minimize the loss value and the loss sharpness.
 
         Args:
             model: The model to train.
-            data: The data batch containing features, target, and potentially
-                additional fields. The data batch is expected to be on the same
-                device as the model. Additional fields are passed to the model
-                as keyword arguments if they are present in the model's forward
-                method.
+            data: The data batch containing features, target, and potentially additional
+                fields. The data batch is expected to be on the same device as the
+                model. Additional fields are passed to the model as keyword arguments if
+                they are present in the model's forward method.
             criterion: Loss function.
-            probabilities_fn: Function to convert model outputs to
-                probabilities.
+            probabilities_fn: Function to convert model outputs to probabilities.
 
         Returns:
             Tuple containing the non-reduced loss and model outputs.

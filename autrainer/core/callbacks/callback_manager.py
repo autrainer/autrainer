@@ -1,16 +1,20 @@
+from __future__ import annotations
+
 from collections import defaultdict
 import inspect
-from typing import TYPE_CHECKING, Any, Callable, DefaultDict, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any
 import weakref
 
 
 if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Callable
+
     from autrainer.training import ModularTaskTrainer
 
 
 class CallbackManager:
-    _instance: "CallbackManager" = None
-    _receivers: DefaultDict[str, List[Tuple[int, weakref.WeakMethod]]]
+    _instance: CallbackManager | None = None
+    _receivers: defaultdict[str, list[tuple[int, weakref.WeakMethod]]]
 
     def __new__(cls) -> "CallbackManager":
         if cls._instance is None:
@@ -19,7 +23,7 @@ class CallbackManager:
         return cls._instance
 
     def _remove_dead_receivers(self, name: str) -> None:
-        alive: List[Tuple[int, weakref.WeakMethod]] = []
+        alive: list[tuple[int, weakref.WeakMethod]] = []
         if name not in self._receivers:
             return
         for o, w in self._receivers[name]:
@@ -32,8 +36,12 @@ class CallbackManager:
         self._receivers[name].append((order, weakref.WeakMethod(fn)))
         self._receivers[name].sort(key=lambda t: t[0])
 
-    def _emit(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
-        name = inspect.currentframe().f_back.f_code.co_name
+    def _emit(self, *args: Any, **kwargs: Any) -> None:
+        frame = inspect.currentframe()
+        if frame is None or frame.f_back is None:
+            return
+
+        name = frame.f_back.f_code.co_name
         self._remove_dead_receivers(name)
         for _, w in self._receivers.get(name, []):
             if (fn := w()) is None:
@@ -47,7 +55,7 @@ class CallbackManager:
             obj: Receiver object whose callback should be removed.
             name: Name of the callback from which the receiver should be removed.
         """
-        alive: List[weakref.WeakMethod] = []
+        alive: list[tuple[int, weakref.WeakMethod]] = []
         for o, w in self._receivers.get(name, []):
             if (fn := w()) is None or fn.__self__ is obj:
                 continue
@@ -81,7 +89,7 @@ class CallbackManager:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        metrics: Dict[str, float],
+        metrics: dict[str, float],
     ) -> None:
         self._emit(trainer=trainer, iteration=iteration, metrics=metrics)
 
@@ -120,7 +128,7 @@ class CallbackManager:
         self,
         trainer: "ModularTaskTrainer",
         iteration: int,
-        dev_results: Dict[str, float],
+        dev_results: dict[str, float],
     ) -> None:
         self._emit(trainer=trainer, iteration=iteration, dev_results=dev_results)
 
@@ -145,7 +153,7 @@ class CallbackManager:
     def cb_on_test_end(
         self,
         trainer: "ModularTaskTrainer",
-        test_results: Dict[str, float],
+        test_results: dict[str, float],
     ) -> None:
         self._emit(trainer=trainer, test_results=test_results)
 

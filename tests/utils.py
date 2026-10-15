@@ -1,6 +1,7 @@
+from collections.abc import Generator
 import os
+from pathlib import Path
 import tempfile
-from typing import Generator
 
 import pytest
 
@@ -24,7 +25,7 @@ class BaseIndividualTempDir:
     @pytest.fixture(autouse=True)
     def isolated_directory(
         self,
-        tmp_path: pytest.TempPathFactory,
+        tmp_path: Path,
         request: pytest.FixtureRequest,
     ) -> Generator[None, None, None]:
         if hasattr(request.node, "callspec"):
@@ -32,7 +33,7 @@ class BaseIndividualTempDir:
         else:
             persist_previous = False
 
-        if persist_previous and BaseIndividualTempDir.previous_temp_dir:
+        if persist_previous and BaseIndividualTempDir.previous_temp_dir is not None:
             self.temp_dir = BaseIndividualTempDir.previous_temp_dir
         else:
             self.temp_dir = tmp_path
@@ -40,5 +41,7 @@ class BaseIndividualTempDir:
 
         self.curr_dir = os.getcwd()
         os.chdir(self.temp_dir)
-        yield
-        os.chdir(self.curr_dir)
+        try:
+            yield
+        finally:
+            os.chdir(self.curr_dir)

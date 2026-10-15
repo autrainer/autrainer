@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import torch
 
@@ -33,35 +33,35 @@ except ImportError:  # pragma: no cover
 class AugmentationWrapper(AbstractAugmentation):
     def __init__(
         self,
-        augmentation_import_path: AbstractAugmentation,
+        augmentation_import_path: str,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
+        generator_seed: int | None = None,
         pass_index: bool = False,
-        probability_attr: Optional[str] = None,
-        **kwargs: Dict[str, Any],
+        probability_attr: str | None = None,
+        **kwargs: Any,
     ) -> None:
         """Wrapper around an AbstractAugmentation.
 
-        Important: While the probability of applying the augmentation is
-        deterministic if the generator_seed is set, the actual augmentation
-        applied is not deterministic. This is because the internal random
-        number generator of the augmentation is not seeded.
+        Important: While the probability of applying the augmentation is deterministic
+        if the generator_seed is set, the actual augmentation applied is not
+        deterministic. This is because the internal random number generator of the
+        augmentation is not seeded.
 
         Args:
-            augmentation_import_path: The augmentation import path for the
-                underlying augmentation to wrap.
+            augmentation_import_path: The augmentation import path for the underlying
+                augmentation to wrap.
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
-            pass_index: Whether to pass the index to the underlying
-                augmentation. Defaults to False.
-            probability_attr: Name of the underlying augmentation's
-                probability attribute to override with 1.0. If None, the
-                probability attribute is not overridden. Defaults to None.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
+            pass_index: Whether to pass the index to the underlying augmentation.
+                Defaults to False.
+            probability_attr: Name of the underlying augmentation's probability
+                attribute to override with 1.0. If None, the probability attribute is
+                not overridden. Defaults to None.
             kwargs: Additional keyword arguments to store in the object.
         """
         super().__init__(order, p, generator_seed, **kwargs)
@@ -95,18 +95,18 @@ class TorchvisionAugmentation(AugmentationWrapper):
         name: str,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
-        **kwargs: Dict[str, Any],
+        generator_seed: int | None = None,
+        **kwargs: Any,
     ) -> None:
-        """Wrapper around torchvision.transforms.v2 transforms, which are
-        specified by their class name and keyword arguments.
+        """Wrapper around torchvision.transforms.v2 transforms, which are specified by
+        their class name and keyword arguments.
 
         Functionals are currently not supported.
 
-        Important: While the probability of applying the augmentation is
-        deterministic if the generator_seed is set, the actual augmentation
-        applied is not deterministic. This is because the internal random
-        number generator of the augmentation is not seeded.
+        Important: While the probability of applying the augmentation is deterministic
+        if the generator_seed is set, the actual augmentation applied is not
+        deterministic. This is because the internal random number generator of the
+        augmentation is not seeded.
 
         Args:
             name: Name of the torchvision augmentation. Must be a valid
@@ -114,9 +114,9 @@ class TorchvisionAugmentation(AugmentationWrapper):
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
             kwargs: Keyword arguments passed to the torchvision augmentation.
         """
         self.name = name
@@ -138,16 +138,16 @@ class TorchaudioAugmentation(AugmentationWrapper):
         name: str,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
-        **kwargs: Dict[str, Any],
+        generator_seed: int | None = None,
+        **kwargs: Any,
     ) -> None:
-        """Wrapper around torchaudio.transforms transforms, which are specified
-        by their class name and keyword arguments.
+        """Wrapper around torchaudio.transforms transforms, which are specified by their
+        class name and keyword arguments.
 
-        Important: While the probability of applying the augmentation is
-        deterministic if the generator_seed is set, the actual augmentation
-        applied is not deterministic. This is because the internal random
-        number generator of the augmentation is not seeded.
+        Important: While the probability of applying the augmentation is deterministic
+        if the generator_seed is set, the actual augmentation applied is not
+        deterministic. This is because the internal random number generator of the
+        augmentation is not seeded.
 
         Args:
             name: Name of the torchaudio augmentation. Must be a valid
@@ -155,9 +155,9 @@ class TorchaudioAugmentation(AugmentationWrapper):
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
             kwargs: Keyword arguments passed to the torchaudio augmentation.
         """
         self.name = name
@@ -184,20 +184,20 @@ class AlbumentationsAugmentation(AugmentationWrapper):
         name: str,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
-        **kwargs: Dict[str, Any],
+        generator_seed: int | None = None,
+        **kwargs: Any,
     ) -> None:
-        """Wrapper around albumentations transforms, which are specified by
-        their class name and keyword arguments.
+        """Wrapper around albumentations transforms, which are specified by their class
+        name and keyword arguments.
 
-        Albumentations operates on numpy arrays, so the input tensor is
-        converted to a numpy array before applying the augmentation, and the
-        output numpy array is converted back to a tensor.
+        Albumentations operates on numpy arrays, so the input tensor is converted to a
+        numpy array before applying the augmentation, and the output numpy array is
+        converted back to a tensor.
 
-        Important: While the probability of applying the augmentation is
-        deterministic if the generator_seed is set, the actual augmentation
-        applied is not deterministic. This is because the internal random
-        number generator of the augmentation is not seeded.
+        Important: While the probability of applying the augmentation is deterministic
+        if the generator_seed is set, the actual augmentation applied is not
+        deterministic. This is because the internal random number generator of the
+        augmentation is not seeded.
 
         Args:
             name: Name of the albumentations augmentation. Must be a valid
@@ -205,11 +205,10 @@ class AlbumentationsAugmentation(AugmentationWrapper):
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
-            kwargs: Keyword arguments passed to the albumentations
-                augmentation.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
+            kwargs: Keyword arguments passed to the albumentations augmentation.
         """
         if not ALBUMENTATIONS_AVAILABLE:
             raise ImportError(
@@ -240,38 +239,37 @@ class AudiomentationsAugmentation(AugmentationWrapper):
     def __init__(
         self,
         name: str,
-        sample_rate: Optional[int] = None,
+        sample_rate: int | None = None,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
-        **kwargs: Dict[str, Any],
+        generator_seed: int | None = None,
+        **kwargs: Any,
     ) -> None:
-        """Wrapper around audiomentations transforms, which are specified
-        by their class name and keyword arguments.
+        """Wrapper around audiomentations transforms, which are specified by their class
+        name and keyword arguments.
 
-        Audiomentations operates on numpy arrays, so the input tensor is
-        converted to a numpy array before applying the augmentation, and the
-        output numpy array is converted back to a tensor.
+        Audiomentations operates on numpy arrays, so the input tensor is converted to a
+        numpy array before applying the augmentation, and the output numpy array is
+        converted back to a tensor.
 
-        Important: While the probability of applying the augmentation is
-        deterministic if the generator_seed is set, the actual augmentation
-        applied is not deterministic. This is because the internal random
-        number generator of the augmentation is not seeded.
+        Important: While the probability of applying the augmentation is deterministic
+        if the generator_seed is set, the actual augmentation applied is not
+        deterministic. This is because the internal random number generator of the
+        augmentation is not seeded.
 
         Args:
-            name: Name of the torchaudio augmentation. Must be a valid
-                audiomentations transform class name.
-            sample_rate: The sample rate of the audio data. Should be specified
-                for most audio augmentations. If None, the sample rate is not
-                passed to the augmentation. Defaults to None.
+            name: Name of the torchaudio augmentation. Must be a valid audiomentations
+                transform class name.
+            sample_rate: The sample rate of the audio data. Should be specified for most
+                audio augmentations. If None, the sample rate is not passed to the
+                augmentation. Defaults to None.
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
-            kwargs: Keyword arguments passed to the audiomentations
-                augmentation.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
+            kwargs: Keyword arguments passed to the audiomentations augmentation.
         """
         if not AUDIOMENTATIONS_AVAILABLE:
             raise ImportError(
@@ -308,16 +306,16 @@ class TorchAudiomentationsAugmentation(AugmentationWrapper):
         sample_rate: int,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
-        **kwargs: Dict[str, Any],
+        generator_seed: int | None = None,
+        **kwargs: Any,
     ) -> None:
-        """Wrapper around torch_audiomentations transforms, which are specified
-        by their class name and keyword arguments.
+        """Wrapper around torch_audiomentations transforms, which are specified by their
+        class name and keyword arguments.
 
-        Important: While the probability of applying the augmentation is
-        deterministic if the generator_seed is set, the actual augmentation
-        applied is not deterministic. This is because the internal random
-        number generator of the augmentation is not seeded.
+        Important: While the probability of applying the augmentation is deterministic
+        if the generator_seed is set, the actual augmentation applied is not
+        deterministic. This is because the internal random number generator of the
+        augmentation is not seeded.
 
         Args:
             name: Name of the torchaudio augmentation. Must be a valid
@@ -326,11 +324,10 @@ class TorchAudiomentationsAugmentation(AugmentationWrapper):
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
-            kwargs: Keyword arguments passed to the torch_audiomentations
-                augmentation.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
+            kwargs: Keyword arguments passed to the torch_audiomentations augmentation.
         """
         if not TORCHAUDIOMENTATIONS_AVAILABLE:
             raise ImportError(

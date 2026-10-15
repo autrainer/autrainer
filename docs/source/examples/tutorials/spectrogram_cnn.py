@@ -1,12 +1,10 @@
-from typing import List
-
 import torch
 
 from autrainer.models import AbstractModel
 
 
 class SpectrogramCNN(AbstractModel):
-    def __init__(self, output_dim: int, hidden_dims: List[int]) -> None:
+    def __init__(self, output_dim: int, hidden_dims: list[int]) -> None:
         """Spectrogram CNN model with a variable number of hidden CNN layers.
 
         Args:

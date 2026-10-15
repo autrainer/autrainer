@@ -1,20 +1,30 @@
 import argparse
+from collections.abc import Callable
 from functools import wraps
 import sys
-from typing import Any, Callable, Dict, Optional, TypeVar
+from typing import Any, ParamSpec
 
 from .command_line_error import CommandLineError
 
 
-F = TypeVar("F", bound=Callable[..., Any])
+class MockParser(argparse.ArgumentParser):
+    def add_argument(self, *args: Any, **kwargs: Any) -> None:  # ty: ignore[invalid-method-override]
+        pass
+
+    def print_help(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
+
+P = ParamSpec("P")
 TQDM_LINE_ENDINGS = ["it/s]", "s/it]", "B/s]"]
 
 
-def encode_override_kwargs(override_kwargs: Dict[str, Any]) -> Dict[str, str]:
+def encode_override_kwargs(override_kwargs: dict[str, Any]) -> dict[str, str]:
     """Encode Hydra override kwargs by converting all values to strings.
-    List values are converted to strings by joining the elements with commas.
-    Boolean values are converted to lowercase strings.
-    Duplicate keys are automatically overwritten.
+
+    List values are converted to strings by joining the elements with commas. Boolean
+    values are converted to lowercase strings. Duplicate keys are automatically
+    overwritten.
 
     Args:
         override_kwargs: The override kwargs to encode.
@@ -23,8 +33,8 @@ def encode_override_kwargs(override_kwargs: Dict[str, Any]) -> Dict[str, str]:
         Encoded override kwargs.
 
     Raises:
-        CommandLineError: If any override argument values are not of type list,
-            str, int, float, or bool.
+        CommandLineError: If any override argument values are not of type list, str,
+            int, float, or bool.
     """
     encoded_kwargs = {}
     for key, value in override_kwargs.items():
@@ -32,10 +42,11 @@ def encode_override_kwargs(override_kwargs: Dict[str, Any]) -> Dict[str, str]:
             value = ",".join(map(str, value))
         elif isinstance(value, bool):
             value = str(value).lower()
-        if not isinstance(value, (str, int, float)):
+        if not isinstance(value, str | int | float):
             raise CommandLineError(
+                MockParser(),
                 f"Hydra override argument values must be of type list, "
-                f"str, int, float, or bool, but got {type(value)}."
+                f"str, int, float, or bool, but got {type(value)}.",
             )
         encoded_kwargs[key] = str(value)
     return encoded_kwargs
@@ -43,22 +54,22 @@ def encode_override_kwargs(override_kwargs: Dict[str, Any]) -> Dict[str, str]:
 
 def run_hydra_cmd(
     cmd: str,
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: dict | None = None,
     config_name: str = "config",
-    config_path: Optional[str] = None,
+    config_path: str | None = None,
     cmd_prefix: str = "autrainer",
 ) -> None:
     """Run a Hydra command in a subprocess and print the output.
 
     Args:
         cmd: The Hydra command to run.
-        override_kwargs: Additional Hydra override arguments to pass to the
-            train script.
-        config_name: The name of the config (usually the file name without the
-            .yaml extension). Defaults to "config".
-        config_path: The config path, a directory where Hydra will search for
-            config files. If config_path is None no directory is added to the
-            search path. Defaults to None.
+        override_kwargs: Additional Hydra override arguments to pass to the train
+            script.
+        config_name: The name of the config (usually the file name without the .yaml
+            extension). Defaults to "config".
+        config_path: The config path, a directory where Hydra will search for config
+            files. If config_path is None no directory is added to the search path.
+            Defaults to None.
         cmd_prefix: The command prefix to use. Defaults to "autrainer".
     """
     import subprocess
@@ -80,6 +91,9 @@ def run_hydra_cmd(
         errors="replace",
         universal_newlines=False,
     ) as process:
+        if process.stdout is None:
+            raise RuntimeError("Failed to capture subprocess output.")
+
         tqdm_line = False
         for line in process.stdout:
             line = line.rstrip()
@@ -102,23 +116,23 @@ def running_in_notebook() -> bool:
     return any("jupyter" in arg or "ipykernel" in arg for arg in sys.argv)
 
 
-def catch_cli_errors(func: F) -> F:
+def catch_cli_errors(func: Callable[P, None]) -> Callable[P, None]:
     @wraps(func)
-    def wrapper(*args: Any, **kwargs: Any) -> Any:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
         try:
-            return func(*args, **kwargs)
+            func(*args, **kwargs)
         except CommandLineError as e:
             if not running_in_notebook():
-                raise e
+                raise
             print(e.message, file=sys.stderr)
 
     return wrapper
 
 
 def add_hydra_args_to_sys(
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: dict | None = None,
     config_name: str = "config",
-    config_path: Optional[str] = None,
+    config_path: str | None = None,
 ) -> None:
     if config_name.replace(".yaml", "") != "config":
         sys.argv.extend(["-cn", config_name])

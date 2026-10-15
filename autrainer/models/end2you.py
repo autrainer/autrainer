@@ -1,7 +1,7 @@
 r"""Code taken from https://github.com/end2you/end2you.
 
-Copied only model code as needed.
-Adapted to match coding styles of current repo:
+Copied only model code as needed. Adapted to match coding styles of current repo:
+
 - Remove input_size argument
 + Add output_dim argument
 + Changed RNN model to local Sequential
@@ -11,10 +11,9 @@ Adapted to match coding styles of current repo:
   + Seems broken; 2nd max-pool applied over channels
   + Output dimension is too long
   + Model's results never reproduced anyway
-
 """
 
-from typing import Any, Dict, Optional, Tuple, Type, Union
+from typing import Any
 
 import numpy as np
 import torch
@@ -31,9 +30,9 @@ class Base(torch.nn.Module):
         self,
         conv_layers_args: dict,
         maxpool_layers_args: dict,
-        conv_op: Optional[Type[torch.nn.Module]] = None,
-        max_pool_op: Optional[Type[torch.nn.Module]] = None,
-        activation: Optional[Type[torch.nn.Module]] = None,
+        conv_op: type[torch.nn.Module] | None = None,
+        max_pool_op: type[torch.nn.Module] | None = None,
+        activation: type[torch.nn.Module] | None = None,
         normalize: bool = False,
     ) -> None:
         """Audio model.
@@ -76,16 +75,17 @@ class Base(torch.nn.Module):
             self._init_weights(m)
 
     def _init_weights(self, m: torch.nn.Module) -> None:
-        """Helper method to initialize the parameters of the model
-        with Kaiming uniform initialization.
+        """Helper method to initialize the parameters of the model with Kaiming uniform
+        initialization.
 
         Args:
             m: Module to initialize.
         """
 
-        if isinstance(m, (torch.nn.Conv1d, torch.nn.Linear)):
+        if isinstance(m, torch.nn.Conv1d | torch.nn.Linear):
             torch.nn.init.kaiming_uniform_(m.weight)
-            torch.nn.init.zeros_(m.bias)
+            if m.bias is not None:
+                torch.nn.init.zeros_(m.bias)
         if isinstance(m, torch.nn.LSTM):
             for name, param in m.named_parameters():
                 if "bias" in name:
@@ -161,13 +161,14 @@ class Base(torch.nn.Module):
 class Emo18(torch.nn.Module):
     def __init__(self) -> None:
         """Speech emotion recognition model proposed in:
+
         https://doi.org/10.1109/ICASSP.2018.8462677
         """
 
         super().__init__()
         self.model, self.num_features = self.build_audio_model()
 
-    def build_audio_model(self) -> Tuple[torch.nn.Module, int]:
+    def build_audio_model(self) -> tuple[torch.nn.Module, int]:
         """Build the audio model: 3 blocks of convolution + max-pooling."""
 
         out_channels = [64, 128, 256]
@@ -210,13 +211,14 @@ class Emo18(torch.nn.Module):
 class Zhao19(torch.nn.Module):
     def __init__(self) -> None:
         """Speech emotion recognition model proposed in:
+
         https://doi.org/10.1016/j.bspc.2018.08.035
         """
 
         super().__init__()
         self.model, self.num_features = self.build_audio_model()
 
-    def build_audio_model(self) -> Tuple[torch.nn.Module, int]:
+    def build_audio_model(self) -> tuple[torch.nn.Module, int]:
         """Build the audio model: 3 blocks of convolution + max-pooling."""
 
         out_channels = [64, 64, 128, 128]
@@ -263,7 +265,7 @@ class AudioModel(torch.nn.Module):
         self,
         model_name: str,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Audio network model.
 
@@ -275,11 +277,10 @@ class AudioModel(torch.nn.Module):
 
         super().__init__()
 
-        self.model = self._get_model(model_name)
-        self.model = self.model(*args, **kwargs)
+        self.model = self._get_model(model_name)(*args, **kwargs)
         self.num_features = self.model.num_features
 
-    def _get_model(self, model_name: str) -> torch.nn.Module:
+    def _get_model(self, model_name: str) -> type[Emo18] | type[Zhao19]:
         """Factory method to choose audio model."""
 
         return {"emo18": Emo18, "zhao19": Zhao19}[model_name]
@@ -298,7 +299,7 @@ class AudioRNNModel(AbstractModel):
         dropout: float = 0.5,
         cell: str = "LSTM",
         bidirectional: bool = False,
-        transfer: Optional[Union[bool, str]] = None,
+        transfer: bool | str | None = None,
     ) -> None:
         """Audio RNN model.
 
@@ -309,10 +310,9 @@ class AudioRNNModel(AbstractModel):
             num_layers: Number of layers of the RNN. Defaults to 2.
             dropout: Dropout rate. Defaults to 0.5.
             cell: Type of RNN cell in ["LSTM", "GRU"] Defaults to "LSTM".
-            bidirectional: Whether to use a bidirectional RNN.
-                Defaults to False.
-            transfer: Not available for this model. If set, raises an error.
-                Defaults to None.
+            bidirectional: Whether to use a bidirectional RNN. Defaults to False.
+            transfer: Not available for this model. If set, raises an error. Defaults to
+                None.
         """
         assert_no_transfer_weights(self, transfer)
         super().__init__(output_dim, None)  # no transfer learning weights
@@ -344,9 +344,9 @@ class AudioRNNModel(AbstractModel):
         return self.rnn(audio_out)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
-        """
-        Args:
-            features ((torch.Tensor) - BS x S x 1 x T)
+        """Args:
+
+        features ((torch.Tensor) - BS x S x 1 x T)
         """
         rnn_out = self.embeddings(features)
         return self.linear(rnn_out)

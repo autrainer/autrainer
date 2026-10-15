@@ -1,4 +1,3 @@
-from typing import Optional, Tuple, Union
 import warnings
 
 import numpy as np
@@ -29,6 +28,7 @@ class LEAFNet(AbstractModel):
         transfer: bool = False,
     ) -> None:
         """EfficientNet with LEAF-Is frontend.
+
         Used to reproduce work from:
         https://www.isca-archive.org/interspeech_2023/meng23c_interspeech.html
 
@@ -40,25 +40,22 @@ class LEAFNet(AbstractModel):
         Args:
             output_dim: Output dimension.
             leaf_filters: Number of LEAF filterbanks to train. Defaults to 40.
-            kernel_size: Size of kernels applied by LEAF (in ms).
-                Defaults to 25.
+            kernel_size: Size of kernels applied by LEAF (in ms). Defaults to 25.
             stride: Stride of LEAF (in ms). Defaults to 0.0625.
             window_stride: Stride of lowpass filter (in ms). Defaults to 10.
-            padding_kernel_size: Size of lowpass filter (in ms).
-                Defaults to 25.
+            padding_kernel_size: Size of lowpass filter (in ms). Defaults to 25.
             sample_rate: Used to compute LEAF params. Defaults to 16000.
             min_freq: Minimum freq analyzed by LEAF. Defaults to 60.
             max_freq: Maximum freq analyzed by LEAF. Defaults to 7800.
-            efficientnet_type: EfficientNet type to use from timm.
-                Defaults to "efficientnet_b0".
-            mode: Implementation according to "interspeech" paper (Meng et al.)
-                or "speech_brain". Defaults to "interspeech".
+            efficientnet_type: EfficientNet type to use from timm. Defaults to
+                "efficientnet_b0".
+            mode: Implementation according to "interspeech" paper (Meng et al.) or
+                "speech_brain". Defaults to "interspeech".
             initialization: Filterbank initialisation in ["mel", "bark",
-                "linear-constant", "constant", "uniform", "zeros"].
-                Defaults to "mel".
+                "linear-constant", "constant", "uniform", "zeros"]. Defaults to "mel".
             generator_seed: Seed for random generator. Defaults to 42.
-            transfer: Whether to use EfficientNet weights from ImageNet.
-                Defaults to False.
+            transfer: Whether to use EfficientNet weights from ImageNet. Defaults to
+                False.
 
         Raises:
             ValueError: If efficientnet_type is not supported.
@@ -121,7 +118,7 @@ class LEAFNet(AbstractModel):
         self.classifier = TimmModel(
             output_dim=self.output_dim,
             timm_name=self.efficientnet_type,
-            transfer=self.transfer,
+            transfer=bool(self.transfer),
             in_chans=1,
         )
 
@@ -176,7 +173,9 @@ class LEAFNet(AbstractModel):
             )
         elif self.initialization == "bark":
             center_frequencies, bandwidths = bark_scale_filterbank(
-                self.min_freq, self.max_freq, self.leaf_filters
+                self.min_freq,
+                self.max_freq,
+                self.leaf_filters,
             )
         else:
             raise ValueError(
@@ -201,9 +200,7 @@ class LEAFNet(AbstractModel):
             self.leaf.state_dict()[filterbank_param][:, 1].copy_(bandwidths)
 
 
-def hz_to_bark(
-    f: Union[float, np.ndarray],
-) -> Union[int, float, np.ndarray]:
+def hz_to_bark(f: float | np.ndarray) -> int | float | np.ndarray:
     """Convert frequency from Hz to Bark scale according to Traunmüller.
 
     Args:
@@ -215,10 +212,9 @@ def hz_to_bark(
     return 26.81 * f / (1960 + f) - 0.53
 
 
-def bark_to_hz(
-    b: Union[float, np.ndarray],
-) -> Union[int, float, np.ndarray]:
+def bark_to_hz(b: np.ndarray) -> np.ndarray:
     """Approximate conversion from Bark to Hz (inverse of the above).
+
     Ajdusted centers for reconversion according to Traunmüller.
 
     Args:
@@ -240,7 +236,7 @@ def bark_scale_filterbank(
     min_freq: float,
     max_freq: float,
     num_bands: int,
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor, torch.Tensor]:
     """Calculate center frequencies and bandwidths for a Bark scale filterbank.
 
     Args:
@@ -272,9 +268,8 @@ def mel_filter_params(
     min_freq: float,
     max_freq: float,
     sample_rate: int,
-) -> Tuple[torch.Tensor, torch.Tensor]:
-    """Analytically calculate the center frequencies and sigmas of a mel
-    filter bank.
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Analytically calculate the center frequencies and sigmas of a mel filter bank.
 
     Args:
         n_filters: Number of filters for the filterbank.
@@ -296,10 +291,12 @@ def mel_filter_params(
 
 
 def gabor_filters(
-    size: int, center_freqs: torch.Tensor, sigmas: torch.Tensor
+    size: int,
+    center_freqs: torch.Tensor,
+    sigmas: torch.Tensor,
 ) -> torch.Tensor:
-    """Calculate a gabor function from given center frequencies and bandwidths
-    that can be used as kernel/filters for an 1D convolution.
+    """Calculate a gabor function from given center frequencies and bandwidths that can
+    be used as kernel/filters for an 1D convolution.
 
     Args:
         size: Kernel/filter size.
@@ -317,8 +314,8 @@ def gabor_filters(
 
 
 def gauss_windows(size: int, sigmas: torch.Tensor) -> torch.Tensor:
-    """Calculate a gaussian lowpass function from given bandwidths that can be
-    used as kernel/filter for an 1D convolution.
+    """Calculate a gaussian lowpass function from given bandwidths that can be used as
+    kernel/filter for an 1D convolution.
 
     Args:
         size: Kernel/filter size.
@@ -346,13 +343,12 @@ class GaborFilterbank(nn.Module):
     ) -> None:
         """Torch module that functions as a gabor filterbank.
 
-        Initializes n_filters center frequencies and bandwidths that are based
-        on a mel filterbank. The parameters are used to calculate Gabor filters
-        for a 1D convolution over the input signal. The squared modulus is
-        taken from the results. To reduce the temporal resolution a gaussian
-        lowpass filter is calculated from pooling_widths, which are used to
-        perform a pooling operation. The center frequencies, bandwidths and
-        pooling_widths are learnable parameters.
+        Initializes n_filters center frequencies and bandwidths that are based on a mel
+        filterbank. The parameters are used to calculate Gabor filters for a 1D
+        convolution over the input signal. The squared modulus is taken from the
+        results. To reduce the temporal resolution a gaussian lowpass filter is
+        calculated from pooling_widths, which are used to perform a pooling operation.
+        The center frequencies, bandwidths and pooling_widths are learnable parameters.
 
         Args:
             n_filters: Number of filters.
@@ -362,10 +358,9 @@ class GaborFilterbank(nn.Module):
             filter_size: Size of the kernels/filters for gabor convolution.
             pool_size: Size of the kernels/filters for pooling convolution.
             pool_stride: Stride of the pooling convolution.
-            pool_init: Initial value for the gaussian lowpass function.
-                Defaults to 0.4.
+            pool_init: Initial value for the gaussian lowpass function. Defaults to 0.4.
         """
-        super(GaborFilterbank, self).__init__()
+        super().__init__()
         self.n_filters = n_filters
         self.filter_size = filter_size
         self.pool_size = pool_size
@@ -412,7 +407,7 @@ class PCEN(nn.Module):
         r: float = 1.0,
         eps: float = 1e-6,
         learn_logs: bool = False,
-        clamp: Optional[float] = None,
+        clamp: float | None = None,
     ) -> None:
         """Trainable PCEN (Per-Channel Energy Normalization) layer.
 
@@ -428,12 +423,12 @@ class PCEN(nn.Module):
             r: Initial value for :math:`r`
             eps: Value for :math:`eps`
             learn_logs: If false-ish, instead of learning the logarithm of each
-                parameter (as in the PCEN paper), learn the inverse of :math:`r`
-                and all other parameters directly (as in the LEAF paper).
-            clamp: If given, clamps the input to the given minimum value before
-                applying PCEN.
+                parameter (as in the PCEN paper), learn the inverse of :math:`r` and all
+                other parameters directly (as in the LEAF paper).
+            clamp: If given, clamps the input to the given minimum value before applying
+                PCEN.
         """
-        super(PCEN, self).__init__()
+        super().__init__()
         if learn_logs:
             # learns logarithm of each parameter
             s = np.log(s)
@@ -497,26 +492,24 @@ class LeafIs(nn.Module):
         sample_rate: int = 16000,
         window_len: float = 25.0,
         window_stride: float = 10.0,
-        compression: Optional[torch.nn.Module] = None,
+        compression: torch.nn.Module | None = None,
     ) -> None:
-        """LEAF frontend, a learnable front-end that takes an audio waveform as
-        input and outputs a learnable spectral representation.
+        """LEAF frontend, a learnable front-end that takes an audio waveform as input
+        and outputs a learnable spectral representation.
+
         Initially approximates the computation of standard mel-filterbanks.
 
         Args:
             n_filters: Number of filters. Defaults to 40.
             min_freq: Minimum frequency. Defaults to 60.0.
             max_freq: Maximum frequency. Defaults to 7800.0.
-            sample_rate: Sample Rate for filterbanc initialization.
-                Defaults to 16000.
-            window_len: Kernel/filter size of the convolutions in ms.
-                Defaults to 25.0.
-            window_stride: Stride used for the pooling convolution in ms.
-                Defaults to 10.0.
-            compression: Compression function. If None, PCEN is used.
-                Defaults to None.
+            sample_rate: Sample Rate for filterbanc initialization. Defaults to 16000.
+            window_len: Kernel/filter size of the convolutions in ms. Defaults to 25.0.
+            window_stride: Stride used for the pooling convolution in ms. Defaults to
+                10.0.
+            compression: Compression function. If None, PCEN is used. Defaults to None.
         """
-        super(LeafIs, self).__init__()
+        super().__init__()
 
         # convert window sizes from milliseconds to samples
         window_size = int(sample_rate * window_len / 1000)

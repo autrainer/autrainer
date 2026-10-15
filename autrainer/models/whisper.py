@@ -1,3 +1,4 @@
+from typing import cast
 import warnings
 
 import torch
@@ -27,12 +28,13 @@ class WhisperBackbone(AbstractModel):
         )
         self.model = model
         self.register_buffer(
-            "decoder_input_ids",
+            "_decoder_input_ids",
             torch.tensor([1, 1]) * self.model.config.decoder_start_token_id,
         )
 
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
-        ids = torch.stack([self.decoder_input_ids] * features.shape[0])
+        decoder_input_ids = cast("torch.Tensor", self._decoder_input_ids)
+        ids = decoder_input_ids.unsqueeze(0).expand(features.shape[0], -1)
         return self.model(features, decoder_input_ids=ids)["last_hidden_state"][:, 0, :]
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
@@ -50,8 +52,8 @@ class WhisperFFNN(AbstractModel):
         transfer: bool = False,
     ) -> None:
         """Whisper model with FFNN frontend adapted for audio classification.
-        For more information, see:
-        https://doi.org/10.48550/arXiv.2212.04356
+
+        For more information, see: https://doi.org/10.48550/arXiv.2212.04356
 
         Args:
             model_name: Name of the model loaded from Huggingface.
@@ -59,8 +61,8 @@ class WhisperFFNN(AbstractModel):
             output_dim: Output dimension of the FFNN.
             num_layers: Number of layers of the FFNN. Defaults to 2.
             dropout: Dropout rate. Defaults to 0.5.
-            transfer: Whether to initialize the Whisper backbone with
-                pretrained weights. Defaults to False.
+            transfer: Whether to initialize the Whisper backbone with pretrained
+                weights. Defaults to False.
         """
         super().__init__(output_dim, transfer)
         self.model_name = model_name

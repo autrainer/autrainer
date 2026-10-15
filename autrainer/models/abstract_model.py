@@ -1,31 +1,27 @@
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from functools import cached_property
 from inspect import signature
-from typing import Callable, List, Optional, Union
 
 import audobject
 import torch
 
 
 class AbstractModel(torch.nn.Module, audobject.Object, ABC):
-    def __init__(
-        self,
-        output_dim: int,
-        transfer: Optional[Union[bool, str]] = None,
-    ) -> None:
+    def __init__(self, output_dim: int, transfer: bool | str | None = None) -> None:
         """Abstract model class.
 
         Args:
             output_dim: Output dimension of the model.
-            transfer: Whether to load the model with pretrained weights if
-                available. May be a boolean or a string representing a truthy
-                or falsy value. Defaults to None.
+            transfer: Whether to load the model with pretrained weights if available.
+                May be a boolean or a string representing a truthy or falsy value.
+                Defaults to None.
         """
         super().__init__()
         self.output_dim = output_dim
         self.transfer = transfer
-        self.inputs  # precompute and verify inputs  # noqa: B018
-        self.embedding_inputs  # precompute and verify embedding inputs  # noqa: B018
+        _ = self.inputs  # precompute and verify inputs
+        _ = self.embedding_inputs  # precompute and verify embedding inputs
 
     @abstractmethod
     def embeddings(self, features: torch.Tensor) -> torch.Tensor:
@@ -39,35 +35,36 @@ class AbstractModel(torch.nn.Module, audobject.Object, ABC):
         """
 
     @cached_property
-    def inputs(self) -> List[str]:
+    def inputs(self) -> list[str]:
         """Get the inputs to the model's forward method.
 
         Returns:
             Model inputs.
         """
-        return self._collect_inputs(self.forward)
+        return self._collect_inputs(self.forward, "forward")
 
     @cached_property
-    def embedding_inputs(self) -> List[str]:
+    def embedding_inputs(self) -> list[str]:
         """Get the inputs to the model's embedding method.
 
         Returns:
             Model inputs.
         """
-        return self._collect_inputs(self.embeddings)
+        return self._collect_inputs(self.embeddings, "embeddings")
 
-    def _collect_inputs(self, fn: Callable) -> List[str]:
+    def _collect_inputs(
+        self,
+        fn: Callable[[torch.Tensor], torch.Tensor],
+        fn_name: str,
+    ) -> list[str]:
         names = [v.name for v in signature(fn).parameters.values()]
-        fn_name = fn.__name__
         if names[0] != "features":
             raise NameError(
-                (
-                    f"Model {type(self).__name__} "
-                    "does not have 'features' "
-                    f"as the first argument of its '{fn_name}' method. "
-                    f"Its arguments are: {names}. "
-                    f"Please rewrite the '{fn_name}' method accordingly."
-                )
+                f"Model {type(self).__name__} "
+                "does not have 'features' "
+                f"as the first argument of its '{fn_name}' method. "
+                f"Its arguments are: {names}. "
+                f"Please rewrite the '{fn_name}' method accordingly."
             )
         return names
 

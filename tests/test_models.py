@@ -1,5 +1,3 @@
-from typing import Optional, Tuple, Type, Union
-
 import pytest
 import torch
 
@@ -65,9 +63,9 @@ class TestAllModels:
     )
     def test_model(
         self,
-        model_class: Type[AbstractModel],
+        model_class: type[AbstractModel],
         model_kwargs: dict,
-        input_shape: Tuple[int],
+        input_shape: tuple[int],
     ) -> None:
         model = model_class(output_dim=10, transfer=False, **model_kwargs)
         self._test_model(model, input_shape)
@@ -75,9 +73,9 @@ class TestAllModels:
     @staticmethod
     def _test_model(
         model: AbstractModel,
-        input_shape: Tuple[int],
+        input_shape: tuple[int, ...],
         eval: bool = True,
-        expected: Optional[Tuple[int, ...]] = None,
+        expected: tuple[int, ...] | None = None,
     ) -> None:
         if eval:
             model.eval()
@@ -107,7 +105,7 @@ class TestAllModels:
     )
     def test_invalid_transfer(
         self,
-        model_class: Type[AbstractModel],
+        model_class: type[AbstractModel],
         model_kwargs: dict,
     ) -> None:
         model_class(output_dim=10, transfer=True, **model_kwargs)
@@ -120,8 +118,8 @@ class TestCnn10Cnn14:
     )
     def test_segmentwise(
         self,
-        cls: Type[Union[Cnn10, Cnn14]],
-        expected: Tuple[int, int, int],
+        cls: type[Cnn10 | Cnn14],
+        expected: tuple[int, int, int],
     ) -> None:
         model = cls(output_dim=10, segmentwise=True)
         TestAllModels._test_model(model, (1, 128, 64), expected=expected)
@@ -267,11 +265,11 @@ class TestWrongArgumentModel:
             def __init__(self, output_dim: int) -> None:
                 super().__init__(output_dim, None)
 
-            def embeddings(self, x: torch.Tensor) -> torch.Tensor:
-                return super().embeddings(x)
+            def embeddings(self, features: torch.Tensor) -> torch.Tensor:
+                return super().embeddings(features)
 
-            def forward(self, x: torch.Tensor) -> torch.Tensor:
-                return x
+            def forward(self, features: torch.Tensor) -> torch.Tensor:
+                return features
 
         bar = Foo(1)
         bar.inputs  # noqa: B018

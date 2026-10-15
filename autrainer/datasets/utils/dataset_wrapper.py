@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List, Optional, Union
 
 import pandas as pd
 import torch
@@ -17,12 +16,12 @@ class DatasetWrapper(torch.utils.data.Dataset):
         path: str,
         features_subdir: str,
         index_column: str,
-        target_column: Union[str, List[str]],
+        target_column: str | list[str],
         file_handler: AbstractFileHandler,
         df: pd.DataFrame,
-        file_type: Optional[str] = None,
-        transform: Optional[SmartCompose] = None,
-        target_transform: Optional[AbstractTargetTransform] = None,
+        file_type: str | None = None,
+        transform: SmartCompose | None = None,
+        target_transform: AbstractTargetTransform | None = None,
     ) -> None:
         """Wrapper around torch.utils.data.Dataset.
 
@@ -33,14 +32,11 @@ class DatasetWrapper(torch.utils.data.Dataset):
             target_column: Target column of the dataframe.
             file_handler: File handler to load the data.
             df: Dataframe containing the index and target column(s).
-            file_type: File type of the features. If `None`,
-                will not enforce a file_type. This can be useful
-                in case the dataset contains audio files
+            file_type: File type of the features. If `None`, will not enforce a
+                file_type. This can be useful in case the dataset contains audio files
                 with different formats. Defaults to `None`.
             transform: Transform to apply to the features. Defaults to None.
-            target_transform: Target transform to apply to the target.
-                Defaults to None.
-
+            target_transform: Target transform to apply to the target. Defaults to None.
         """
         self.path = path
         self.features_subdir = features_subdir
@@ -65,7 +61,7 @@ class DatasetWrapper(torch.utils.data.Dataset):
     def __len__(self) -> int:
         return len(self.df)
 
-    def __getitem__(self, item: int) -> DataItem:
+    def __getitem__(self, item: int) -> DataItem:  # ty: ignore[invalid-method-override]
         """Get the data item at the specified index.
 
         Args:
@@ -81,7 +77,7 @@ class DatasetWrapper(torch.utils.data.Dataset):
         if isinstance(target, pd.Series):
             target = torch.Tensor(target.to_list())
 
-        it = DataItem(features=data, target=target, index=item)
+        it = DataItem(features=data, target=target, index=item)  # ty: ignore[invalid-argument-type]
 
         if self.transform is not None:
             it = self.transform(it)
@@ -90,4 +86,4 @@ class DatasetWrapper(torch.utils.data.Dataset):
         if self.target_transform is not None:
             it.target = self.target_transform(it.target)
 
-        return it
+        return it  # ty: ignore[invalid-return-type]

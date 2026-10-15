@@ -2,7 +2,7 @@ from collections import defaultdict
 from copy import deepcopy
 import os
 import shutil
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from omegaconf import DictConfig, OmegaConf
 import pandas as pd
@@ -29,34 +29,34 @@ class AggregateGrid:
         self,
         results_dir: str,
         experiment_id: str,
-        aggregate_list: List[str],
+        aggregate_list: list[str],
         aggregate_prefix: str = "agg",
         training_dir: str = "training",
-        max_runs_plot: Optional[int] = None,
-        aggregate_name: Optional[str] = None,
-        aggregated_dict: Optional[dict] = None,
-        plot_params: Optional[dict] = None,
+        max_runs_plot: int | None = None,
+        aggregate_name: str | None = None,
+        aggregated_dict: dict | None = None,
+        plot_params: dict[str, Any] | None = None,
     ) -> None:
         """Aggregate the results of a grid search over one or more parameters.
 
-        If loggers have been used for the grid search, the aggregated results
-        will be logged to the same loggers.
+        If loggers have been used for the grid search, the aggregated results will be
+        logged to the same loggers.
 
         Args:
             results_dir: The directory where the results are stored.
             experiment_id: The ID of the grid search experiment.
             aggregate_list: The list of parameters to aggregate over.
-            aggregate_prefix: The prefix for the aggregated experiment ID.
-                Defaults to "agg".
-            training_dir: The directory of the training results of the
-                experiment. Defaults to "training".
-            max_runs_plot: The maximum number of best runs to plot. If None,
-                all runs will be plotted. Defaults to None.
-            aggregate_name: The name of the aggregated experiment. If None,
-                it will be generated from the aggregate_list. Defaults to None.
-            aggregated_dict: A dictionary mapping the aggregated experiment
-                names to the runs to aggregate. If None, the runs will be
-                aggregated based on the aggregate_list. Defaults to None.
+            aggregate_prefix: The prefix for the aggregated experiment ID. Defaults to
+                "agg".
+            training_dir: The directory of the training results of the experiment.
+                Defaults to "training".
+            max_runs_plot: The maximum number of best runs to plot. If None, all runs
+                will be plotted. Defaults to None.
+            aggregate_name: The name of the aggregated experiment. If None, it will be
+                generated from the aggregate_list. Defaults to None.
+            aggregated_dict: A dictionary mapping the aggregated experiment names to the
+                runs to aggregate. If None, the runs will be aggregated based on the
+                aggregate_list. Defaults to None.
             plot_params: Additional parameters for plotting. Defaults to None.
         """
         self.aggregate_list = aggregate_list
@@ -157,7 +157,7 @@ class AggregateGrid:
         run_list: list,
         path: str,
         yaml_type: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         assert yaml_type in ["dev", "test"]
         loss_type = "dev_loss" if yaml_type == "dev" else "loss"
         dfs = []
@@ -180,24 +180,26 @@ class AggregateGrid:
     def _aggregate_config(self, agg_name: str, run_list: list) -> None:
         path = os.path.join(self.output_directory, agg_name, ".hydra")
         os.makedirs(path, exist_ok=True)
-        runs = [
-            OmegaConf.load(
+        runs = []
+        for r in run_list:
+            run = OmegaConf.load(
                 os.path.join(self.training_directory, r, ".hydra", "config.yaml")
             )
-            for r in run_list
-        ]
+            if not isinstance(run, DictConfig):
+                raise ValueError("Expected config.yaml to be a mapping.")
+            runs.append(run)
         config = runs.pop(0)
         if self.aggregated_dict is None:
             for key in self.aggregate_list:
                 config[key] = self._replace_differing_values(config, runs, key)
-        save_yaml(os.path.join(path, "config.yaml"), OmegaConf.to_container(config))
+        save_yaml(os.path.join(path, "config.yaml"), OmegaConf.to_container(config))  # ty: ignore[invalid-argument-type]
 
     def _replace_differing_values(
         self,
         config: DictConfig,
-        runs: List[DictConfig],
+        runs: list[DictConfig],
         key: str,
-    ) -> DictConfig:
+    ) -> Any:
         if not runs:
             return config[key]
 
@@ -217,7 +219,7 @@ class AggregateGrid:
         return config[key]
 
     def _aggregate_timer(self, agg_name: str, run_list: list) -> None:
-        mean_timer = {
+        mean_timer: dict[str, Any] = {
             "train": {"mean_seconds": 0, "total_seconds": 0},
             "dev": {"mean_seconds": 0, "total_seconds": 0},
             "test": {"mean_seconds": 0, "total_seconds": 0},
@@ -248,6 +250,8 @@ class AggregateGrid:
         cfg = OmegaConf.load(
             os.path.join(self.output_directory, agg_name, ".hydra", "config.yaml")
         )
+        if not isinstance(cfg, DictConfig):
+            raise ValueError("Expected config.yaml to be a mapping.")
         if isinstance(cfg.dataset.metrics, str):
             raise ValueError(
                 "Unable to aggregate over datasets with different metrics."
@@ -276,7 +280,7 @@ class AggregateGrid:
             output_directory=os.path.join(self.output_directory, agg_name),
             training_type=self.training_type,
             metric_fns=metric_fns,
-            **self.plot_params,
+            **self.plot_params,  # ty: ignore[invalid-argument-type]
         )
         plotter.plot_run(df)
 

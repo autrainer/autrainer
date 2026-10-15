@@ -1,5 +1,4 @@
 import os
-from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 
@@ -22,9 +21,9 @@ class TensorBoardLogger(AbstractLogger):
         self,
         exp_name: str,
         run_name: str,
-        metrics: List[AbstractMetric],
+        metrics: list[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[Union[str, Dict[str, str]]] = None,
+        artifacts: list[str | dict[str, str]] | None = None,
         output_dir: str = "runs",
     ) -> None:
         super().__init__(exp_name, run_name, metrics, tracking_metric, artifacts)
@@ -33,21 +32,21 @@ class TensorBoardLogger(AbstractLogger):
     def setup(self) -> None:
         self.writer = SummaryWriter(log_dir=self.output_dir)
 
-    def log_params(self, params: Union[dict, DictConfig]) -> None:
+    def log_params(self, params: dict | DictConfig) -> None:
         for key, value in get_params_to_export(params).items():
             self.writer.add_text(key, str(value))
         self.writer.flush()
 
     def log_metrics(
         self,
-        metrics: Dict[str, Union[int, float]],
-        iteration: Optional[int] = None,
+        metrics: dict[str, int | float],
+        iteration: int | None = None,
     ) -> None:
         for key, value in metrics.items():
             self.writer.add_scalar(key, value, iteration)
         self.writer.flush()
 
-    def log_timers(self, timers: Dict[str, float]) -> None:
+    def log_timers(self, timers: dict[str, float | str]) -> None:
         for key, value in timers.items():
             self.writer.add_text(key, str(value))
         self.writer.flush()
@@ -67,4 +66,4 @@ TensorBoardLogger = (
         "TensorBoardLogger",
         "tensorboard",
     )
-)
+)  # ty: ignore[invalid-assignment]

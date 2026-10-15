@@ -1,7 +1,9 @@
-from typing import Any, Dict, Tuple, Union
+from typing import Any, cast
+
+from omegaconf import DictConfig, OmegaConf
 
 
-def convert_shorthand(aug: Union[str, Dict[str, Any]]) -> Dict[str, Any]:
+def convert_shorthand(aug: str | dict[str, Any] | DictConfig) -> dict[str, Any]:
     """Convert shorthand syntax to a dictionary.
 
     Args:
@@ -10,25 +12,26 @@ def convert_shorthand(aug: Union[str, Dict[str, Any]]) -> Dict[str, Any]:
     Returns:
         The converted augmentation.
     """
+    if isinstance(aug, DictConfig):
+        aug = cast("dict", OmegaConf.to_container(aug))
     if isinstance(aug, str):
         return {aug: {}}
     return aug
 
 
 def assign_seeds(
-    aug: Dict[str, Any],
+    aug: dict[str, Any],
     current_seed: int,
     increment: bool,
-) -> Tuple[Dict[str, Any], int]:
-    """Recursively assign optionally incrementing seeds to augmentation
-    configurations.
+) -> tuple[dict[str, Any], int]:
+    """Recursively assign optionally incrementing seeds to augmentation configurations.
 
     Args:
         aug: Potentially nested augmentation configuration.
         current_seed: The current seed to assign.
-        increment: Whether to increment the seed after assignment. If True,
-            the seed of each augmentation will be incremented by 1.
-            If False, the same seed will be used for all augmentations.
+        increment: Whether to increment the seed after assignment. If True, the seed of
+            each augmentation will be incremented by 1. If False, the same seed will be
+            used for all augmentations.
 
     Returns:
         The updated augmentation configuration and the next seed to use.

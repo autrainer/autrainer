@@ -1,5 +1,3 @@
-from typing import Optional
-
 import torch
 import torch.nn.functional as F
 
@@ -13,18 +11,19 @@ class Cnn10(AbstractModel):
         output_dim: int,
         segmentwise: bool = False,
         in_channels: int = 1,
-        transfer: Optional[str] = None,
+        transfer: str | None = None,
     ) -> None:
         """CNN10 PANN model. For more information see:
+
         https://doi.org/10.48550/arXiv.1912.10211
 
         Args:
             output_dim: Output dimension of the model.
-            segmentwise: Whether to use segmentwise path or clipwise path.
-                Defaults to False.
+            segmentwise: Whether to use segmentwise path or clipwise path. Defaults to
+                False.
             in_channels: Number of input channels. Defaults to 1.
-            transfer: Link to the weights to transfer. If None, the weights
-                are randomly initialized. Defaults to None.
+            transfer: Link to the weights to transfer. If None, the weights will be
+                randomly initialized. Defaults to None.
         """
         super().__init__(output_dim, transfer)
         self.segmentwise = segmentwise
@@ -40,8 +39,8 @@ class Cnn10(AbstractModel):
         self.out = torch.nn.Linear(512, output_dim, bias=True)
 
         self.init_weight()
-        if self.transfer:  # pragma: no cover
-            load_transfer_weights(self, self.transfer)
+        if transfer:  # pragma: no cover
+            load_transfer_weights(self, transfer)
 
     def init_weight(self) -> None:
         init_bn(self.bn0)

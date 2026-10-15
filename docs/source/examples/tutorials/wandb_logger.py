@@ -1,5 +1,4 @@
 import os
-from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 import wandb
@@ -13,9 +12,9 @@ class WandBLogger(AbstractLogger):
         self,
         exp_name: str,
         run_name: str,
-        metrics: List[AbstractMetric],
+        metrics: list[AbstractMetric],
         tracking_metric: AbstractMetric,
-        artifacts: List[Union[str, Dict[str, str]]] = None,
+        artifacts: list[str | dict[str, str]] | None = None,
         output_dir: str = "wandb",
     ) -> None:
         super().__init__(exp_name, run_name, metrics, tracking_metric, artifacts)
@@ -24,7 +23,7 @@ class WandBLogger(AbstractLogger):
         os.makedirs(output_dir, exist_ok=True)
         self.output_dir = output_dir
 
-    def log_params(self, params: Union[dict, DictConfig]) -> None:
+    def log_params(self, params: dict | DictConfig) -> None:
         wandb.init(
             project=self.exp_name,
             name=self.run_name,
@@ -34,12 +33,12 @@ class WandBLogger(AbstractLogger):
 
     def log_metrics(
         self,
-        metrics: Dict[str, Union[int, float]],
-        iteration: Optional[int] = None,
+        metrics: dict[str, int | float],
+        iteration: int | None = None,
     ) -> None:
         wandb.log(metrics, step=iteration)
 
-    def log_timers(self, timers: Dict[str, float]) -> None:
+    def log_timers(self, timers: dict[str, float | str]) -> None:
         wandb.log(timers)
 
     def log_artifact(self, filename: str, path: str = "") -> None:

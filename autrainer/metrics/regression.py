@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict
+from collections.abc import Callable
+from typing import Any
 
 import audmetric
 import numpy as np
@@ -10,11 +11,10 @@ def _mean_metric(
     y_true: np.ndarray,
     y_pred: np.ndarray,
     metric_fn: Callable,
-    **kwargs: Dict[str, Any],
+    **kwargs: Any,
 ) -> float:
-    """Calculate the mean of a metric for each target if multi-target arrays
-    are given. If single-target arrays are given, the metric is calculated
-    directly.
+    """Calculate the mean of a metric for each target if multi-target arrays are
+    given. If single-target arrays are given, the metric is calculated directly.
 
     Args:
         y_true: Ground truth values.
@@ -31,14 +31,14 @@ def _mean_metric(
     m = np.empty(y_true.shape[1])
     for i in range(y_true.shape[1]):
         m[i] = metric_fn(y_true[:, i], y_pred[:, i], **kwargs)
-    return np.mean(m)
+    return float(np.mean(m))
 
 
 class MSE(BaseDescendingMetric):
     def __init__(self) -> None:
-        """Mean squared error metric using `audmetric.mean_squared_error`
-        for (multi-target) regression. The metric is calculated for each
-        target separately and the mean is returned.
+        """Mean squared error metric using `audmetric.mean_squared_error` for
+        (multi-target) regression. The metric is calculated for each target separately
+        and the mean is returned.
         """
         super().__init__(
             name="mse",
@@ -49,9 +49,9 @@ class MSE(BaseDescendingMetric):
 
 class MAE(BaseDescendingMetric):
     def __init__(self) -> None:
-        """Mean absolute error metric using `audmetric.mean_absolute_error`
-        for (multi-target) regression. The metric is calculated for each
-        target separately and the mean is returned.
+        """Mean absolute error metric using `audmetric.mean_absolute_error` for
+        (multi-target) regression. The metric is calculated for each target separately
+        and the mean is returned.
         """
         super().__init__(
             name="mae",
@@ -62,9 +62,9 @@ class MAE(BaseDescendingMetric):
 
 class PCC(BaseAscendingMetric):
     def __init__(self) -> None:
-        """Pearson correlation coefficient metric using
-        `audmetric.pearson_cc` for (multi-target) regression. The metric is
-        calculated for each target separately and the mean is returned.
+        """Pearson correlation coefficient metric using `audmetric.pearson_cc` for
+        (multi-target) regression. The metric is calculated for each target separately
+        and the mean is returned.
         """
         super().__init__(
             name="pcc",
@@ -75,9 +75,9 @@ class PCC(BaseAscendingMetric):
 
 class CCC(BaseAscendingMetric):
     def __init__(self) -> None:
-        """Concordance correlation coefficient metric using
-        `audmetric.concordance_cc` for (multi-target) regression. The metric is
-        calculated for each target separately and the mean is returned.
+        """Concordance correlation coefficient metric using `audmetric.concordance_cc`
+        for (multi-target) regression. The metric is calculated for each target
+        separately and the mean is returned.
         """
         super().__init__(
             name="ccc",

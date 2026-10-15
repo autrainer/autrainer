@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict, List, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 import numpy as np
 import pandas as pd
@@ -34,8 +35,8 @@ class OutputsTracker:
         self.reset()
 
     def reset(self) -> None:
-        """Reset the tracker. Clears all the stored data accumulated over a
-        single iteration.
+        """Reset the tracker. Clears all the stored data accumulated over a single
+        iteration.
         """
         self._outputs = torch.zeros((0, self._data.output_dim), dtype=torch.float32)
         self._targets = torch.zeros(
@@ -53,8 +54,8 @@ class OutputsTracker:
         loss: torch.Tensor,
         sample_idx: torch.Tensor,
     ) -> None:
-        """Update the tracker with the current model outputs, targets, losses,
-        and sample indices.
+        """Update the tracker with the current model outputs, targets, losses, and
+        sample indices.
 
         Args:
             output: Detached model outputs.
@@ -72,8 +73,8 @@ class OutputsTracker:
 
         Args:
             iteration_folder: Current iteration folder.
-            reset: Whether to reset the tracker after saving the results.
-                Defaults to True.
+            reset: Whether to reset the tracker after saving the results. Defaults to
+                True.
         """
         results = {
             "outputs": self._outputs.numpy(),
@@ -118,7 +119,7 @@ class OutputsTracker:
 
     @staticmethod
     def check_saved(func: Callable[..., T]) -> Callable[..., T]:
-        def wrapper(self: "OutputsTracker", *args: Any, **kwargs: Dict[str, Any]) -> T:
+        def wrapper(self: "OutputsTracker", *args: Any, **kwargs: Any) -> T:
             if self._results_df is None:
                 raise ValueError("Results not saved yet.")
             return func(self, *args, **kwargs)
@@ -183,15 +184,19 @@ class OutputsTracker:
         Returns:
             Results as a DataFrame.
         """
+        if self._results_df is None:
+            raise RuntimeError(
+                "Results have already been reset and are no longer accessible."
+            )
         return self._results_df
 
 
 def init_trackers(
-    exports: List[bool],
-    prefixes: List[str],
+    exports: list[bool],
+    prefixes: list[str],
     data: AbstractDataset,
     bookkeeping: Bookkeeping,
-) -> List[OutputsTracker]:
+) -> list[OutputsTracker]:
     """Utility function to initialize multiple trackers at once.
 
     Args:

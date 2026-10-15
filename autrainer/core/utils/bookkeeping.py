@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-from typing import Dict, List, Optional, Tuple, Union
 import warnings
 
 import audobject
@@ -18,7 +17,7 @@ class Bookkeeping:
     def __init__(
         self,
         output_directory: str,
-        file_handler_path: Optional[str] = None,
+        file_handler_path: str | None = None,
     ) -> None:
         """Bookkeeping to handle general disk operations and interactions.
 
@@ -40,7 +39,7 @@ class Bookkeeping:
                     logging.Formatter("[%(asctime)s][%(levelname)s]\n%(message)s\n")
                 )
 
-    def _setup_logger(self, fp: Optional[str] = None) -> None:
+    def _setup_logger(self, fp: str | None = None) -> None:
         self.logger.setLevel(logging.INFO)
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler())
@@ -69,19 +68,19 @@ class Bookkeeping:
             message: Message to log.
             level: Logging level. Defaults to logging.INFO.
         """
+        record = self.logger.makeRecord(
+            name=self.logger.name,
+            level=level,
+            fn="",
+            lno=0,
+            msg=message,
+            args=(),
+            exc_info=None,
+        )
+
         for handler in self.logger.handlers:
             if isinstance(handler, logging.FileHandler):
-                handler.emit(
-                    logging.LogRecord(
-                        self.logger.name,
-                        level,
-                        None,
-                        None,
-                        message,
-                        None,
-                        None,
-                    )
-                )
+                handler.emit(record)
 
     def create_folder(self, folder_name: str, path: str = "") -> None:
         """Create a new folder in the output directory.
@@ -98,7 +97,7 @@ class Bookkeeping:
     def save_model_summary(
         self,
         model: torch.nn.Module,
-        shape: Tuple[int, ...],
+        shape: tuple[int, ...],
         device: torch.device,
         filename: str,
     ) -> None:
@@ -135,13 +134,10 @@ class Bookkeeping:
 
     def save_state(
         self,
-        obj: Optional[
-            Union[
-                torch.nn.Module,
-                torch.optim.Optimizer,
-                torch.optim.lr_scheduler.LRScheduler,
-            ]
-        ],
+        obj: torch.nn.Module
+        | torch.optim.Optimizer
+        | torch.optim.lr_scheduler.LRScheduler
+        | None,
         filename: str,
         path: str = "",
     ) -> None:
@@ -171,11 +167,9 @@ class Bookkeeping:
 
     def load_state(
         self,
-        obj: Union[
-            torch.nn.Module,
-            torch.optim.Optimizer,
-            torch.optim.lr_scheduler.LRScheduler,
-        ],
+        obj: torch.nn.Module
+        | torch.optim.Optimizer
+        | torch.optim.lr_scheduler.LRScheduler,
         filename: str,
         path: str = "",
     ) -> None:
@@ -229,7 +223,7 @@ class Bookkeeping:
 
     def save_results_dict(
         self,
-        results_dict: Dict[str, float],
+        results_dict: dict[str, float],
         filename: str,
         path: str = "",
     ) -> None:
@@ -263,7 +257,8 @@ class Bookkeeping:
         """
         os.makedirs(os.path.join(self.output_directory, path), exist_ok=True)
         results_df.to_csv(
-            os.path.join(self.output_directory, path, filename), index=False
+            os.path.join(self.output_directory, path, filename),
+            index=False,
         )
 
     def save_results_np(
@@ -286,7 +281,7 @@ class Bookkeeping:
         self,
         metrics: pd.DataFrame,
         filename: str,
-        metric_fns: List[AbstractMetric],
+        metric_fns: list[AbstractMetric],
         tracking_metric_fn: AbstractMetric,
         path: str = "",
     ) -> None:
@@ -296,8 +291,7 @@ class Bookkeeping:
             metrics: DataFrame of metrics to save.
             filename: Name of the file to save the best results to.
             metric_fns: List of metric functions to get the best results from.
-            tracking_metric_fn: Tracking metric function to get the best
-                iteration from.
+            tracking_metric_fn: Tracking metric function to get the best iteration from.
             path: Subdirectory to save the best results to. Defaults to "".
         """
         best_metrics = {}
@@ -308,9 +302,8 @@ class Bookkeeping:
         for m in metric_fns:
             best_metrics[m.name] = m.get_best(metrics[m.name])
 
-        best_metrics["best_iteration"] = tracking_metric_fn.get_best_pos(
-            metrics[tracking_metric_fn.name]
-        )
+        pos = tracking_metric_fn.get_best_pos(metrics[tracking_metric_fn.name])
+        best_metrics["best_iteration"] = int(metrics.index[pos])
         os.makedirs(os.path.join(self.output_directory, path), exist_ok=True)
         with open(
             os.path.join(self.output_directory, path, filename),

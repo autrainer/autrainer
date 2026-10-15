@@ -1,5 +1,3 @@
-from typing import Dict, Optional, Tuple, Union
-
 from omegaconf import DictConfig
 
 import autrainer
@@ -11,12 +9,12 @@ from .augmentation_pipeline import AugmentationPipeline
 class AugmentationManager:
     def __init__(
         self,
-        train_augmentation: Optional[Union[DictConfig, Dict]] = None,
-        dev_augmentation: Optional[Union[DictConfig, Dict]] = None,
-        test_augmentation: Optional[Union[DictConfig, Dict]] = None,
+        train_augmentation: DictConfig | dict | None = None,
+        dev_augmentation: DictConfig | dict | None = None,
+        test_augmentation: DictConfig | dict | None = None,
     ) -> None:
-        """Manage the creation of the augmentation pipelines for train, dev,
-        and test sets.
+        """Manage the creation of the augmentation pipelines for train, dev, and test
+        sets.
 
         Args:
             train_augmentation: Train augmentation configuration.
@@ -29,7 +27,7 @@ class AugmentationManager:
 
     def get_augmentations(
         self,
-    ) -> Tuple[SmartCompose, SmartCompose, SmartCompose]:
+    ) -> tuple[SmartCompose, SmartCompose, SmartCompose]:
         """Get augmentation pipelines for train, dev, and test.
 
         Returns:
@@ -43,7 +41,7 @@ class AugmentationManager:
 
     def _build_augmentation(
         self,
-        augmentation: Optional[Union[DictConfig, Dict]],
+        augmentation: DictConfig | dict | None,
     ) -> SmartCompose:
         if augmentation is None:
             return SmartCompose([])

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import argparse
 import sys
-from typing import Any, Dict, List, Optional, Type, TypeVar
+from typing import Any, TypeVar
 
 from autrainer.core.constants import NamingConstants
 
@@ -15,13 +15,12 @@ class AbstractScript(ABC):
     """Abstract script class.
 
     Args:
-        command (str): Command name.
-        description (str): Command description.
-        extended_description (str, optional): Extended description.
-        epilog (str, optional): Command epilog. Defaults to "".
-        dataclass (Type[T], optional): Dataclass type. Defaults to None.
-        unknown_args (bool, optional): Allow to pass unknown arguments.
-        Defaults to False.
+        command: Command name.
+        description: Command description.
+        extended_description: Extended description.
+        epilog: Command epilog. Defaults to "".
+        dataclass: Dataclass type. Defaults to None.
+        unknown_args: Allow to pass unknown arguments. Defaults to False.
     """
 
     def __init__(
@@ -30,61 +29,64 @@ class AbstractScript(ABC):
         description: str,
         extended_description: str = "",
         epilog: str = "",
-        dataclass: Optional[Type[T]] = None,
+        dataclass: type[T] | None = None,
         unknown_args: bool = False,
     ) -> None:
         self.command = command
         self.description = description
         self.extended_description = extended_description
         self.epilog = epilog
-        self.dataclass = dataclass or dict
+        self.dataclass = dataclass
         self.unknown_args = unknown_args
 
     def init_parser(self, parser: argparse.ArgumentParser) -> None:
         """Initialize the parser.
 
         Args:
-            parser (argparse.ArgumentParser): The parser.
+            parser: The parser.
         """
         self.parser = parser
 
     def add_arguments(self) -> None:  # noqa: B027
         """Add arguments to the parser."""
 
-    def run(self, args: Dict[str, Any], unknown: List[str]) -> None:
+    def run(self, args: dict[str, Any], unknown: list[str]) -> None:
         """Run the script.
 
         Args:
-            args (Dict[str, Any]): Parsed arguments.
-            unknown (List[str]): List of unknown arguments.
+            args: Parsed arguments.
+            unknown: List of unknown arguments.
         """
         assert getattr(self, "parser", None) is not None
         if not self.unknown_args:
             self._assert_no_unknown_args(unknown)
         else:
             sys.argv = sys.argv[:1] + unknown
-        if self.dataclass is not dict:
-            args = self._create_dataclass(args, self.dataclass)
-        self.main(args)
+
+        self.main(
+            self._create_dataclass(args, self.dataclass)
+            if self.dataclass is not None
+            else args
+        )
 
     @abstractmethod
     def main(self, args: T) -> None:
         """Main function to run the script.
 
         Args:
-            args (T): Parsed arguments as a dataclass instance or dict if no
-            dataclass is provided.
+            args: Parsed arguments as a dataclass instance or dict if no dataclass is
+                provided.
         """
 
-    def _create_dataclass(self, args: Dict[str, Any], dataclass: Type[T]) -> T:
+    def _create_dataclass(self, args: dict[str, Any], dataclass: type[T]) -> T:
         """Create a dataclass instance from parsed arguments.
 
         Args:
-            args (Dict[str, Any]): Parsed arguments.
-            dataclass (T): Dataclass type.
+            args: Parsed arguments.
+            dataclass: Dataclass type.
 
         Returns:
-            T: Dataclass instance.
+            Dataclass instance.
         """
         return dataclass(**args)
 
@@ -92,7 +94,7 @@ class AbstractScript(ABC):
         """Assert that the configuration directory is valid.
 
         Args:
-            directory (str): Configuration directory.
+            directory: Configuration directory.
 
         Raises:
             CommandLineError: If the configuration directory is invalid.
@@ -103,11 +105,11 @@ class AbstractScript(ABC):
                 message=f"Invalid configuration directory '{directory}'.",
             )
 
-    def _assert_no_unknown_args(self, unknown: List[str]) -> None:
+    def _assert_no_unknown_args(self, unknown: list[str]) -> None:
         """Assert that there are no unknown arguments.
 
         Args:
-            unknown (List[str]): List of unknown arguments.
+            unknown: List of unknown arguments.
 
         Raises:
             CommandLineError: If there are unknown arguments.
@@ -117,11 +119,3 @@ class AbstractScript(ABC):
                 parser=self.parser,
                 message=f"Unknown arguments: {unknown}.",
             )
-
-
-class MockParser:
-    def add_argument(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
-        pass
-
-    def print_help(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
-        pass

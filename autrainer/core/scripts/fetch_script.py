@@ -1,13 +1,11 @@
-from typing import Optional
-
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
 import autrainer
-from autrainer.core.scripts.abstract_script import MockParser
 
 from .abstract_preprocess_script import AbstractPreprocessScript, PreprocessArgs
 from .utils import (
+    MockParser,
     add_hydra_args_to_sys,
     catch_cli_errors,
     check_invalid_config_path_arg,
@@ -79,7 +77,7 @@ class FetchScript(AbstractPreprocessScript):
             model.pop("skip_last_layer", None)
             autrainer.instantiate(config=model, output_dim=10)
 
-    def _download_transform(self, transform: Optional[DictConfig]) -> None:
+    def _download_transform(self, transform: DictConfig | None) -> None:
         if not transform:
             return
         from autrainer.transforms import TransformManager
@@ -95,24 +93,23 @@ class FetchScript(AbstractPreprocessScript):
 
 @catch_cli_errors
 def fetch(
-    override_kwargs: Optional[dict] = None,
+    override_kwargs: dict | None = None,
     cfg_launcher: bool = False,
     config_name: str = "config",
-    config_path: Optional[str] = None,
+    config_path: str | None = None,
 ) -> None:
-    """Fetch the datasets, models, and transforms specified in a training
-    configuration.
+    """Fetch the datasets, models, and transforms specified in a training configuration.
 
     Args:
-        override_kwargs: Additional Hydra override arguments to pass to the
-            train script.
-        cfg_launcher: Use the launcher specified in the configuration instead
-            of the Hydra basic launcher. Defaults to False.
-        config_name: The name of the config (usually the file name without the
-            .yaml extension). Defaults to "config".
-        config_path: The config path, a directory where Hydra will search for
-            config files. If config_path is None no directory is added to the
-            search path. Defaults to None.
+        override_kwargs: Additional Hydra override arguments to pass to the train
+            script.
+        cfg_launcher: Use the launcher specified in the configuration instead of the
+            Hydra basic launcher. Defaults to False.
+        config_name: The name of the config (usually the file name without the .yaml
+            extension). Defaults to "config".
+        config_path: The config path, a directory where Hydra will search for config
+            files. If config_path is None no directory is added to the search path.
+            Defaults to None.
     """
     if running_in_notebook():
         run_hydra_cmd(

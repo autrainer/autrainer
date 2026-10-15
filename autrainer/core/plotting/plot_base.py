@@ -3,7 +3,7 @@ import logging
 import os
 import pickle
 import shutil
-from typing import Any, Dict
+from typing import Any, Callable
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -35,7 +35,7 @@ class PlotBase(ABC):  # noqa: B024
         add_titles: bool,
         add_xlabels: bool,
         add_ylabels: bool,
-        rcParams: Dict[str, Any],  # noqa: N803
+        rcParams: dict[str, Any],  # noqa: N803
     ) -> None:
         """Base class for plotting.
 
@@ -43,9 +43,8 @@ class PlotBase(ABC):  # noqa: B024
             output_directory: Output directory to save plots to.
             training_type: Type of training in ["Epoch", "Step"].
             figsize: Figure size in inches.
-            latex: Whether to use LaTeX in plots. Requires the `latex` package.
-                To install all necessary dependencies, run:
-                `pip install autrainer[latex]`.
+            latex: Whether to use LaTeX in plots. Requires the `latex` package. To
+                install all necessary dependencies, run: `pip install autrainer[latex]`.
             filetypes: Filetypes to save plots as.
             pickle: Whether to save additional pickle files of the plots.
             context: Context for seaborn plots.
@@ -131,7 +130,7 @@ class PlotBase(ABC):  # noqa: B024
             return
         plt.rcParams["text.usetex"] = True
 
-    def _apply_to_labels(self, fig: plt.Figure, func: callable) -> None:
+    def _apply_to_labels(self, fig: plt.Figure, func: Callable) -> None:
         if not fig.axes or fig.axes[0].legend_ is None:
             return
         for text in fig.axes[0].legend_.texts:
@@ -149,7 +148,10 @@ class PlotBase(ABC):  # noqa: B024
         self._apply_to_labels(fig, process_label)
 
     def _add_label(
-        self, ax: plt.Axes, x_label: str = None, y_label: str = None
+        self,
+        ax: plt.Axes,
+        x_label: str | None = None,
+        y_label: str | None = None,
     ) -> None:
         if x_label is not None:
             if self.add_xlabels:

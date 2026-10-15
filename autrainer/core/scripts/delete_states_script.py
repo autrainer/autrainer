@@ -1,25 +1,22 @@
 from dataclasses import dataclass
 import glob
 import os
-from typing import List, Optional, Union
-
-from autrainer.core.scripts.abstract_script import MockParser
 
 from .abstract_postprocess_script import (
     AbstractPostprocessArgs,
     AbstractPostprocessScript,
 )
-from .utils import catch_cli_errors
+from .utils import MockParser, catch_cli_errors
 
 
 @dataclass
 class DeleteStatesArgs(AbstractPostprocessArgs):
     keep_best: bool
-    keep_runs: Optional[List[str]]
-    keep_iterations: Optional[List[int]]
+    keep_runs: list[str] | None
+    keep_iterations: list[int] | None
 
 
-class DeleteStatesScript(AbstractPostprocessScript):
+class DeleteStatesScript(AbstractPostprocessScript[DeleteStatesArgs]):
     def __init__(self) -> None:
         super().__init__(
             "rm-states",
@@ -76,28 +73,28 @@ class DeleteStatesScript(AbstractPostprocessScript):
         if self._confirm_deletion(state_paths):
             self._delete_states(state_paths)
 
-    def _collect_state_paths(self, args: DeleteStatesArgs) -> List[str]:
+    def _collect_state_paths(self, args: DeleteStatesArgs) -> list[str]:
         pattern = "**/*.pt"
         path = os.path.join(args.results_dir, args.experiment_id, "training")
         return list(glob.glob(os.path.join(path, pattern), recursive=True))
 
-    def _filter_best_states(self, state_paths: List[str]) -> List[str]:
+    def _filter_best_states(self, state_paths: list[str]) -> list[str]:
         return [f for f in state_paths if self._get_iter_dir(f) != "_best"]
 
     def _filter_runs(
         self,
-        state_paths: List[str],
-        runs: List[str],
-    ) -> List[str]:
+        state_paths: list[str],
+        runs: list[str],
+    ) -> list[str]:
         for run in runs:
             state_paths = [f for f in state_paths if run != self._get_run_name(f)]
         return state_paths
 
     def _filter_iterations(
         self,
-        state_paths: List[str],
-        iterations: List[int],
-    ) -> List[str]:
+        state_paths: list[str],
+        iterations: list[int],
+    ) -> list[str]:
         for iteration in iterations:
             state_paths = [f for f in state_paths if iteration != self._get_iter_num(f)]
         return state_paths
@@ -108,13 +105,13 @@ class DeleteStatesScript(AbstractPostprocessScript):
     def _get_run_name(self, state_path: str) -> str:
         return os.path.basename(os.path.dirname(os.path.dirname(state_path)))
 
-    def _get_iter_num(self, state_path: str) -> Union[int, str]:
+    def _get_iter_num(self, state_path: str) -> int | str:
         iter_dir = self._get_iter_dir(state_path)
         if iter_dir in ["_best", "_initial"]:
             return iter_dir
         return int(iter_dir.split("_")[-1])
 
-    def _confirm_deletion(self, state_paths: List[str]) -> bool:
+    def _confirm_deletion(self, state_paths: list[str]) -> bool:
         print("The following states will be deleted:")
         print("\n".join(state_paths))
         print()
@@ -123,7 +120,7 @@ class DeleteStatesScript(AbstractPostprocessScript):
         ).lower()
         return response in ["y", "yes"]
 
-    def _delete_states(self, state_paths: List[str]) -> None:
+    def _delete_states(self, state_paths: list[str]) -> None:
         for state_path in state_paths:
             try:
                 os.remove(state_path)
@@ -137,13 +134,13 @@ def rm_states(
     results_dir: str,
     experiment_id: str,
     keep_best: bool = True,
-    keep_runs: Optional[List[str]] = None,
-    keep_iterations: Optional[List[int]] = None,
+    keep_runs: list[str] | None = None,
+    keep_iterations: list[int] | None = None,
 ) -> None:
     """Delete states (.pt files) from an experiment.
 
-    If called in a notebook, the function will not raise an error and print
-    the error message instead.
+    If called in a notebook, the function will not raise an error and print the error
+    message instead.
 
     Args:
         results_dir: Path to grid search results directory.

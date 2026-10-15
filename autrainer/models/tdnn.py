@@ -23,8 +23,8 @@ class TDNNFFNN(AbstractModel):
             hidden_size: Hidden size.
             num_layers: Number of layers. Defaults to 2.
             dropout: Dropout rate. Defaults to 0.5.
-            transfer: Whether to initialize the TDNN backbone with
-                pretrained weights. Defaults to False.
+            transfer: Whether to initialize the TDNN backbone with pretrained weights.
+                Defaults to False.
         """
         super().__init__(output_dim, transfer)  # no transfer learning weights
         self.hidden_size = hidden_size
@@ -56,7 +56,7 @@ class TDNNFFNN(AbstractModel):
                 )
 
         self.frontend = FFNN(
-            input_size=list(self.backbone.modules())[-1].weight.shape[0],
+            input_size=list(self.backbone.modules())[-1].weight.shape[0],  # ty: ignore[invalid-argument-type, not-subscriptable]
             hidden_size=hidden_size,
             output_dim=output_dim,
             num_layers=num_layers,

@@ -1,7 +1,8 @@
+from collections.abc import Callable
 from copy import deepcopy
 import os
 import tempfile
-from typing import Any, Callable, Dict, List, Tuple, Type, Union
+from typing import Any
 
 from omegaconf import DictConfig, ListConfig
 import pandas as pd
@@ -29,7 +30,6 @@ from autrainer.augmentations import (
     TorchAudiomentationsAugmentation,
     TorchvisionAugmentation,
 )
-from autrainer.augmentations.image_augmentations import BaseMixUpCutMix
 from autrainer.core.structs import DataBatch, DataItem
 from autrainer.transforms import SmartCompose
 
@@ -107,10 +107,10 @@ class TestAllAugmentations:
     )
     def test_probability(
         self,
-        augmentation: Type[AbstractAugmentation],
-        params: Dict[str, Any],
-        input_shape: Union[Tuple[int, int], Tuple[int, int, int]],
-        output_shape: Union[Tuple[int, int], Tuple[int, int, int]],
+        augmentation: type[AbstractAugmentation],
+        params: dict[str, Any],
+        input_shape: tuple[int, int] | tuple[int, int, int],
+        output_shape: tuple[int, int] | tuple[int, int, int],
     ) -> None:
         with pytest.raises(ValueError, match=r"p must be in the range \[0, 1\]"):
             augmentation(**params, generator_seed=AUGMENTATION_SEED, p=1.1)
@@ -136,10 +136,10 @@ class TestAllAugmentations:
     )
     def test_deterministic(
         self,
-        augmentation: Type[AbstractAugmentation],
-        params: Dict[str, Any],
-        input_shape: Union[Tuple[int, int], Tuple[int, int, int]],
-        output_shape: Union[Tuple[int, int], Tuple[int, int, int]],
+        augmentation: type[AbstractAugmentation],
+        params: dict[str, Any],
+        input_shape: tuple[int, int] | tuple[int, int, int],
+        output_shape: tuple[int, int] | tuple[int, int, int],
     ) -> None:
         if len(input_shape) == 2:
             x = torch.randn(*input_shape)
@@ -163,10 +163,10 @@ class TestAllAugmentations:
     )
     def test_offset_generator_seed(
         self,
-        augmentation: Type[AbstractAugmentation],
-        params: Dict[str, Any],
-        input_shape: Union[Tuple[int, int], Tuple[int, int, int]],
-        output_shape: Union[Tuple[int, int], Tuple[int, int, int]],
+        augmentation: type[AbstractAugmentation],
+        params: dict[str, Any],
+        input_shape: tuple[int, int] | tuple[int, int, int],
+        output_shape: tuple[int, int] | tuple[int, int, int],
     ) -> None:
         for _ in range(10):  # should be enough to detect drifts
             if len(input_shape) == 2:
@@ -220,7 +220,7 @@ class TestAugmentationManagerPipeline:
             (DictConfig(pipline_cfg2), "test"),
         ],
     )
-    def test_creation(self, config: Union[DictConfig, Dict, None], subset: str) -> None:
+    def test_creation(self, config: DictConfig | dict | None, subset: str) -> None:
         am = AugmentationManager(**{f"{subset}_augmentation": config})
         augs = {}
         augs["train"], augs["dev"], augs["test"] = am.get_augmentations()
@@ -304,28 +304,29 @@ class TestBaseMixUpCutMix:
         cls.regression_dataset = MockRegressionDataset()
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
-    def test_invalid_dataset(self, aug: Type[BaseMixUpCutMix]) -> None:
+    def test_invalid_dataset(self, aug: type[MixUp | CutMix]) -> None:
         with pytest.raises(ValueError, match="requires more than 1 class"):
-            aug().get_collate_fn(self.regression_dataset, default=DataBatch.collate)
+            aug().get_collate_fn(self.regression_dataset, default=DataBatch.collate)  # ty: ignore[invalid-argument-type]
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
-    def test_collate_fn(self, aug: Type[BaseMixUpCutMix]) -> None:
+    def test_collate_fn(self, aug: type[MixUp | CutMix]) -> None:
         self._test_collate(
-            aug().get_collate_fn(self.classification_dataset, default=DataBatch.collate)
+            aug().get_collate_fn(self.classification_dataset, default=DataBatch.collate)  # ty: ignore[invalid-argument-type]
         )
 
     @pytest.mark.parametrize("aug", [MixUp, CutMix])
-    def test_collate_identity(self, aug: Type[BaseMixUpCutMix]) -> None:
+    def test_collate_identity(self, aug: type[MixUp | CutMix]) -> None:
         (x_in, y_in, idx_in), (x_out, y_out, idx_out) = self._test_collate(
             aug(p=0).get_collate_fn(
-                self.classification_dataset, default=DataBatch.collate
+                self.classification_dataset,  # ty: ignore[invalid-argument-type]
+                default=DataBatch.collate,
             )
         )
         assert torch.allclose(x_in, x_out), "Should be the same"
         assert torch.allclose(y_in, y_out), "Should be the same"
         assert torch.allclose(idx_in, idx_out), "Should be the same"
 
-    def _test_collate(self, collate_fn: Callable) -> Tuple[Tuple, Tuple]:
+    def _test_collate(self, collate_fn: Callable) -> tuple[tuple, tuple]:
         x1, x2 = torch.randn(3, 32, 32), torch.randn(3, 32, 32)
         y1, y2 = 0, 1
         idx1, idx2 = 0, 1
@@ -508,7 +509,7 @@ class TestAugmentationPipeline:
             (4, [42, 5, 43, 6, 44]),
         ],
     )
-    def test_with_increment(self, idx: int, seeds: List[int]) -> None:
+    def test_with_increment(self, idx: int, seeds: list[int]) -> None:
         self._test_increment(idx, seeds, increment=True)
 
     @pytest.mark.parametrize(
@@ -521,13 +522,13 @@ class TestAugmentationPipeline:
             (4, [42, 5, 42, 6, 42]),
         ],
     )
-    def test_without_increment(self, idx: int, seeds: List[int]) -> None:
+    def test_without_increment(self, idx: int, seeds: list[int]) -> None:
         self._test_increment(idx, seeds, increment=False)
 
     def _test_increment(
         self,
         idx: int,
-        seeds: List[int],
+        seeds: list[int],
         increment: bool,
     ) -> None:
         pipeline = AugmentationPipeline(

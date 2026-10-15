@@ -1,8 +1,9 @@
+from collections.abc import Callable
 import logging
 import os
 import platform
 import threading
-from typing import Any, Callable, Optional, Type
+from typing import Any
 
 from omegaconf import OmegaConf
 import psutil
@@ -14,7 +15,7 @@ class ThreadManager:
 
     _instance = None
 
-    def __new__(cls: Type["ThreadManager"]) -> "ThreadManager":
+    def __new__(cls: type["ThreadManager"]) -> "ThreadManager":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialize()
@@ -50,7 +51,7 @@ class ThreadManager:
                 return
 
 
-def get_gpu_info(device: torch.device) -> Optional[dict]:
+def get_gpu_info(device: torch.device) -> dict | None:
     """Get GPU information of the current system.
 
     Args:
@@ -121,8 +122,8 @@ def save_hardware_info(output_directory: str, device: torch.device) -> None:
 
 
 def set_device(device_name: str) -> torch.device:
-    """Set the device to use. If the specified CUDA device is unavailable,
-    automatically fall back to CPU.
+    """Set the device to use. If the specified CUDA device is unavailable, automatically
+    fall back to CPU.
 
     Args:
         device_name: Name of the device to use.

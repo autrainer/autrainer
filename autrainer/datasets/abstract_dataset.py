@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from functools import cached_property, partial
 import os
-from typing import Callable, Dict, List, Optional, TypeVar, Union
+from typing import TypeVar
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -33,29 +34,28 @@ class AbstractDataset(ABC):
     def __init__(
         self,
         path: str,
-        features_subdir: Optional[str],
+        features_subdir: str | None,
         seed: int,
         task: str,
-        metrics: List[Union[str, DictConfig, Dict]],
-        tracking_metric: Union[str, DictConfig, Dict],
+        metrics: list[str | DictConfig | dict],
+        tracking_metric: str | DictConfig | dict,
         index_column: str,
-        target_column: Union[str, List[str]],
+        target_column: str | list[str],
         file_type: str,
-        file_handler: Union[str, DictConfig, Dict],
-        features_path: Optional[str] = None,
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
-        stratify: Optional[List[str]] = None,
+        file_handler: str | DictConfig | dict,
+        features_path: str | None = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
+        stratify: list[str] | None = None,
     ) -> None:
         """Abstract dataset class.
 
         Args:
             path: Root path to the dataset.
-            features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
+            features_subdir: Subdirectory containing the features. If `None`, defaults
+                to audio subdirectory, which is `default` for the standard format, but
+                can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             task: Task of the dataset in
                 :const:`~autrainer.core.constants.TrainingConstants.TASKS`.
@@ -65,16 +65,12 @@ class AbstractDataset(ABC):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different directory than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
-            train_transform: Transform to apply to the training set.
-                Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            features_path: Root path to features. Useful when features need to be
+                extracted and stored in a different directory than the root of the
+                dataset. If `None`, will be set to `path`. Defaults to `None`.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
         """
         self._assert_task(task)
@@ -110,8 +106,7 @@ class AbstractDataset(ABC):
     def audio_subdir(self) -> str:
         """Subdirectory containing audio data.
 
-        Defaults to `default` for our standard format.
-        Should be overridden for datasets
+        Defaults to `default` for our standard format. Should be overridden for datasets
         that do not conform to it.
         """
         return "default"
@@ -161,7 +156,7 @@ class AbstractDataset(ABC):
         return len(self.target_transform)
 
     @staticmethod
-    def _init_metric(metric: Union[str, DictConfig, Dict]) -> AbstractMetric:
+    def _init_metric(metric: str | DictConfig | dict) -> AbstractMetric:
         return autrainer.instantiate_shorthand(
             config=metric,
             instance_of=AbstractMetric,
@@ -169,7 +164,7 @@ class AbstractDataset(ABC):
 
     @staticmethod
     def _init_file_handler(
-        file_handler: Union[str, DictConfig, Dict],
+        file_handler: str | DictConfig | dict,
     ) -> AbstractFileHandler:
         return autrainer.instantiate_shorthand(
             config=file_handler,
@@ -218,8 +213,8 @@ class AbstractDataset(ABC):
             Initialized dataset.
         """
         return DatasetWrapper(
-            path=self.features_path,
-            features_subdir=self.features_subdir,
+            path=self.features_path or "",
+            features_subdir=self.features_subdir or "",
             index_column=self.index_column,
             target_column=self.target_column,
             file_type=self.file_type,
@@ -267,7 +262,7 @@ class AbstractDataset(ABC):
         pin_memory: bool = False,
         drop_last: bool = False,
         timeout: float = 0,
-        prefetch_factor: Optional[int] = None,
+        prefetch_factor: int | None = None,
         pin_memory_device: str = "",
     ) -> DataLoader:
         return DataLoader(
@@ -297,7 +292,7 @@ class AbstractDataset(ABC):
         pin_memory: bool = False,
         drop_last: bool = False,
         timeout: float = 0,
-        prefetch_factor: Optional[int] = None,
+        prefetch_factor: int | None = None,
         pin_memory_device: str = "",
     ) -> DataLoader:
         return DataLoader(
@@ -327,7 +322,7 @@ class AbstractDataset(ABC):
         pin_memory: bool = False,
         drop_last: bool = False,
         timeout: float = 0,
-        prefetch_factor: Optional[int] = None,
+        prefetch_factor: int | None = None,
         pin_memory_device: str = "",
     ) -> DataLoader:
         return DataLoader(
@@ -361,8 +356,7 @@ class AbstractDataset(ABC):
 
     @staticmethod  # noqa: B027
     def download(path: str) -> None:
-        """Download the dataset. Can be implemented by subclasses, but is not
-        required.
+        """Download the dataset. Can be implemented by subclasses, but is not required.
 
         Args:
             path: Path to download the dataset to.
@@ -373,28 +367,27 @@ class BaseClassificationDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: Optional[str],
+        features_subdir: str | None,
         seed: int,
-        metrics: List[Union[str, DictConfig, Dict]],
-        tracking_metric: Union[str, DictConfig, Dict],
+        metrics: list[str | DictConfig | dict],
+        tracking_metric: str | DictConfig | dict,
         index_column: str,
         target_column: str,
         file_type: str,
-        file_handler: Union[str, DictConfig, Dict],
-        features_path: Optional[str] = None,
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
-        stratify: Optional[List[str]] = None,
+        file_handler: str | DictConfig | dict,
+        features_path: str | None = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
+        stratify: list[str] | None = None,
     ) -> None:
         """Base classification dataset.
 
         Args:
             path: Root path to the dataset.
-            features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
+            features_subdir: Subdirectory containing the features. If `None`, defaults
+                to audio subdirectory, which is `default` for the standard format, but
+                can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -402,16 +395,12 @@ class BaseClassificationDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different directory than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
-            train_transform: Transform to apply to the training set.
-                Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            features_path: Root path to features. Useful when features need to be
+                extracted and stored in a different directory than the root of the
+                dataset. If `None`, will be set to `path`. Defaults to `None`.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
         """
         super().__init__(
@@ -442,7 +431,7 @@ class BaseClassificationDataset(AbstractDataset):
             raise ValueError(f"dev_split '{dev_split}' must be in [0, 1).")
 
     @staticmethod
-    def _assert_choice(choice: T, choices: List[T], name: str) -> None:
+    def _assert_choice(choice: T, choices: list[T], name: str) -> None:
         if choice not in choices:
             raise ValueError(f"{name} '{choice}' not in {choices}.")
 
@@ -451,29 +440,28 @@ class BaseMLClassificationDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: Optional[str],
+        features_subdir: str | None,
         seed: int,
-        metrics: List[Union[str, DictConfig, Dict]],
-        tracking_metric: Union[str, DictConfig, Dict],
+        metrics: list[str | DictConfig | dict],
+        tracking_metric: str | DictConfig | dict,
         index_column: str,
-        target_column: List[str],
+        target_column: list[str],
         file_type: str,
-        file_handler: Union[str, DictConfig, Dict],
-        features_path: Optional[str] = None,
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
-        stratify: Optional[List[str]] = None,
+        file_handler: str | DictConfig | dict,
+        features_path: str | None = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
+        stratify: list[str] | None = None,
         threshold: float = 0.5,
     ) -> None:
         """Base multi-label classification dataset.
 
         Args:
             path: Root path to the dataset.
-            features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
+            features_subdir: Subdirectory containing the features. If `None`, defaults
+                to audio subdirectory, which is `default` for the standard format, but
+                can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -481,16 +469,12 @@ class BaseMLClassificationDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different directory than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
-            train_transform: Transform to apply to the training set.
-                Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            features_path: Root path to features. Useful when features need to be
+                extracted and stored in a different directory than the root of the
+                dataset. If `None`, will be set to `path`. Defaults to `None`.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
             threshold: Threshold for classification. Defaults to 0.5.
         """
@@ -513,14 +497,14 @@ class BaseMLClassificationDataset(AbstractDataset):
             test_transform=test_transform,
             stratify=stratify,
         )
-        self._assert_target_column(allowed_columns=self.df_train.columns)
+        self._assert_target_column(allowed_columns=list(self.df_train.columns))
 
     @staticmethod
     def _assert_threshold(threshold: float) -> None:
         if not 0 <= threshold <= 1:
             raise ValueError(f"Threshold '{threshold}' must be between 0 and 1.")
 
-    def _assert_target_column(self, allowed_columns: List[str]) -> None:
+    def _assert_target_column(self, allowed_columns: list[str]) -> None:
         if isinstance(self.target_column, str):
             raise ValueError(
                 f"Invalid target column '{self.target_column}'. "
@@ -537,35 +521,34 @@ class BaseMLClassificationDataset(AbstractDataset):
 
     @cached_property
     def target_transform(self) -> MultiLabelEncoder:
-        return MultiLabelEncoder(self.threshold, self.target_column)
+        return MultiLabelEncoder(self.threshold, list(self.target_column))
 
 
 class BaseRegressionDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: Optional[str],
+        features_subdir: str | None,
         seed: int,
-        metrics: List[Union[str, DictConfig, Dict]],
-        tracking_metric: Union[str, DictConfig, Dict],
+        metrics: list[str | DictConfig | dict],
+        tracking_metric: str | DictConfig | dict,
         index_column: str,
         target_column: str,
         file_type: str,
-        file_handler: Union[str, DictConfig, Dict],
-        features_path: Optional[str] = None,
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
-        stratify: Optional[List[str]] = None,
+        file_handler: str | DictConfig | dict,
+        features_path: str | None = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
+        stratify: list[str] | None = None,
     ) -> None:
         """Base regression dataset.
 
         Args:
             path: Root path to the dataset.
-            features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
+            features_subdir: Subdirectory containing the features. If `None`, defaults
+                to audio subdirectory, which is `default` for the standard format, but
+                can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -573,16 +556,12 @@ class BaseRegressionDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different directory than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
-            train_transform: Transform to apply to the training set.
-                Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            features_path: Root path to features. Useful when features need to be
+                extracted and stored in a different directory than the root of the
+                dataset. If `None`, will be set to `path`. Defaults to `None`.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
         """
         super().__init__(
@@ -605,6 +584,8 @@ class BaseRegressionDataset(AbstractDataset):
 
     @cached_property
     def target_transform(self) -> MinMaxScaler:
+        if not isinstance(self.target_column, str):
+            raise TypeError("Expected a single target column.")
         return MinMaxScaler(
             target=self.target_column,
             minimum=self.df_train[self.target_column].min(),
@@ -616,28 +597,27 @@ class BaseMTRegressionDataset(AbstractDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: Optional[str],
+        features_subdir: str | None,
         seed: int,
-        metrics: List[Union[str, DictConfig, Dict]],
-        tracking_metric: Union[str, DictConfig, Dict],
+        metrics: list[str | DictConfig | dict],
+        tracking_metric: str | DictConfig | dict,
         index_column: str,
-        target_column: List[str],
+        target_column: list[str],
         file_type: str,
-        file_handler: Union[str, DictConfig, Dict],
-        features_path: Optional[str] = None,
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
-        stratify: Optional[List[str]] = None,
+        file_handler: str | DictConfig | dict,
+        features_path: str | None = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
+        stratify: list[str] | None = None,
     ) -> None:
         """Base multi-target regression dataset.
 
         Args:
             path: Root path to the dataset.
-            features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
+            features_subdir: Subdirectory containing the features. If `None`, defaults
+                to audio subdirectory, which is `default` for the standard format, but
+                can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -645,16 +625,12 @@ class BaseMTRegressionDataset(AbstractDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different directory than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
-            train_transform: Transform to apply to the training set.
-                Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            features_path: Root path to features. Useful when features need to be
+                extracted and stored in a different directory than the root of the
+                dataset. If `None`, will be set to `path`. Defaults to `None`.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
         """
         super().__init__(
@@ -677,6 +653,8 @@ class BaseMTRegressionDataset(AbstractDataset):
 
     @cached_property
     def target_transform(self) -> MultiTargetMinMaxScaler:
+        if not isinstance(self.target_column, list):
+            raise TypeError("Expected multiple target columns.")
         return MultiTargetMinMaxScaler(
             target=self.target_column,
             minimum=self.df_train[self.target_column].min().to_list(),

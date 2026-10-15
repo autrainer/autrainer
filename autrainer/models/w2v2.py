@@ -59,6 +59,7 @@ class W2V2FFNN(AbstractModel):
         transfer: bool = False,
     ) -> None:
         """Wav2Vec2 model with FFNN frontend adapted for audio classification.
+
         For more information, see:
         https://huggingface.co/docs/transformers/model_doc/wav2vec2
 
@@ -69,8 +70,8 @@ class W2V2FFNN(AbstractModel):
             hidden_size: Hidden size of the FFNN.
             num_layers: Number of layers of the FFNN. Defaults to 2.
             dropout: Dropout rate. Defaults to 0.5.
-            transfer: Whether to initialize the Wav2Vec2 backbone with
-                pretrained weights. Defaults to False.
+            transfer: Whether to initialize the Wav2Vec2 backbone with pretrained
+                weights. Defaults to False.
         """
         super().__init__(output_dim, transfer)
         self.model_name = model_name

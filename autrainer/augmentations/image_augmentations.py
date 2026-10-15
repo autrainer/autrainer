@@ -1,5 +1,6 @@
+from collections.abc import Callable
 import os
-from typing import TYPE_CHECKING, Callable, List, Optional, Type
+from typing import TYPE_CHECKING
 
 import pandas as pd
 import torch
@@ -17,11 +18,11 @@ if TYPE_CHECKING:  # pragma: no cover
 class BaseMixUpCutMix(AbstractAugmentation):
     def __init__(
         self,
-        augmentation_class: Type,
+        augmentation_class: type,
         alpha: float = 1.0,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
+        generator_seed: int | None = None,
     ) -> None:
         """Base class for MixUp and CutMix augmentations.
 
@@ -31,19 +32,15 @@ class BaseMixUpCutMix(AbstractAugmentation):
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
         """
         super().__init__(order, p, generator_seed)
         self.augmentation_class = augmentation_class
         self.alpha = alpha
 
-    def get_collate_fn(
-        self,
-        data: "AbstractDataset",
-        default: Callable,
-    ) -> Callable:
+    def get_collate_fn(self, data: "AbstractDataset", default: Callable) -> Callable:
         if data.output_dim <= 1:
             raise ValueError(
                 f"{self.augmentation_class.__name__} requires more than 1 class."
@@ -53,7 +50,7 @@ class BaseMixUpCutMix(AbstractAugmentation):
             alpha=self.alpha,
         )
 
-        def _collate_fn(batch: List[AbstractDataItem]) -> AbstractDataBatch:
+        def _collate_fn(batch: list[AbstractDataItem]) -> AbstractDataBatch:
             probability = torch.rand(1, generator=self.g).item()
             batched: AbstractDataBatch = default(batch)
             if probability < self.p:
@@ -81,19 +78,19 @@ class MixUp(BaseMixUpCutMix):
         alpha: float = 1.0,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
+        generator_seed: int | None = None,
     ) -> None:
-        """MixUp augmentation. As MixUp utilizes a collate function, the
-        probability of applying the augmentation is drawn for each batch.
+        """MixUp augmentation. As MixUp utilizes a collate function, the probability of
+        applying the augmentation is drawn for each batch.
 
         Args:
             alpha: Hyperparameter of the Beta distribution. Defaults to 1.0.
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
         """
         super().__init__(v2.MixUp, alpha, order, p, generator_seed)
 
@@ -104,19 +101,19 @@ class CutMix(BaseMixUpCutMix):
         alpha: float = 1.0,
         order: int = 0,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
+        generator_seed: int | None = None,
     ) -> None:
-        """CutMix augmentation. As CutMix utilizes a collate function, the
-        probability of applying the augmentation is drawn for each batch.
+        """CutMix augmentation. As CutMix utilizes a collate function, the probability
+        of applying the augmentation is drawn for each batch.
 
         Args:
             alpha: Hyperparameter of the Beta distribution. Defaults to 1.0.
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 0.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
         """
         super().__init__(v2.CutMix, alpha, order, p, generator_seed)
 
@@ -126,26 +123,26 @@ class SampleGaussianWhiteNoise(AbstractAugmentation):
         self,
         snr_df: str,
         snr_col: str,
-        sample_seed: int = None,
+        sample_seed: int | None = None,
         order: int = 101,
         p: float = 1.0,
-        generator_seed: Optional[int] = None,
+        generator_seed: int | None = None,
     ) -> None:
         """Sample-level gaussian white noise augmentation based on SNR values.
 
         Args:
-            snr_df: Path to a CSV file containing SNR values for each sample.
-                Index of the CSV file must match the index of the dataset.
+            snr_df: Path to a CSV file containing SNR values for each sample. Index of
+                the CSV file must match the index of the dataset.
             snr_col: Name of the column containing the SNR values.
-            sample_seed: Seed for the random number generator used for sampling
-                the noise. If a seed is provided, a consistent augmentation
-                is applied to the same sample. Defaults to None.
+            sample_seed: Seed for the random number generator used for sampling the
+                noise. If a seed is provided, a consistent augmentation is applied to
+                the same sample. Defaults to None.
             order: The order of the augmentation in the transformation pipeline.
                 Defaults to 101.
             p: The probability of applying the augmentation. Defaults to 1.0.
-            generator_seed: The initial seed for the internal random number
-                generator drawing the probability. If None, the generator is
-                not seeded. Defaults to None.
+            generator_seed: The initial seed for the internal random number generator
+                drawing the probability. If None, the generator is not seeded. Defaults
+                to None.
         """
         super().__init__(order, p, generator_seed)
         if not os.path.exists(snr_df):

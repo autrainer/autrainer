@@ -1,5 +1,3 @@
-from typing import List
-
 from .abstract_constants import AbstractConstants
 
 
@@ -32,11 +30,12 @@ class NamingConstants(AbstractConstants):
     ]
 
     @property
-    def NAMING_CONVENTION(self) -> List[str]:
+    def NAMING_CONVENTION(self) -> list[str]:
         """Get the naming convention of runs.
+
         Defaults to :attr:`["dataset", "model", "optimizer", "learning_rate",
-        "batch_size", "training_type", "iterations", "scheduler",
-        "augmentation", "seed"]`.
+        "batch_size", "training_type", "iterations", "scheduler", "augmentation",
+        "seed"]`.
 
         Returns:
             Naming convention of runs.
@@ -44,7 +43,7 @@ class NamingConstants(AbstractConstants):
         return self._naming_convention
 
     @NAMING_CONVENTION.setter
-    def NAMING_CONVENTION(self, naming_convention: List[str]) -> None:
+    def NAMING_CONVENTION(self, naming_convention: list[str]) -> None:
         """Set the naming convention of runs.
 
         Args:
@@ -64,8 +63,9 @@ class NamingConstants(AbstractConstants):
         self._naming_convention = naming_convention
 
     @property
-    def INVALID_AGGREGATIONS(self) -> List[str]:
+    def INVALID_AGGREGATIONS(self) -> list[str]:
         """Get the invalid aggregations for postprocessing.
+
         Defaults to :attr:`["training_type"]`.
 
         Returns:
@@ -74,7 +74,7 @@ class NamingConstants(AbstractConstants):
         return self._invalid_aggregations
 
     @INVALID_AGGREGATIONS.setter
-    def INVALID_AGGREGATIONS(self, invalid_aggregations: List[str]) -> None:
+    def INVALID_AGGREGATIONS(self, invalid_aggregations: list[str]) -> None:
         """Set the invalid aggregations for postprocessing.
 
         Args:
@@ -94,11 +94,12 @@ class NamingConstants(AbstractConstants):
         self._invalid_aggregations = invalid_aggregations
 
     @property
-    def VALID_AGGREGATIONS(self) -> List[str]:
+    def VALID_AGGREGATIONS(self) -> list[str]:
         """Get the valid aggregations for postprocessing.
+
         Defaults to :attr:`["dataset", "model", "optimizer", "learning_rate",
-        "batch_size", "iterations", "scheduler", "augmentation", "seed"]`
-        (the naming convention without the invalid aggregations).
+        "batch_size", "iterations", "scheduler", "augmentation", "seed"]` (the naming
+        convention without the invalid aggregations).
 
         Returns:
             Valid aggregations for postprocessing.
@@ -106,7 +107,7 @@ class NamingConstants(AbstractConstants):
         return self._valid_aggregations
 
     @VALID_AGGREGATIONS.setter
-    def VALID_AGGREGATIONS(self, valid_aggregations: List[str]) -> None:
+    def VALID_AGGREGATIONS(self, valid_aggregations: list[str]) -> None:
         """Set the valid aggregations for postprocessing.
 
         Args:
@@ -126,10 +127,11 @@ class NamingConstants(AbstractConstants):
         self._valid_aggregations = valid_aggregations
 
     @property
-    def CONFIG_DIRS(self) -> List[str]:
+    def CONFIG_DIRS(self) -> list[str]:
         """Get the configuration directories for Hydra configurations.
-        Defaults to :attr:`["augmentation", "dataset", "model", "optimizer",
-        "plotting", "preprocessing", "scheduler"]`.
+
+        Defaults to :attr:`["augmentation", "dataset", "model", "optimizer", "plotting",
+        "preprocessing", "scheduler"]`.
 
         Returns:
             Configuration directories for Hydra configurations.
@@ -137,15 +139,14 @@ class NamingConstants(AbstractConstants):
         return self._config_dirs
 
     @CONFIG_DIRS.setter
-    def CONFIG_DIRS(self, config_dirs: List[str]) -> None:
+    def CONFIG_DIRS(self, config_dirs: list[str]) -> None:
         """Set the configuration directories for Hydra configurations.
 
         Args:
             config_dirs: Configuration directories for Hydra configurations.
 
         Raises:
-            ValueError: If the configuration directories are not a list of
-                strings.
+            ValueError: If the configuration directories are not a list of strings.
         """
         self._assert_type(config_dirs, list, "CONFIG_DIRS")
         for c in config_dirs:

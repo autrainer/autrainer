@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Union
 
 import audobject
 from torchvision import transforms as T
@@ -13,18 +14,13 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class SmartCompose(T.Compose, audobject.Object):
-    def __init__(
-        self,
-        transforms: List[AbstractTransform],
-        **kwargs: Dict[str, Any],
-    ) -> None:
-        """SmartCompose wrapper for torchvision.transforms.Compose, which
-        allows for simple composition of transforms by adding them together.
-        Transforms are automatically sorted by their order attribute if present.
+    def __init__(self, transforms: list[AbstractTransform], **kwargs: Any) -> None:
+        """SmartCompose wrapper for torchvision.transforms.Compose, which allows for
+        simple composition of transforms by adding them together. Transforms are
+        automatically sorted by their order attribute if present.
 
-        Additionally, SmartCompose allows for the specification of a
-        collate function to be used in a DataLoader, the last collate function
-        specified will be used.
+        Additionally, SmartCompose allows for the specification of a collate function to
+        be used in a DataLoader, the last collate function specified will be used.
 
         Args:
             transforms: List of transforms to compose.
@@ -36,20 +32,18 @@ class SmartCompose(T.Compose, audobject.Object):
 
     def __add__(
         self,
-        other: Optional[
-            Union["SmartCompose", AbstractTransform, List[AbstractTransform]]
-        ],
+        other: Union["SmartCompose", AbstractTransform, list[AbstractTransform]] | None,
     ) -> "SmartCompose":
-        """Add another transform to the composition. Transforms are
-        automatically sorted by their order attribute if present.
+        """Add another transform to the composition. Transforms are automatically sorted
+        by their order attribute if present.
 
         Args:
             other: Transform to add to the composition.
 
         Raises:
-            TypeError: If the addition is not a valid type.
-                Supported types are AbstractTransform, SmartCompose,
-                and list of AbstractTransform or SmartCompose.
+            TypeError: If the addition is not a valid type. Supported types are
+                AbstractTransform, SmartCompose, and list of AbstractTransform or
+                SmartCompose.
 
         Returns:
             New SmartCompose object with the added transform.
@@ -80,13 +74,14 @@ class SmartCompose(T.Compose, audobject.Object):
         self.transforms.sort(key=lambda x: getattr(x, "order", 0))
 
     def get_collate_fn(self, data: "AbstractDataset") -> Callable:
-        """Get the collate function. If no collate function is present in
-        the transforms, the dataset default is returned.
-        If multiple collate functions are present, the last one is used.
+        """Get the collate function.
+
+        If no collate function is present in the transforms, the dataset default is
+        returned. If multiple collate functions are present, the last one is used.
 
         Args:
-            data: Dataset to get the collate function for.
-                Includes a ``default_collate_fn``.
+            data: Dataset to get the collate function for. Includes a
+                ``default_collate_fn``.
 
         Returns:
             Collate function.
@@ -107,19 +102,19 @@ class SmartCompose(T.Compose, audobject.Object):
         return self
 
     def offset_generator_seed(self, offset: int) -> None:
-        """Offset the generator seed for transforms that use random
-        number generators. Useful for ensuring reproducibility and
-        randomness of augmentations when using multiple workers.
+        """Offset the generator seed for transforms that use random number generators.
+
+        Useful for ensuring reproducibility and randomness of augmentations when using
+        multiple workers.
 
         Args:
-            offset: Offset to add to the generator seed. Usually the
-                worker index.
+            offset: Offset to add to the generator seed. Usually the worker index.
         """
         for t in self.transforms:
             if hasattr(t, "offset_generator_seed"):
                 t.offset_generator_seed(offset)
 
-    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:
+    def __call__(self, item: AbstractDataItem) -> AbstractDataItem:  # ty: ignore[invalid-method-override]
         """Apply the transform to the input data item.
 
         Args:

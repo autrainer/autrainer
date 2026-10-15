@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 import glob
 import os
-from typing import Optional
 
 import autrainer
 
-from .abstract_script import AbstractScript, MockParser
+from .abstract_script import AbstractScript
 from .command_line_error import CommandLineError
-from .utils import catch_cli_errors
+from .utils import MockParser, catch_cli_errors
 
 
 @dataclass
@@ -21,11 +20,11 @@ class InferenceArgs:
     recursive: bool
     embeddings: bool
     update_frequency: int
-    preprocess_cfg: Optional[str]
-    window_length: Optional[float]
-    stride_length: Optional[float]
-    min_length: Optional[float]
-    sample_rate: Optional[int]
+    preprocess_cfg: str | None
+    window_length: float | None
+    stride_length: float | None
+    min_length: float | None
+    sample_rate: int | None
     trust_remote: bool = False
 
 
@@ -363,64 +362,58 @@ def inference(
     recursive: bool = False,
     embeddings: bool = False,
     update_frequency: int = 1,
-    preprocess_cfg: Optional[str] = "default",
-    window_length: Optional[float] = None,
-    stride_length: Optional[float] = None,
-    min_length: Optional[float] = None,
-    sample_rate: Optional[int] = None,
+    preprocess_cfg: str | None = "default",
+    window_length: float | None = None,
+    stride_length: float | None = None,
+    min_length: float | None = None,
+    sample_rate: int | None = None,
     trust_remote: bool = False,
 ) -> None:
     """Perform inference on a trained model.
 
-    If called in a notebook, the function will not raise an error and print
-    the error message instead.
+    If called in a notebook, the function will not raise an error and print the error
+    message instead.
 
     Args:
-        model: Local path to model directory or Hugging Face link of the
-            format: `hf:repo_id[@revision][:subdir]#local_dir`.
-            Should contain at least one state subdirectory, the
-            `model.yaml`, `file_handler.yaml`, `target_transform.yaml`,
-            and `inference_transform.yaml` files.
-        input: Path to input directory. Should contain audio files of the
-            specified extension.
-        output: Path to output directory. Output includes a YAML file with
-            predictions and a CSV file with model outputs.
+        model: Local path to model directory or Hugging Face link of the format:
+            `hf:repo_id[@revision][:subdir]#local_dir`. Should contain at least one
+            state subdirectory, the `model.yaml`, `file_handler.yaml`,
+            `target_transform.yaml`, and `inference_transform.yaml` files.
+        input: Path to input directory. Should contain audio files of the specified
+            extension.
+        output: Path to output directory. Output includes a YAML file with predictions
+            and a CSV file with model outputs.
         checkpoint: Checkpoint to use for evaluation. Defaults to '_best'.
         device: CUDA-enabled device to use for processing. Defaults to 'cpu'.
-        extension: Type of file to look for in the input directory.
-            Defaults to 'wav'.
-        recursive: Recursively search for files in the input directory.
-            Defaults to False.
-        embeddings: Extract embeddings from the model in addition to
-            predictions. For each file, a .pt file with embeddings will be
-            saved. Defaults to False.
-        update_frequency: Frequency of progress bar updates. If 0, the progress
-            bar will be disabled. Defaults to 1.
-        preprocess_cfg: Preprocessing configuration to apply to input. Can be
-            a path to a YAML file or the name of the preprocessing
-            configuration in the local or autrainer 'conf/preprocessing'
-            directory. If "default", the default preprocessing configuration
-            used during training will be applied. If None, no preprocessing
-            will be applied. Defaults to "default".
-        window_length: Window length for sliding window inference in seconds.
-            If None, the entire input will be processed at once.
-            Defaults to None.
-        stride_length: Stride length for sliding window inference in seconds.
-            If None, the entire input will be processed at once.
-            Defaults to None.
-        min_length: Minimum length of audio file to process in seconds.
-            Files shorter than the minimum length are padded with zeros.
-            Sample rate has to be specified for padding. If None, no minimum
-            length is enforced. Defaults to None.
-        sample_rate: Sample rate of audio files in Hz. Has to be specified for
-            sliding window inference. Defaults to None.
-        trust_remote: Whether to trust and execute custom Python code from
-            Hugging Face models. Warning: This can be dangerous as it may run
-            arbitrary code on your machine! Defaults to False.
+        extension: Type of file to look for in the input directory. Defaults to 'wav'.
+        recursive: Recursively search for files in the input directory. Defaults to
+            False.
+        embeddings: Extract embeddings from the model in addition to predictions. For
+            each file, a .pt file with embeddings will be saved. Defaults to False.
+        update_frequency: Frequency of progress bar updates. If 0, the progress bar will
+            be disabled. Defaults to 1.
+        preprocess_cfg: Preprocessing configuration to apply to input. Can be a path to
+            a YAML file or the name of the preprocessing configuration in the local or
+            autrainer 'conf/preprocessing' directory. If "default", the default
+            preprocessing configuration used during training will be applied. If None,
+            no preprocessing will be applied. Defaults to "default".
+        window_length: Window length for sliding window inference in seconds. If None,
+            the entire input will be processed at once. Defaults to None.
+        stride_length: Stride length for sliding window inference in seconds. If None,
+            the entire input will be processed at once. Defaults to None.
+        min_length: Minimum length of audio file to process in seconds. Files shorter
+            than the minimum length are padded with zeros. Sample rate has to be
+            specified for padding. If None, no minimum length is enforced. Defaults to
+            None.
+        sample_rate: Sample rate of audio files in Hz. Has to be specified for sliding
+            window inference. Defaults to None.
+        trust_remote: Whether to trust and execute custom Python code from Hugging Face
+            models. Warning: This can be dangerous as it may run arbitrary code on your
+            machine! Defaults to False.
 
     Raises:
-        CommandLineError: If the model, input, or preprocessing configuration
-            does not exist, or if the device is invalid.
+        CommandLineError: If the model, input, or preprocessing configuration does not
+            exist, or if the device is invalid.
     """
     script = InferenceScript()
     script.parser = MockParser()

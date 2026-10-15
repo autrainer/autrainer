@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Type
+from typing import Any
 
 import numpy as np
 import numpy.testing
@@ -57,16 +57,17 @@ class TestAllMetrics:
                 assert m.get_best_pos(x) == 0, "1 should be at position 0."
 
     def _test_result(
-        self, m: AbstractMetric, truth: List, pred: List, res: float
+        self, m: AbstractMetric, truth: list, pred: list, res: float
     ) -> None:
         np.testing.assert_almost_equal(m(truth, pred), res, 2)
 
     @pytest.mark.parametrize("cls", [Accuracy, F1, UAR, CCC, MAE, MSE, PCC])
-    def test_classification_regression_metrics(self, cls: Type[AbstractMetric]) -> None:
-        self._test_metric(cls())
-        self._test_metric_invalid(cls())
-        self._test_starting_metric(cls())
-        self._test_comparisons(cls())
+    def test_classification_regression_metrics(self, cls: type[AbstractMetric]) -> None:
+        c = cls()  # ty: ignore[missing-argument]
+        self._test_metric(c)
+        self._test_metric_invalid(c)
+        self._test_starting_metric(c)
+        self._test_comparisons(c)
 
     @pytest.mark.parametrize(
         ("cls", "truth", "pred", "res"),
@@ -141,20 +142,20 @@ class TestAllMetrics:
     )
     def test_mlc_metrics(
         self,
-        cls: Type[AbstractMetric],
+        cls: type[AbstractMetric],
         truth: np.ndarray,
         pred: np.ndarray,
         res: float,
         caplog: pytest.LogCaptureFixture,
     ) -> None:
-        self._test_metric(cls())
+        m = cls()  # ty: ignore[missing-argument]
+        self._test_metric(m)
         with caplog.at_level(logging.WARNING):
-            self._test_metric_invalid(cls())
+            self._test_metric_invalid(m)
         assert "Error computing" in caplog.text, "Warning should be logged."
-        self._test_starting_metric(cls())
-        self._test_comparisons(cls())
-        m = cls()
-        self._test_result(m, truth, pred, res)
+        self._test_starting_metric(m)
+        self._test_comparisons(m)
+        self._test_result(m, list(truth), list(pred), res)
         for idx in range(truth.shape[1]):
             np.testing.assert_almost_equal(
                 m.unitary(truth[:, idx], pred[:, idx]),
@@ -178,7 +179,7 @@ class TestAllMetrics:
                 np.array([2, 3, 4, 5, 6]),
                 np.array([0, 1, 2, 3, 4]),
                 [MAE()],
-                pd.DataFrame([0, 1, 2, 3, 4], columns=["truth"]),
+                pd.DataFrame({"truth": [0, 1, 2, 3, 4]}),
                 "truth",
                 [],
                 {
@@ -192,10 +193,7 @@ class TestAllMetrics:
                 np.array([2, 3, 4, 6, 7]),
                 np.array([0, 1, 2, 3, 4]),
                 [MAE()],
-                pd.DataFrame(
-                    [[0, 0], [1, 0], [2, 0], [3, 1], [4, 1]],
-                    columns=["truth", "foo"],
-                ),
+                pd.DataFrame({"truth": [0, 1, 2, 3, 4], "foo": [0, 0, 0, 1, 1]}),
                 "truth",
                 ["foo"],
                 {"mae": {"all": 2.4, 0: 2, 1: 3}},
@@ -205,10 +203,7 @@ class TestAllMetrics:
                 np.array([2, 3, 4, 7, 7]),
                 np.array([0, 3, 4, 1, 2]),
                 [MAE()],
-                pd.DataFrame(
-                    [[0, 0], [1, 0], [2, 0], [3, 1], [4, 1]],
-                    columns=["truth", "foo"],
-                ),
+                pd.DataFrame({"truth": [0, 1, 2, 3, 4], "foo": [0, 0, 0, 1, 1]}),
                 "truth",
                 ["foo"],
                 {"mae": {"all": 2.6, 0: 3, 1: 2}},
@@ -220,11 +215,11 @@ class TestAllMetrics:
         targets: np.ndarray,
         predictions: np.ndarray,
         indices: np.ndarray,
-        metrics: List[AbstractMetric],
+        metrics: list[AbstractMetric],
         groundtruth: pd.DataFrame,
         target_column: str,
-        stratify: List[str],
-        results: Dict[str, Any],
+        stratify: list[str],
+        results: dict[str, Any],
     ) -> None:
         res = disaggregated_evaluation(
             targets=targets,

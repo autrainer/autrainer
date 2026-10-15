@@ -1,7 +1,7 @@
+from collections.abc import Generator
 from contextlib import contextmanager
 import io
 import sys
-from typing import Generator
 
 
 @contextmanager

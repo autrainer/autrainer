@@ -2,7 +2,6 @@ from functools import cached_property
 import os
 from pathlib import Path
 import shutil
-from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 import pandas as pd
@@ -37,29 +36,28 @@ class DCASE2016Task1(BaseClassificationDataset):
     def __init__(
         self,
         path: str,
-        features_subdir: Optional[str],
+        features_subdir: str | None,
         seed: int,
-        metrics: List[Union[str, DictConfig, Dict]],
-        tracking_metric: Union[str, DictConfig, Dict],
+        metrics: list[str | DictConfig | dict],
+        tracking_metric: str | DictConfig | dict,
         index_column: str,
         target_column: str,
         file_type: str,
-        file_handler: Union[str, DictConfig, Dict],
-        features_path: Optional[str] = None,
-        train_transform: Optional[SmartCompose] = None,
-        dev_transform: Optional[SmartCompose] = None,
-        test_transform: Optional[SmartCompose] = None,
-        stratify: Optional[List[str]] = None,
+        file_handler: str | DictConfig | dict,
+        features_path: str | None = None,
+        train_transform: SmartCompose | None = None,
+        dev_transform: SmartCompose | None = None,
+        test_transform: SmartCompose | None = None,
+        stratify: list[str] | None = None,
         fold: int = 1,
     ) -> None:
         """TUT Acoustic scenes 2016 Task 1 (DCASE2016Task1) dataset.
 
         Args:
             path: Root path to the dataset.
-            features_subdir: Subdirectory containing the features.
-                If `None`, defaults to audio subdirectory,
-                which is `default` for the standard format,
-                but can be overridden in the dataset specification.
+            features_subdir: Subdirectory containing the features. If `None`, defaults
+                to audio subdirectory, which is `default` for the standard format, but
+                can be overridden in the dataset specification.
             seed: Seed for reproducibility.
             metrics: List of metrics to calculate.
             tracking_metric: Metric to track.
@@ -67,16 +65,12 @@ class DCASE2016Task1(BaseClassificationDataset):
             target_column: Target column of the dataframe.
             file_type: File type of the features.
             file_handler: File handler to load the data.
-            features_path: Root path to features. Useful
-                when features need to be extracted and stored
-                in a different directory than the root of the dataset.
-                If `None`, will be set to `path`. Defaults to `None`.
-            train_transform: Transform to apply to the training set.
-                Defaults to None.
-            dev_transform: Transform to apply to the development set.
-                Defaults to None.
-            test_transform: Transform to apply to the test set.
-                Defaults to None.
+            features_path: Root path to features. Useful when features need to be
+                extracted and stored in a different directory than the root of the
+                dataset. If `None`, will be set to `path`. Defaults to `None`.
+            train_transform: Transform to apply to the training set. Defaults to None.
+            dev_transform: Transform to apply to the development set. Defaults to None.
+            test_transform: Transform to apply to the test set. Defaults to None.
             stratify: Columns to stratify the dataset on. Defaults to None.
             fold: Fold to use in [1, 2, 3, 4]. Defaults to 1.
         """
@@ -113,8 +107,7 @@ class DCASE2016Task1(BaseClassificationDataset):
 
     @staticmethod
     def download(path: str) -> None:  # pragma: no cover
-        """Download the TUT Acoustic scenes 2016 Task 1 (DCASE2016Task1)
-        dataset.
+        """Download the TUT Acoustic scenes 2016 Task 1 (DCASE2016Task1) dataset.
 
         For more information on the dataset and dataset split, see:
         https://dcase.community/challenge2016/task-acoustic-scene-classification

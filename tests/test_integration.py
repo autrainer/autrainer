@@ -1,4 +1,5 @@
 import os
+from typing import cast
 from unittest.mock import patch
 import warnings
 
@@ -39,7 +40,7 @@ class TestCLIIntegration(BaseIndividualTempDir):
     ) -> None:
         assert train_type in ["epoch", "step"], "Invalid train type."
         autrainer.cli.create(empty=True, force=True)
-        config = OmegaConf.load("conf/config.yaml")
+        config = cast("DictConfig", OmegaConf.load("conf/config.yaml"))
         if train_type == "epoch":
             config = self._setup_epoch(config, iterations)
         else:
@@ -127,7 +128,7 @@ class TestCheckpointsIntegration(BaseIndividualTempDir):
         assert len(run_dirs) == 1, "Should have only one run directory."
 
         autrainer.cli.show("model", "ToyFFNN", save=True)
-        model_cfg = OmegaConf.load("conf/model/ToyFFNN.yaml")
+        model_cfg = cast("DictConfig", OmegaConf.load("conf/model/ToyFFNN.yaml"))
         run_dir = f"results/default/training/{run_dirs[0]}/_best"
         model_cfg["id"] = "ToyFFNN-CKPT"
         model_cfg["model_checkpoint"] = f"{run_dir}/model.pt"
@@ -136,7 +137,10 @@ class TestCheckpointsIntegration(BaseIndividualTempDir):
         OmegaConf.save(model_cfg, "conf/model/ToyFFNN-CKPT.yaml")
 
         autrainer.cli.show("dataset", "ToyTabular-C", save=True)
-        dataset_cfg = OmegaConf.load("conf/dataset/ToyTabular-C.yaml")
+        dataset_cfg = cast(
+            "DictConfig",
+            OmegaConf.load("conf/dataset/ToyTabular-C.yaml"),
+        )
         dataset_cfg["id"] = "ToyTabular-C-7"
         dataset_cfg["num_targets"] = 7
         OmegaConf.save(dataset_cfg, "conf/dataset/ToyTabular-C-7.yaml")

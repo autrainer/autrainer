@@ -1,13 +1,13 @@
 import datetime
 import os
 import sys
-from typing import Any, Dict, List
+from typing import Any
 
 from sphinx.application import Sphinx
 import toml
 
 
-def build_authors(authors: List[Dict[str, Any]]) -> str:
+def build_authors(authors: list[dict[str, Any]]) -> str:
     return ", ".join([a["name"] for a in authors])
 
 

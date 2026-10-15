@@ -5,13 +5,13 @@ from pathlib import Path
 import shutil
 import sys
 import tempfile
-from typing import Any, Optional
+from typing import Any
 
 from hydra.experimental.callback import Callback
 from omegaconf import DictConfig
 
 
-def pop_config_dir_from_argv() -> Optional[str]:
+def pop_config_dir_from_argv() -> str | None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config-dir", "-cd")
     args, remaining = parser.parse_known_args()
@@ -21,7 +21,7 @@ def pop_config_dir_from_argv() -> Optional[str]:
 
 class ConfigDirSnapshot(Callback):
     _instance = None
-    _temp_dir: Optional[Path] = None
+    _temp_dir: Path | None = None
 
     def __new__(cls) -> "ConfigDirSnapshot":
         if cls._instance is None:
@@ -29,19 +29,18 @@ class ConfigDirSnapshot(Callback):
             cls._temp_dir = None
         return cls._instance
 
-    def create_snapshot_dir(self) -> Optional[str]:
-        """Create a snapshot of the config directory by copying all
-        configuration files to a temporary directory.
+    def create_snapshot_dir(self) -> str | None:
+        """Create a snapshot of the config directory by copying all configuration files
+        to a temporary directory.
 
-        The snapshot is created by either copying the config directory
-        specified by the `--config-dir` argument (and removing it from
-        `sys.argv`) or by copying the `conf` directory in the current
-        working directory if it exists.
-        If no config directory is found, the method returns None.
+        The snapshot is created by either copying the config directory specified by the
+        `--config-dir` argument (and removing it from `sys.argv`) or by copying the
+        `conf` directory in the current working directory if it exists. If no config
+        directory is found, the method returns None.
 
         Returns:
-            The path to the temporary directory containing the snapshot of
-            the config directory, or None if no config directory was found.
+            The path to the temporary directory containing the snapshot of the config
+            directory, or None if no config directory was found.
         """
         if self._temp_dir and self._temp_dir.is_dir():
             return str(self._temp_dir)
