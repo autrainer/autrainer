@@ -302,9 +302,8 @@ class Bookkeeping:
         for m in metric_fns:
             best_metrics[m.name] = m.get_best(metrics[m.name])
 
-        best_metrics["best_iteration"] = tracking_metric_fn.get_best_pos(
-            metrics[tracking_metric_fn.name]
-        )
+        pos = tracking_metric_fn.get_best_pos(metrics[tracking_metric_fn.name])
+        best_metrics["best_iteration"] = int(metrics.index[pos])
         os.makedirs(os.path.join(self.output_directory, path), exist_ok=True)
         with open(
             os.path.join(self.output_directory, path, filename),

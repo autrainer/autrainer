@@ -60,13 +60,13 @@ class AbstractMetric(ABC):
             score = self.fn(*args, **kwargs, **self.fn_kwargs)
         except ValueError as e:
             self.logger.warning(
-                f"Error computing {self.name} metric due to: {e}. "  # noqa: G004
+                f"Error computing '{self.name}' metric due to: {e}. "  # noqa: G004
                 f"Defaulting to fallback value of {self.fallback}."
             )
             return self.fallback
         if np.isnan(score):
             self.logger.warning(
-                f"Error computi'ng {self.name} metric as score is NaN. "  # noqa: G004
+                f"Error computing '{self.name}' metric as score is NaN. "  # noqa: G004
                 f"Defaulting to fallback value of {self.fallback}."
             )
             return self.fallback
@@ -215,7 +215,7 @@ class BaseDescendingMetric(AbstractMetric):
                 value is set to 1e32. Defaults to None.
             **fn_kwargs: Additional keyword arguments to pass to the function.
         """
-        fallback = fallback if fallback is not None else -1e32
+        fallback = fallback if fallback is not None else 1e32
         super().__init__(name, fn, fallback, **fn_kwargs)
 
     @property

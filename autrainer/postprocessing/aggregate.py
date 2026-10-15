@@ -187,6 +187,7 @@ class AggregateGrid:
             )
             if not isinstance(run, DictConfig):
                 raise ValueError("Expected config.yaml to be a mapping.")
+            runs.append(run)
         config = runs.pop(0)
         if self.aggregated_dict is None:
             for key in self.aggregate_list:

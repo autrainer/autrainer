@@ -125,7 +125,7 @@ class SummarizeGrid:
                 if m is None:
                     raise ValueError(f"No metric found for '{metric}'.")
                 idx = m.get_best_pos(df[metric])
-            best_runs[metric] = df.loc[idx, "run_name"]
+            best_runs[metric] = df["run_name"].iloc[idx]
         path = os.path.join(self.output_directory, "best_runs.yaml")
         save_yaml(path, best_runs)
 
@@ -208,7 +208,7 @@ class SummarizeGrid:
         )
         self._update_metric_fns(cfg.dataset.metrics)
         best_iteration = tracking_metric.get_best_pos(df[tracking_metric.name])
-        metrics_dict = df.loc[best_iteration].to_dict()
+        metrics_dict = df.iloc[best_iteration].to_dict()
         metrics_dict["best_iteration"] = best_iteration
         return metrics_dict
 

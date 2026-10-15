@@ -89,7 +89,9 @@ class ContinueTraining(CallbackMixin):
         trainer.initial_iteration = int(trainer.metrics.index.max() + 1)
         m = trainer.data.tracking_metric
         trainer.max_dev_metric = m.get_best(trainer.metrics[m.name])
-        trainer.best_iteration = m.get_best_pos(trainer.metrics[m.name])
+        pos = m.get_best_pos(trainer.metrics[m.name])
+        trainer.best_iteration = int(trainer.metrics.index[pos])
+        print("continue training trainer.best_iteration:", trainer.best_iteration)  #!
 
     def _init_timers(self, trainer: ModularTaskTrainer, run: str) -> None:
         timers = load_yaml(
